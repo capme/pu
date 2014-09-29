@@ -1,0 +1,1 @@
+<input type="hidden" value="<?php echo $value?>" name="<?php echo $group."[".$name."]";?>" id="<?php echo $id?>" />

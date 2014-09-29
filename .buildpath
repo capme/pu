@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<buildpath>
+	<buildpathentry kind="src" path="application/config"/>
+	<buildpathentry kind="src" path="application/controllers"/>
+	<buildpathentry kind="src" path="application/core"/>
+	<buildpathentry kind="src" path="application/errors"/>
+	<buildpathentry kind="src" path="application/helpers"/>
+	<buildpathentry kind="src" path="application/libraries"/>
+	<buildpathentry kind="src" path="application/logs"/>
+	<buildpathentry kind="src" path="application/migrations"/>
+	<buildpathentry kind="src" path="application/models"/>
+	<buildpathentry kind="src" path="application/third_party/threepl/libraries"/>
+	<buildpathentry kind="src" path="application/views"/>
+	<buildpathentry kind="src" path="public"/>
+	<buildpathentry kind="src" path="system/core"/>
+	<buildpathentry kind="src" path="system/database"/>
+	<buildpathentry kind="src" path="system/helpers"/>
+	<buildpathentry kind="src" path="system/language/english"/>
+	<buildpathentry kind="src" path="system/libraries"/>
+	<buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
+</buildpath>

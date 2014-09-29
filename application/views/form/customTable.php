@@ -1,0 +1,8 @@
+<div class="form-control height-auto" >
+<table >
+
+<tr> <td><input size=5 type="text" placeholder="<?php echo $placeholder;?>"  value="<?php echo @$value['0']['range']['0']?>" name="<?php echo $group."[".$name."]";?>[range][]" /></td> <td>-</td> <td><input size=5 type="text" placeholder="<?php echo $placeholder;?>"  value="<?php echo  @$value ['0']['range']['1']?>"name="<?php echo $group."[".$name."]";?>[range][]" /></td> <td> =</td> <td><input size=5 type="text" placeholder="<?php echo $placeholder;?>" value="<?php echo  @$value['0']['value']?>" name="<?php echo $group."[".$name."]";?>[value][]"  /> %</td></tr>
+<tr> <td><input size=5 type="text" placeholder="<?php echo $placeholder;?>"  value="<?php echo @$value['1']['range']['0']?>" name="<?php echo $group."[".$name."]";?>[range][]" /></td> <td>-</td> <td><input size=5 type="text" placeholder="<?php echo $placeholder;?>"  value="<?php echo  @$value['1']['range']['1']?>" name="<?php echo $group."[".$name."]";?>[range][]" /></td> <td> =</td> <td><input size=5 type="text" placeholder="<?php echo $placeholder;?>" value="<?php echo  @$value['1']['value']?>" name="<?php echo $group."[".$name."]";?>[value][]" /> %</td></tr>
+<tr> <td><input size=5 type="text" placeholder="<?php echo $placeholder;?>"  value="<?php echo @$value['2']['range']['0']?>" name="<?php echo $group."[".$name."]";?>[range][]" /></td> <td>-</td> <td><input size=5 type="text" placeholder="<?php echo $placeholder;?>"  value="<?php echo  @$value['2']['range']['1']?>" name="<?php echo $group."[".$name."]";?>[range][]" /></td> <td> =</td> <td><input size=5 type="text" placeholder="<?php echo $placeholder;?>" value="<?php echo  @$value['2']['value']?>" name="<?php echo $group."[".$name."]";?>[value][]"  /> %</td></tr>
+</table>
+</div>

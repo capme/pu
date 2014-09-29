@@ -1,0 +1,1 @@
+<input type="text" class="form-control form-filter input-sm" name="<?php echo $name?>">
