@@ -50,8 +50,8 @@ $active_record = TRUE;
 
 $db['mysql']['hostname'] = 'localhost';
 $db['mysql']['username'] = 'root';
-$db['mysql']['password'] = 'root';
-$db['mysql']['database'] = 'vela_oms';
+$db['mysql']['password'] = '';
+$db['mysql']['database'] = 'oms';
 $db['mysql']['dbdriver'] = 'mysql';
 $db['mysql']['dbprefix'] = '';
 $db['mysql']['pconnect'] = TRUE;
