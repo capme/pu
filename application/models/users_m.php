@@ -193,8 +193,30 @@ class Users_m extends MY_Model {
 	}
 	public function deleteUser($pkField)
 	{
-	$this->db->where(array($this-> pkField=> $pkField));
-	$this->db->delete($this->table);
+		$this->db->where(array($this-> pkField=> $pkField));
+		$this->db->delete($this->table);
+	}
+	
+	public function changePassword( $post )
+	{
+		$msg = array();
+		if(!empty($post['password'])) {
+			$data['password'] = sha1($post['password']);
+		} else {
+			$msg['password'] = "Invalid password";
+		}
+				
+		if(empty($msg)) 
+		{
+			$this->db->where($this->pkField, $post['pkUserId']);
+			$this->db->update($this->table, $data);
+			return $post['pkUserId'];
+		} 
+		else
+		{
+			return $msg;
+		}
+		
 	}	
 }
 ?>

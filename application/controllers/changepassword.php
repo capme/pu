@@ -2,22 +2,17 @@
 class Changepassword extends MY_Controller {
 	var $data = array();	
 	public function __construct()
-	{
-		$this->allow_group("1");
-		$this->allow_group("cadmin");
-		
-		parent::__construct();
-		$this->data['pagegroup'] = 4;
-		$this->load->model("changepassword_m");
-		$this->data['page'] = "changepassword";
+	{	
+		parent::__construct();		
+		$this->load->model("users_m");		
 	}
 	
 	public function index()
 	{
 		$userdata=$this->session->userdata('pkUserId');
-		$data = $this->changepassword_m->getUser($userdata);
+		$data = $this->users_m->getUser($userdata);
 		if($data->num_rows() < 1) {
-			redirect("users");
+			redirect("logout");
 		}
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "Change Password";
@@ -48,15 +43,15 @@ class Changepassword extends MY_Controller {
 	$post = $this->input->post("user");
 		if($post['method'] == "update") 
 		{
-			$result = $this->changepassword_m->changePassword($post);
+			$result = $this->users_m->changePassword($post);
 			if(is_numeric($result)) 
 			{
-				redirect("users");
+				redirect("logout");
 			} 
 			else 
 			{
 			$this->session->set_flashdata( array("userError" => json_encode(array("msg" => $result, "data" => $post))) );
-				redirect("logout");
+			redirect("changepassword");
 			}
 		}
 	}
