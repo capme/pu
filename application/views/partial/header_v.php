@@ -469,7 +469,12 @@
 					-->
 					<li>
 						<a href="<?php echo site_url('logout')?>">
-							<i class="fa fa-key"></i> Log Out
+							<i class="fa fa-sign-out"></i> Log Out
+						</a>
+					</li>
+					<li>
+						<a href="<?php echo site_url('changepassword')?>">
+							<i class="fa fa-key"></i> Change Password
 						</a>
 					</li>
 				</ul>
