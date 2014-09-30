@@ -33,7 +33,9 @@ class Auth_m extends CI_Model {
 			}
 
 			$userdata = array(
-				'username' => $user['username'],
+				
+				'username' => $user['username'],				
+				'pkUserId' => $user['pkUserId'],
 				//'password' => @$user['password'],
 				'loggedin' => TRUE,
 				'remember' => $remember,
