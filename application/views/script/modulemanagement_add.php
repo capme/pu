@@ -31,18 +31,8 @@ var FormValidation = function () {
                         minlength: 5,
                         required: true
                     },                    
-                    "user[icon]": {
-                        required: true,
-                    },
                     "user[url]": {
                         required: true,
-                    },
-                    "user[sort]": {
-                    	required: true,
-                    	integer: true,
-                    },
-                    "user[parent]": {
-                        required: true
                     },
                     "user[status]": {
                         required: true

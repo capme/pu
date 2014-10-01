@@ -87,12 +87,18 @@ class Usergroup_m extends MY_Model {
 			$authModule = array();
 			foreach($post['modules'] as $mId) {
 				$authModule[] = $mId;
-				$parent = $parentMap[$mId];
+				if(isset($parentMap[$mId]))
+					$parent = $parentMap[$mId];
+				else
+					$parent = 0;
 				while($parent > 0) {
 					$authModule[] = $parent;
 					$parent = $parentMap[$parent];
 				}
 			}
+			
+			$authModule = array_unique($authModule);
+			$authModule = explode(",", implode(",", $authModule));
 				
 			$data['auth_module'] = json_encode( $authModule );
 		} else {
@@ -138,12 +144,17 @@ class Usergroup_m extends MY_Model {
 			$authModule = array();
 			foreach($post['modules'] as $mId) {
 				$authModule[] = $mId;
-				$parent = $parentMap[$mId];
+				if(isset($parentMap[$mId]))
+					$parent = $parentMap[$mId];
+				else
+					$parent = 0;
 				while($parent > 0) {
 					$authModule[] = $parent;
 					$parent = $parentMap[$parent];
 				}
 			}
+			$authModule = array_unique($authModule);
+			$authModule = explode(",", implode(",", $authModule));
 			
 			$data['auth_module'] = json_encode( $authModule );
 		} else {
