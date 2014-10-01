@@ -17,22 +17,11 @@ var FormValidation = function () {
                 messages: {
                 },
                 rules: {
-                    "client[name]": {
-                        minlength: 2,
+                    "client[client_code]": {
+                        minlength: 5,
                         required: true
                     },
-                    "client[nGAProfileId]": {
-                        minlength: 3,
-                        digits: true
-                    },
-                    "client[nGAProfileId_mobile]": {
-                    	minlength: 3,
-                        digits: true
-                    },
-                    "client[consign]": {
-                    	minlength: 2,
-                        digits: true
-                    },
+               
                 },
 
                 invalidHandler: function (event, validator) { //display error alert on form submit              

@@ -27,10 +27,8 @@ var TableAjax = function () {
 						  { "bSortable": false },
 						  { "bSortable": false },
 						  { "bSortable": false },
-						  { "bSortable": false },
-						  { "bSortable": false },
-						  { "bSortable": false},
-						  { "bSortable": false},
+						   { "bSortable": false },
+						  
                     ],
                     /* 
                         By default the ajax datatable's layout is horizontally scrollable and this can cause an issue of dropdown menu is used in the table rows which.
@@ -53,9 +51,10 @@ var TableAjax = function () {
             grid.getTableWrapper().on('click', '.table-group-action-submit', function(e){
                 e.preventDefault();
                 var action = $(".table-group-action-input", grid.getTableWrapper());
-                if (action.val() != "" && grid.getSelectedRowsCount() > 0) {
+                if (action.val() != "" && grid.getSelectedRowsCount() > 0) 
+				{
                     if( action.val() == 2 ) { // delete row
-                        if( !confirm("Are you sure to remove client?\nThis action will remove all client's data and cannot be undone.") ){
+                        if( !confirm("Are you sure to remove client?") ){
                             return false;
                         }
                     }
