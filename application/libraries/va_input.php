@@ -27,6 +27,19 @@ class Va_input {
 		return $this;
 	}
 	
+	public function addTextarea( $conf = array() ) {
+		if(!is_array($conf)) {
+			return $this;
+		}
+	
+		$input = $this->_prepareBasicField($conf);
+		$input["type"] = "textarea";
+	
+		$this->fields[] = $input;
+	
+		return $this;
+	}
+	
 	public function addPassword( $conf = array() ) {
 		if(!is_array($conf)) {
 			return $this;
@@ -224,6 +237,11 @@ class Va_input {
 				case "text":
 					$field['group'] = $this->_group;
 					$result = $this->_CI->load->view("form/input", $field, true);
+					$html .= $result;
+					break;
+				case "textarea":
+					$field['group'] = $this->_group;
+					$result = $this->_CI->load->view("form/textarea", $field, true);
 					$html .= $result;
 					break;
 				case "hidden":
