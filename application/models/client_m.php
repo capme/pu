@@ -6,7 +6,7 @@ class Client_m extends MY_Model {
 	var $table = 'client';
 	var $filters = array("client_code" => "client_code");
 	var $sorts = array(1 => "id");
-	var $id = "id";
+	var $pkField = "id";
 	
 	function __construct()
     {
@@ -97,13 +97,13 @@ class Client_m extends MY_Model {
 	{
 		$this->db = $this->load->database('mysql', TRUE);
 	
-		$this->db->where_in($this->id, $id);
+		$this->db->where_in($this->pkField, $id);
 		return $this->db->get($this->table);		
 	}
 	
 	public function updateClient($post) 
 	{
-	$this->db = $this->load->database('mysql', TRUE);
+		$this->db = $this->load->database('mysql', TRUE);
 		$msg = array();		
 		
 		if(!empty($post['client_code'])) {
@@ -124,7 +124,7 @@ class Client_m extends MY_Model {
 				
 		if(empty($msg)) 
 		{
-			$this->db->where($this->id, $post['id']);
+			$this->db->where($this->pkField, $post['id']);
 			$this->db->update($this->table, $data);
 			return $post['id'];
 		} 
@@ -137,7 +137,7 @@ class Client_m extends MY_Model {
 	public function removeClient($id, $action) 
 	{
 		$this->db = $this->load->database("mysql", TRUE);
-		$this->db->where_in($this->id, $id);
+		$this->db->where_in($this->pkField, $id);
 		$this->db->delete($this->table);
 	}
 
