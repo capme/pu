@@ -16,6 +16,8 @@ class MY_Model extends CI_Model{
 	var $sorts = array();
 	var $aFilters = array();
 	var $pkField = null;
+	var $relation = array();
+	var $select = array();
 	
 	function __construct() {
 		parent::__construct();
@@ -39,6 +41,12 @@ class MY_Model extends CI_Model{
 	protected function _doGetTotalRow() {
 		$this->_prepareFilter();
 	
+		if( !empty($this->relation) ) {
+			foreach($this->relation as $relation) {
+				$this->db->join($relation['table'], $relation['link'], $relation['type']);
+			}
+		}
+		
 		foreach($this->aFilters as $tField => $val) {
 			$this->db->where($tField, $val);
 		}
@@ -112,6 +120,16 @@ class MY_Model extends CI_Model{
 	
 		$this->_prepareFilter();
 	
+		if(!empty($this->select)) {
+			$res->select( implode(",", $this->select) );
+		}
+		
+		if( !empty($this->relation) ) {
+			foreach($this->relation as $relation) {
+				$res->join($relation['table'], $relation['link'], $relation['type']);
+			}
+		}
+		
 		foreach($this->aFilters as $tField => $val) {
 			$res->where($tField, $val);
 		}
