@@ -113,6 +113,7 @@ class Returnorder extends MY_Controller {
 		$this->data['formTitle'] = "View Order";
 	
 		$this->load->library("va_input", array("group" => "returnorder"));
+		$this->va_input->setJustView();
 		$flashData = $this->session->flashdata("clientError");
 		if($flashData !== false) {
 			$flashData = json_decode($flashData, true);

@@ -6,6 +6,7 @@ class Va_input {
 	private $_group = "";
 	private $_groupedForm = FALSE;
 	private $_groupList = array();
+	private $_justView = false;
 	
 	function __construct($data) {
 		$this->_CI =& get_instance();
@@ -322,6 +323,15 @@ class Va_input {
 	public function commitForm($id) {
 		$this->groupFields[$id] = $this->fields;
 		$this->fields = array();
+	}
+	
+	public function justView() {
+		return $this->_justView;
+	}
+	
+	public function setJustView($flag = true) {
+		$this->_justView = $flag;
+		return $this;
 	}
 }
 ?>
