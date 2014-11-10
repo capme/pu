@@ -126,11 +126,35 @@ class Returnorder_m extends MY_Model {
 		$this->db = $this->load->database('mysql', TRUE);
 		$this->db->select('*');
 		$this->db->from('return');
-		$this->db->join('return_item', 'return.id=return_item.return_id = '.$id.'');
+		$this->db->join('return_item', 'return.id=return_item.return_id');
 		$this->db->join('client','client.id=return.client_id');
+		$this->db->where("return.id", $id);
 		$query=$this->db->get();
 		return $query;
 	}
 	
+	public function add($client, $items) {
+		$this->db = $this->load->database('mysql', TRUE);
+		
+		$this->db->trans_start();
+		$insertedIds = array();
+		
+		foreach($items as $item) {
+			$this->db->insert(
+				$this->table, 
+				array("order_number" => $item['increment_id'], "email_address" => $item['email'], "phone_number" => $item['phone_number'], "client_id" => $client['id'], "updated_by" => "2", "created_at" => date("Y-m-d H:i:s"))
+			);
+			$id = $this->db->insert_id();
+			$this->db->insert(
+				$this->tableReturnItem,
+				array("return_id" => $id, "sku" => $item['sku'], "return_reason" => $item['reason'], "updated_by" => 2)
+			);
+			$insertedIds[] = $item['item_id'];
+		}
+		
+		$this->db->trans_complete();
+		
+		return $insertedIds;
+	}
 	
 }

@@ -66,7 +66,7 @@ class Returnorder extends MY_Controller {
 		}
 	
 		$this->va_input->addHidden( array("name" => "method", "value" => "update") );
-		$this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
+		$this->va_input->addHidden( array("name" => "id", "value" => $value['return_id']) );
 		$this->va_input->addTextarea( array("name" => "cancel_reason", "placeholder" => "Cancel reason", "help" => "Cancel reason", "label" => "Cancel Reason *", "value" => @$value['cancel_reason'], "msg" => @$msg['cancel_reason']) );
 		
 		$this->data['script'] = $this->load->view("script/client_add", array(), true);
@@ -126,8 +126,6 @@ class Returnorder extends MY_Controller {
 		$this->va_input->addInput( array("name" => "order_number", "placeholder" => "Order Number", "label" => "Order Number", "value" => @$value['order_number'], "msg" => @$msg['order_number'], "help" => "Order Number") );
 		$this->va_input->addInput( array("name" => "sku", "placeholder" => "SKU", "help" => "SKU", "label" => "SKU *", "value" => @$value['sku'], "msg" => @$msg['sku']) );
 		$this->va_input->addSelect( array("name" => "status", "list" => $this->getStatus(), "value" => @$value['status'], "msg" => @$msg['status'], "label" => "Order Status *", "help" => "Order Status") );
-		$this->va_input->addInput( array("name" => "created_at", "value" => @$value['created_at'], "msg" => @$msg['created_at'], "label" => "Created At *", "help" => "Created At") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['updated_at'], "msg" => @$msg['updated_at'], "label" => "Updated At *", "help" => "Updated At") );
 		$this->va_input->addInput( array("name" => "phone_number", "value" => @$value['phone_number'], "msg" => @$msg['phone_number'], "label" => "Phone Number *", "help" => "Phone Number") );
 		$this->va_input->addInput( array("name" => "email_address", "value" => @$value['email_address'], "msg" => @$msg['email_address'], "label" => "Email Address *", "help" => "Email Address") );
 		$this->va_input->addTextarea( array("name" => "cancel_reason", "value" => @$value['cancel_reason'], "msg" => @$msg['cancel_reason'], "label" => "Cancel Reason*", "help" => "Cancel Reason") );

@@ -140,5 +140,13 @@ class Client_m extends MY_Model {
 		$this->db->where_in($this->pkField, $id);
 		$this->db->delete($this->table);
 	}
+	
+	function getClients()
+	{
+		$mysql = $this->load->database('mysql', TRUE);
+		$query = $mysql->get($this->table);
+		return $query->result_array();
+	}
+	
 
 }
