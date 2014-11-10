@@ -18,7 +18,7 @@ class Returnorder extends MY_Controller {
 		
 		$this->load->library("va_list");
 		$this->va_list->setListName("Return Order")->setMassAction(array("2" => "Remove"))
-		->setHeadingTitle(array("Record #", "Client Code","Order Number","SKU","Status","Updated","Updated By"))
+		->setHeadingTitle(array("Record #", "Client Code","Order Number","SKU","Status","Updated At","Updated By"))
 		->setHeadingWidth(array(2, 2, 2,8,5,10,10));
 		
 		$this->va_list->setInputFilter(2, array("name" => $this->returnorder_m->filters['order_number']));
@@ -70,21 +70,17 @@ class Returnorder extends MY_Controller {
 		$this->va_input->addTextarea( array("name" => "cancel_reason", "placeholder" => "Cancel reason", "help" => "Cancel reason", "label" => "Cancel Reason *", "value" => @$value['cancel_reason'], "msg" => @$msg['cancel_reason']) );
 		
 		$this->data['script'] = $this->load->view("script/client_add", array(), true);
-
 		$this->load->view('template', $this->data);
 	}
 	
 	public function approve ($id)
 	{
-		$data = $this->returnorder_m->getOrderById($id);
+		$this->returnorder_m->Approve($id);
 		redirect("returnorder");
 	}
 	
-	
-	
 	public function save() 
 	{
-	
 		$post = $this->input->post("returnorder");
 		if(empty($post)) {
 			redirect("returnorder");

@@ -90,17 +90,15 @@ class Returnorder_m extends MY_Model {
 			$data['status'] = $this->status['cancel'];
 			$data['updated_by']=$user;
 			$data['updated_at']= $time;
-			$dat['updated_by']=$user;
-			$dat['updated_at']= $time;
+
 		} else {
 		}
 						
 		if(empty($msg)) 
 		{			
-			$this->db->where($this->pkField, $post['id']);
-			
+			$this->db->where('return_id', $post['id']);			
 			$this->db->update($this->tableReturnItem, $data);
-			$this->db->update($this->table, $dat);
+			
 			return $post['id'];
 		} 
 		else {
@@ -108,7 +106,7 @@ class Returnorder_m extends MY_Model {
 		}	
 	}
 	
-	public function Approve ($post)
+	public function Approve ($id)
 	{
 		$this->db = $this->load->database('mysql', TRUE);
 		$user=$this->session->userdata('pkUserId');	
@@ -117,15 +115,10 @@ class Returnorder_m extends MY_Model {
 		$data['status'] = $this->status['approve'];
 		$data['updated_by']=$user;
 		$data['updated_at']= $time;	
-		
-		$dat['updated_by']=$user;
-		$dat['updated_at']= $time;
-		
-		$this->db->where($this->pkField, $post['id']);	
-		
+				
+		$this->db->where('return_id', $id);			
 		$this->db->update($this->tableReturnItem, $data);
-		$this->db->update($this->table, $dat);
-		return $post['id'];		
+		return $id;		
 	}
 	
 	public function getOrderById($id)
