@@ -140,11 +140,17 @@ class Returnorder_m extends MY_Model {
 		$insertedIds = array();
 		
 		foreach($items as $item) {
-			$this->db->insert(
-				$this->table, 
-				array("order_number" => $item['increment_id'], "email_address" => $item['email'], "phone_number" => $item['phone_number'], "client_id" => $client['id'], "updated_by" => "2", "created_at" => date("Y-m-d H:i:s"))
-			);
-			$id = $this->db->insert_id();
+			$existing = $this->db->get_where($this->table, array("order_number" => $item['increment_id']))->row_array();
+			if(empty($existing)) {
+				$this->db->insert(
+						$this->table,
+						array("order_number" => $item['increment_id'], "email_address" => $item['email'], "phone_number" => $item['phone_number'], "client_id" => $client['id'], "updated_by" => "2", "created_at" => date("Y-m-d H:i:s"))
+				);
+				$id = $this->db->insert_id();
+			} else {
+				$id = $existing['id'];
+			}
+			
 			$this->db->insert(
 				$this->tableReturnItem,
 				array("return_id" => $id, "sku" => $item['sku'], "return_reason" => $item['reason'], "updated_by" => 2)
