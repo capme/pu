@@ -123,13 +123,14 @@ class Returnorder extends MY_Controller {
 			$msg = array();
 			$value = $data->row_array();
 		}
-		$this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client Code", "help" => "Client Code", "label" => "Client Code *", "value" => @$value['client_code'], "msg" => @$msg['client_code']) );
+		$this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client Code", "help" => "Client Code", "label" => "Client Code", "value" => @$value['client_code'], "msg" => @$msg['client_code']) );
 		$this->va_input->addInput( array("name" => "order_number", "placeholder" => "Order Number", "label" => "Order Number", "value" => @$value['order_number'], "msg" => @$msg['order_number'], "help" => "Order Number") );
-		$this->va_input->addInput( array("name" => "sku", "placeholder" => "SKU", "help" => "SKU", "label" => "SKU *", "value" => @$value['sku'], "msg" => @$msg['sku']) );
-		$this->va_input->addSelect( array("name" => "status", "list" => $this->getStatus(), "value" => @$value['status'], "msg" => @$msg['status'], "label" => "Order Status *", "help" => "Order Status") );
-		$this->va_input->addInput( array("name" => "phone_number", "value" => @$value['phone_number'], "msg" => @$msg['phone_number'], "label" => "Phone Number *", "help" => "Phone Number") );
-		$this->va_input->addInput( array("name" => "email_address", "value" => @$value['email_address'], "msg" => @$msg['email_address'], "label" => "Email Address *", "help" => "Email Address") );
-		$this->va_input->addTextarea( array("name" => "cancel_reason", "value" => @$value['cancel_reason'], "msg" => @$msg['cancel_reason'], "label" => "Cancel Reason*", "help" => "Cancel Reason") );
+		$this->va_input->addInput( array("name" => "sku", "placeholder" => "SKU", "help" => "SKU", "label" => "SKU", "value" => @$value['sku'], "msg" => @$msg['sku']) );
+		$this->va_input->addTextarea( array("name" => "reason", "value" => @$value['return_reason'], "msg" => @$msg['return_reason'], "label" => "Return Reason", "help" => "Cancellation reason") );
+		$this->va_input->addSelect( array("name" => "status", "list" => $this->getStatus(), "value" => @$value['status'], "msg" => @$msg['status'], "label" => "Order Status", "help" => "Order Status") );
+		$this->va_input->addInput( array("name" => "phone_number", "value" => @$value['phone_number'], "msg" => @$msg['phone_number'], "label" => "Phone Number", "help" => "Phone Number") );
+		$this->va_input->addInput( array("name" => "email_address", "value" => @$value['email_address'], "msg" => @$msg['email_address'], "label" => "Email Address", "help" => "Email Address") );
+		$this->va_input->addTextarea( array("name" => "cancel_reason", "value" => @$value['cancel_reason'], "msg" => @$msg['cancel_reason'], "label" => "Cancel Reason", "help" => "Ops. Cancel Reason") );
 		
 		$this->data['script'] = $this->load->view("script/client_add", array(), true);
 		$this->load->view('template', $this->data);
