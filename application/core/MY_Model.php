@@ -67,7 +67,7 @@ class MY_Model extends CI_Model{
 		if( $this->input->post("sAction") == "filter" ) {
 			foreach($this->filters as $tField => $iField) {
 				$val = $this->input->post($iField);
-				if(is_numeric($val)) {
+				if(is_numeric($val) && $val >= -1) {
 					$this->aFilters[$tField] = $val;
 				} else if(!empty($val)) {
 					$this->aFilters[$tField] = $val;
