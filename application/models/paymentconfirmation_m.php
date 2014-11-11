@@ -42,9 +42,9 @@ class Paymentconfirmation_m extends MY_Model {
 		}
 		
 		$statList= array(
-				0=>"Default",
-				1 => "Approve",
-				2 => "Cancel"
+				0 =>array("Default", "warning"),
+				1 =>array("Approve", "success"),
+				2 =>array("Cancel","danger")
 		);
 		
 		$end = $iDisplayStart + $iDisplayLength;
@@ -53,7 +53,7 @@ class Paymentconfirmation_m extends MY_Model {
 		$_row = $this->_doGetRows($iDisplayStart, $iDisplayLength);
 		$no=0;
 		foreach($_row->result() as $_result) {
-			
+			$status=$statList[$_result->status];
 			$records["aaData"][] = array(
 					'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
 					$no=$no+1,
@@ -62,7 +62,7 @@ class Paymentconfirmation_m extends MY_Model {
 					$_result->name,
 					$_result->origin_bank,
 					$_result->transaction_method,					
-					$statList[$_result->status],
+					'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
 					$_result->transaction_date,					
 					'<a '.anchor($_result->receipt_url,'View','target="_blank" enabled="enabled" class="fa fa-search btn btn-xs default"').'</a>',		
 					

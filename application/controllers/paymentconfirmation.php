@@ -14,6 +14,8 @@ class Paymentconfirmation extends MY_Controller {
 		$this->data['content'] = "list_v.php";
 		$this->data['pageTitle'] = "Payment Confirmation";
 		$this->data['breadcrumb'] = array("Payment Confirmation" => "");
+		
+		$this->paymentconfirmation_m->clearCurrentFilter();
 				
 		$this->load->library("va_list");
 		$this->va_list->setListName("Payment Confirmation")->setMassAction(array("2" => "Remove"))
@@ -87,7 +89,7 @@ class Paymentconfirmation extends MY_Controller {
 	}
 	
 	private function getStatus() {
-		return array(0=>"Default",1 => "Approve",2 => "Cancel");
+		return array(-1=>"",0=>"Default",1 => "Approve",2 => "Cancel");
 	}
 	
 	public function approve ($id)
