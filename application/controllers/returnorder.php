@@ -13,16 +13,18 @@ class Returnorder extends MY_Controller {
 		$this->data['content'] = "list_v.php";
 		$this->data['pageTitle'] = "Return Order";
 		$this->data['breadcrumb'] = array("Return Order" => "");
-	
+		
 		$this->returnorder_m->clearCurrentFilter();
 		
 		$this->load->library("va_list");
-		$this->va_list->setListName("Return Order")->setMassAction(array("2" => "Remove"))
+		$this->va_list->disableAddPlugin()->setListName("Return Order")
 		->setHeadingTitle(array("Record #", "Client Code","Order Number","SKU","Status","Updated At","Updated By"))
 		->setHeadingWidth(array(2, 2, 2,8,5,10,10));
 		
 		$this->va_list->setInputFilter(2, array("name" => $this->returnorder_m->filters['order_number']));
 		$this->va_list->setDropdownFilter(4, array("name" => $this->returnorder_m->filters['status'], "option" => $this->getStatus()));	
+		
+		
 		
 		$this->data['script'] = $this->load->view("script/returnorder_list", array("ajaxSource" => site_url("returnorder/returnOrderList")), true);	
 		$this->load->view("template", $this->data);
@@ -137,7 +139,7 @@ class Returnorder extends MY_Controller {
 	}
 	
 	private function getStatus() {
-		return array(0=>"Default",1 => "Approve",2 => "Cancel");
+		return array(-1=>"",0=>"Default",1 => "Approve",2 => "Cancel");
 	}
 	
 	}

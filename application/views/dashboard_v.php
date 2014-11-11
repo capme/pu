@@ -1,4 +1,5 @@
-
+<center><h1>Order Management System</h1></center>
+<?php /*?>
 <div class="row">
 	<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 margin-bottom-10">
 		<div class="dashboard-stat blue">
@@ -846,3 +847,6 @@
 	EcommerceIndex.init();
 });
 </script>
+
+*/
+?>

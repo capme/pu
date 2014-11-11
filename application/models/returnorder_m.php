@@ -7,7 +7,7 @@ class Returnorder_m extends MY_Model {
 	var $tableReturnItem ='return_item';
 	var $tableClient ='client';
 	var $pkField = "id";
-	var $status=array("cancel"=>2,"approve"=>1);	
+	var $status=array("cancel"=>2,"approve"=>1);
 	
 	function __construct()
     {
@@ -20,7 +20,7 @@ class Returnorder_m extends MY_Model {
 		
 		$this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->tableReturnItem}.sku", "{$this->tableReturnItem}.status", "{$this->tableReturnItem}.updated_at", "{$this->tableReturnItem}.updated_by", "{$this->tableClient}.client_code", "{$this->tableReturnItem}.id as item_id");
 		
-		$this->filters = array("client_code" => $this->table.".client_code","status"=>"status","order_number"=>"order_number");
+		$this->filters = array("status"=>"status","order_number"=>"order_number");		
 		$this->sorts = array(1 => $this->table.".id");
     }
 	
@@ -43,9 +43,9 @@ class Returnorder_m extends MY_Model {
 		}
 		
 		$statList= array(
-				0=>"Default",
-				1 => "Approve",
-				2 => "Cancel"
+				0 =>array("Default", "warning"),
+				1 =>array("Approve", "success"),
+				2 =>array("Cancel","danger")
 		);
 		
 		$end = $iDisplayStart + $iDisplayLength;
@@ -54,14 +54,14 @@ class Returnorder_m extends MY_Model {
 		$_row = $this->_doGetRows($iDisplayStart, $iDisplayLength);
 		$no=0;
 		foreach($_row->result() as $_result) {
-
+			$status=$statList[$_result->status];
 			$records["aaData"][] = array(
 					'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
 					$no=$no+1,
 					$_result->client_code,
 					$_result->order_number,
 					$_result->sku,
-					$statList[$_result->status],
+					'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
 					$_result->updated_at,
 					@$opsiarray[$_result->updated_by],
 					
@@ -91,7 +91,8 @@ class Returnorder_m extends MY_Model {
 			$data['updated_by']=$user;
 			$data['updated_at']= $time;
 
-		} else {
+		} 
+		else {
 		}
 						
 		if(empty($msg)) 
