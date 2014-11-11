@@ -17,7 +17,7 @@ class Returnorder extends MY_Controller {
 		$this->returnorder_m->clearCurrentFilter();
 		
 		$this->load->library("va_list");
-		$this->va_list->setListName("Return Order")->setMassAction(array("2" => "Remove"))
+		$this->va_list->disableAddPlugin()->setListName("Return Order")
 		->setHeadingTitle(array("Record #", "Client Code","Order Number","SKU","Status","Updated At","Updated By"))
 		->setHeadingWidth(array(2, 2, 2,8,5,10,10));
 		
