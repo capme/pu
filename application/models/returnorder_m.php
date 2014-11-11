@@ -18,7 +18,7 @@ class Returnorder_m extends MY_Model {
 			array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}")
 		);
 		
-		$this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->tableReturnItem}.sku", "{$this->tableReturnItem}.status", "{$this->tableReturnItem}.updated_at", "{$this->tableReturnItem}.updated_by", "{$this->tableClient}.client_code");
+		$this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->tableReturnItem}.sku", "{$this->tableReturnItem}.status", "{$this->tableReturnItem}.updated_at", "{$this->tableReturnItem}.updated_by", "{$this->tableClient}.client_code", "{$this->tableReturnItem}.id as item_id");
 		
 		$this->filters = array("client_code" => $this->table.".client_code","status"=>"status","order_number"=>"order_number");
 		$this->sorts = array(1 => $this->table.".id");
@@ -54,7 +54,7 @@ class Returnorder_m extends MY_Model {
 		$_row = $this->_doGetRows($iDisplayStart, $iDisplayLength);
 		$no=0;
 		foreach($_row->result() as $_result) {
-			
+
 			$records["aaData"][] = array(
 					'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
 					$no=$no+1,
@@ -65,9 +65,9 @@ class Returnorder_m extends MY_Model {
 					$_result->updated_at,
 					@$opsiarray[$_result->updated_by],
 					
-					'<a href="'.site_url("returnorder/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>|			
-					<a href="'.site_url("returnorder/approve/".$_result->id).'" class="btn btn-xs default"><i class="fa fa-check" ></i> Approve</a>|
-					<a href="'.site_url("returnorder/cancel/".$_result->id).'" class="btn btn-xs default"><i class="fa fa-times" ></i> Cancel</a>'
+					'<a href="'.site_url("returnorder/view/".$_result->item_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>|			
+					<a href="'.site_url("returnorder/approve/".$_result->item_id).'" class="btn btn-xs default"><i class="fa fa-check" ></i> Approve</a>|
+					<a href="'.site_url("returnorder/cancel/".$_result->item_id).'" class="btn btn-xs default"><i class="fa fa-times" ></i> Cancel</a>'
 									
 			);
 		}
@@ -96,7 +96,7 @@ class Returnorder_m extends MY_Model {
 						
 		if(empty($msg)) 
 		{			
-			$this->db->where('return_id', $post['id']);			
+			$this->db->where($this->tableReturnItem.'.id', $post['id']);			
 			$this->db->update($this->tableReturnItem, $data);
 			
 			return $post['id'];
@@ -116,7 +116,7 @@ class Returnorder_m extends MY_Model {
 		$data['updated_by']=$user;
 		$data['updated_at']= $time;	
 				
-		$this->db->where('return_id', $id);			
+		$this->db->where($this->tableReturnItem.'.id', $id);			
 		$this->db->update($this->tableReturnItem, $data);
 		return $id;		
 	}
@@ -128,7 +128,7 @@ class Returnorder_m extends MY_Model {
 		$this->db->from('return');
 		$this->db->join('return_item', 'return.id=return_item.return_id');
 		$this->db->join('client','client.id=return.client_id');
-		$this->db->where("return.id", $id);
+		$this->db->where($this->tableReturnItem.".id", $id);
 		$query=$this->db->get();
 		return $query;
 	}
