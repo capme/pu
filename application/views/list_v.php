@@ -144,3 +144,12 @@
 
 <script src="/assets/scripts/core/datatable.js"></script>
 <?php echo $script?>
+<script>
+$(document).ready(function(){
+	$(".dataTable .filter").find("input[type='text']").keyup(function(e){
+		if(e.keyCode == 13) {
+			$(".dataTable .filter .filter-submit").trigger("click")
+		}
+	})
+})
+</script>
