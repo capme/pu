@@ -18,8 +18,8 @@ class Paymentconfirmation extends MY_Controller {
 		$this->paymentconfirmation_m->clearCurrentFilter();
 				
 		$this->load->library("va_list");
-		$this->va_list->setListName("Payment Confirmation")->setMassAction(array("2" => "Remove"))
-		->setHeadingTitle(array("Record #", "Client Name","Order Number","Name","Origin Bank","Transact Mtd","Status","Transact Date","Receipt","Updated By"))
+		$this->va_list->disableAddPlugin()->setListName("Payment Confirmation")
+		->setHeadingTitle(array("Record #", "Client Name","Order Number","Name","Origin Bank","Amount","Status","Transfer Date","Receipt","Updated By"))
 		->setHeadingWidth(array(2, 2,2,3,2,3,4,2,2,4));
 		
 		$this->va_list->setInputFilter(2, array("name" => $this->paymentconfirmation_m->filters['order_number']));
@@ -67,29 +67,30 @@ class Paymentconfirmation extends MY_Controller {
 			$value = $data->row_array();
 		}
 		
-		$this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client Code", "help" => "Client Code", "label" => "Client Code *", "value" => @$value['client_code'], "msg" => @$msg['client_code']) );
+		$this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value" => @$value['client_code'], "msg" => @$msg['client_code']) );
 		
-		$this->va_input->addInput( array("name" => "sku", "placeholder" => "Order Number", "help" => "Order Number", "label" => "Order Number *", "value" => @$value['order_number'], "msg" => @$msg['order_number']) );
-		$this->va_input->addSelect( array("name" => "status", "list" => $this->getStatus(), "value" => @$value['status'], "msg" => @$msg['status'], "label" => "Order Status *", "help" => "Order Status") );		
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['name'], "msg" => @$msg['name'], "label" => "Name *", "help" => "Name") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['transaction_date'], "msg" => @$msg['transaction_date'], "label" => "Transaction Date *", "help" => "Transaction Date") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['amount'], "msg" => @$msg['amount'], "label" => "Amount *", "help" => "Amount") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['origin_bank'], "msg" => @$msg['origin_bank'], "label" => "Original Bank *", "help" => "Original Bank") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['dest_bank'], "msg" => @$msg['dest_bank'], "label" => "Destination Bank *", "help" => "Destination Bank") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['transaction_method'], "msg" => @$msg['transaction_method'], "label" => "Transaction Method *", "help" => "Transaction Method") );
+		$this->va_input->addInput( array("name" => "sku", "placeholder" => "Order Number", "help" => "Order Number", "label" => "Order Number", "value" => @$value['order_number'], "msg" => @$msg['order_number']) );
+		$this->va_input->addInput( array("name" => "status", "value" => $this->getStatus()[@$value['status']], "msg" => @$msg['status'], "label" => "Status", "help" => "Order Status") );		
+		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['name'], "msg" => @$msg['name'], "label" => "Name", "help" => "Name") );
+		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['transaction_date'], "msg" => @$msg['transaction_date'], "label" => "Transfer Date", "help" => "Transaction Date") );
+		$this->va_input->addInput( array("name" => "updated_at", "value" => number_format(@$value['amount'], 2), "msg" => @$msg['amount'], "label" => "Amount", "help" => "Amount") );
+		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['origin_bank'], "msg" => @$msg['origin_bank'], "label" => "Original Bank", "help" => "Original Bank") );
+		//$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['dest_bank'], "msg" => @$msg['dest_bank'], "label" => "Destination Bank", "help" => "Destination Bank") );
+		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['transaction_method'], "msg" => @$msg['transaction_method'], "label" => "Transaction Method", "help" => "Transaction Method") );
+		$this->va_input->addCustomField( array("name" =>"receipt_url", "placeholder" => "xx", "label" => "Receipt URL", "value" => @$value['receipt_url'], "msg" => @$msg['receipt_url'], "view"=>"form/customFoto"));
 		
-		$this->va_input->addTextarea( array("name" => "cancel_reason", "value" => @$value['reason'], "msg" => @$msg['reason'], "label" => "Reason*", "help" => "Reason") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['updated_at'], "msg" => @$msg['updated_at'], "label" => "Updated At *", "help" => "Updated At") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['created_at'], "msg" => @$msg['created_at'], "label" => "Created At *", "help" => "Created At") );
+		$this->va_input->addTextarea( array("name" => "cancel_reason", "value" => @$value['reason'], "msg" => @$msg['reason'], "label" => "Reason", "help" => "Reason") );
+		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['updated_at'], "msg" => @$msg['updated_at'], "label" => "Updated At", "help" => "Updated At") );
+		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['created_at'], "msg" => @$msg['created_at'], "label" => "Created At", "help" => "Created At") );
 		
-		$this->va_input->addCustomField( array("name" =>"receipt_url", "placeholder" => "xx", "label" => "Receipt URL", "value" => @$value['receipt_url'], "msg" => @$msg['receipt_url'], "view"=>"form/customFoto"));		
+				
 		
 		$this->data['script'] = $this->load->view("script/client_add", array(), true);
 		$this->load->view('template', $this->data);
 	}
 	
 	private function getStatus() {
-		return array(-1=>"",0=>"Default",1 => "Approve",2 => "Cancel");
+		return array(-1=>"",0=>"New Request",1 => "Approve",2 => "Cancel");
 	}
 	
 	public function approve ($id)
@@ -123,7 +124,7 @@ class Paymentconfirmation extends MY_Controller {
 	
 		$this->va_input->addHidden( array("name" => "method", "value" => "update") );
 		$this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
-		$this->va_input->addTextarea( array("name" => "reason", "placeholder" => "Cancel reason", "help" => "Cancel reason", "label" => "Cancel Reason *", "value" => @$value['reason'], "msg" => @$msg['reason']) );
+		$this->va_input->addTextarea( array("name" => "reason", "placeholder" => "Cancel reason", "help" => "Cancel reason", "label" => "Cancel Reason", "value" => @$value['reason'], "msg" => @$msg['reason']) );
 		
 		$this->data['script'] = $this->load->view("script/client_add", array(), true);
 		$this->load->view('template', $this->data);

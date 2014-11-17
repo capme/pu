@@ -42,7 +42,7 @@ class Paymentconfirmation_m extends MY_Model {
 		}
 		
 		$statList= array(
-				0 =>array("Default", "warning"),
+				0 =>array("New Request", "warning"),
 				1 =>array("Approve", "success"),
 				2 =>array("Cancel","danger")
 		);
