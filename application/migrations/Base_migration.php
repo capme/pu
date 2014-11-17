@@ -20,6 +20,7 @@ class Base_migration extends CI_Migration {
 			$this->db->trans_start();
 			$sqls = explode("\n", file_get_contents($migrationFile));
 			foreach($sqls as $sql) {
+				if(empty($sql)) continue;
 				$this->db->query($sql);
 			}
 			$this->db->trans_complete();
@@ -33,6 +34,7 @@ class Base_migration extends CI_Migration {
 			$this->db->trans_start();
 			$sqls = explode("\n", file_get_contents($migrationFile));
 			foreach($sqls as $sql) {
+				if(empty($sql)) continue;
 				$this->db->query($sql);
 			}
 			$this->db->trans_complete();
