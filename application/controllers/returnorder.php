@@ -129,7 +129,7 @@ class Returnorder extends MY_Controller {
 		$this->va_input->addInput( array("name" => "order_number", "placeholder" => "Order Number", "label" => "Order Number", "value" => @$value['order_number'], "msg" => @$msg['order_number'], "help" => "Order Number") );
 		$this->va_input->addInput( array("name" => "sku", "placeholder" => "SKU", "help" => "SKU", "label" => "SKU", "value" => @$value['sku'], "msg" => @$msg['sku']) );
 		$this->va_input->addTextarea( array("name" => "reason", "value" => @$value['return_reason'], "msg" => @$msg['return_reason'], "label" => "Return Reason", "help" => "Cancellation reason") );
-		$this->va_input->addSelect( array("name" => "status", "list" => $this->getStatus(), "value" => @$value['status'], "msg" => @$msg['status'], "label" => "Order Status", "help" => "Order Status") );
+		$this->va_input->addSelect( array("name" => "status", "list" => $this->getStatus(), "value" => @$value['status'], "msg" => @$msg['status'], "label" => "Status", "help" => "Order Status") );
 		$this->va_input->addInput( array("name" => "phone_number", "value" => @$value['phone_number'], "msg" => @$msg['phone_number'], "label" => "Phone Number", "help" => "Phone Number") );
 		$this->va_input->addInput( array("name" => "email_address", "value" => @$value['email_address'], "msg" => @$msg['email_address'], "label" => "Email Address", "help" => "Email Address") );
 		$this->va_input->addTextarea( array("name" => "cancel_reason", "value" => @$value['cancel_reason'], "msg" => @$msg['cancel_reason'], "label" => "Cancel Reason", "help" => "Ops. Cancel Reason") );
@@ -139,7 +139,7 @@ class Returnorder extends MY_Controller {
 	}
 	
 	private function getStatus() {
-		return array(-1=>"",0=>"Default",1 => "Approve",2 => "Cancel");
+		return array(-1=>"",0=>"New Request",1 => "Approve",2 => "Cancel");
 	}
 	
 	}
