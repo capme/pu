@@ -221,7 +221,7 @@ class Mageapi {
 		}
 	}
 	
-	public function setAsExported($ids) {
+	public function setReturnItemAsExported($ids) {
 		try {
 			$calls = array();
 			foreach($ids as $id) {

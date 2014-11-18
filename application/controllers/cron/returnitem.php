@@ -30,7 +30,7 @@ class Returnitem extends CI_Controller {
 					$addedIds = $this->returnorder_m->add($client, $returnItems);
 					
 					if(!empty($addedIds)) {
-						$this->mageapi->setAsExported($addedIds);
+						$this->mageapi->setReturnItemAsExported($addedIds);
 					}
 				}
 			}
