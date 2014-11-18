@@ -22,7 +22,7 @@ class Paymentconfirmation_m extends MY_Model {
 		$this->filters = array("status"=>"status","order_number"=>"order_number");
 	}
 	
-		public function getPaymentConfirmationList() 
+	public function getPaymentConfirmationList() 
 	{
 		$this->db = $this->load->database('mysql', TRUE); 
 		$iTotalRecords = $this->_doGetTotalRow();
@@ -126,5 +126,22 @@ class Paymentconfirmation_m extends MY_Model {
 		}	
 	}
 	
+	public function add($client, $payments) {
+		$this->db = $this->load->database('mysql', TRUE);
+		
+		$this->db->trans_start();
+		$insertedIds = array();
+		foreach($payments as $payment) {
+			$this->db->insert( 
+					$this->table, 
+					array("client_id" => $client['id'], "order_number" => $payment['order_number'], "origin_bank" => $payment['origin_bank'], "dest_bank" => $payment['dest_bank'], "transaction_method" => $payment['transaction_method'], "name" => $payment['name'], "transaction_date" => $payment['transaction_date'], "amount" => $payment['amount'], "receipt_url" => $payment['receipt_url'], "updated_by" => "2", "created_at" => date("Y-m-d H:i:s") )
+			);
+			$insertedIds[] = $payment['id'];
+		}
+		$this->db->trans_complete();
+		
+		return $insertedIds;
 	}
+	
+}
 ?>

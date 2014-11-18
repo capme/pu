@@ -96,6 +96,19 @@ class Paymentconfirmation extends MY_Controller {
 	public function approve ($id)
 	{
 		$this->paymentconfirmation_m->Approve($id);
+		$this->load->model("client_m");
+		$this->load->library("mageapi");
+		$data = $this->paymentconfirmation_m->getConfirmationById($id)->row_array();
+		$client = $this->client_m->getClientById($data['client_id'])->row_array();
+
+		$config = array(
+				"auth" => $client['mage_auth'],
+				"url" => $client['mage_wsdl']
+		);
+		
+		if( $this->mageapi->initSoap($config) ) {
+			$this->mageapi->processOrder($data['order_number']);
+		}
 		redirect("paymentconfirmation");
 	}
 	

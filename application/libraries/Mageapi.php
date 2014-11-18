@@ -26,6 +26,9 @@ class Mageapi {
 	const METHOD_VELA_SHIPMENT = "vela_shipment.create";
 	const METHOD_VELA_RETURN_NEW = "vela_return.new";
 	const METHOD_VELA_RETURN_EXPORTED = "vela_return.exported";
+	const METHOD_VELA_CONFIRMATION_NEW = "vela_confirmation.new";
+	const METHOD_VELA_CONFIRMATION_EXPORTED = "vela_confirmation.exported";
+	const METHOD_VELA_CONFIRMATION_APPROVE = "vela_confirmation.approve";
 	
 	public function __construct( $config = array() ) {
 		if(!empty($config)) {
@@ -226,6 +229,44 @@ class Mageapi {
 			}
 				
 			$this->soapClient->multiCall($this->soapSession, $calls);
+			return true;
+		} catch( Exception $e ) {
+			log_message('error', "MAGEAPI ==> ". $e->getMessage());
+			return false;
+		}
+	}
+	
+	public function getUnexportedConfirmations() {
+		$data = array();
+		try {
+			$data = $this->soapClient->call($this->soapSession, self::METHOD_VELA_CONFIRMATION_NEW);
+	
+			return $data;
+		} catch( Exception $e ) {
+			log_message('error', "MAGEAPI ==> ". $e->getMessage());
+			return false;
+		}
+	}
+	
+	public function setConfirmationsAsExported($ids) {
+		try {
+			$calls = array();
+			foreach($ids as $id) {
+				$calls[] = array(self::METHOD_VELA_CONFIRMATION_EXPORTED, $id );
+			}
+	
+			$this->soapClient->multiCall($this->soapSession, $calls);
+			return true;
+		} catch( Exception $e ) {
+			log_message('error', "MAGEAPI ==> ". $e->getMessage());
+			return false;
+		}
+	}
+	
+	public function processOrder($orderNr) {
+		try {
+			$data = $this->soapClient->call($this->soapSession, self::METHOD_VELA_CONFIRMATION_APPROVE, $orderNr);
+
 			return true;
 		} catch( Exception $e ) {
 			log_message('error', "MAGEAPI ==> ". $e->getMessage());
