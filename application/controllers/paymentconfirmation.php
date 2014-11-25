@@ -22,7 +22,8 @@ class Paymentconfirmation extends MY_Controller {
 		->setHeadingTitle(array("Record #", "Client Name","Order Number","Name","Origin Bank","Amount","Status","Transfer Date","Receipt","Updated By"))
 		->setHeadingWidth(array(2, 2,2,3,2,3,4,2,2,4));
 		
-		$this->va_list->setInputFilter(2, array("name" => $this->paymentconfirmation_m->filters['order_number']));
+		$this->va_list->setInputFilter(2, array("name" => $this->paymentconfirmation_m->filters['order_number']))
+			->setDropdownFilter(1, array("name" => $this->paymentconfirmation_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
 		$this->va_list->setDropdownFilter(6, array("name" => $this->paymentconfirmation_m->filters['status'], "option" => $this->getStatus()));
 		
 		$this->data['script'] = $this->load->view("script/paymentconfirmation_list", array("ajaxSource" => site_url("paymentconfirmation/paymentConfirmationList")), true);	

@@ -148,5 +148,18 @@ class Client_m extends MY_Model {
 		return $query->result_array();
 	}
 	
+	function getClientCodeList($withNull = FALSE, $defaultText = "-- Client --") {
+		$list = $this->getClients();
+		$cList = array();
+		if($withNull) {
+			$cList["-1"] = $defaultText;
+		}
+		foreach($list as $d) {
+			$cList[$d['id']] = $d['client_code'];
+		}
+		
+		return $cList;
+	}
+	
 
 }

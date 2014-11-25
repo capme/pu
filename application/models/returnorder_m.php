@@ -20,7 +20,7 @@ class Returnorder_m extends MY_Model {
 		
 		$this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->tableReturnItem}.sku", "{$this->tableReturnItem}.status", "{$this->tableReturnItem}.updated_at", "{$this->tableReturnItem}.updated_by", "{$this->tableClient}.client_code", "{$this->tableReturnItem}.id as item_id");
 		
-		$this->filters = array("status"=>"status","order_number"=>"order_number");		
+		$this->filters = array("status"=>"status", "order_number"=>"order_number", "client_id" => "client_id");		
 		$this->sorts = array(1 => $this->table.".id");
     }
 	

@@ -1,11 +1,15 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * 
+ * @property Va_list $va_list
+ *
+ */
 class Returnorder extends MY_Controller {
 	var $data = array();
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model("returnorder_m");
-		$this->load->model("users_m");
+		$this->load->model( array("returnorder_m", "users_m", "client_m"));
 	}
 	
 	public function index() 
@@ -18,10 +22,11 @@ class Returnorder extends MY_Controller {
 		
 		$this->load->library("va_list");
 		$this->va_list->disableAddPlugin()->setListName("Return Order")
-		->setHeadingTitle(array("Record #", "Client Code","Order Number","SKU","Status","Updated At","Updated By"))
+		->setHeadingTitle(array("Record #", "Client Name","Order Number","SKU","Status","Updated At","Updated By"))
 		->setHeadingWidth(array(2, 2, 2,8,5,10,10));
 		
-		$this->va_list->setInputFilter(2, array("name" => $this->returnorder_m->filters['order_number']));
+		$this->va_list->setInputFilter(2, array("name" => $this->returnorder_m->filters['order_number']))
+			->setDropdownFilter(1, array("name" => $this->returnorder_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));
 		$this->va_list->setDropdownFilter(4, array("name" => $this->returnorder_m->filters['status'], "option" => $this->getStatus()));	
 		
 		
