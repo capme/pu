@@ -20,6 +20,7 @@ class Awbprinting_m extends MY_Model {
 		
 		$this->select = array("{$this->table}.*", "{$this->tableClient}.client_code");
 		$this->filters = array("status"=>"status","ordernr"=>"ordernr","client_id"=>"client_id");
+		$this->group = array("ordernr");
 	}
 	
 	public function getAwbPrintingList()

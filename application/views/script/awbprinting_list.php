@@ -72,7 +72,8 @@ var TableAjax = function () {
                     }
 					var courier = action.val();	
 					grid.clearAjaxParams();
-					window.location.href="awbprinting/doPrintAwb?ids="+ids.join(",") +"&courier="+courier;								
+                        var win = window.open("awbprinting/doPrintAwb?ids="+ids.join(",") +"&courier="+courier, '_blank');
+                        win.focus();
 					}					
                     grid.addAjaxParam("sAction", "group_action");
 					grid.addAjaxParam("sGroupActionName", action.val());
