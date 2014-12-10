@@ -54,6 +54,14 @@ class Paymentconfirmation_m extends MY_Model {
 		$no=0;
 		foreach($_row->result() as $_result) {
 			$status=$statList[$_result->status];
+			if ($_result->status==0)
+			{
+			$action='<a href="'.site_url("paymentconfirmation/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>|<a href="'.site_url("paymentconfirmation/approve/".$_result->id).'" class="btn btn-xs default"><i class="fa fa-check" ></i> Approve</a>|
+					<a href="'.site_url("paymentconfirmation/cancel/".$_result->id).'" class="btn btn-xs default"><i class="fa fa-times" ></i> Cancel</a>';
+					}
+			else{
+			$action='<a href="'.site_url("paymentconfirmation/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>'		
+					;}
 			$records["aaData"][] = array(
 					'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
 					$no=$no+1,
@@ -64,13 +72,9 @@ class Paymentconfirmation_m extends MY_Model {
 					$_result->transaction_method,					
 					'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
 					$_result->transaction_date,					
-					'<a '.anchor($_result->receipt_url,'View','target="_blank" enabled="enabled" class="fa fa-search btn btn-xs default"').'</a>',		
-					
+					'<a '.anchor($_result->receipt_url,'View','target="_blank" enabled="enabled" class="fa fa-search btn btn-xs default"').'</a>',
 					@$opsiarray[$_result->updated_by],					
-					'<a href="'.site_url("paymentconfirmation/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>|			
-					<a href="'.site_url("paymentconfirmation/approve/".$_result->id).'" class="btn btn-xs default"><i class="fa fa-check" ></i> Approve</a>|
-					<a href="'.site_url("paymentconfirmation/cancel/".$_result->id).'" class="btn btn-xs default"><i class="fa fa-times" ></i> Cancel</a>'
-									
+					$action				
 			);
 		}
 	
