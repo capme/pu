@@ -1,7 +1,5 @@
 <script>
-
 var FormValidation = function () {
-
     var apiFormValidate = function() {
         // for more info visit the official plugin documentation: 
             // http://docs.jquery.com/Plugins/Validation
