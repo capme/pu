@@ -18,6 +18,7 @@ class MY_Model extends CI_Model{
 	var $pkField = null;
 	var $relation = array();
 	var $select = array();
+	var $group = array();
 	
 	function __construct() {
 		parent::__construct();
@@ -151,6 +152,12 @@ class MY_Model extends CI_Model{
 
 		if(!empty($client)){
 			$res->where("client", $client);
+		}
+
+		if(!empty($this->group)) {
+			foreach($this->group as $field) {
+				$res->group_by($field);
+			}
 		}
 
 		$res = $res->get( $this->table );
