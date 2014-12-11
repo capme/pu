@@ -24,8 +24,8 @@ class Awbprinting extends MY_Controller {
 		$this->load->library("va_list");
 		$this->va_list->setListName("AWB Listing")->setAddLabel("Upload new AWB")
 			->setMassAction(array("0" => "Print JNE Format", "2" => "Print NEX Format"))
-			->setHeadingTitle(array("Record #", "Client Name","Order Number","Name","Address","City","Status","Package Type","Ship Type"))
-			->setHeadingWidth(array(2, 2,2,3,2,3,4,2,2));
+			->setHeadingTitle(array("Record #", "Client Name","Order Number","Name","Address","City","Status"))
+			->setHeadingWidth(array(2, 2,2,3,2,3,4));
 		
 		$this->va_list->setInputFilter(2, array("name" => $this->awbprinting_m->filters['ordernr']))
 			->setDropdownFilter(1, array("name" => $this->awbprinting_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
@@ -50,8 +50,14 @@ class Awbprinting extends MY_Controller {
 	
 	public function doPrintAwb() {
 		$courier = $this->input->get("courier");
-		$ids = explode(",", $this->input->get("ids"));
-		$this->awbprinting_m->printAwb($ids, $courier);
+		$ids = $this->input->get("ids");
+		$data['list'] = $this->awbprinting_m->getAwbData(explode(",", $ids));		
+		if($courier == 0) 
+		{
+			$this->load->view("print_template_jne", $data);
+		}else {
+			$this->load->view("print_template_nex", $data);
+		}
 	}
 	
 	public function view($id)
@@ -90,8 +96,6 @@ class Awbprinting extends MY_Controller {
 		$this->va_input->addInput( array("name" => "country", "value" => @$value['country'], "msg" => @$msg['country'], "label" => "Country", "help" => "Country") );
 		$this->va_input->addInput( array("name" => "zipcode", "value" => @$value['zipcode'], "msg" => @$msg['zipcode'], "label" => "ZIP code", "help" => "ZIP code") );
 		$this->va_input->addInput( array("name" => "phone", "value" => @$value['phone'], "msg" => @$msg['phone'], "label" => "Phone Number", "help" => "Phone Number") );
-		$this->va_input->addInput( array("name" => "shipping_type", "value" => @$value['shipping_type'], "msg" => @$msg['shipping_type'], "label" => "Shipping Type", "help" => "Shipping Type") );
-		$this->va_input->addInput( array("name" => "package_type", "value" => @$value['package_type'], "msg" => @$msg['package_type'], "label" => "Package Type", "help" => "Package Type") );
 		$this->va_input->addInput( array("name" => "created_at", "value" => @$value['created_at'], "msg" => @$msg['created_at'], "label" => "Created At", "help" => "Created At") );
 		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['updated_at'], "msg" => @$msg['updated_at'], "label" => "Updated At", "help" => "Updated At") );
 		$this->va_input->addCustomField( array("name" =>"items", "placeholder" => "Items", "label" => "Items", "value" => @$value['items'], "msg" => @$msg['items'], "view"=>"form/customItems"));
@@ -120,7 +124,7 @@ class Awbprinting extends MY_Controller {
 			$msg = $value = array();
 		}
 		$this->va_input->addHidden( array("name" => "method", "value" => "new") );		
-		$this->va_input->addInput( array("name" => "name", "placeholder" => "name of module", "help" => "Module Name", "label" => "Module Name *", "value" => @$value['module'], "msg" => @$msg['module']) );
+		$this->va_input->addInput( array("name" => "name", "placeholder" => "Name", "help" => "Name", "label" => "Name *", "value" => @$value['name'], "msg" => @$msg['name']) );
 		$this->va_input->addCustomField( array("name" =>"userfile", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg['userfile'], "label" => "Upload File", "view"=>"form/upload_csv"));
 		$this->va_input->addSelect( array("name" => "client", "list" => $this->getClient(), "value" => @$value['client'], "msg" => @$msg['client'], "label" => "Client *") );
 		$this->data['script'] = $this->load->view("script/awbprinting_add", array(), true);

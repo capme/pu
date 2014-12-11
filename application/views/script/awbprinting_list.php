@@ -36,9 +36,7 @@ var TableAjax = function () {
 						  { "bSortable": false },
 						  { "bSortable": false },
 						  { "bSortable": false },
-						  { "bSortable": false },	
-						  { "bSortable": false },						  
-						  
+						    
                     ],
                     /* 
                         By default the ajax datatable's layout is horizontally scrollable and this can cause an issue of dropdown menu is used in the table rows which.
@@ -65,15 +63,15 @@ var TableAjax = function () {
 				{
                     if ( action.val()==0||1)
 					{	
-					var records = grid.getSelectedRows();
-					var ids = [];
-                    for (var i in records) {
-                        ids.push(records[i]["value"]);    
-                    }
-					var courier = action.val();	
-					grid.clearAjaxParams();
-                        var win = window.open("awbprinting/doPrintAwb?ids="+ids.join(",") +"&courier="+courier, '_blank');
-                        win.focus();
+						var records = grid.getSelectedRows();
+						var ids = [];
+						for (var i in records) {
+							ids.push(records[i]["value"]);    
+						}								
+						var courier = action.val();	
+						grid.clearAjaxParams();
+							var win = window.open("awbprinting/doPrintAwb?ids="+ids.join(",") +"&courier="+courier, '_blank');
+							win.focus();
 					}					
                     grid.addAjaxParam("sAction", "group_action");
 					grid.addAjaxParam("sGroupActionName", action.val());

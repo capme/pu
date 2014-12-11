@@ -36,15 +36,15 @@ body{
 }
 </style>
 
-<?php
+<?php 
 $grup=$this->client_m->getClients();
 $opsi=array();
 foreach($grup as $id=>$row)
 {
-$opsi[$row['id']] = $row['client_code'];
+	$opsi[$row['id']] = $row['client_code'];
 }
 
-foreach($list->result() as $i => $v):
+foreach($list->result() as $i => $v): 
 if($i%11 == 0 && $i > 0){ 
 echo "<div style='page-break-before: always;'></div><div style='height:2px;'></div>";
 }
@@ -71,7 +71,7 @@ $client=$opsi[$v->client_id];
 	<div class="container addr1"><?php echo $v->address;?></div>
 	<div class="container items">
 		<?php
-		$itemLists = explode("|", $v->items);
+		$itemLists = explode("|", $v->itemlist);
 		foreach($itemLists as $i): 
 			if(empty($i)){continue;}
 			else{$i = unserialize($i);}

@@ -34,14 +34,7 @@ class Awbprinting_m extends MY_Model {
 	
 		$records = array();
 		$records["aaData"] = array();
-		
-		$grup=$this->users_m->userList();
-		$opsiarray=array();
-		foreach($grup as $pkUserId=>$row)
-		{
-		$opsiarray[$row['pkUserId']]=$row['username'];
-		}
-		
+	
 		$statList= array(
 				0 =>array("New Request", "warning"),
 				1 =>array("Printed", "success"),
@@ -57,16 +50,14 @@ class Awbprinting_m extends MY_Model {
 		foreach($_row->result() as $_result) {
 			$status=$statList[$_result->status];
 			$records["aaData"][] = array(
-					'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
+					'<input type="checkbox" name="id[]" value="'.$_result->ordernr.'">',
 					$no=$no+1,
 					$_result->client_code,
 					$_result->ordernr,
 					$_result->receiver,
 					$_result->address,
 					$_result->city,
-					'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
-					$_result->package_type,
-					$_result->shipping_type,					
+					'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',										
 					'<a href="'.site_url("awbprinting/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>'
 					
 			);
@@ -88,28 +79,17 @@ class Awbprinting_m extends MY_Model {
 		return $this->db->get();  
 	}
 	
-	public function printAwb($ids = array(), $status) {
-		$this->db->where_in($this->pkField, $ids);
-		$this->db->select('*');		
-		$query = $this->db->get($this->table);
-		$data['list'] = $query;
-		if($status == 0) 
-		{
-		$this->load->view("print_template_jne", $data);
-		} 
-		else {
-		$this->load->view("print_template_nex", $data);
+	public function getAwbData($orderId = array()) {
+		$ids = array();
+		foreach($orderId as $i => $v) {
+			$ids[] = "'{$v}'";
 		}
+		return $this->db->query("SELECT *, GROUP_CONCAT(items SEPARATOR '|') itemlist FROM ".$this->table." WHERE ordernr IN (".implode(",", $ids).") GROUP BY ordernr ORDER BY id DESC");
 	}
 	
 	public function newData($data)
 	{
-	$this->db->insert_batch($this->table, $data); 
-	}
-	
-	public function insertBatchData($data) {
-		$this->db->insert_batch($this->tableName, $data); 
-	}
-	
+		$this->db->insert_batch($this->table, $data); 
+	}	
 }
 ?>
