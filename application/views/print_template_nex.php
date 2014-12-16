@@ -31,6 +31,8 @@ body{
 .items span{display:inline-block; vertical-align: top;}
 .items .name{font-size: 5px; width: 2.8cm; }
 .items .qty{width: 0.8cm; }
+.Firefox .container.nilai{left: 25.2cm; top: 7.5cm; width: 2.5cm; height: 0.2cm; font-size: 9px;}
+.Chrome .container.nilai{left: 15.8cm; top: 4.5cm; width: 2.5cm; height: 0.2cm;}
 @page {
 	margin: 0.3cm;
 }
@@ -60,6 +62,7 @@ $client=$opsi[$v->client_id];
 	<div class="container addr2"><?php echo $v->zipcode."<br />".$v->country."<br />".$v->phone?></div>
 	<div class="container city"><?php echo ($v->city) ? $v->city : ''?></div>
 	<div class="container prov"><?php echo $v->province?></div>
+	<div class="container nilai"><?php echo "10000";?></div>
 	<?php
 	$addr = explode("\n", $v->address);
 	if(sizeof($addr) > 3) {
