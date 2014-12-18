@@ -117,7 +117,7 @@ $client=$opsi[$v->client_id];
 	<div class="container delivery-ins"><?php echo $v->ordernr." - ".$client?></div>
 	<div class="container print-date"><?php echo date("d m Y", time())?></div>
 	<div class="container package-type">X</div>
-	<div class="container shipping-type"><?php echo ($v->shipping_type == "1") ? "A" : ($v->shipping_type == "2" ? "<br /> <br /> <br /> B" : "<br />C")?></div>
+	<div class="container shipping-type" style="display:none;"><?php echo ($v->shipping_type == "1") ? "A" : ($v->shipping_type == "2" ? "<br /> <br /> <br /> B" : "<br />C")?></div>
 	<div class="container receiver"><?php echo $v->receiver?></div>
 	<div class="container company"><?php echo $v->company?></div>
 	<div class="container addr2"><?php echo $v->zipcode."<br />".$v->country."<br />".$v->phone?></div>
