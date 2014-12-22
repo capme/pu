@@ -24,12 +24,12 @@ class Awbprinting extends MY_Controller {
 		$this->load->library("va_list");
 		$this->va_list->setListName("AWB Listing")->setAddLabel("Upload new AWB")
 			->setMassAction(array("0" => "Print JNE Format", "2" => "Print NEX Format"))
-			->setHeadingTitle(array("Record #", "Client Name","Order Number","Name","Address","City","Status"))
+			->setHeadingTitle(array("Record #", "Client Name","Order Number","Status","Name","Address","City"))
 			->setHeadingWidth(array(2, 2,2,3,2,3,4));
 		
 		$this->va_list->setInputFilter(2, array("name" => $this->awbprinting_m->filters['ordernr']))
 			->setDropdownFilter(1, array("name" => $this->awbprinting_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
-		$this->va_list->setDropdownFilter(6, array("name" => $this->awbprinting_m->filters['status'], "option" => $this->getStatus()));
+		$this->va_list->setDropdownFilter(3, array("name" => $this->awbprinting_m->filters['status'], "option" => $this->getStatus()));
 		
 		$this->data['script'] = $this->load->view("script/awbprinting_list", array("ajaxSource" => site_url("awbprinting/awbPrintingList")), true);	
 		$this->load->view("template", $this->data);
@@ -50,14 +50,19 @@ class Awbprinting extends MY_Controller {
 	
 	public function doPrintAwb() {
 		$courier = $this->input->get("courier");
-		$ids = $this->input->get("ids");
-		$data['list'] = $this->awbprinting_m->getAwbData(explode(",", $ids));		
-		if($courier == 0) 
-		{
-			$this->load->view("print_template_jne", $data);
-		}else {
-			$this->load->view("print_template_nex", $data);
-		}
+		$ids = explode(",", $this->input->get("ids"));
+		$data['list'] = $this->awbprinting_m->getAwbData($ids);
+		
+		if($data['list']->num_rows()) {
+			$this->awbprinting_m->setAsPrinted($ids);
+			if($courier == 0) {
+				$this->load->view("awb/print_template_jne", $data);
+			} else {
+				$this->load->view("awb/print_template_nex", $data);
+			}
+		} else {
+			die("Invalid order number");
+		}		
 	}
 	
 	public function view($id)
@@ -112,7 +117,7 @@ class Awbprinting extends MY_Controller {
 		$this->data['formTitle'] = "Upload File";
 		$this->load->library("va_input", array("group" => "user"));
 		
-		$flashData = $this->session->flashdata("userError");
+		$flashData = $this->session->flashdata("awbError");
 		if($flashData !== false) 
 		{
 			$flashData = json_decode($flashData, true);
@@ -148,6 +153,11 @@ class Awbprinting extends MY_Controller {
 			
 			$data = array();
 			$datas = $this->_csvToArray($filename['full_path'], chr(9));
+			if(!is_array($datas)) {
+				$this->session->set_flashdata( array("awbError" => json_encode(array("msg" => array("userfile" => $datas), "data" => $post))) );
+				redirect("/awbprinting/add");
+			}
+			
 			foreach($datas as $k => $d) {
 			if( !$d['ReferenceNum'] ){continue;}
 				$alamat=$d['ShipToCity'];		
@@ -221,8 +231,12 @@ class Awbprinting extends MY_Controller {
 		$data = array();
 		if (($handle = fopen($filename, 'r')) !== FALSE)
 		{
-			while (($row = fgetcsv($handle, 1000, $delimiter)) !== FALSE)
+			while (($row = fgetcsv($handle, 0, $delimiter)) !== FALSE)
 			{
+				if(sizeof($row) != 52) {
+					return "Error! Invalid file csv format";
+				}
+				
 				if(!$header)
 					$header = $row;
 				else {							

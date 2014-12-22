@@ -20,7 +20,7 @@ class Awbprinting_m extends MY_Model {
 		
 		$this->select = array("{$this->table}.*", "{$this->tableClient}.client_code");
 		$this->filters = array("status"=>"status","ordernr"=>"ordernr","client_id"=>"client_id");
-		$this->group = array("ordernr");
+		$this->group = array("ordernr", "client_id");
 	}
 	
 	public function getAwbPrintingList()
@@ -54,10 +54,10 @@ class Awbprinting_m extends MY_Model {
 					$no=$no+1,
 					$_result->client_code,
 					$_result->ordernr,
+					'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
 					$_result->receiver,
 					$_result->address,
 					$_result->city,
-					'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',										
 					'<a href="'.site_url("awbprinting/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>'
 					
 			);
@@ -84,7 +84,12 @@ class Awbprinting_m extends MY_Model {
 		foreach($orderId as $i => $v) {
 			$ids[] = "'{$v}'";
 		}
-		return $this->db->query("SELECT *, GROUP_CONCAT(items SEPARATOR '|') itemlist FROM ".$this->table." WHERE ordernr IN (".implode(",", $ids).") GROUP BY ordernr ORDER BY id DESC");
+		return $this->db->query("SELECT *, GROUP_CONCAT(items SEPARATOR '|') itemlist FROM ".$this->table." WHERE ordernr IN (".implode(",", $ids).") GROUP BY ordernr, client_id ORDER BY id DESC");
+	}
+	
+	public function setAsPrinted($ids) {
+		$this->db->where_in("ordernr", $ids);
+		$this->db->update($this->table, array("status" => 1));
 	}
 	
 	public function newData($data)
