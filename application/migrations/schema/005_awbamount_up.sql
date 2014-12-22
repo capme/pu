@@ -1,0 +1,1 @@
+ALTER TABLE `awb_queue_printing` ADD `amount` DECIMAL(12,4) NOT NULL AFTER `status`;

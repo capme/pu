@@ -123,7 +123,7 @@ $client=$opsi[$v->client_id];
 	<div class="container addr2"><?php echo $v->zipcode."<br />".$v->country."<br />".$v->phone?></div>
 	<div class="container city"><?php echo ($v->city) ? $v->city : ''?></div>
 	<div class="container prov"><?php echo $v->province?></div>
-	<div class="container nilai"><?php echo "10000";?></div>
+	<div class="container nilai">RP <?php echo number_format($v->amount, 0);?></div>
 	<?php
 	$addr = explode("\n", $v->address);
 	if(sizeof($addr) > 3) {

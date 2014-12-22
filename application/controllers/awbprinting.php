@@ -193,22 +193,25 @@ class Awbprinting extends MY_Controller {
 			
 			if ($post['userfile']!= null)
 			{			
-				$result=$this->awbprinting_m->newData($data);
+				$this->awbprinting_m->newData($data);
+				$this->_fetchOrderAmount($post['client']);
 				redirect("awbprinting");
-				if(is_numeric($result)) {
-				redirect("awbprinting");
-				}
-				else {
-					$this->session->set_flashdata( array("clientError" => json_encode(array("msg" => $result, "data" => $post))) );
-					redirect("awbprinting/add");
-				}
 			}					
 		}
 			
 		
 	}
+	
+	private function _fetchOrderAmount($clientId) {
+		$cmd = PHP_BINDIR."/php " . FCPATH . "index.php cron/awb getAmountOrder/".$clientId;
+		if (substr(php_uname(), 0, 7) == "Windows"){
+			pclose(popen("start /B ". $cmd, "r"));
+		} else {
+			exec($cmd . " > /dev/null &");
+		}
+	}
 
-	public function _uploadFile() {
+	private function _uploadFile() {
 		$return = array('error' => false, 'data' => array());
 		$config['upload_path'] = '../webroot/';
 		$config['allowed_types'] = 'csv|txt';
