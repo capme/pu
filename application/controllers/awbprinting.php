@@ -146,10 +146,13 @@ class Awbprinting extends MY_Controller {
 			redirect("awbprinting/add");
 		}		
 		if($post['method'] == "new"){
-			$filename=$this->_uploadFile(array('file_name'=>'file_name'));
-			$post['userfile']= $filename['file_name'] ;			
-			$this->db->insert("awb_upload_file", array("name" =>$post['name'] , "filename" => $post['userfile']));
-			$uFileId = $this->db->insert_id();			
+			$filename=$this->_uploadFile();
+			$post['userfile']= $filename['file_name'] ;
+			$hasil=$this->awbprinting_m->awbUploadFile($post);
+			if ($filename == null){
+				$this->session->set_flashdata( array("awbError" => json_encode(array("msg" => $hasil, "data" => $post))) );
+				redirect("awbprinting/add");								 
+			}
 			
 			$data = array();
 			$datas = $this->_csvToArray($filename['full_path'], chr(9));
@@ -187,7 +190,7 @@ class Awbprinting extends MY_Controller {
 				'items' => serialize( array("name" => $d['SkusAndQtys'][0], 'qty' => $trim, 'weight' => 1) ),
 				'shipping_type' => $d['ShipService'],
 				'package_type' => 2,
-				'reference_file_id' => $uFileId,
+				'reference_file_id' => $hasil,
 				);
 			}
 			
@@ -221,8 +224,10 @@ class Awbprinting extends MY_Controller {
 		$this->load->library('upload', $config);		
 		if ( ! $this->upload->do_upload()) {			
 			return null;
-		} else {
-			return $this->upload->data();				
+		} else {			
+			$data=$this->upload->data();
+			$dataupload=array('file_name'=>$data['file_name'], 'full_path'=>$data['full_path']);			
+			return $dataupload;			
 		}
 	}
 	
@@ -249,8 +254,7 @@ class Awbprinting extends MY_Controller {
 						$parsing2=explode('(',$a);
 						foreach($parsing2 as $b)
 						{	
-							//$trim=rtrim($b,'.0)');
-							$row['47']=$parsing2;
+							$row['47']=$parsing2;							
 						}
 						$data[] = array_combine($header, $row);			
 					}

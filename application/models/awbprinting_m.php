@@ -104,5 +104,27 @@ class Awbprinting_m extends MY_Model {
 	public function updateAmount($datas) {
 		$this->db->update_batch($this->table, $datas, "ordernr");
 	}
+
+	public function awbUploadFile($post)
+	{
+		$msg = array();		
+		if(!empty($post['name'])) {
+			$data['name'] = $post['name'];
+		} else {
+			$msg['name'] = "Invalid full name";
+		}
+		if(!empty($post['userfile'])) {
+			$data['filename'] = $post['userfile'];
+		} else {
+			$msg['userfile'] = "File Max 2 Mb";
+		}
+		if(empty($msg)) {
+			$this->db->insert($this->tableUpload, $data);
+			return $this->db->insert_id();
+		} 
+		else {
+			return $msg;
+		}
+	}
 }
 ?>
