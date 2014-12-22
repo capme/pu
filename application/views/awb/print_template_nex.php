@@ -14,7 +14,6 @@ body .Chrome{
 }
 
 .Firefox .area{
-	border-bottom:1px solid #000000 !important;
 	font-family: FXMatrix105MonoEliteExpDbl; 
 	font-size: 6px; 0cm; 
 	border: 1px solid white; 
@@ -40,7 +39,6 @@ body .Chrome{
 	margin-left: -15px;
 }
 .Firefox .area > div {
-    border-bottom: 1px solid blue;
 	border-right: 1px solid blue;
     width: 1cm;
     height: 0.5cm;
@@ -48,7 +46,6 @@ body .Chrome{
 }
 
 .Chrome .area > div {
-    border-bottom: 1px solid blue;
 	border-right: 1px solid blue;
     width: 1cm;
     height: 0.5cm;
@@ -65,10 +62,10 @@ body .Chrome{
 .Firefox .container.receiver{left: 22cm;  top: 1.3cm; width: 5.5cm; height: 0.2cm; font-size: 11px;}
 .Firefox .container.company{left: 13.3cm; top: 1.1cm; width: 6cm; height: 0.2cm; font-size: 9px;}
 .Firefox .container.addr2{left: 29.4cm; top: 2.5cm; width: 2cm; height: 0.8cm; font-size:9px;}
-.Firefox .container.city{left: 21.9cm;  top: 2.5cm; width: 3cm; height: 0.12cm; font-size: 9px;}
-.Firefox .container.prov{left: 22.8cm; top: 2.8cm; width: 2.5cm; height: 0.2cm; font-size: 9px;}
-.Firefox .container.addr1{left: 21.9cm; top: 1.7cm; width: 6.4cm; height: 0.6cm; font-size: 11px;}
-.Firefox .container.nilai{left: 25.2cm; top: 7.7cm; width: 2.5cm; height: 0.2cm; font-size: 11px;}
+.Firefox .container.city{left: 21.9cm;  top: 2.5cm; width: 5cm; height: 0.12cm; font-size: 9px;}
+.Firefox .container.prov{left: 22.8cm; top: 2.8cm; width: 5cm; height: 0.2cm; font-size: 9px;}
+.Firefox .container.addr1{left: 21.9cm; top: 1.7cm; width: 10cm; height: 0.6cm; font-size: 11px;}
+.Firefox .container.nilai{left: 25.2cm; top: 7.7cm; width: 6cm; height: 0.2cm; font-size: 11px;}
 .Firefox .container.items{left: 21.1cm; top: 4.2cm; width: 7cm; height: 1cm; font-size: 11px;}
 .Firefox .items span{display:inline-block; vertical-align: top;}
 .Firefox .items .name{font-size: 9px; width: 3.6cm; }
@@ -87,7 +84,7 @@ body .Chrome{
 .Chrome .container.prov{left: 13.2cm; top: 1.9cm; width: 2.5cm; height: 0.2cm;}
 .Chrome .container.addr1{left: 13cm; top: 1.3cm; width: 6.4cm; height: 0.6cm;}
 .Chrome .container.items{left: 12.3cm; top: 2.7cm; width: 4cm; height: 1cm;}
-.Chrome .container.nilai{left: 15.8cm; top: 4.5cm; width: 2.5cm; height: 0.2cm;}
+.Chrome .container.nilai{left: 15.8cm; top: 4.5cm; width: 6cm; height: 0.2cm;}
 .Chrome .items span{display:inline-block; vertical-align: top;}
 .Chrome .items .name{font-size: 5px; width: 2.2cm; }
 .Chrome .items .qty{width: 1.2cm; } 
@@ -123,7 +120,7 @@ $client=$opsi[$v->client_id];
 	<div class="container addr2"><?php echo $v->zipcode."<br />".$v->country."<br />".$v->phone?></div>
 	<div class="container city"><?php echo ($v->city) ? $v->city : ''?></div>
 	<div class="container prov"><?php echo $v->province?></div>
-	<div class="container nilai"><?php echo "10000";?></div>
+	<div class="container nilai">RP <?php echo number_format(1000000, 0);?></div>
 	<?php
 	$addr = explode("\n", $v->address);
 	if(sizeof($addr) > 3) {

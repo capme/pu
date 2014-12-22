@@ -1,5 +1,4 @@
 <style>
-@import url('/assets/css/normalize.css') print;
 @font-face {
   font-family: 'FXMatrix105MonoEliteExpDbl';
   src: url('<?php echo base_static()?>/FXMatrix105MonoEliteExpDblRegular.woff') format('woff');
@@ -29,7 +28,7 @@ body.Chrome{
 
 .Chrome .area{
 	font-family: FXMatrix105MonoEliteExpDbl; 
-	font-size: 6px; 0cm; 
+	font-size: 5px; 0cm; 
 	border: 1px solid white;
 	width: 19cm; 
 	height: 5cm; 
@@ -63,9 +62,9 @@ body.Chrome{
 .Firefox .container.receiver{left: 16cm; top: 1.5cm; width: 5.5cm; height: 0.2cm;font-size: 12px;}
 .Firefox .container.company{left: 10.4cm; top: 1.1cm; width: 6cm; height: 0.2cm;font-size: 9px;}
 .Firefox .container.addr2{left: 22.4cm; top: 2.7cm; width: 2cm; height: 0.8cm; font-size:9px;}
-.Firefox .container.city{left: 14.4cm; top: 2.7cm; width: 3cm; height: 0.12cm; font-size: 9px;}
-.Firefox .container.prov{left: 16.3cm; top: 3cm; width: 2.5cm; height: 0.2cm; font-size: 9px;}
-.Firefox .container.addr1{left: 14.9cm; top: 1.9cm; width: 6.4cm; height: 0.6cm; font-size: 9px;}
+.Firefox .container.city{left: 14.4cm; top: 2.7cm; width: 5cm; height: 0.12cm; font-size: 9px;}
+.Firefox .container.prov{left: 16.3cm; top: 3cm; width: 4.5cm; height: 0.2cm; font-size: 9px;}
+.Firefox .container.addr1{left: 14.9cm; top: 1.9cm; width: 11cm; height: 0.6cm; font-size: 9px;}
 .Firefox .container.items{left: 14.1cm; top: 4.2cm; width: 6cm; height: 1cm; font-size: 9px;}
 .Firefox .items span{display:inline-block; vertical-align: top; font-size: 9px;}
 .Firefox .items .name{font-size: 9px; width: 4cm; }
@@ -96,16 +95,16 @@ body.Chrome{
 $browser = get_browser(null, true);
 $grup=$this->client_m->getClients();
 $opsi=array();
-foreach($grup as $id=>$row)
-{
+foreach($grup as $id=>$row){
 	$opsi[$row['id']] = $row['client_code'];
-}
+	}
+
 
 foreach($list->result() as $i => $v): 
-if($i%11 == 0 && $i > 0){ 
-echo "<div style='page-break-before: always;'></div><div style='height:2px;'></div>";
-}
-$client=$opsi[$v->client_id];
+	if($i%11 == 0 && $i > 0){ 
+	echo "<div style='page-break-before: always;'></div><div style='height:2px;'></div>";
+	}
+	$client=$opsi[$v->client_id];
 ?>
 <body class="<?php echo $browser['browser'];?>">
 <div  class="area">
