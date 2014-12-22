@@ -118,7 +118,6 @@ class Awbprinting extends MY_Controller {
 		$this->load->library("va_input", array("group" => "user"));
 		
 		$flashData = $this->session->flashdata("awbError");
-		
 		if($flashData !== false) 
 		{
 			$flashData = json_decode($flashData, true);
@@ -151,7 +150,7 @@ class Awbprinting extends MY_Controller {
 			$post['userfile']= $filename['file_name'] ;
 			$hasil=$this->awbprinting_m->awbUploadFile($post);
 			if ($filename == null){
-				$this->session->set_flashdata( array("clientError" => json_encode(array("msg" => $hasil, "data" => $post))) );
+				$this->session->set_flashdata( array("awbError" => json_encode(array("msg" => $hasil, "data" => $post))) );
 				redirect("awbprinting/add");								 
 			}
 			
@@ -197,29 +196,32 @@ class Awbprinting extends MY_Controller {
 			
 			if ($post['userfile']!= null)
 			{			
-				$result=$this->awbprinting_m->newData($data);
+				$this->awbprinting_m->newData($data);
+				$this->_fetchOrderAmount($post['client']);
 				redirect("awbprinting");
-				if(is_numeric($result)) {
-				redirect("awbprinting");
-				}
-				else {
-					$this->session->set_flashdata( array("awbError" => json_encode(array("msg" => $result, "data" => $post))) );
-					redirect("awbprinting/add");
-				}
 			}					
 		}
 			
 		
 	}
+	
+	private function _fetchOrderAmount($clientId) {
+		$cmd = PHP_BINDIR."/php " . FCPATH . "index.php cron/awb getAmountOrder/".$clientId;
+		if (substr(php_uname(), 0, 7) == "Windows"){
+			pclose(popen("start /B ". $cmd, "r"));
+		} else {
+			exec($cmd . " > /dev/null &");
+		}
+	}
 
-	public function _uploadFile() {
+	private function _uploadFile() {
 		$return = array('error' => false, 'data' => array());
 		$config['upload_path'] = '../webroot/';
 		$config['allowed_types'] = 'csv|txt';
 		$config['max_size']	= '2000';
 		$config['encrypt_name'] = TRUE;
-				
-		$this->load->library('upload', $config);
+		
+		$this->load->library('upload', $config);		
 		if ( ! $this->upload->do_upload()) {			
 			return null;
 		} else {			
@@ -244,7 +246,7 @@ class Awbprinting extends MY_Controller {
 				}
 				
 				if(!$header)
-					$header = $row;					
+					$header = $row;
 				else {							
 					$parsing=explode('|', $row['47']);
 					foreach(@$parsing as $a)

@@ -1,0 +1,1 @@
+ALTER TABLE `awb_queue_printing` DROP amount;

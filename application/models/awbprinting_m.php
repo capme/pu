@@ -94,9 +94,17 @@ class Awbprinting_m extends MY_Model {
 	
 	public function newData($data)
 	{
-		$this->db->insert_batch($this->table, $data);		
+		$this->db->insert_batch($this->table, $data); 
+	}
+
+	public function getOrderNoAmount($clientId) {
+		return $this->db->get_where($this->table, array("client_id" => $clientId, "amount" => 0))->result_array();
 	}
 	
+	public function updateAmount($datas) {
+		$this->db->update_batch($this->table, $datas, "ordernr");
+	}
+
 	public function awbUploadFile($post)
 	{
 		$msg = array();		

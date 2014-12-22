@@ -159,6 +159,29 @@ class Mageapi {
 		}
 	}
 	
+	public function getOrderAmount($orders = array()) {
+		$data = array();
+	
+		try {
+			foreach($orders as $order) {
+				$callsOrder[] = array(self::METHOD_ORDER_LIST, array(array("increment_id" => $order['ordernr'])) );
+			}
+				
+			$dataOrder = $this->soapClient->multiCall($this->soapSession, $callsOrder);
+				
+			foreach($dataOrder as $orderList) {
+				if(!empty($orderList)) {
+					$data[] = array("ordernr" => $orderList[0]["increment_id"], "amount" => $orderList[0]["grand_total"]);
+				}
+			}
+				
+			return $data;
+		} catch( Exception $e ) {
+			log_message('error', "MAGEAPI ==> ". $e->getMessage());
+			return false;
+		}
+	}
+	
 	public function getCategoryList() {
 		$catalogCategory = $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_TREE , 2);
 		$catList = array();
