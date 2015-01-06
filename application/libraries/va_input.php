@@ -212,6 +212,12 @@ class Va_input {
 		} else {
 			$input['msg'] = "";
 		}
+
+		if(isset($conf['disabled']) && $conf['disabled']) {
+			$input['disabled'] = "disabled";
+		} else {
+			$input['disabled'] = "";
+		}
 	
 		return $input;
 	}
