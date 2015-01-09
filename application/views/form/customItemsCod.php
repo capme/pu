@@ -1,7 +1,7 @@
 <div class="panel panel-default" style="width:50%">
   <table class="table" >
 	<tr>
-    <td>ITEM</td>
+    <td>ITEM (SKU)</td>
     <td>QTY</td>    
   </tr>
 <?php 
