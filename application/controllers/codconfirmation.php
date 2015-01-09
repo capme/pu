@@ -82,7 +82,7 @@ class Codconfirmation extends MY_Controller {
 		
 		$this->va_input->addHidden( array("name" => "method", "value" => "comment") );
 		$this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
-		$this->va_input->addSelect( array("name" => "status", "label" => "Status *", "list" => array("0" => "New Request", "1" => "Approve","2"=>"Cancel"), "value" => $this->getStatus()[@$value['status']], "msg" => @$msg['status']));	
+		$this->va_input->addSelect( array("name" => "status", "label" => "Status *", "list" => array("0" => "New Request", "1" => "Approve","2"=>"Cancel"), "value" => @$value['status'], "msg" => @$msg['status']));	
 		$this->va_input->addTextarea( array("name" => "comment", "value" => @$value['note'], "msg" => @$msg['note'], "label" => "Comment *", "help" => "Comment") );
 		$this->va_input->addCustomField( array("name"=>"","value" =>'submit', "view"=>"form/customSubmit"));		
 		$this->va_input->commitForm(1);
