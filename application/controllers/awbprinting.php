@@ -3,6 +3,7 @@
  * 
  * @property Awbprinting_m $awbprinting_m
  * @property Va_list $va_list
+ * @property Clientoptions_m $clientoptions_m
  *
  */
 class Awbprinting extends MY_Controller {
@@ -130,8 +131,7 @@ class Awbprinting extends MY_Controller {
 		}
 		$this->va_input->addHidden( array("name" => "method", "value" => "new") );		
 		$this->va_input->addInput( array("name" => "name", "placeholder" => "Name", "help" => "Name", "label" => "Name *", "value" => @$value['name'], "msg" => @$msg['name']) );
-		$this->va_input->addCustomField( array("name" =>"userfile", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg['userfile'], "label" => "Upload File", "view"=>"form/upload_csv"));
-		$this->va_input->addSelect( array("name" => "client", "list" => $this->getClient(), "value" => @$value['client'], "msg" => @$msg['client'], "label" => "Client *") );
+		$this->va_input->addCustomField( array("name" =>"userfile", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg['userfile'], "label" => "Upload File *", "view"=>"form/upload_csv"));
 		$this->data['script'] = $this->load->view("script/awbprinting_add", array(), true);
 		$this->load->view('template', $this->data);
 	}	
@@ -161,36 +161,40 @@ class Awbprinting extends MY_Controller {
 				redirect("/awbprinting/add");
 			}
 			
+			$this->load->model('clientoptions_m');
+			$cCustomerName = $this->clientoptions_m->getCCustomerName();
+			
 			foreach($datas as $k => $d) {
-			if( !$d['ReferenceNum'] ){continue;}
+				if( !$d['ReferenceNum'] ){continue;}
+				
 				$alamat=$d['ShipToCity'];		
 				$pecah = explode(",", $alamat);
 				$kota = $pecah[0];
 				$provinsi = $pecah[0];
 			
-			$address = array();
-			if($d['ShipToAddress1'] != "0") {$address[] = $d['ShipToAddress1'];}
-			if($d['ShipToAddress2'] != "0") {$address[] = $d['ShipToAddress2'];}
-			
-			$country=$d['ShipToCountry'];
-			$negara=array('ID'=>'Indonesia',
-			'MY'=>'Malaysia');
-			$trim=rtrim($d['SkusAndQtys'][1],'.0)');						
-			$data[] = array(
-				'ordernr' => $d['ReferenceNum'] ,
-				'client_id' => $post['client'],
-				'receiver' => $d['ShipToName'],
-				'company' => $d['ShipToCompanyName'],
-				'address' => implode("\n", $address),
-				'city' => $kota,
-				'province' => @$provinsi,
-				'zipcode' => $d['ShipToZip'],
-				'country' => @$negara[$country],
-				'phone' => $d['ShipToPhone'],
-				'items' => serialize( array("name" => $d['SkusAndQtys'][0], 'qty' => $trim, 'weight' => 1) ),
-				'shipping_type' => $d['ShipService'],
-				'package_type' => 2,
-				'reference_file_id' => $hasil,
+				$address = array();
+				if($d['ShipToAddress1'] != "0") {$address[] = $d['ShipToAddress1'];}
+				if($d['ShipToAddress2'] != "0") {$address[] = $d['ShipToAddress2'];}
+				
+				$country=$d['ShipToCountry'];
+				$negara=array('ID'=>'Indonesia',
+				'MY'=>'Malaysia');
+				$trim=rtrim($d['SkusAndQtys'][1],'.0)');						
+				$data[] = array(
+					'ordernr' => $d['ReferenceNum'] ,
+					'client_id' => array_search($d['CustomerName'], $cCustomerName),
+					'receiver' => $d['ShipToName'],
+					'company' => $d['ShipToCompanyName'],
+					'address' => implode("\n", $address),
+					'city' => $kota,
+					'province' => @$provinsi,
+					'zipcode' => $d['ShipToZip'],
+					'country' => @$negara[$country],
+					'phone' => $d['ShipToPhone'],
+					'items' => serialize( array("name" => $d['SkusAndQtys'][0], 'qty' => $trim, 'weight' => 1) ),
+					'shipping_type' => $d['ShipService'],
+					'package_type' => 2,
+					'reference_file_id' => $hasil,
 				);
 			}
 			

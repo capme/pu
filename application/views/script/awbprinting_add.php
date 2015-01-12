@@ -23,10 +23,6 @@ var FormValidation = function () {
                     "userfile": {
                         required: true,
 						extension: "txt|csv"
-                    },
-					
-                    "user[client]": {
-                        required: true
                     }
                 },		
 				
