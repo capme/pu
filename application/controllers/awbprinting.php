@@ -167,6 +167,11 @@ class Awbprinting extends MY_Controller {
 			foreach($datas as $k => $d) {
 				if( !$d['ReferenceNum'] ){continue;}
 				
+				$clientId = array_search($d['CustomerName'], $cCustomerName);
+				if(!$clientId) {
+					continue;
+				}
+				
 				$alamat=$d['ShipToCity'];		
 				$pecah = explode(",", $alamat);
 				$kota = $pecah[0];
@@ -182,7 +187,7 @@ class Awbprinting extends MY_Controller {
 				$trim=rtrim($d['SkusAndQtys'][1],'.0)');						
 				$data[] = array(
 					'ordernr' => $d['ReferenceNum'] ,
-					'client_id' => array_search($d['CustomerName'], $cCustomerName),
+					'client_id' => $clientId,
 					'receiver' => $d['ShipToName'],
 					'company' => $d['ShipToCompanyName'],
 					'address' => implode("\n", $address),
