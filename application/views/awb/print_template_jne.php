@@ -55,19 +55,19 @@ body.Chrome{
 
 .Firefox .container{position: absolute; border:1px solid gray !important;}
 *, .Firefox .container {border: none !important;}
-.Firefox .container.delivery-ins{left: 1.6cm; top: 5.3cm; width: 7cm; height: 0.5cm;font-size: 11px;}
+.Firefox .container.delivery-ins{left: 1.6cm; top: 5.3cm; width: 12cm; height: 0.5cm;font-size: 11px;}
 .Firefox .container.print-date{left:6.5cm; top: 7cm; height: 0.4cm; width:3cm; font-size: 9px;}
 .Firefox .container.package-type{left: 27.5cm; top: 6.3cm; width: .5cm; height: 0.3cm; font-size:12px;}
 .Firefox .container.shipping-type{left: 27.5cm; top: 2.9cm; width: .5cm; height: 0.5cm; font-size:12px;}
-.Firefox .container.receiver{left: 16cm; top: 1.5cm; width: 5.5cm; height: 0.2cm;font-size: 12px;}
+.Firefox .container.receiver{left: 16cm; top: 1.5cm; width: 9.5cm; height: 0.2cm;font-size: 10px;}
 .Firefox .container.company{left: 10.4cm; top: 1.1cm; width: 6cm; height: 0.2cm;font-size: 9px;}
 .Firefox .container.addr2{left: 22.4cm; top: 2.7cm; width: 2cm; height: 0.8cm; font-size:9px;}
 .Firefox .container.city{left: 14.4cm; top: 2.7cm; width: 5cm; height: 0.12cm; font-size: 9px;}
 .Firefox .container.prov{left: 16.3cm; top: 3cm; width: 4.5cm; height: 0.2cm; font-size: 9px;}
-.Firefox .container.addr1{left: 14.9cm; top: 1.9cm; width: 11cm; height: 0.6cm; font-size: 9px;}
+.Firefox .container.addr1{left: 14.9cm; top: 1.9cm; width: 11cm; height: 0.6cm; font-size: 8px;}
 .Firefox .container.items{left: 14.1cm; top: 4.2cm; width: 6cm; height: 1cm; font-size: 9px;}
 .Firefox .items span{display:inline-block; vertical-align: top; font-size: 9px;}
-.Firefox .items .name{font-size: 9px; width: 4cm; }
+.Firefox .items .name{font-size: 9px; width: 3.5cm; }
 .Firefox .items .qty{width: 1cm; font-size: 9px;}
 
 .Chrome .container{position: absolute; border:1px solid gray !important;}
