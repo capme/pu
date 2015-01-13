@@ -60,7 +60,7 @@ body.Chrome{
 .Firefox .container.package-type{left: 27.5cm; top: 6.3cm; width: .5cm; height: 0.3cm; font-size:12px;}
 .Firefox .container.shipping-type{left: 27.5cm; top: 2.9cm; width: .5cm; height: 0.5cm; font-size:12px;}
 .Firefox .container.receiver{left: 16cm; top: 1.5cm; width: 9.5cm; height: 0.2cm;font-size: 10px;}
-.Firefox .container.company display:none;{left: 10.4cm; top: 1.1cm; width: 6cm; height: 0.2cm;font-size: 9px;}
+.Firefox .container.company {left: 10.4cm; top: 1.1cm; width: 6cm; height: 0.2cm;font-size: 9px;  display:none;}
 .Firefox .container.addr2{left: 22.4cm; top: 2.7cm; width: 2cm; height: 0.8cm; font-size:9px;}
 .Firefox .container.city{left: 14.4cm; top: 2.7cm; width: 5cm; height: 0.12cm; font-size: 9px;}
 .Firefox .container.prov{left: 16.3cm; top: 3cm; width: 4.5cm; height: 0.2cm; font-size: 9px;}
@@ -77,7 +77,7 @@ body.Chrome{
 .Chrome .container.package-type{left: 16cm; top: 3.8cm; width: .5cm; height: 0.3cm; font-size:11px;}
 .Chrome .container.shipping-type{left: 16cm; top: 1.9cm; width: .5cm; height: 0.5cm; font-size:11px;}
 .Chrome .container.receiver{left: 9.4cm; top: 0.9cm; width: 5.5cm; height: 0.2cm;}
-.Chrome .container.company display:none;{left: 10.4cm; top: 1.1cm; width: 6cm; height: 0.2cm;}
+.Chrome .container.company {left: 10.4cm; top: 1.1cm; width: 6cm; height: 0.2cm;  display:none;}
 .Chrome .container.addr2{left: 13.1cm; top: 1.8cm; width: 2cm; height: 0.8cm; font-size:5px;}
 .Chrome .container.city{left: 8.7cm; top: 1.7cm; width: 3cm; height: 0.12cm;}
 .Chrome .container.prov{left: 9.8cm; top: 1.9cm; width: 2.5cm; height: 0.2cm;}
@@ -112,7 +112,7 @@ foreach($list->result() as $i => $v):
 	<div class="container package-type">X</div>
 	<div class="container shipping-type"><?php echo ($v->shipping_type == "YES") ? "X" : "<br />X"?></div>
 	<div class="container receiver"><?php echo $v->receiver?></div>
-	<div class="container company" ><?php echo $v->company?></div>		
+	<div class="container company" style="display:none" ><?php echo $v->company?></div>		
 	<div class="container addr2"><?php echo $v->zipcode."<br />".$v->country."<br />".$v->phone?></div>
 	<div class="container city"><?php echo ($v->city) ? $v->city : ''?></div>
 	<div class="container prov"><?php echo $v->province?></div>
