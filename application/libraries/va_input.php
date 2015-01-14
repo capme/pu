@@ -35,7 +35,7 @@ class Va_input {
 	
 		$input = $this->_prepareBasicField($conf);
 		$input["type"] = "textarea";
-	
+							
 		$this->fields[] = $input;
 	
 		return $this;
@@ -218,7 +218,7 @@ class Va_input {
 		} else {
 			$input['disabled'] = "";
 		}
-	
+
 		return $input;
 	}
 	

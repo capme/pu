@@ -93,7 +93,7 @@ class Codconfirmation extends MY_Controller {
 	
 	public function approve($id)
 	{
-		$data = $this->codconfirmation_m->getCodConfirmationById($id);
+		$data = $this->codconfirmation_m->getCodConfirmationById($id);		
 		if($data->num_rows() < 1) {
 			redirect("codconfirmation");
 		}
@@ -113,13 +113,14 @@ class Codconfirmation extends MY_Controller {
 			$msg = array();
 			$value = $data->row_array();
 		}
-	
+		
 		$this->va_input->addHidden( array("name" => "method", "value" => "approve") );
 		$this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
+		$this->va_input->addHidden( array("name" => "client_id", "value" => $value['client_id']) );
 		$this->va_input->addTextarea( array("name" => "approve", "placeholder" => "Note", "help" => "Note", "label" => "Note", "value" => @$value['note'], "msg" => @$msg['note']) );
 		
 		$this->data['script'] = $this->load->view("script/codconfirmation_add", array(), true);
-		$this->load->view('template', $this->data);
+		$this->load->view('template', $this->data);					
 	}
 	
 	public function cancel($id)
@@ -147,6 +148,7 @@ class Codconfirmation extends MY_Controller {
 	
 		$this->va_input->addHidden( array("name" => "method", "value" => "cancel") );
 		$this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
+		$this->va_input->addHidden( array("name" => "client_id", "value" => $value['client_id']) );
 		$this->va_input->addTextarea( array("name" => "cancel", "placeholder" => "Note", "help" => "Note", "label" => "Note", "value" => @$value['note'], "msg" => @$msg['note']) );
 		
 		$this->data['script'] = $this->load->view("script/codconfirmation_add", array(), true);
@@ -155,13 +157,27 @@ class Codconfirmation extends MY_Controller {
 	
 	public function save() 
 	{
-		$post = $this->input->post("codconfirmation");
+		$this->load->library("mageapi");
+		$post = $this->input->post("codconfirmation");	
+		
 		if(empty($post)) {
 			redirect("codconfirmation");
 		}
 		
-		else if($post['method'] == "approve") {
+		else if($post['method'] == "approve") {			
+			$data = $this->codconfirmation_m->getCodConfirmationById($post['id'])->row_array();						
+			$client = $this->client_m->getClientById($post['client_id'])->row_array();
+			$config = array(
+				"auth" => $client['mage_auth'],
+				"url" => $client['mage_wsdl']
+			);
+			
+			if( $this->mageapi->initSoap($config) ) {
+				$this->mageapi->setOrderToVerified($data['order_number'], $post['approve']);
+			}
+			
 			$result = $this->codconfirmation_m->Approve($post);
+			
 			if(is_numeric($result)) 
 			{
 				redirect("codconfirmation");
@@ -174,6 +190,17 @@ class Codconfirmation extends MY_Controller {
 		}
 		
 		else if($post['method'] == "cancel") {
+			$data = $this->codconfirmation_m->getCodConfirmationById($post['id'])->row_array();						
+			$client = $this->client_m->getClientById($post['client_id'])->row_array();
+			$config = array(
+				"auth" => $client['mage_auth'],
+				"url" => $client['mage_wsdl']
+			);
+			
+			if( $this->mageapi->initSoap($config) ) {
+				$this->mageapi->setOrderToCancel($data['order_number'], $post['cancel']);
+			}
+			
 			$result = $this->codconfirmation_m->Cancel($post);
 			if(is_numeric($result)) 
 			{
