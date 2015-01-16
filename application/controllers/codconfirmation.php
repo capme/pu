@@ -13,7 +13,7 @@ class Codconfirmation extends MY_Controller {
 	{
 		$this->data['content'] = "list_v.php";
 		$this->data['pageTitle'] = "COD Order Confirmation";
-		$this->data['breadcrumb'] = array("COD Confirmation" => "");
+		$this->data['breadcrumb'] = array("COD Order Confirmation" => "");
 		
 		$this->codconfirmation_m->clearCurrentFilter();
 				
@@ -100,8 +100,8 @@ class Codconfirmation extends MY_Controller {
 		
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "Approve COD Order";
-		$this->data['breadcrumb'] = array("COD Order Confirmation "=> "", "Approve COD Order" => "");
-		$this->data['formTitle'] = "Approve COD";
+		$this->data['breadcrumb'] = array("COD Order Confirmation "=> "codconfirmation", "Approve COD Order" => "");
+		$this->data['formTitle'] = "Approve COD Order";
 	
 		$this->load->library("va_input", array("group" => "codconfirmation"));
 		$flashData = $this->session->flashdata("clientError");
@@ -132,8 +132,8 @@ class Codconfirmation extends MY_Controller {
 		
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "Cancel COD Order";
-		$this->data['breadcrumb'] = array("COD Order Confirmation "=> "", "Cancel COD Order" => "");
-		$this->data['formTitle'] = "Cancel COD";
+		$this->data['breadcrumb'] = array("COD Order Confirmation "=> "codconfirmation", "Cancel COD Order" => "");
+		$this->data['formTitle'] = "Cancel COD Order";
 	
 		$this->load->library("va_input", array("group" => "codconfirmation"));
 		$flashData = $this->session->flashdata("clientError");
