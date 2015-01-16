@@ -31,6 +31,7 @@ class Mageapi {
 	const METHOD_VELA_CONFIRMATION_APPROVE = "vela_confirmation.approve";
 	const METHOD_VELA_COD_APPROVE = "vela_cod.verify";
 	const METHOD_VELA_COD_CANCEL ="vela_cod.cancel";
+	const METHOD_VELA_COD_RECEIVED = "vela_cod.payment";
 	
 	public function __construct( $config = array() ) {
 		if(!empty($config)) {
@@ -321,6 +322,16 @@ class Mageapi {
 	public function setOrderToCancel($ordernr, $comment){
 		try {
 			$data = $this->soapClient->call($this->soapSession, self::METHOD_VELA_COD_CANCEL, array('orderincrementId'=>$ordernr, 'comment'=>$comment));
+			return true;
+		} catch( Exception $e ) {
+			log_message('error', "MAGEAPI ==> ". $e->getMessage());
+			return false;
+		}
+	}
+	
+	public function setOrderToReceived($ordernr){
+		try {
+			$data = $this->soapClient->call($this->soapSession, self::METHOD_VELA_COD_RECEIVED, array('orderincrementId'=>$ordernr));
 			return true;
 		} catch( Exception $e ) {
 			log_message('error', "MAGEAPI ==> ". $e->getMessage());
