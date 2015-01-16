@@ -56,6 +56,7 @@ class Awbprinting extends MY_Controller {
 		
 		if($data['list']->num_rows()) {
 			$this->awbprinting_m->setAsPrinted($ids);
+			$this->load->library("va_pdf");
 			if($courier == 0) {
 				$this->load->view("awb/print_template_jne", $data);
 			} else {
