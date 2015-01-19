@@ -103,6 +103,7 @@ class Awbprinting extends MY_Controller {
 		$this->va_input->addInput( array("name" => "country", "value" => @$value['country'], "msg" => @$msg['country'], "label" => "Country", "help" => "Country") );
 		$this->va_input->addInput( array("name" => "zipcode", "value" => @$value['zipcode'], "msg" => @$msg['zipcode'], "label" => "ZIP code", "help" => "ZIP code") );
 		$this->va_input->addInput( array("name" => "phone", "value" => @$value['phone'], "msg" => @$msg['phone'], "label" => "Phone Number", "help" => "Phone Number") );
+		$this->va_input->addInput( array("name" => "amount", "value" => @number_format($value['amount'], 0), "msg" => @$msg['amount'], "label" => "Amount", "help" => "Amount") );
 		$this->va_input->addInput( array("name" => "created_at", "value" => @$value['created_at'], "msg" => @$msg['created_at'], "label" => "Created At", "help" => "Created At") );
 		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['updated_at'], "msg" => @$msg['updated_at'], "label" => "Updated At", "help" => "Updated At") );
 		$this->va_input->addCustomField( array("name" =>"items", "placeholder" => "Items", "label" => "Items", "value" => @$value['items'], "msg" => @$msg['items'], "view"=>"form/customItems"));
