@@ -1,4 +1,9 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * 
+ * @property Mageapi $mageapi
+ *
+ */
 class Codconfirmation extends MY_Controller {
 	var $data = array();
 	public function __construct()
@@ -81,6 +86,8 @@ class Codconfirmation extends MY_Controller {
 		$this->va_input->commitForm(0);
 		
 		$this->va_input->addHidden( array("name" => "method", "value" => "comment") );
+		$this->va_input->addHidden( array("name" => "client_id", "value" => $value['client_id']) );
+		$this->va_input->addHidden( array("name" => "order_number", "value" => $value['order_number']) );
 		$this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
 		$this->va_input->addSelect( array("name" => "status", "label" => "Status *", "list" => array("0" => "New Request", "1" => "Approve","2"=>"Cancel"), "value" => @$value['status'], "msg" => @$msg['status']));	
 		$this->va_input->addTextarea( array("name" => "comment", "value" => @$value['note'], "msg" => @$msg['note'], "label" => "Comment *", "help" => "Comment") );
@@ -214,6 +221,25 @@ class Codconfirmation extends MY_Controller {
 		}
 		
 		else if($post['method'] == "comment") {
+			$client = $this->client_m->getClientById($post['client_id'])->row_array();
+			$config = array(
+				"auth" => $client['mage_auth'],
+				"url" => $client['mage_wsdl']
+			);
+				
+			if( $this->mageapi->initSoap($config) ) {
+				if($post['status'] == 2) {
+					$apiResponse = $this->mageapi->setOrderToCancel($post['order_number'], $post['comment']);
+				} else if($post['status'] == 1) {
+					$apiResponse = $this->mageapi->setOrderToVerified($post['order_number'], $post['comment']);
+				}
+			}
+			
+			if(!$apiResponse) {
+				$this->session->set_flashdata( array("clientError" => json_encode(array("msg" => array("order_number" => "Magento client error"), "data" => $post))) );
+				redirect("codconfirmation/view/".$post['id']);
+			}
+			
 			$result = $this->codconfirmation_m->Comment($post);
 			if(is_numeric($result)) 
 			{
