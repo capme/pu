@@ -25,10 +25,10 @@ $pdf->SetAutoPageBreak(TRUE, 0);
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
  // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+/* if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
 	require_once(APPPATH.'libraries/tcpdf/example/lang/eng.php');
 	$pdf->setLanguageArray($l);
-} 
+}  */
 
 // ---------------------------------------------------------
 
@@ -49,7 +49,6 @@ foreach($grup as $id=>$row){
 $date= date("d m Y", time());
 
 foreach ($list->result() as $hasil => $data):
-
 $client=$opsi[$data->client_id];
 
 $addr = explode("\n", $data->address);
@@ -58,57 +57,13 @@ $addr = explode("\n", $data->address);
 	} else {
 		$data->address = implode("<br />", $addr);
 	}
-
-$itemLists = explode("|", $data->itemlist);
-	foreach($itemLists as $i): 
-		if(empty($i)){
-			continue;
-		}
-		else{
-			$a = unserialize($i);		
-			$qty[]= $a['qty'];
-			$weight[]=$a['weight'];
-			$name[]= $a['name'];
-		}	
-
-endforeach;	
-if (count($itemLists) == 1)
-	{
-	$n=$a['name'];
-	$w=$a['qty'];
-	$k=$a['weight'];
-	$e="";
-	$r="";
-	$t="";
-	$u="";
-	$o="";
-	$p="";
-	}
-if(count($itemLists) == 2)
-	{
-	$n=$name[0];
-	$w=$weight[0];
-	$k=$qty[0];
-	$e=$name[1];
-	$r=$weight[1];
-	$t=$qty[1];
-	$u="";
-	$o="";
-	$p="";
-	}
 	
-if(count($itemLists) == 3)
-	{
-	$n=$name[0];
-	$w=$weight[0];
-	$k=$qty[0];
-	$e=$name[1];
-	$r=$weight[1];
-	$t=$qty[1];
-	$u=$name[2];
-	$o=$weight[2];
-	$p=$qty[2];
-	}
+$itemLists = explode("|", $data->itemlist);
+$items = array(array('', '', ''), array('', '', ''), array('', '', ''), array('', '', ''));
+foreach($itemLists as $l => $item) {
+	$i = unserialize($item);
+	$items[$l] = array($i['name'], $i['qty'], $i['weight']);
+}
 
 if ($data->shipping_type == "YES" )
 	{$yes ="X";}
@@ -117,7 +72,7 @@ $reg ="";
 if ($data->shipping_type !="YES")
 	{$reg="X";}
 	else{$reg;}
-	
+		
 $htm =<<<EOF
 <table border="0" cellspacing="0" cellpadding="0">
 	<tr>
@@ -159,31 +114,31 @@ $htm =<<<EOF
 		<th width="45%"></th>
 		<th width="25%"></th>
 		<th width="17%"></th>
-		<th width="13%">X</th>
+		<th width="13%"></th>
 	</tr>
 	<tr>
 		<th width="42%"></th>
-		<th width="15%">$n</th>
-		<th width="5%">$w</th>
-		<th width="38%">$k</th>
+		<th width="15%">{$items[0][0]}</th>
+		<th width="5%">{$items[0][1]}</th>
+		<th width="38%">{$items[0][2]}</th>
 	</tr>
 		<tr>
 		<th width="42%"></th>
-		<th width="15%">$e</th>
-		<th width="5%">$r</th>
-		<th width="38%">$t</th>
+		<th width="15%">{$items[1][0]}</th>
+		<th width="5%">{$items[1][1]}</th>
+		<th width="38%">{$items[1][2]}</th>
 	</tr>
 	<tr>
 		<th width="42%"></th>
-		<th width="15%">$u</th>
-		<th width="5%">$o</th>
-		<th width="38%">$p</th>
+		<th width="15%">{$items[2][0]}</th>
+		<th width="5%">{$items[2][1]}</th>
+		<th width="38%">{$items[2][2]}</th>
 	</tr>
 	<tr>
 		<th width="42%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $data->ordernr - $client</th>
-		<th width="15%"></th>
-		<th width="5%"></th>
-		<th width="38%"></th>
+		<th width="15%">{$items[3][0]}</th>
+		<th width="5%">{$items[3][1]}</th>
+		<th width="38%">{$items[3][2]}</th>
 	</tr>
 	<tr>
 		<th width="42%"></th>
@@ -230,7 +185,7 @@ $htm =<<<EOF
 	</tr>
 </table>
 EOF;
-
+	
 $pdf->writeHTML($htm, true, false, true, false, '');
 endforeach;
 
