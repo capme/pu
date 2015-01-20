@@ -159,8 +159,8 @@ class Codpaymentconfirmation_m extends MY_Model {
 				$this->db->where($this->pkField, $post['id']);			
 				$this->db->update($this->table, $data);
 				
-				$this->db->where('cod_id', $post['id']);
-				$this->db->update('cod_history', $note);
+				$this->db->insert("cod_history", array("cod_id" => $post['id'], "note" => $post['comment'], 'status' => $post['status'], 'type' => 1, 'created_by' => $this->session->userdata('pkUserId')));
+				
 				return $post['id'];	
 			}
 		else {

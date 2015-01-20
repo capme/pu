@@ -84,8 +84,9 @@ class Codpaymentconfirmation extends MY_Controller {
 		$this->va_input->addHidden( array("name" => "method", "value" => "comment") );
 		$this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
 		$this->va_input->addHidden( array("name" => "client_id", "value" => $value['client_id']) );
+		$this->va_input->addHidden( array("name" => "order_number", "value" => $value['order_number']) );
 		$this->va_input->addSelect( array("name" => "status", "label" => "Status *", "list" => array("1"=>"Processing","3" => "Receive","4"=>"Cancel"), "value" => $value['status'], "msg" => @$msg['status']));	
-		$this->va_input->addTextarea( array("name" => "comment", "value" => @$value['note'], "msg" => @$msg['note'], "label" => "Comment *", "help" => "Comment") );
+		$this->va_input->addTextarea( array("name" => "comment", "value" => '', "msg" => @$msg['note'], "label" => "Comment *", "help" => "Comment") );
 		$this->va_input->addCustomField( array("name"=>"","value" =>'submit', "view"=>"form/customSubmit"));		
 		$this->va_input->commitForm(1);
 		
@@ -203,38 +204,34 @@ class Codpaymentconfirmation extends MY_Controller {
 		}
 		
 		else if($post['method'] == "comment") {
-			if($post['status']== 3){
-				$data = $this->codpaymentconfirmation_m->getCodPaymentConfirmationById($post['id'])->row_array();						
-				$client = $this->client_m->getClientById($post['client_id'])->row_array();
-				$config = array(
+			$client = $this->client_m->getClientById($post['client_id'])->row_array();
+			$config = array(
 					"auth" => $client['mage_auth'],
 					"url" => $client['mage_wsdl']
-				);
+			);
 			
-				if( $this->mageapi->initSoap($config) ) {
-					$this->mageapi->setOrderToreceived($data['order_number']);
-					}
-				
-				$result = $this->codpaymentconfirmation_m->Comment($post);					
-				if(is_numeric($result)){
-					redirect("codpaymentconfirmation");
-					} 
-				else {
-					$this->session->set_flashdata( array("clientError" => json_encode(array("msg" => $result, "data" => $post))) );
-					redirect("codpaymentconfirmation/view/".$post['id']);
-					}
-			}
-			else{
-				$result = $this->codpaymentconfirmation_m->Comment($post);				
-				if(is_numeric($result)){
-					redirect("codpaymentconfirmation");
-					} 
-				else {
-					$this->session->set_flashdata( array("clientError" => json_encode(array("msg" => $result, "data" => $post))) );
-					redirect("codpaymentconfirmation/view/".$post['id']);
-					}
+			$apiResponse = TRUE;
+			if( $this->mageapi->initSoap($config) ) {
+				if($post['status'] == 3) {
+					$apiResponse = $this->mageapi->setOrderToreceived($post['order_number']);
+				}
 			}
 			
+			if(!$apiResponse) {
+				$this->session->set_flashdata( array("clientError" => json_encode(array("msg" => array("order_number" => "Magento client error"), "data" => $post))) );
+				redirect("codpaymentconfirmation/view/".$post['id']);
+			}
+			
+			$result = $this->codpaymentconfirmation_m->Comment($post);
+			if(is_numeric($result)) 
+			{
+				redirect("codpaymentconfirmation");
+			} 
+			else 
+			{
+				$this->session->set_flashdata( array("clientError" => json_encode(array("msg" => $result, "data" => $post))) );
+				redirect("codpaymentconfirmation/view/".$post['id']);
+			}
 		}
 	}
 	

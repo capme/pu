@@ -81,9 +81,18 @@ class Codconfirmation_m extends MY_Model {
 		$this->db->select('*, cod_confirmation.id', 'cod_confirmation.status');
 		$this->db->from($this->table);
 		$this->db->join('client','client.id=cod_confirmation.client_id');
-		$this->db->join('cod_history', 'cod_history.cod_id=cod_confirmation.id');
-		$this->db->where('cod_confirmation.id', $id);		
+//		$this->db->join('cod_history', 'cod_history.cod_id=cod_confirmation.id');
+		$this->db->where('cod_confirmation.id', $id);
 		return $this->db->get();  
+	}
+
+	public function getCodConfirmationByOrderNumber($orderNumber)
+	{
+		$this->db = $this->load->database('mysql', TRUE);
+		$this->db->select('*');
+		$this->db->from($this->table);
+		$this->db->where('order_number', $orderNumber);
+		return $this->db->get();
 	}
 	
 	public function Approve($post) 
@@ -159,13 +168,36 @@ class Codconfirmation_m extends MY_Model {
 				$this->db->where($this->pkField, $post['id']);			
 				$this->db->update($this->table, $data);
 				
-				$this->db->where('cod_id', $post['id']);
-				$this->db->update('cod_history', $note);
+				$this->db->insert("cod_history", array("cod_id" => $post['id'], "note" => $post['comment'], 'status' => $post['status'], 'type' => 1, 'created_by' => $this->session->userdata('pkUserId')));
+				
 				return $post['id'];	
 			}
 		else {
 		return $msg;
 		}	
+	}
+
+	public function add($client, $orders) {
+		$this->db = $this->load->database('mysql', TRUE);
+
+		$this->db->trans_start();
+		$insertedIds = array();
+		foreach($orders as $order) {
+
+			$cekCodConfirmation = $this->getCodConfirmationByOrderNumber($order['order_number']);
+
+			if($cekCodConfirmation->num_rows() > 0) continue;
+
+			$this->db->insert(
+				$this->table,
+				array("client_id" => $client['id'], "order_number" => $order['order_number'], "customer_name" => $order['customer_fullname'], "shipping_address" => $order['full_shipping_address'], "amount" => $order['total_amount'], "items" => $order['items'], "updated_by" => "2", "created_at" => date("Y-m-d H:i:s") )
+			);
+
+			$insertedIds[] = $order['id'];
+		}
+		$this->db->trans_complete();
+
+		return $insertedIds;
 	}
 }
 ?>
