@@ -60,11 +60,13 @@ $addr = explode("\n", $data->address);
 		$data->address = implode("<br />", $addr);
 	}
 	
-$itemLists = explode("|", $data->itemlist);
+$itemLists = unserialize($data->itemlist);
 $items = array(array('', '', ''), array('', '', ''), array('', '', ''), array('', '', ''));
-foreach($itemLists as $l => $item) {
-	$i = unserialize($item);	
-	$items[$l] = array($i['name'], $i['qty'], $i['weight']);
+if(is_array($itemLists)) {
+	foreach($itemLists as $l => $item) {
+		$i = $item;
+		$items[$l] = array($i['name'], intval($i['qty']), $i['weight']);
+	}
 }
 
 $number=number_format($data->amount, 0);

@@ -25,7 +25,7 @@ class Awbprinting extends MY_Controller {
 		$this->load->library("va_list");
 		$this->va_list->setListName("AWB Listing")->setAddLabel("Upload new AWB")
 			->setMassAction(array("0" => "Print JNE Format", "2" => "Print NEX Format"))
-			->setHeadingTitle(array("Record #", "Client Name","Order Number","Status","Name","Address","City"))
+			->setHeadingTitle(array("Record #", "Client Name","Order Number","Status","Name","City"))
 			->setHeadingWidth(array(2, 2,2,3,2,3,4));
 		
 		$this->va_list->setInputFilter(2, array("name" => $this->awbprinting_m->filters['ordernr']))

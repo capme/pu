@@ -35,7 +35,6 @@ var TableAjax = function () {
 						  { "bSortable": false },
 						  { "bSortable": false },
 						  { "bSortable": false },
-						  { "bSortable": false },
 						    
                     ],
                     /* 
