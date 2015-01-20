@@ -76,7 +76,7 @@ if ($data->shipping_type !="YES")
 	else{$reg;}
 		
 $htm =<<<EOF
-<table border="1" cellspacing="0" cellpadding="0">
+<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td></td>
 		<td></td>
