@@ -76,7 +76,7 @@ if ($data->shipping_type !="YES")
 	else{$reg;}
 		
 $htm =<<<EOF
-<table border="0" cellspacing="0" cellpadding="0">
+<table border="1" cellspacing="0" cellpadding="0">
 	<tr>
 		<td></td>
 		<td></td>
@@ -101,16 +101,16 @@ $htm =<<<EOF
 		<th width="13%">$yes</th>
 	</tr>
 	<tr>
-		<th width="25%"></th>
-		<th width="25%"></th>
+		<th width="50%"></th>
 		<th width="20%"></th>
-		<th width="35%">$data->phone</th>
+		<th width="17%">$data->phone</th>
+		<th width="13%">$reg</th>
 	</tr>
 	<tr>
 		<th width="45%"></th>
 		<th width="25%"></th>
 		<th width="17%"></th>
-		<th width="13%">$reg</th>
+		<th width="13%"></th>
 	</tr>
 		<tr>
 		<th width="45%"></th>
@@ -131,13 +131,13 @@ $htm =<<<EOF
 		<th width="38%">{$items[1][2]}</th>
 	</tr>
 	<tr>
-		<th width="42%"></th>
+		<th width="42%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $data->ordernr - $client</th>
 		<th width="15%">{$items[2][0]}</th>
 		<th width="5%">{$items[2][1]}</th>
 		<th width="38%">{$items[2][2]}</th>
 	</tr>
 	<tr>
-		<th width="42%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $data->ordernr - $client</th>
+		<th width="42%"></th>
 		<th width="15%">{$items[3][0]}</th>
 		<th width="5%">{$items[3][1]}</th>
 		<th width="38%">{$items[3][2]}</th>

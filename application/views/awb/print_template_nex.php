@@ -152,7 +152,7 @@ $html = <<<EOF
 		<th width="35%"></th>
 	</tr>
 		<tr>
-		<th width="20%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; X</th>
+		<th width="20%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; X</th>
 		<th width="22%"></th>
 		<th width="20%">$date</th>
 		<th width="38%"></th>
@@ -161,13 +161,13 @@ $html = <<<EOF
 		<th width="50%"></th>
 		<th width="15%"></th>
 		<th width="15%"></th>
-		<th width="20%">$number</th>
+		<th width="20%"></th>
 	</tr>
 	<tr>
 	<th width="50%"></th>
 		<th width="15%"></th>
 		<th width="15%"></th>
-		<th width="20%"></th>
+		<th width="20%">$number</th>
 	</tr>
 	<tr>
 		<th width="50%"></th>
