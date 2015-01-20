@@ -82,6 +82,7 @@ class Codconfirmation extends MY_Controller {
 		
 		$this->va_input->addHidden( array("name" => "method", "value" => "comment") );
 		$this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
+		$this->va_input->addHidden( array("name" => "client_id", "value" => $value['client_id']) );
 		$this->va_input->addSelect( array("name" => "status", "label" => "Status *", "list" => array("0" => "New Request", "1" => "Approve","2"=>"Cancel"), "value" => @$value['status'], "msg" => @$msg['status']));	
 		$this->va_input->addTextarea( array("name" => "comment", "value" => @$value['note'], "msg" => @$msg['note'], "label" => "Comment *", "help" => "Comment") );
 		$this->va_input->addCustomField( array("name"=>"","value" =>'submit', "view"=>"form/customSubmit"));		
@@ -214,15 +215,55 @@ class Codconfirmation extends MY_Controller {
 		}
 		
 		else if($post['method'] == "comment") {
+		if ($post['status']==1){
+			$data = $this->codconfirmation_m->getCodConfirmationById($post['id'])->row_array();						
+			$client = $this->client_m->getClientById($post['client_id'])->row_array();
+			$config = array(
+				"auth" => $client['mage_auth'],
+				"url" => $client['mage_wsdl']
+			);
+			
+			if( $this->mageapi->initSoap($config) ) {
+				$this->mageapi->setOrderToVerified($data['order_number'], $post['comment']);
+			}
 			$result = $this->codconfirmation_m->Comment($post);
-			if(is_numeric($result)) 
-			{
+			if(is_numeric($result)){
 				redirect("codconfirmation");
-			} 
-			else 
-			{
+				} 
+			else {
 				$this->session->set_flashdata( array("clientError" => json_encode(array("msg" => $result, "data" => $post))) );
 				redirect("codconfirmation/view/".$post['id']);
+				}
+		}
+		else if ($post['status']==2){
+			$data = $this->codconfirmation_m->getCodConfirmationById($post['id'])->row_array();						
+			$client = $this->client_m->getClientById($post['client_id'])->row_array();
+			$config = array(
+				"auth" => $client['mage_auth'],
+				"url" => $client['mage_wsdl']
+			);
+			
+			if( $this->mageapi->initSoap($config) ) {
+				$this->mageapi->setOrderToCancel($data['order_number'], $post['comment']);
+			}
+			$result = $this->codconfirmation_m->Comment($post);
+			if(is_numeric($result))	{
+				redirect("codconfirmation");
+				} 
+			else{
+				$this->session->set_flashdata( array("clientError" => json_encode(array("msg" => $result, "data" => $post))) );
+				redirect("codconfirmation/view/".$post['id']);
+				}
+		}		
+		else{ 
+			$result = $this->codconfirmation_m->Comment($post);
+			if(is_numeric($result)) {
+				redirect("codconfirmation");
+				} 
+			else {
+				$this->session->set_flashdata( array("clientError" => json_encode(array("msg" => $result, "data" => $post))) );
+				redirect("codconfirmation/view/".$post['id']);
+				}
 			}
 		}
 	}
