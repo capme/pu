@@ -15,7 +15,7 @@ class Awbprinting_m extends MY_Model {
 		$this->db = $this->load->database('mysql', TRUE);
 		
 		$this->relation = array(
-			array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}")
+			array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} AND {$this->table}.status != 3")
 		);
 		
 		$this->select = array("{$this->table}.*", "{$this->tableClient}.client_code");
@@ -56,7 +56,6 @@ class Awbprinting_m extends MY_Model {
 					$_result->ordernr,
 					'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
 					$_result->receiver,
-					$_result->address,
 					$_result->city,
 					'<a href="'.site_url("awbprinting/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>'
 					
@@ -84,7 +83,7 @@ class Awbprinting_m extends MY_Model {
 		foreach($orderId as $i => $v) {
 			$ids[] = "'{$v}'";
 		}
-		return $this->db->query("SELECT *, GROUP_CONCAT(items SEPARATOR '|') itemlist FROM ".$this->table." WHERE ordernr IN (".implode(",", $ids).") GROUP BY ordernr, client_id ORDER BY id DESC");
+		return $this->db->query("SELECT *, items itemlist FROM ".$this->table." WHERE ordernr IN (".implode(",", $ids).") AND status <> 3 ORDER BY id DESC");
 	}
 	
 	public function setAsPrinted($ids) {
@@ -124,6 +123,79 @@ class Awbprinting_m extends MY_Model {
 		} 
 		else {
 			return $msg;
+		}
+	}
+	
+	public function addIgnore($datas) {
+		$this->load->model('clientoptions_m');
+		$cCustomerName = $this->clientoptions_m->getCCustomerName();
+		
+		$clientOrder = array();
+		$now = date("Y-m-d: H:i:s");
+		
+		$this->db->trans_start();
+		$datas = json_decode(json_encode($datas), true);
+		foreach($datas as $d) {
+			if( !$d['reference_num'] ){continue;}
+			
+			$clientId = array_search($d['customer_name'], $cCustomerName);
+			if(!$clientId) {
+				continue;
+			}
+			
+			if(!isset($clientOrder[$clientId])) {
+				$clientOrder[$clientId] = array();
+			}
+			
+			$clientOrder[$clientId][] = $d;
+			$address = $d['ship_to_address1'];
+			$shipToCity = explode(",", $d['ship_to_city']);
+			$province = array_pop($shipToCity);
+			$city = array_pop($shipToCity);
+			
+			$sql = "INSERT IGNORE INTO ".$this->table." VALUES";
+			$sql .= " (NULL, '".$this->db->escape_str($d['reference_num'])."', ".$clientId.", '".$this->db->escape_str($d['ship_to_name'])."', '".$this->db->escape_str($d['ship_to_company_name'])."', '".$this->db->escape_str($address)."', '".$this->db->escape_str($city)."', '".$this->db->escape_str($province)."', '".$this->db->escape_str($d['ship_to_zip'])."', '".$this->db->escape_str($d['ship_to_country'])."', '".$this->db->escape_str($d['ship_to_phone'])."', '', '".$this->db->escape_str($d['ship_method'])."', '2', 3, 0.0000, 0, '".$now."', '".$now."')";
+			$this->db->query($sql);
+		}
+		$this->db->trans_complete();
+		return $clientOrder;
+	}
+	
+	public function getOrderNoItems($clientId) {
+		return $this->db->get_where($this->table, array("client_id" => $clientId, "items" => ''))->result_array();
+	}
+	
+	public function setOrderItems($orders) {
+		$dataUpdate = array();
+		foreach($orders as $order) {
+			$items = array();
+			if(!isset($order['items']))
+				continue;
+			
+			foreach($order['items'] as $item) {
+				if(!intval($item['base_price'])) {
+					continue;
+				}
+				$items[] = array("name" => $item['sku'], "qty" => $item['qty_ordered'], "weight" => 1);
+			}
+			
+			if(!empty($items)) {
+				$dataUpdate[] = array("ordernr" => $order['increment_id'], "items" => serialize($items));
+			}
+		}
+		if(!empty($dataUpdate))
+			$this->db->update_batch($this->table, $dataUpdate, 'ordernr');
+	}
+	
+	public function setAsFetched($clientId, $orders) {
+		$dataUpdate = array();
+		
+		foreach($orders as $order) {
+			if(!isset($order['increment_id']))
+				continue;
+			
+			$this->db->where( array("ordernr" => $order['increment_id'], "client_id" => $clientId) );
+			$this->db->update($this->table, array("status" => 0));
 		}
 	}
 }
