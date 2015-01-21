@@ -71,7 +71,7 @@ if(is_array($itemLists)) {
 
 $number=number_format($data->amount, 0);
 $html = <<<EOF
-<table border="0" cellspacing="0" cellpadding="0">
+<table border="1" cellspacing="0" cellpadding="0">
 	<tr>
 		<td width="25%"></td>
 		<td width="25%"></td>
@@ -108,35 +108,35 @@ $html = <<<EOF
 		<th width="13%"></th>
 	</tr>
 	<tr>
-		<th width="42%"></th>
-		<th width="15%"></th>
-		<th width="5%"></th>
-		<th width="38%"></th>
-	</tr>
-		<tr>
-		<th width="62%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>
+		<th width="62%"></th>
 		<th width="15%">&nbsp;&nbsp;&nbsp; {$items[0][0]}</th>
 		<th width="5%">{$items[0][1]}</th>
 		<th width="18%">{$items[0][2]}</th>
 	</tr>
+		<tr>
+		<th width="62%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>
+		<th width="15%">&nbsp;&nbsp;&nbsp; {$items[1][0]}</th>
+		<th width="5%">{$items[1][1]}</th>
+		<th width="18%">{$items[1][2]}</th>
+	</tr>
 	<tr>
 		<th width="62%"></th>
-		<th width="15%">&nbsp;&nbsp;&nbsp; {$items[1][0]}</th>
-		<th width="5%">{$items[1][1]} </th>
-		<th width="18%">{$items[1][2]}</th>
+		<th width="15%">&nbsp;&nbsp;&nbsp; {$items[2][0]}</th>
+		<th width="5%">{$items[2][1]} </th>
+		<th width="18%">{$items[2][2]}</th>
 	</tr>
 
 	<tr>
 		<th width="62%"><table><tr><td width="40%"></td><td>$data->ordernr - $client</td></tr></table></th>		
-		<th width="15%">&nbsp;&nbsp;&nbsp;{$items[2][0]}</th>
-		<th width="5%">{$items[2][1]}</th>
-		<th width="18%">{$items[2][2]}</th>
+		<th width="15%">&nbsp;&nbsp;&nbsp;{$items[3][0]}</th>
+		<th width="5%">{$items[3][1]}</th>
+		<th width="18%">{$items[3][2]}</th>
 	</tr>
 	<tr>
 		<th width="62%"></th>
-		<th width="15%">&nbsp;&nbsp;&nbsp; {$items[3][0]}</th>
-		<th width="5%">{$items[3][1]}</th>
-		<th width="18%">{$items[3][2]}</th>
+		<th width="15%"></th>
+		<th width="5%"></th>
+		<th width="18%"></th>
 	</tr>
 	<tr>
 		<th></th>
