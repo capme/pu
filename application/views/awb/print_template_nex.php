@@ -71,7 +71,7 @@ if(is_array($itemLists)) {
 
 $number=number_format($data->amount, 0);
 $html = <<<EOF
-<table border="1" cellspacing="0" cellpadding="0">
+<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td width="25%"></td>
 		<td width="25%"></td>
