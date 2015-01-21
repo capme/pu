@@ -140,7 +140,7 @@ class Paymentconfirmation extends MY_Controller {
 		$this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
 		$this->va_input->addTextarea( array("name" => "reason", "placeholder" => "Cancel reason", "help" => "Cancel reason", "label" => "Cancel Reason", "value" => @$value['reason'], "msg" => @$msg['reason']) );
 		
-		$this->data['script'] = $this->load->view("script/client_add", array(), true);
+		$this->data['script'] = $this->load->view("script/paymentconfirmation_add", array(), true);
 		$this->load->view('template', $this->data);
 	}
 	

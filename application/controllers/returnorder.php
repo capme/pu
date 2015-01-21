@@ -55,7 +55,6 @@ class Returnorder extends MY_Controller {
 		if($data->num_rows() < 1) {
 			redirect("returnorder");
 		}
-		
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "Cancel Order";
 		$this->data['breadcrumb'] = array("Return Oder"=> "", "Cancel Order" => "");
@@ -71,12 +70,11 @@ class Returnorder extends MY_Controller {
 			$msg = array();
 			$value = $data->row_array();
 		}
-	
 		$this->va_input->addHidden( array("name" => "method", "value" => "update") );
 		$this->va_input->addHidden( array("name" => "id", "value" => $value['return_id']) );
 		$this->va_input->addTextarea( array("name" => "cancel_reason", "placeholder" => "Cancel reason", "help" => "Cancel reason", "label" => "Cancel Reason *", "value" => @$value['cancel_reason'], "msg" => @$msg['cancel_reason']) );
 		
-		$this->data['script'] = $this->load->view("script/client_add", array(), true);
+		$this->data['script'] = $this->load->view("script/returnorder_add", array(), true);
 		$this->load->view('template', $this->data);
 	}
 	
@@ -139,7 +137,7 @@ class Returnorder extends MY_Controller {
 		$this->va_input->addInput( array("name" => "email_address", "value" => @$value['email_address'], "msg" => @$msg['email_address'], "label" => "Email Address", "help" => "Email Address") );
 		$this->va_input->addTextarea( array("name" => "cancel_reason", "value" => @$value['cancel_reason'], "msg" => @$msg['cancel_reason'], "label" => "Cancel Reason", "help" => "Ops. Cancel Reason") );
 		
-		$this->data['script'] = $this->load->view("script/client_add", array(), true);
+		$this->data['script'] = $this->load->view("script/returnorder_add", array(), true);
 		$this->load->view('template', $this->data);
 	}
 	

@@ -23,7 +23,7 @@
 	</div>
 	<div class="portlet-body form">
 		<!-- BEGIN FORM-->
-		<form action="<?php echo site_url($this->router->class . "/" . "save")?>" method="POST" class="form-horizontal form-bordered form-row-stripped" id="<?php echo "form_".$this->va_input->getGroup(); ?>">
+		<form action="<?php echo site_url($this->router->class . "/" . "save")?>" method="POST" class="form-horizontal form-bordered form-row-stripped" id="<?php echo "form_".$this->va_input->getGroup(); ?>" enctype="multipart/form-data">
 			<div class="form-body">
 				<div class="alert alert-danger display-hide">
 					<button class="close" data-close="alert"></button>

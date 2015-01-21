@@ -36,6 +36,7 @@ define('FOPEN_READ_WRITE_CREATE',				'a+b');
 define('FOPEN_WRITE_CREATE_STRICT',				'xb');
 define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 
-
+define('DART_URL', 'http://dart.velaasia.dev/xhr_threepl/');
+define('DART_KEY', 'Vela123!');
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

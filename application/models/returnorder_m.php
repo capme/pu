@@ -55,6 +55,15 @@ class Returnorder_m extends MY_Model {
 		$no=0;
 		foreach($_row->result() as $_result) {
 			$status=$statList[$_result->status];
+			if ($_result->status==0)
+			{
+			$action='<a href="'.site_url("returnorder/view/".$_result->item_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>|
+				|<a href="'.site_url("returnorder/approve/".$_result->item_id).'" class="btn btn-xs default" id="approve"><i class="fa fa-check" ></i> Approve</a>|<a href="'.site_url("returnorder/cancel/".$_result->item_id).'" class="btn btn-xs default" id="cancel"><i class="fa fa-times" ></i> Cancel</a>';			
+			}
+			else{
+			$action='<a href="'.site_url("returnorder/view/".$_result->item_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>';
+			}
+			
 			$records["aaData"][] = array(
 					'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
 					$no=$no+1,
@@ -63,20 +72,17 @@ class Returnorder_m extends MY_Model {
 					$_result->sku,
 					'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
 					$_result->updated_at,
-					@$opsiarray[$_result->updated_by],
-					
-					'<a href="'.site_url("returnorder/view/".$_result->item_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>|			
-					<a href="'.site_url("returnorder/approve/".$_result->item_id).'" class="btn btn-xs default"><i class="fa fa-check" ></i> Approve</a>|
-					<a href="'.site_url("returnorder/cancel/".$_result->item_id).'" class="btn btn-xs default"><i class="fa fa-times" ></i> Cancel</a>'
-									
+					@$opsiarray[$_result->updated_by],					
+					$action
 			);
 		}
-	
+		
 		$records["sEcho"] = $sEcho;
 		$records["iTotalRecords"] = $iTotalRecords;
 		$records["iTotalDisplayRecords"] = $iTotalRecords;
 		return $records;
 	}
+	
 	
 	public function Reason($post) 
 	{
