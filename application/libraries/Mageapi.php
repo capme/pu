@@ -187,6 +187,23 @@ class Mageapi {
 		}
 	}
 	
+	public function getOrderItems($orders = array()) {
+		try {
+			foreach($orders as $order) {
+				if(!empty($order)) {
+					$callsOrderInfo[] = array(self::METHOD_ORDER_INFO, $order['ordernr'] );
+				}
+			}
+				
+			$dataOrderInfo = $this->soapClient->multiCall($this->soapSession, $callsOrderInfo);
+			return array("info" => $dataOrderInfo);
+		} catch( Exception $e ) {
+			log_message('error', "MAGEAPI ==> ". $e->getMessage());
+			return false;
+		}
+			
+	}
+	
 	public function getCategoryList() {
 		$catalogCategory = $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_TREE , 2);
 		$catList = array();

@@ -81,7 +81,7 @@ class Codconfirmation_m extends MY_Model {
 		$this->db->select('*, cod_confirmation.id', 'cod_confirmation.status');
 		$this->db->from($this->table);
 		$this->db->join('client','client.id=cod_confirmation.client_id');
-//		$this->db->join('cod_history', 'cod_history.cod_id=cod_confirmation.id');
+		$this->db->join('cod_history', 'cod_history.cod_id=cod_confirmation.id');
 		$this->db->where('cod_confirmation.id', $id);
 		return $this->db->get();  
 	}
@@ -192,6 +192,14 @@ class Codconfirmation_m extends MY_Model {
 				$this->table,
 				array("client_id" => $client['id'], "order_number" => $order['order_number'], "customer_name" => $order['customer_fullname'], "shipping_address" => $order['full_shipping_address'], "amount" => $order['total_amount'], "items" => $order['items'], "updated_by" => "2", "created_at" => date("Y-m-d H:i:s") )
 			);
+
+			if( $codId = $this->db->insert_id() ){
+				$this->db->insert(
+					'cod_history',
+					array('cod_id' => $codId, 'note' => '== Order coming to oms', 'status' => 0, 'type' => 1, 'created_by' => '2', 'created_at' => date('Y-m-d H:i:s', now()))
+				);
+				log_message('debug','inserted cod history: data '.$codId);
+			}
 
 			$insertedIds[] = $order['id'];
 		}
