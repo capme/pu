@@ -8,9 +8,11 @@
     <td>SKU</td>
     <td>QTY</td>    
   </tr>
+  <?php foreach($arr as $item):?>
   <tr>
-    <td><?php echo $arr['name']; ?></td>
-	<td><?php echo $arr['qty']; ?></td>    
+    <td><?php echo $item['name']; ?></td>
+	<td><?php echo $item['qty']; ?></td>    
   </tr>
+  <?php endforeach;?>
   </table>
 </div>
