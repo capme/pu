@@ -42,7 +42,7 @@
 						<div class="col-md-offset-3 col-md-9">
 							<?php if(!$this->va_input->justView()):?>
 							<button type="submit" class="btn green"><i class="fa fa-check"></i> Submit</button>
-							<button type="button" class="btn default">Cancel</button>
+							<button type="button" class="btn default" onclick="history.back();">Cancel</button>
 							<?php else:?>
 							<button type="button" class="btn green" onclick="history.back();"><i class="fa fa-check"></i> Back</button>
 							<?php endif;?>
