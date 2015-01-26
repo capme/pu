@@ -19,8 +19,8 @@ class Codpaymentconfirmation extends MY_Controller {
 				
 		$this->load->library("va_list");
 		$this->va_list->disableAddPlugin()->setListName("COD Payment Confirmation")
-		->setHeadingTitle(array("Record #", "Client Name","Status","Order Number","Cust. Name","Updated By"))
-		->setHeadingWidth(array(2,2,2,2,2,2));
+		->setHeadingTitle(array("Record #", "Client Name","Status","Order Number","Cust. Name","Phone / Email","Updated By"))
+		->setHeadingWidth(array(2,2,2,2,2,2,2));
 		
 		$this->va_list->setInputFilter(3, array("name" => $this->codpaymentconfirmation_m->filters['order_number']))
 			->setDropdownFilter(1, array("name" => $this->codpaymentconfirmation_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
@@ -74,6 +74,8 @@ class Codpaymentconfirmation extends MY_Controller {
 		$this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value" => @$value['client_code'], "msg" => @$msg['client_code'], "disabled"=>"disabled"));
 		$this->va_input->addInput( array("name" => "ordernumber", "placeholder" => "Order Number", "help" => "Order Number", "label" => "Order Number", "value" => @$value['order_number'], "msg" => @$msg['order_number'], "disabled"=>"disabled") );
 		$this->va_input->addInput( array("name" => "customer_name", "value" => @$value['customer_name'], "msg" => @$msg['customer_name'], "label" => "Customer Name", "help" => "Customer Name", "disabled"=>"disabled"));
+		$this->va_input->addInput( array("name" => "email", "value" => @$value['email'], "msg" => @$msg['email'], "label" => "Email Address", "help" => "Customer Email", "disabled"=>"disabled"));
+		$this->va_input->addInput( array("name" => "phone_number", "value" => @$value['phone_number'], "msg" => @$msg['phone_number'], "label" => "Customer Phone", "help" => "Customer Phone", "disabled"=>"disabled"));
 		$this->va_input->addInput( array("name" => "amount", "value" => number_format(@$value['amount'], 2), "msg" => @$msg['amount'], "label" => "Amount", "help" => "Amount", "disabled"=>"disabled"));
 		$this->va_input->addTextarea( array("name" => "shipping_address","placeholder" => "Shipping Addres","value" => @$value['shipping_address'], "msg" => @$msg['shipping_address'], "label" => "Shipping Address", "help" => "Shipping Address","disabled"=>"disabled"));
 		$this->va_input->addCustomField( array("name" =>"items", "placeholder" => "Items", "label" => "Items", "value" => @$value['items'], "msg" => @$msg['items'], "view"=>"form/customItemsCod"));		

@@ -3,7 +3,7 @@
  *
  * @property Client_m $client_m
  * @property Mageapi $mageapi
- * @property Codconfirmation $codconfirmation_m
+ * @property Codconfirmation_m $codconfirmation_m
  *
  */
 
