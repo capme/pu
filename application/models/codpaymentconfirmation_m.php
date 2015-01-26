@@ -38,8 +38,8 @@ class Codpaymentconfirmation_m extends MY_Model {
 		
 		$statList= array(				
 				1 =>array("Processing","info"),
-				3 =>array("Receive","success"),
-				4 =>array("Cancel","danger")
+				3 =>array("Received","success"),
+				4 =>array("Canceled","danger")
 		);
 		
 		$end = $iDisplayStart + $iDisplayLength;

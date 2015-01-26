@@ -122,7 +122,7 @@ class Codpaymentconfirmation extends MY_Controller {
 		$this->va_input->addHidden( array("name" => "method", "value" => "receive") );
 		$this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
 		$this->va_input->addHidden( array("name" => "client_id", "value" => $value['client_id']) );
-		$this->va_input->addTextarea( array("name" => "receive", "placeholder" => "Note", "help" => "Note", "label" => "Note", "value" => @$value['note'], "msg" => @$msg['note']) );
+		$this->va_input->addTextarea( array("name" => "receive", "placeholder" => "Note", "help" => "Note", "label" => "Note", "value" => '', "msg" => @$msg['note']) );
 		
 		$this->data['script'] = $this->load->view("script/codconfirmation_add", array(), true);
 		$this->load->view('template', $this->data);					
@@ -153,7 +153,7 @@ class Codpaymentconfirmation extends MY_Controller {
 	
 		$this->va_input->addHidden( array("name" => "method", "value" => "cancel") );
 		$this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
-		$this->va_input->addTextarea( array("name" => "cancel", "placeholder" => "Note", "help" => "Note", "label" => "Note", "value" => @$value['note'], "msg" => @$msg['note']) );
+		$this->va_input->addTextarea( array("name" => "cancel", "placeholder" => "Note", "help" => "Note", "label" => "Note", "value" => '', "msg" => @$msg['note']) );
 		
 		$this->data['script'] = $this->load->view("script/codconfirmation_add", array(), true);
 		$this->load->view('template', $this->data);

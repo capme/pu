@@ -92,7 +92,7 @@ class Codconfirmation extends MY_Controller {
 		$this->va_input->addHidden( array("name" => "order_number", "value" => $value['order_number']) );
 		$this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
 		$this->va_input->addSelect( array("name" => "status", "label" => "Status *", "list" => array("0" => "New Request", "1" => "Approve","2"=>"Cancel"), "value" => @$value['status'], "msg" => @$msg['status']));	
-		$this->va_input->addTextarea( array("name" => "comment", "value" => @$value['note'], "msg" => @$msg['note'], "label" => "Comment *", "help" => "Comment") );
+		$this->va_input->addTextarea( array("name" => "comment", "value" => '', "msg" => @$msg['note'], "label" => "Comment *", "help" => "Comment") );
 		$this->va_input->addCustomField( array("name"=>"","value" =>'submit', "view"=>"form/customSubmit"));		
 		$this->va_input->commitForm(1);
 		
@@ -126,7 +126,7 @@ class Codconfirmation extends MY_Controller {
 		$this->va_input->addHidden( array("name" => "method", "value" => "approve") );
 		$this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
 		$this->va_input->addHidden( array("name" => "client_id", "value" => $value['client_id']) );
-		$this->va_input->addTextarea( array("name" => "approve", "placeholder" => "Note", "help" => "Note", "label" => "Note", "value" => @$value['note'], "msg" => @$msg['note']) );
+		$this->va_input->addTextarea( array("name" => "approve", "placeholder" => "Note", "help" => "Note", "label" => "Note", "value" => '', "msg" => @$msg['note']) );
 		
 		$this->data['script'] = $this->load->view("script/codconfirmation_add", array(), true);
 		$this->load->view('template', $this->data);					
@@ -158,7 +158,7 @@ class Codconfirmation extends MY_Controller {
 		$this->va_input->addHidden( array("name" => "method", "value" => "cancel") );
 		$this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
 		$this->va_input->addHidden( array("name" => "client_id", "value" => $value['client_id']) );
-		$this->va_input->addTextarea( array("name" => "cancel", "placeholder" => "Note", "help" => "Note", "label" => "Note", "value" => @$value['note'], "msg" => @$msg['note']) );
+		$this->va_input->addTextarea( array("name" => "cancel", "placeholder" => "Note", "help" => "Note", "label" => "Note", "value" => '', "msg" => @$msg['note']) );
 		
 		$this->data['script'] = $this->load->view("script/codconfirmation_add", array(), true);
 		$this->load->view('template', $this->data);
