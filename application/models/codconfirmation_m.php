@@ -13,7 +13,7 @@ class Codconfirmation_m extends MY_Model {
 		parent::__construct();
 		$this->db = $this->load->database('mysql', TRUE);		
 		$this->relation = array(array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} and {$this->table}.status = 0 "));
-		$this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->table}.customer_name", "{$this->table}.updated_at", "{$this->table}.status", "{$this->table}.updated_by", "{$this->tableClient}.client_code");
+		$this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->table}.customer_name", "{$this->table}.updated_at", "{$this->table}.status", "{$this->table}.updated_by", "{$this->tableClient}.client_code", "{$this->table}.phone_number", "{$this->table}.email");
 		$this->filters = array("order_number"=>"order_number","client_id"=>"client_id");
 	}
 	
@@ -64,6 +64,7 @@ class Codconfirmation_m extends MY_Model {
 					'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
 					$_result->order_number,
 					$_result->customer_name,
+					$_result->phone_number . " / " . $_result->email,	
 					@$opsiarray[$_result->updated_by],
 					$action				
 			);
@@ -190,7 +191,9 @@ class Codconfirmation_m extends MY_Model {
 
 			$this->db->insert(
 				$this->table,
-				array("client_id" => $client['id'], "order_number" => $order['order_number'], "customer_name" => $order['customer_fullname'], "shipping_address" => $order['full_shipping_address'], "amount" => $order['total_amount'], "items" => $order['items'], "updated_by" => "2", "created_at" => date("Y-m-d H:i:s") )
+				array("client_id" => $client['id'], "order_number" => $order['order_number'], "customer_name" => $order['customer_fullname'], 
+						"shipping_address" => $order['full_shipping_address'], "amount" => $order['total_amount'], "items" => $order['items'], "updated_by" => "2", 
+						"created_at" => date("Y-m-d H:i:s"), "email" => $order['email'], "phone_number" => $order['phone_number'] )
 			);
 
 			if( $codId = $this->db->insert_id() ){
