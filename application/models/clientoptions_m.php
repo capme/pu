@@ -1,7 +1,12 @@
 <?php
-class Clientoptions_m extends CI_Model {
-	var $table = "client_options";
-	private $_mysql = null;
+class Clientoptions_m extends MY_Model {
+	var $filterSession = "DB_USER_FILTER";
+	var $db = null;
+	var $table = 'client_options';
+	var $sorts = array(1 => "id");
+	var $pkField = "id";	
+	var $tableClient ='client';
+	var $filters = array("id" => "id");
 	private $_option = array();
 	
 	const CATALOG_CATEGORY = "catalog_category";
@@ -12,8 +17,112 @@ class Clientoptions_m extends CI_Model {
 	const VELA_CLIENT_ID = "vela_client_id";
 	const VELA_3PL_CUSTOMER_NAME = "3pl_customer_name";
 	
-	public function __construct() {
-		$this->_mysql = $this->load->database("mysql", TRUE);
+	function __construct()
+	{
+		parent::__construct();
+		$this->db = $this->load->database('mysql', TRUE);
+		$this->relation = array(array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}"));
+		$this->select = array("{$this->table}.{$this->pkField}", "{$this->tableClient}.client_code", "{$this->table}.client_id");
+		$this->filters = array("client_id"=>"client_id"); 
+		$this->group= array ("client_id");
+	}
+	
+	public function getClientOptions() 
+	{
+		$this->db = $this->load->database('mysql', TRUE); 
+		$iTotalRecords = $this->_doGetTotalRow();
+		$iDisplayLength = intval($this->input->post('iDisplayLength'));
+		$iDisplayLength = $iDisplayLength < 0 ? $iTotalRecords : $iDisplayLength;
+		$iDisplayStart = intval($this->input->post('iDisplayStart'));
+		$sEcho = intval($this->input->post('sEcho'));
+	
+		$records = array();
+		$records["aaData"] = array();
+				
+		$end = $iDisplayStart + $iDisplayLength;
+		$end = $end > $iTotalRecords ? $iTotalRecords : $end;
+	
+		$_row = $this->_doGetRows($iDisplayStart, $iDisplayLength);
+		$no=0;
+		foreach($_row->result() as $_result) {				
+			$records["aaData"][] = array(
+					'<input type="checkbox" name="id[]" value="'.$_result->client_id.'">',
+					$no=$no+1,
+					$_result->client_code,
+					'<a href="'.site_url("clientoptions/view/".$_result->client_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>'
+			);
+		}
+	
+		$records["sEcho"] = $sEcho;
+		$records["iTotalRecords"] = $iTotalRecords;
+		$records["iTotalDisplayRecords"] = $iTotalRecords;
+		return $records;
+	}
+	
+	public function getClientById($id){
+		$this->db = $this->load->database('mysql', TRUE);
+		$this->db->select('*');
+		$this->db->where('id',$id); 
+		return $this->db->get($this->tableClient);		
+	}
+	
+	public function getOptions($id){
+		$this->db = $this->load->database('mysql', TRUE);
+		$this->db->select('*');		
+		$this->db->where('client_id',$id);
+		return $this->db->get($this->table)->result_array();
+	}
+	
+	public function clientOptionSave($data){
+		$this->db = $this->load->database('mysql', TRUE);		
+		$update['option_value']= $data['value'];		
+		$this->db->where($this->pkField, $data['update']);			
+		$this->db->update($this->table,$update);		
+		return $data['update'];	
+	}
+	
+	public function clientOptionUpdate($data){
+		$this->db = $this->load->database('mysql', TRUE);	
+		$update['option_value']=$data['value'];
+		$this->db->where($this->pkField, $data['id']);
+		$this->db->update($this->table, $update);
+		return $data['id'];	
+	}
+	
+	public function clientOptionDelete($data){
+		$this->db = $this->load->database('mysql', TRUE);
+		$this->db->delete($this->table, array('id' => $data['delete'])); 
+		return $data['delete'];
+	}
+	
+	public function newClientOptions($post){
+		$this->db = $this->load->database('mysql', TRUE);
+		$msg = array();
+		
+		if(!empty($post['client'])) {
+			$data['client_id'] = $post['client'];
+		} else {
+		}
+		
+		if(!empty($post['option_name'])) {
+			$data['option_name'] = $post['option_name'];
+		} else {
+		}
+		
+		
+		if(!empty($post['option_value'])) {
+			$data['option_value'] = $post['option_value'];
+		} else {
+		}
+		
+		if(empty($msg)) {				
+			$this->db->insert($this->table, $data);			
+			$clientId = $this->db->insert_id();
+			return $clientId;			
+		}
+		else {
+			return $msg;
+		}
 	}
 	
 	public function save($clientId, $key, $value) {
@@ -21,9 +130,9 @@ class Clientoptions_m extends CI_Model {
 		$data = array("client_id" => $clientId, "option_name" => $key, "option_value" => $value);
 		
 		if(!empty($exists)) {
-			$this->_mysql->update($this->table, $data, array("id" => $exists['id']));
+			$this->db->update($this->table, $data, array("id" => $exists['id']));
 		} else {
-			$this->_mysql->insert($this->table, $data);
+			$this->db->insert($this->table, $data);
 		}
 		
 		return $this;
@@ -34,13 +143,13 @@ class Clientoptions_m extends CI_Model {
 			return $this->_option[$clientId][$key];
 		}
 		
-		$data = $this->_mysql->get_where($this->table, array("client_id" => $clientId, "option_name" => $key))->row_array();
+		$data = $this->db->get_where($this->table, array("client_id" => $clientId, "option_name" => $key))->row_array();
 		return $data;
 	}
 	
 	public function gets($clientId, $keys) {
-		$this->_mysql->where_in("option_name", $keys);
-		$rows = $this->_mysql->get_where($this->table, array("client_id" => $clientId))->result_array();
+		$this->db->where_in("option_name", $keys);
+		$rows = $this->db->get_where($this->table, array("client_id" => $clientId))->result_array();
 		$data = array();
 		
 		foreach($rows as $row) {
@@ -58,7 +167,7 @@ class Clientoptions_m extends CI_Model {
 
 	public function checkOption($clientId, $key) {
 		$data = array();
-		$rows = $this->_mysql->get_where($this->table, array("client_id" => $clientId, "option_name LIKE " => '%'.$key.'%'))->result_array();
+		$rows = $this->db->get_where($this->table, array("client_id" => $clientId, "option_name LIKE " => '%'.$key.'%'))->result_array();
 		foreach ($rows as $row) {
 			$data[] = $row['option_name'];
 		}
@@ -66,7 +175,7 @@ class Clientoptions_m extends CI_Model {
 	}
 	
 	public function getVelaClientIdMap() {
-		$res = $this->_mysql->get_where($this->table, array("option_name" => self::VELA_CLIENT_ID));
+		$res = $this->db->get_where($this->table, array("option_name" => self::VELA_CLIENT_ID));
 		$map = array();
 		
 		foreach($res->result_array() as $row) {
@@ -81,7 +190,7 @@ class Clientoptions_m extends CI_Model {
 			return $this->_option[self::VELA_3PL_CUSTOMER_NAME];
 		}
 		
-		$res = $this->_mysql->get_where($this->table, array("option_name" => self::VELA_3PL_CUSTOMER_NAME));
+		$res = $this->db->get_where($this->table, array("option_name" => self::VELA_3PL_CUSTOMER_NAME));
 		$map = array();
 		
 		foreach($res->result_array() as $row) {

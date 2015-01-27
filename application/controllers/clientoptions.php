@@ -27,7 +27,7 @@ class Clientoptions extends MY_Controller {
 		->setHeadingTitle(array("Record #", "Client Name"))
 		->setHeadingWidth(array(2,3));
 		
-		$this->va_list->setDropdownFilter(1, array("name" => $this->clientoptions_m->filters['id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
+		$this->va_list->setDropdownFilter(1, array("name" => $this->clientoptions_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
 	
 		$this->data['script'] = $this->load->view("script/ClientOptionsList", array("ajaxSource" => site_url("clientoptions/ClientOptionsList")), true);	
 		$this->load->view("template", $this->data);
@@ -81,12 +81,13 @@ class Clientoptions extends MY_Controller {
 		else if($post['method'] == "save") {
 		foreach ($_POST as $f =>$options){	
 		}
-
-		if (count($options) > 3){	
+		
+		if (count($options) > 2){	
 			foreach($options['cek'] as $d=>$h){					
-			$iddelete= $options['cek'][$d];			
+			$iddelete= $options['cek'][$d];				
 			unset($options['option_value'][$iddelete]);	
 			$data = array ('delete'=>$iddelete);
+			
 			$this->clientoptions_m->clientOptionDelete($data);
 			}
 			
@@ -104,6 +105,7 @@ class Clientoptions extends MY_Controller {
 			}			
 			redirect("clientoptions");			
 			}
+			
 		}
 		else if ($post['method'] == "new"){
 			$result = $this->clientoptions_m->newClientOptions( $post );		
