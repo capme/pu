@@ -152,6 +152,7 @@ class Awbprinting_m extends MY_Model {
 			$shipToCity = explode(",", $d['ship_to_city']);
 			$province = array_pop($shipToCity);
 			$city = array_pop($shipToCity);
+			$address .= " , ".array_pop($shipToCity);
 			
 			$sql = "INSERT IGNORE INTO ".$this->table." VALUES";
 			$sql .= " (NULL, '".$this->db->escape_str($d['reference_num'])."', ".$clientId.", '".$this->db->escape_str($d['ship_to_name'])."', '".$this->db->escape_str($d['ship_to_company_name'])."', '".$this->db->escape_str($address)."', '".$this->db->escape_str($city)."', '".$this->db->escape_str($province)."', '".$this->db->escape_str($d['ship_to_zip'])."', '".$this->db->escape_str($d['ship_to_country'])."', '".$this->db->escape_str($d['ship_to_phone'])."', '', '".$this->db->escape_str($d['ship_method'])."', '2', 3, 0.0000, 0, '".$now."', '".$now."')";
