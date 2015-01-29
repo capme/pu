@@ -82,7 +82,7 @@ class Clientoptions extends MY_Controller {
 		foreach ($_POST as $f =>$options){	
 		}
 		
-		if (count($options) > 2){	
+		if (isset($options['cek'])){	
 			foreach($options['cek'] as $d=>$h){					
 			$iddelete= $options['cek'][$d];				
 			unset($options['option_value'][$iddelete]);	
