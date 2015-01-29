@@ -53,6 +53,12 @@ foreach ($list->result() as $hasil => $data):
 
 $client=$opsi[$data->client_id];
 
+$data->company = trim($data->company);
+$company = '';
+if( $data->company && $data->company != '-' ) {
+        $company = '('.$data->company.')';
+}
+
 $addr = explode("\n", $data->address);
 	if(sizeof($addr) > 3) {
 		$data->address = implode(" ", $addr);
@@ -76,7 +82,7 @@ $html = <<<EOF
 		<td width="25%"></td>
 		<td width="25%"></td>
 		<td width="20%"></td>
-		<td width="35%">$data->receiver</td>
+		<td width="35%">$data->receiver $company</td>
 	</tr>
 	<tr>
 		<th width="42%"></th>
