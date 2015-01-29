@@ -50,6 +50,11 @@ $date= date("d m Y", time());
 
 foreach ($list->result() as $hasil => $data):
 $client=$opsi[$data->client_id];
+$data->company = trim($data->company);
+$company = '';
+if( $data->company && $data->company != '-' ) {
+	$company = '('.$data->company.')';
+}
 
 $addr = explode("\n", $data->address);
 	if(sizeof($addr) > 3) {
@@ -80,7 +85,7 @@ $htm =<<<EOF
 	<tr>
 		<td></td>
 		<td></td>
-		<td colspan="2">$data->receiver</td>
+		<td colspan="2">$data->receiver $company</td>
 	</tr>
 	<tr>
 		<th width="25%"></th>
