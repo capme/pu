@@ -136,10 +136,20 @@ class Paymentconfirmation_m extends MY_Model {
 		$this->db->trans_start();
 		$insertedIds = array();
 		foreach($payments as $payment) {
-			$this->db->insert( 
+			$exist = $this->db->get_where($this->table, array("order_number" => $payment['order_number'], "client_id" => $client['id']))->row_array();
+			if(isset($exist['id']) && $exist['id']) {
+				$this->db->where(array("order_number" => $payment['order_number'], "client_id" => $client['id']));
+				$this->db->update(
 					$this->table, 
 					array("client_id" => $client['id'], "order_number" => $payment['order_number'], "origin_bank" => $payment['origin_bank'], "dest_bank" => $payment['dest_bank'], "transaction_method" => $payment['transaction_method'], "name" => $payment['name'], "transaction_date" => $payment['transaction_date'], "amount" => $payment['amount'], "receipt_url" => $payment['receipt_url'], "updated_by" => "2", "created_at" => date("Y-m-d H:i:s") )
-			);
+				);
+			} else {
+				$this->db->insert( 
+					$this->table, 
+					array("client_id" => $client['id'], "order_number" => $payment['order_number'], "origin_bank" => $payment['origin_bank'], "dest_bank" => $payment['dest_bank'], "transaction_method" => $payment['transaction_method'], "name" => $payment['name'], "transaction_date" => $payment['transaction_date'], "amount" => $payment['amount'], "receipt_url" => $payment['receipt_url'], "updated_by" => "2", "created_at" => date("Y-m-d H:i:s") )
+				);
+			}
+			
 			$insertedIds[] = $payment['id'];
 		}
 		$this->db->trans_complete();
