@@ -127,25 +127,25 @@ $htm =<<<EOF
 		<th width="42%"></th>
 		<th width="15%">{$items[0][0]}</th>
 		<th width="5%">{$items[0][1]}</th>
-		<th width="38%">{$items[0][2]}</th>
+		<th width="38%"></th>
 	</tr>
 		<tr>
 		<th width="42%"></th>
 		<th width="15%">{$items[1][0]}</th>
 		<th width="5%">{$items[1][1]}</th>
-		<th width="38%">{$items[1][2]}</th>
+		<th width="38%"></th>
 	</tr>
 	<tr>
 		<th width="42%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $data->ordernr - $client</th>
 		<th width="15%">{$items[2][0]}</th>
 		<th width="5%">{$items[2][1]}</th>
-		<th width="38%">{$items[2][2]}</th>
+		<th width="38%"></th>
 	</tr>
 	<tr>
 		<th width="42%"></th>
 		<th width="15%">{$items[3][0]}</th>
 		<th width="5%">{$items[3][1]}</th>
-		<th width="38%">{$items[3][2]}</th>
+		<th width="38%"></th>
 	</tr>
 	<tr>
 		<th width="42%"></th>
