@@ -76,6 +76,33 @@ if(is_array($itemLists)) {
 }
 
 $number=number_format($data->amount, 0);
+
+if($data->shipping_type == 'S3+'){
+	$chkOneDay = "";
+	$chkReg = "X";
+	$chkCOD = "";
+	$nilaiCOD = "";
+	$nomreCOD = "";
+}elseif($data->shipping_type == 'S1D'){
+	$chkOneDay = "X";
+	$chkReg = "";
+	$chkCOD = "";
+	$nilaiCOD = "";
+	$nomreCOD = "";
+}elseif($data->shipping_type == 'COD'){
+	$chkOneDay = "X";
+	$chkReg = "";
+	$chkCOD = "X";
+	$nilaiCOD = $number;
+	$nomreCOD = $data->ordernr;
+}else{
+	$chkOneDay = "";
+	$chkReg = "";
+	$chkCOD = "";
+	$nilaiCOD = "";
+	$nomreCOD = "";
+}
+
 $html = <<<EOF
 <table border="0" cellspacing="0" cellpadding="0">
 	<tr>
@@ -85,7 +112,19 @@ $html = <<<EOF
 		<td width="35%">$data->receiver $company</td>
 	</tr>
 	<tr>
-		<th width="42%"></th>
+		<th width="42%">
+		<table border="0">
+		<tr>
+			<td></td>
+		</tr>
+		<tr>
+			<td></td>
+		</tr>
+		<tr>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $chkOneDay</td>
+		</tr>
+		</table>
+		</th>
 		<th width="25%"></th>
 		<th height="41" width="33%" colspan="2" style="font-size:8pt;">$data->address</th>
 	</tr>
@@ -96,7 +135,7 @@ $html = <<<EOF
 		<td width="11%">$data->zipcode</td>
 	</tr>
 	<tr>
-		<th width="45%"></th>
+		<th width="45%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $chkReg</th>
 		<th width="26%"></th>
 		<th width="18%">$data->province</th>
 		<th width="11%">$data->country</th>
@@ -114,7 +153,7 @@ $html = <<<EOF
 		<th width="13%"></th>
 	</tr>
 	<tr>
-		<th width="62%"></th>
+		<th width="62%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $chkCOD</th>
 		<th width="15%">&nbsp;&nbsp;&nbsp; {$items[0][0]}</th>
 		<th width="5%">{$items[0][1]}</th>
 		<th width="18%">{$items[0][2]}</th>
@@ -173,13 +212,13 @@ $html = <<<EOF
 	<th width="50%"></th>
 		<th width="15%"></th>
 		<th width="15%"></th>
-		<th width="20%">$number</th>
+		<th width="20%">$nilaiCOD</th>
 	</tr>
 	<tr>
 		<th width="50%"></th>
 		<th width="15%"></th>
 		<th width="15%"></th>
-		<th width="20%"></th>
+		<th width="20%">$nomreCOD</th>
 	</tr>
 </table>
 EOF;

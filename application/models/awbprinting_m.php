@@ -154,8 +154,10 @@ class Awbprinting_m extends MY_Model {
 			$city = array_pop($shipToCity);
 			$address .= " , ".array_pop($shipToCity);
 			
-			$sql = "INSERT IGNORE INTO ".$this->table." VALUES";
+			//$sql = "INSERT IGNORE INTO ".$this->table." VALUES";
+			$sql = "INSERT INTO ".$this->table." VALUES";
 			$sql .= " (NULL, '".$this->db->escape_str($d['reference_num'])."', ".$clientId.", '".$this->db->escape_str($d['ship_to_name'])."', '".$this->db->escape_str($d['ship_to_company_name'])."', '".$this->db->escape_str($address)."', '".$this->db->escape_str($city)."', '".$this->db->escape_str($province)."', '".$this->db->escape_str($d['ship_to_zip'])."', '".$this->db->escape_str($d['ship_to_country'])."', '".$this->db->escape_str($d['ship_to_phone'])."', '', '".$this->db->escape_str($d['ship_method'])."', '2', 3, 0.0000, 0, '".$now."', '".$now."')";
+			$sql .= " ON DUPLICATE KEY UPDATE ordernr='".$this->db->escape_str($d['reference_num'])."', client_id=".$clientId.", receiver='".$this->db->escape_str($d['ship_to_name'])."', company='".$this->db->escape_str($d['ship_to_company_name'])."', address='".$this->db->escape_str($address)."', city='".$this->db->escape_str($city)."', province='".$this->db->escape_str($province)."', zipcode='".$this->db->escape_str($d['ship_to_zip'])."', country='".$this->db->escape_str($d['ship_to_country'])."', phone='".$this->db->escape_str($d['ship_to_phone'])."', shipping_type='".$this->db->escape_str($d['ship_method'])."', package_type='2', updated_at='".$now."'";
 			$this->db->query($sql);
 		}
 		$this->db->trans_complete();
