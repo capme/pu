@@ -7,7 +7,6 @@
  *
  */
 class Awbprinting extends MY_Controller {
-	const TAG = "[AWB CRON]";
 	var $data = array();
 	public function __construct()
 	{
@@ -115,33 +114,10 @@ class Awbprinting extends MY_Controller {
 	
 	public function add()
 	{
-		$this->load->library("threepl_lib");
-		$this->load->model( array("awbprinting_m", "client_m") );
-
-		$param['all'] = "1";
-		$param['order'] = "creation_date";
-		$param['order_dir'] = "desc";
-		
-		$param['creation_date_from'] = '2014-12-31 00:00:00';//date('Y-m-d 00-00-00',strtotime("-1 days"));
-		$param['creation_date_to'] = date('Y-m-d 00-00-00',strtotime("+1 days"));
-
-		$records = (array) $this->threepl_lib->getOrderByDate( $param );
-		$clientOrder = $this->awbprinting_m->addIgnore($records);
-		if(!empty($clientOrder)) {
-			foreach($clientOrder as $cId => $orders) {
-				// get amount order
-				$cmd = PHP_BINDIR."/php " . FCPATH . "index.php cron/awb getAmountOrder/".$cId;
-				if (substr(php_uname(), 0, 7) == "Windows"){
-					pclose(popen("start /B ". $cmd, "r"));
-				} else {
-					exec($cmd . " > /dev/null &");
-				}
-				//echo $cId;
-				$this->_getOrderItems($cId, $orders);
-			}
-		}
-		
-		redirect("/awbprinting");
+		require_once(APPPATH.'controllers/cron/awb.php');
+		$cAwb = new Awb();
+		$cAwb->fetch();
+		redirect("awbprinting");
 		/**
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "Operation";
@@ -322,38 +298,5 @@ class Awbprinting extends MY_Controller {
 		return array(-1 => "", 0 => "New Request", 1 => "Printed");
 	}
 	
-	protected function _getOrderItems($clientId, $orders) {
-		$orders = $this->awbprinting_m->getOrderNoItems($clientId);
-		if(empty($orders)) {
-			return;
-		}
-		if(empty($orders)) {
-			log_message("debug", self::TAG . " order without items found");
-		}
-
-		$this->load->library("mageapi");
-		$client = $this->client_m->getClientById($clientId);
-		if(!$client->num_rows()) {
-			log_message("debug", self::TAG . " Client data (".$clientId.") not found");
-		}
-		
-		$client = $client->row_array();
-		
-		if(!$client['mage_auth'] && !$client['mage_wsdl']) {
-			log_message("debug", self::TAG . " Client doesn't had mage detail");
-		}
-			
-		$config = array(
-				"auth" => $client['mage_auth'],
-				"url" => $client['mage_wsdl']
-		);
-		
-		if( $this->mageapi->initSoap($config) ) {
-			$mageOrders = $this->mageapi->getOrderItems($orders);
-			$this->awbprinting_m->setOrderItems($mageOrders['info']);
-			
-			$this->awbprinting_m->setAsFetched($clientId, $mageOrders['info']);
-		}
-	}
 }
 ?>
