@@ -50,6 +50,11 @@ $date= date("d m Y", time());
 
 foreach ($list->result() as $hasil => $data):
 $client=$opsi[$data->client_id];
+$data->company = trim($data->company);
+$company = '';
+if( $data->company && $data->company != '-' ) {
+	$company = '('.$data->company.')';
+}
 
 $addr = explode("\n", $data->address);
 	if(sizeof($addr) > 3) {
@@ -80,7 +85,7 @@ $htm =<<<EOF
 	<tr>
 		<td></td>
 		<td></td>
-		<td colspan="2">$data->receiver</td>
+		<td colspan="2">$data->receiver $company</td>
 	</tr>
 	<tr>
 		<th width="25%"></th>
@@ -122,25 +127,25 @@ $htm =<<<EOF
 		<th width="42%"></th>
 		<th width="15%">{$items[0][0]}</th>
 		<th width="5%">{$items[0][1]}</th>
-		<th width="38%">{$items[0][2]}</th>
+		<th width="38%"></th>
 	</tr>
 		<tr>
 		<th width="42%"></th>
 		<th width="15%">{$items[1][0]}</th>
 		<th width="5%">{$items[1][1]}</th>
-		<th width="38%">{$items[1][2]}</th>
+		<th width="38%"></th>
 	</tr>
 	<tr>
 		<th width="42%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $data->ordernr - $client</th>
 		<th width="15%">{$items[2][0]}</th>
 		<th width="5%">{$items[2][1]}</th>
-		<th width="38%">{$items[2][2]}</th>
+		<th width="38%"></th>
 	</tr>
 	<tr>
 		<th width="42%"></th>
 		<th width="15%">{$items[3][0]}</th>
 		<th width="5%">{$items[3][1]}</th>
-		<th width="38%">{$items[3][2]}</th>
+		<th width="38%"></th>
 	</tr>
 	<tr>
 		<th width="42%"></th>

@@ -23,7 +23,7 @@ class Awbprinting extends MY_Controller {
 		$this->awbprinting_m->clearCurrentFilter();
 				
 		$this->load->library("va_list");
-		$this->va_list->setListName("AWB Listing")->disableAddPlugin()->setAddLabel("Upload new AWB")
+		$this->va_list->setListName("AWB Listing")->setAddLabel("Fetch Data")
 			->setMassAction(array("0" => "Print JNE Format", "2" => "Print NEX Format"))
 			->setHeadingTitle(array("Record #", "Client Name","Order Number","Status","Name","City"))
 			->setHeadingWidth(array(2, 2,2,3,2,3,4));
@@ -114,6 +114,11 @@ class Awbprinting extends MY_Controller {
 	
 	public function add()
 	{
+		require_once(APPPATH.'controllers/cron/awb.php');
+		$cAwb = new Awb();
+		$cAwb->fetch();
+		redirect("awbprinting");
+		/**
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "Operation";
 		$this->data['breadcrumb'] = array("AWB Printing"=> "awbprinting", "Upload File" => "");
@@ -136,6 +141,8 @@ class Awbprinting extends MY_Controller {
 		$this->va_input->addCustomField( array("name" =>"userfile", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg['userfile'], "label" => "Upload File *", "view"=>"form/upload_csv"));
 		$this->data['script'] = $this->load->view("script/awbprinting_add", array(), true);
 		$this->load->view('template', $this->data);
+		*/
+		
 	}	
 	
 	public function save ()
@@ -290,5 +297,6 @@ class Awbprinting extends MY_Controller {
 	private function getStatus() {
 		return array(-1 => "", 0 => "New Request", 1 => "Printed");
 	}
+	
 }
 ?>

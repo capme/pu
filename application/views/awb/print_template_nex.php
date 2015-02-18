@@ -53,6 +53,12 @@ foreach ($list->result() as $hasil => $data):
 
 $client=$opsi[$data->client_id];
 
+$data->company = trim($data->company);
+$company = '';
+if( $data->company && $data->company != '-' ) {
+        $company = '('.$data->company.')';
+}
+
 $addr = explode("\n", $data->address);
 	if(sizeof($addr) > 3) {
 		$data->address = implode(" ", $addr);
@@ -70,16 +76,55 @@ if(is_array($itemLists)) {
 }
 
 $number=number_format($data->amount, 0);
+
+if($data->shipping_type == 'S3+'){
+	$chkOneDay = "";
+	$chkReg = "X";
+	$chkCOD = "";
+	$nilaiCOD = "";
+	$nomreCOD = "";
+}elseif($data->shipping_type == 'S1D'){
+	$chkOneDay = "X";
+	$chkReg = "";
+	$chkCOD = "";
+	$nilaiCOD = "";
+	$nomreCOD = "";
+}elseif($data->shipping_type == 'COD'){
+	$chkOneDay = "X";
+	$chkReg = "";
+	$chkCOD = "X";
+	$nilaiCOD = $number;
+	$nomreCOD = $data->ordernr;
+}else{
+	$chkOneDay = "";
+	$chkReg = "";
+	$chkCOD = "";
+	$nilaiCOD = "";
+	$nomreCOD = "";
+}
+
 $html = <<<EOF
 <table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td width="25%"></td>
 		<td width="25%"></td>
 		<td width="20%"></td>
-		<td width="35%">$data->receiver</td>
+		<td width="35%">$data->receiver $company</td>
 	</tr>
 	<tr>
-		<th width="42%"></th>
+		<th width="42%">
+		<table border="0">
+		<tr>
+			<td></td>
+		</tr>
+		<tr>
+			<td></td>
+		</tr>
+		<tr>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $chkOneDay</td>
+		</tr>
+		</table>
+		</th>
 		<th width="25%"></th>
 		<th height="41" width="33%" colspan="2" style="font-size:8pt;">$data->address</th>
 	</tr>
@@ -90,7 +135,7 @@ $html = <<<EOF
 		<td width="11%">$data->zipcode</td>
 	</tr>
 	<tr>
-		<th width="45%"></th>
+		<th width="45%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $chkReg</th>
 		<th width="26%"></th>
 		<th width="18%">$data->province</th>
 		<th width="11%">$data->country</th>
@@ -108,29 +153,29 @@ $html = <<<EOF
 		<th width="13%"></th>
 	</tr>
 	<tr>
-		<th width="62%"></th>
+		<th width="62%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $chkCOD</th>
 		<th width="15%">&nbsp;&nbsp;&nbsp; {$items[0][0]}</th>
 		<th width="5%">{$items[0][1]}</th>
-		<th width="18%">{$items[0][2]}</th>
+		<th width="18%"></th>
 	</tr>
 		<tr>
 		<th width="62%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>
 		<th width="15%">&nbsp;&nbsp;&nbsp; {$items[1][0]}</th>
 		<th width="5%">{$items[1][1]}</th>
-		<th width="18%">{$items[1][2]}</th>
+		<th width="18%"></th>
 	</tr>
 	<tr>
 		<th width="62%"></th>
 		<th width="15%">&nbsp;&nbsp;&nbsp; {$items[2][0]}</th>
 		<th width="5%">{$items[2][1]} </th>
-		<th width="18%">{$items[2][2]}</th>
+		<th width="18%"></th>
 	</tr>
 
 	<tr>
 		<th width="62%"><table><tr><td width="40%"></td><td>$data->ordernr - $client</td></tr></table></th>		
 		<th width="15%">&nbsp;&nbsp;&nbsp;{$items[3][0]}</th>
 		<th width="5%">{$items[3][1]}</th>
-		<th width="18%">{$items[3][2]}</th>
+		<th width="18%"></th>
 	</tr>
 	<tr>
 		<th width="62%"></th>
@@ -167,13 +212,13 @@ $html = <<<EOF
 	<th width="50%"></th>
 		<th width="15%"></th>
 		<th width="15%"></th>
-		<th width="20%">$number</th>
+		<th width="20%">$nilaiCOD</th>
 	</tr>
 	<tr>
 		<th width="50%"></th>
 		<th width="15%"></th>
 		<th width="15%"></th>
-		<th width="20%"></th>
+		<th width="20%">$nomreCOD</th>
 	</tr>
 </table>
 EOF;
