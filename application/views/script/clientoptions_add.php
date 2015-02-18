@@ -50,7 +50,7 @@ var FormValidation = function () {
 
                 submitHandler: function (form) {
                     if ($("#name").val() == false && $("#namea").val() == false){
-                    alert("This field is required");
+                    alert("Option name is required");
                     return false;}                   
                     error1.hide();
                     form.submit();
