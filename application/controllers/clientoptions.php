@@ -107,8 +107,8 @@ class Clientoptions extends MY_Controller {
 			}
 			
 		}
-		else if ($post['method'] == "new"){
-			$result = $this->clientoptions_m->newClientOptions( $post );		
+		else if ($post['method'] == "new"){	
+			$result = $this->clientoptions_m->newClientOptions($post);		
 			if(is_numeric($result)) {
 					redirect("clientoptions");
 				} else {
@@ -120,7 +120,8 @@ class Clientoptions extends MY_Controller {
 	}
 	
 	public function add(){
-		$this->data['content'] = "form_v.php";
+		$optionname=$this->clientoptions_m->getOptionName()->result_array();
+        $this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "Add Client Options";
 		$this->data['breadcrumb'] = array("Client Options"=> "clientoptions", "Add Client Options" => "");
 		$this->data['formTitle'] = "Add Client Ooptions";
@@ -139,9 +140,12 @@ class Clientoptions extends MY_Controller {
 		}
 		$this->va_input->addHidden( array("name" => "method", "value" => "new") );	
 		$this->va_input->addSelect( array("name" => "client","label" => "Client *", "list" => $this->client_m->getClientCodeList(), "value" => @$value['client'], "msg" => @$msg['client']) );
-		$this->va_input->addInput( array("name" => "option_name", "placeholder" => "Option Name", "help" => "Option Name", "label" => "Option Name *", "value" => @$value['option_name'], "msg" => @$msg['option_name']) );
-		$this->va_input->addInput( array("name" => "option_value", "placeholder" => "Option Value", "help" => "Option Value", "label" => "Option Value *", "value" => @$value['option_value'], "msg" => @$msg['option_value']) );
+		$this->va_input->addCustomField( array("name" =>"option_name", "placeholder" => "Option Name", "label" => "Option Name *","value"=>@$optionname, "view"=>"form/customOptionName","msg" => @$msg['option_name']));
+        $this->va_input->addInput( array("name" => "option_value", "placeholder" => "Option Value", "help" => "Option Value", "label" => "Option Value *", "value" => @$value['option_value'], "msg" => @$msg['option_value']) );
 		$this->data['script'] = $this->load->view("script/clientoptions_add", array(), true);
 		$this->load->view('template', $this->data);
 	}
+    
+    
+
 }
