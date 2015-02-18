@@ -7,11 +7,13 @@ class Va_input {
 	private $_groupedForm = FALSE;
 	private $_groupList = array();
 	private $_justView = false;
+	private $_strhtml = "";
 	
 	function __construct($data) {
 		$this->_CI =& get_instance();
 		$this->_CI->load->helper("inflector");
 		$this->_group = $data['group'];
+		require_once(APPPATH.'libraries/HtmlTag.class.php');
 	}
 	
 	public function addInput( $conf = array() ) {
@@ -173,6 +175,10 @@ class Va_input {
 		
 		return $this;
 	}
+
+	private function _prepareBasicFieldV2($conf){
+		return $conf;
+	}	
 	
 	private function _prepareBasicField($conf) {
 		$input = array();
@@ -273,6 +279,12 @@ class Va_input {
 					$field['group'] = $this->_group;
 					$html .= $this->_CI->load->view("form/checkbox", $field, true);
 					break;
+				case "custom_input":
+					$field['group'] = $this->_group;
+					$this->_strhtml = HtmlTag::createElement();
+					$this->_strhtml->addElement($this->_renderHtml($field));
+					$html .= $this->_strhtml;
+					break;
 			}
 		}
 		return $html;
@@ -338,6 +350,52 @@ class Va_input {
 	public function setJustView($flag = true) {
 		$this->_justView = $flag;
 		return $this;
+	}
+	
+	public function addCustomInput( $conf = array() ) {
+		if(!is_array($conf)) {
+			return $this;
+		}
+		
+		//$input = $this->_prepareBasicField($conf);
+		$input = $this->_prepareBasicFieldV2($conf);
+		$input["type"] = "custom_input";
+		
+		
+		$this->fields[] = $input;
+		
+		return $this;
+	}
+	
+	private function _renderHtml($data){
+		$localObj = "";
+
+		 foreach($data as $key => $value){
+		 	if(isset($data['sub'])){
+				foreach($data as $key => $value){
+					if($key == "setText"){	
+						$localObj->setText($value);
+					}elseif($key == "objectname"){
+				 		$localObj = HtmlTag::createElement($data['objectname']);
+					}elseif($key != "objectname" and $key != "sub"){
+						$localObj->set($key, $value);
+					}
+				}
+				$localObj->addElement($this->_renderHtml($data['sub']));
+				
+		 	}else{
+				if($key == "setText"){	
+					$localObj->setText($value);
+				}elseif($key == "objectname"){
+			 		$localObj = HtmlTag::createElement($data['objectname']);
+				}elseif($key != "objectname" and $key != "sub"){
+					$localObj->set($key, $value);
+				}
+		 	}
+		 }
+		 
+		return $localObj;
+		
 	}
 }
 ?>
