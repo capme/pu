@@ -279,7 +279,7 @@ class Va_input {
 					$field['group'] = $this->_group;
 					$html .= $this->_CI->load->view("form/checkbox", $field, true);
 					break;
-				case "custom_input":
+				case "custom_form":
 					$field['group'] = $this->_group;
 					$this->_strhtml = HtmlTag::createElement();
 					$tmp = $this->_renderCustomForm($field);
@@ -361,7 +361,7 @@ class Va_input {
 		}
 		
 		$input = $this->_prepareBasicFieldV2($conf);
-		$input["type"] = "custom_input";
+		$input["type"] = "custom_form";
 		
 		
 		$this->fields[] = $input;
