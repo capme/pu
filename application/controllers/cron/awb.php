@@ -57,7 +57,7 @@ class Awb extends CI_Controller {
 		$param['order'] = "creation_date";
 		$param['order_dir'] = "desc";
 		
-		$param['creation_date_from'] = '2014-12-31 00:00:00';//date('Y-m-d 00-00-00',strtotime("-1 days"));
+		$param['creation_date_from'] = date('Y-m-d 00-00-00',strtotime("-1 days"));
 		$param['creation_date_to'] = date('Y-m-d 00-00-00',strtotime("+1 days"));
 		
 		$this->load->library("threepl_lib");

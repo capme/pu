@@ -80,7 +80,7 @@ var $data = array();
 		$this->va_input->addInput( array("name" => "url", "placeholder" => "url", "help" => "URL", "label" => "URL *", "value" => @$value['url'], "msg" => @$msg['url']) );
 		$this->va_input->addInput( array("name" => "sort", "placeholder" => "Sort", "help" => "Sort", "label" => "Sort *", "value" => @$value['sort'], "msg" => @$msg['sort']) );
 		$this->va_input->addSelect( array("name" => "hidden", "label" => "Visibility *", "list" => array("0" => "Visible", "1" => "Hidden"), "value" => @$value['hidden'], "msg" => @$msg['hidden']) );
-		$this->va_input->addSelect( array("name" => "status", "label" => "Group Status *", "list" => array("0" => "Not Active", "1" => "Active"), "value" => @$value['status'], "msg" => @$msg['status']) );
+		$this->va_input->addSelect( array("name" => "status", "label" => "Status *", "list" => array("0" => "Not Active", "1" => "Active"), "value" => @$value['status'], "msg" => @$msg['status']) );
 		$this->data['script'] = $this->load->view("script/modulemanagement_add", array(), true);
 		$this->load->view('template', $this->data);
 	}
@@ -158,7 +158,7 @@ var $data = array();
 		}		
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "Module Management";
-		$this->data['breadcrumb'] = array("Application Management"=> "", "Module Management" => "");
+		$this->data['breadcrumb'] = array("Application Management"=> "", "Module Management" => "modulemanagement");
 		$this->data['formTitle'] = "View Module";
 		
 		$this->load->library("va_input", array("group" => "user"));
@@ -184,7 +184,7 @@ var $data = array();
 		$this->va_input->addInput( array("name" => "url", "placeholder" => "URL", "help" => "URL", "label" => "URL *", "value" => @$value['slug'], "msg" => @$msg['slug']) );
 		$this->va_input->addInput( array("name" => "sort", "placeholder" => "Sort", "help" => "Sort", "label" => "Sort *", "value" => @$value['sort'], "msg" => @$msg['sort']) );
 		$this->va_input->addSelect( array("name" => "hidden", "label" => "Visibility *", "list" => array("0" => "Visible", "1" => "Hidden"), "value" => @$value['hidden'], "msg" => @$msg['hidden']) );
-		$this->va_input->addSelect( array("name" => "status", "label" => "Group Status *", "list" => array("0" => "Not Active", "1" => "Active"), "value" => @$value['status'], "msg" => @$msg['status']) );
+		$this->va_input->addSelect( array("name" => "status", "label" => "Status *", "list" => array("0" => "Not Active", "1" => "Active"), "value" => @$value['status'], "msg" => @$msg['status']) );
 		
 		$this->data['script'] = $this->load->view("script/user_add", array(), true);		
 		// $this->load->view('customers_v', $this->data);

@@ -29,6 +29,11 @@ class Mageapi {
 	const METHOD_VELA_CONFIRMATION_NEW = "vela_confirmation.new";
 	const METHOD_VELA_CONFIRMATION_EXPORTED = "vela_confirmation.exported";
 	const METHOD_VELA_CONFIRMATION_APPROVE = "vela_confirmation.approve";
+	const METHOD_VELA_COD_APPROVE = "vela_cod.verify";
+	const METHOD_VELA_COD_CANCEL ="vela_cod.cancel";
+	const METHOD_VELA_COD_RECEIVED = "vela_cod.payment";
+	const METHOD_VELA_COD_NEW = "vela_cod.new";
+	const METHOD_VELA_COD_EXPORTED = "vela_cod.exported";
 	
 	public function __construct( $config = array() ) {
 		if(!empty($config)) {
@@ -287,7 +292,7 @@ class Mageapi {
 			return false;
 		}
 	}
-	
+
 	public function setConfirmationsAsExported($ids) {
 		try {
 			$calls = array();
@@ -320,6 +325,63 @@ class Mageapi {
 			if(!empty($d['children'])) {
 				$this->_extractCategoryData($d['children'], $catList);
 			}
+		}
+	}
+	
+	public function setOrderToVerified($ordernr, $comment){
+		try {
+			$data = $this->soapClient->call($this->soapSession, self::METHOD_VELA_COD_APPROVE, array('orderincrementId'=>$ordernr, 'comment'=>$comment));
+			return true;
+		} catch( Exception $e ) {
+			log_message('error', "MAGEAPI ==> ". $e->getMessage());
+			return false;
+		}
+	}
+	
+	public function setOrderToCancel($ordernr, $comment){
+		try {
+			$data = $this->soapClient->call($this->soapSession, self::METHOD_VELA_COD_CANCEL, array('orderincrementId'=>$ordernr, 'comment'=>$comment));
+			return true;
+		} catch( Exception $e ) {
+			log_message('error', "MAGEAPI ==> ". $e->getMessage());
+			return false;
+		}
+	}
+	
+	public function setOrderToReceived($ordernr){
+		try {
+			$data = $this->soapClient->call($this->soapSession, self::METHOD_VELA_COD_RECEIVED, array('orderincrementId'=>$ordernr));
+			return true;
+		} catch( Exception $e ) {
+			log_message('error', "MAGEAPI ==> ". $e->getMessage());
+			return false;
+		}
+	}
+
+	public function getUnexportedCodOrder() {
+		$data = array();
+		try {
+			$data = $this->soapClient->call($this->soapSession, self::METHOD_VELA_COD_NEW);
+
+			return $data;
+		} catch( Exception $e ) {
+			log_message('error', "MAGEAPI ==> ". $e->getMessage());
+			return false;
+		}
+	}
+
+	public function setCodOrderAsExported($ids) {
+		try {
+			$calls = array();
+			foreach($ids as $id) {
+				$calls[] = array(self::METHOD_VELA_COD_EXPORTED, $id );
+			}
+
+			$this->soapClient->multiCall($this->soapSession, $calls);
+			return true;
+		} catch( Exception $e ) {
+			log_message('error', "MAGEAPI ==> ". $e->getMessage());
+			return false;
 		}
 	}
 }
