@@ -373,7 +373,7 @@ class Va_input {
 		$arrlocalObj = array();
 
 		 foreach($data as $key => $value){
-			 if(is_array($value)){
+			 if(is_array($value)){ 
 				 foreach($value as $key_sub => $value_sub){
 				 	if(isset($value['sub'])){
 				 		

@@ -20,7 +20,7 @@ class Testform extends MY_Controller {
 		$this->data['breadcrumb'] = array("AWB Printing"=> "", "View AWB Printing" => "");
 		
 		$this->load->library("va_input", array("group" => "returnorder"));
-		$this->va_input->setJustView();
+		//$this->va_input->setJustView();
 		  
 		$arrayObject =  
 			array(			
@@ -129,7 +129,28 @@ class Testform extends MY_Controller {
 					)
 			);
 	
-		
+		$this->va_input->addCustomForm( $arrayObject );
+		$arrayObject = array(
+							0 => array(
+								"objectname" => "span",
+								"id" => "span1",
+								"setText" => "isi text span1"
+							)		
+				);
+		$this->va_input->addCustomForm( $arrayObject );
+		$arrayObject = array(
+							0 => array(
+								"objectname" => "br"
+							)		
+				);
+		$this->va_input->addCustomForm( $arrayObject );
+		$arrayObject = array(
+							0 => array(
+								"objectname" => "span",
+								"id" => "span2",
+								"setText" => "isi text span2"
+							)		
+				);
 		$this->va_input->addCustomForm( $arrayObject );
 				
 		$this->data['script'] = $this->load->view("script/client_add", array(), true);
