@@ -130,7 +130,7 @@ class Testform extends MY_Controller {
 			);
 	
 		
-		$this->va_input->addCustomInput( $arrayObject );
+		$this->va_input->addCustomForm( $arrayObject );
 				
 		$this->data['script'] = $this->load->view("script/client_add", array(), true);
 		$this->load->view('template', $this->data);

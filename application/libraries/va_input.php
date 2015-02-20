@@ -282,7 +282,7 @@ class Va_input {
 				case "custom_input":
 					$field['group'] = $this->_group;
 					$this->_strhtml = HtmlTag::createElement();
-					$tmp = $this->_renderHtml($field);
+					$tmp = $this->_renderCustomForm($field);
 					foreach($tmp as $tmp_key => $tmp_item){
 						$this->_strhtml->addElement($tmp[$tmp_key]);
 					}
@@ -355,7 +355,7 @@ class Va_input {
 		return $this;
 	}
 	
-	public function addCustomInput( $conf = array() ) {
+	public function addCustomForm( $conf = array() ) {
 		if(!is_array($conf)) {
 			return $this;
 		}
@@ -369,7 +369,7 @@ class Va_input {
 		return $this;
 	}
 	
-	private function _renderHtml($data){
+	private function _renderCustomForm($data){
 		$arrlocalObj = array();
 
 		 foreach($data as $key => $value){
@@ -380,7 +380,7 @@ class Va_input {
 						foreach($value as $key_sub => $value_sub){
 							if($key_sub == "sub"){
 							
-								$tmp = $this->_renderHtml($value['sub']);
+								$tmp = $this->_renderCustomForm($value['sub']);
 								foreach($tmp as $tmp_key => $tmp_item){
 									$arrlocalObj[$key]->addElement($tmp[$tmp_key]);
 								}
