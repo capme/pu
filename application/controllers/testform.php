@@ -21,54 +21,117 @@ class Testform extends MY_Controller {
 		
 		$this->load->library("va_input", array("group" => "returnorder"));
 		$this->va_input->setJustView();
-		
 		  
-		$arrayObject =  array(
-			"objectname" => "table",
-			"id" => "table1",
-			"sub" =>
-				array(
-					"objectname" => "tr",
-					"id" => "tr1",
-					"sub" =>
+		$arrayObject =  
+			array(			
+				0 => array(
+						"objectname" => "table",
+						"id" => "table1",
+						"sub" =>
 						array(
-							"objectname" => "td",
-							"id" => "td1",
-							"sub" => 
+							0 =>
 								array(
-									"objectname" => "input",
-									"id" => "input1",
-									"value" => "isi text 1"
+									"objectname" => "tr",
+									"id" => "tr1",
+									"sub" =>
+									array(
+										0 =>
+											array(
+												"objectname" => "td",
+												"id" => "td11",
+												"sub" => 
+												array(
+													0 =>
+														array(
+															"objectname" => "input",
+															"id" => "input11",
+															"value" => "isi text 11"
+														)
+												)
+											),
+										1 =>
+											array(
+												"objectname" => "td",
+												"id" => "td12",
+												"sub" => 
+												array(
+													0 =>
+														array(
+															"objectname" => "input",
+															"id" => "input12",
+															"value" => "isi text 12"
+														)
+												)
+											)
+									)
+								),
+							1 =>
+								array(
+									"objectname" => "tr",
+									"id" => "tr2",
+									"sub" =>
+									array(
+										0 =>
+											array(
+												"objectname" => "td",
+												"id" => "td21",
+												"sub" => 
+												array(
+													0 =>
+														array(
+															"objectname" => "input",
+															"id" => "input21",
+															"value" => "isi text 21"
+														)
+												)
+											),
+											array(
+												"objectname" => "td",
+												"id" => "td22",
+												"sub" => 
+												array(
+													0 =>
+														array(
+															"objectname" => "input",
+															"id" => "input22",
+															"value" => "isi text 22"
+														)
+												)
+											)
+									)
+								),
+							2 =>
+								array(
+									"objectname" => "tr",
+									"id" => "tr2",
+									"sub" =>
+									array(
+										0 =>
+											array(
+												"objectname" => "td",
+												"id" => "td21",
+												"colspan"=> "2",
+												"align"=> "center",
+												"sub" => 
+												array(
+													0 =>
+														array(
+															"objectname" => "input",
+															"id" => "input21",
+															"value" => "isi text 21"
+														)
+												)
+											)
+									)
 								)
-						)
-				)		
-		);
-		 /*
-		$arrayObject = array(
-			"objectname" => "span",
-			"name" => "container1",
-			"id" => "container1",
-			"sub" => array(
-						"objectname" => "input",
-						"id" => "input1",
-						"name" => "input1",
-						"value" => "isi input1"
+								
+						)		
 					)
 			);
-		
-		*/
-		/*
-		$arrayObject = array(
-			"objectname" => "input",
-			"type" => "text",
-			"value" => "isi container1",
-			"name" => "container1",
-			"id" => "container1"
-			);
-			*/
+	
 		
 		$this->va_input->addCustomInput( $arrayObject );
-		
+				
 		$this->data['script'] = $this->load->view("script/client_add", array(), true);
 		$this->load->view('template', $this->data);
 		

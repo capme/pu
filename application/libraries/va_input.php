@@ -282,7 +282,10 @@ class Va_input {
 				case "custom_input":
 					$field['group'] = $this->_group;
 					$this->_strhtml = HtmlTag::createElement();
-					$this->_strhtml->addElement($this->_renderHtml($field));
+					$tmp = $this->_renderHtml($field);
+					foreach($tmp as $tmp_key => $tmp_item){
+						$this->_strhtml->addElement($tmp[$tmp_key]);
+					}
 					$html .= $this->_strhtml;
 					break;
 			}
@@ -357,7 +360,6 @@ class Va_input {
 			return $this;
 		}
 		
-		//$input = $this->_prepareBasicField($conf);
 		$input = $this->_prepareBasicFieldV2($conf);
 		$input["type"] = "custom_input";
 		
@@ -368,34 +370,49 @@ class Va_input {
 	}
 	
 	private function _renderHtml($data){
-		$localObj = "";
+		$arrlocalObj = array();
 
 		 foreach($data as $key => $value){
-		 	if(isset($data['sub'])){
-				foreach($data as $key => $value){
-					if($key == "setText"){	
-						$localObj->setText($value);
-					}elseif($key == "objectname"){
-				 		$localObj = HtmlTag::createElement($data['objectname']);
-					}elseif($key != "objectname" and $key != "sub"){
-						$localObj->set($key, $value);
-					}
-				}
-				$localObj->addElement($this->_renderHtml($data['sub']));
-				
-		 	}else{
-				if($key == "setText"){	
-					$localObj->setText($value);
-				}elseif($key == "objectname"){
-			 		$localObj = HtmlTag::createElement($data['objectname']);
-				}elseif($key != "objectname" and $key != "sub"){
-					$localObj->set($key, $value);
-				}
-		 	}
+			 if(is_array($value)){
+				 foreach($value as $key_sub => $value_sub){
+				 	if(isset($value['sub'])){
+				 		
+						foreach($value as $key_sub => $value_sub){
+							if($key_sub == "sub"){
+							
+								$tmp = $this->_renderHtml($value['sub']);
+								foreach($tmp as $tmp_key => $tmp_item){
+									$arrlocalObj[$key]->addElement($tmp[$tmp_key]);
+								}
+								
+							}else{
+								if($key_sub == "setText"){	
+									$arrlocalObj[$key]->setText($value_sub);
+								}elseif($key_sub == "objectname"){
+									$arrlocalObj[$key] = HtmlTag::createElement($value['objectname']);
+								}elseif($key_sub != "objectname" and $key_sub != "sub"){
+									$arrlocalObj[$key]->set($key_sub, $value_sub);
+								}
+								
+							}							
+						}
+						
+				 	}else{
+						if($key_sub == "setText"){	
+							$arrlocalObj[$key]->setText($value_sub);
+						}elseif($key_sub == "objectname"){
+							$arrlocalObj[$key] = HtmlTag::createElement($value['objectname']);
+						}elseif($key_sub != "objectname" and $key_sub != "sub"){
+							$arrlocalObj[$key]->set($key_sub, $value_sub);
+						}
+				 	}
+				 }
+			 }
 		 }
-		 
-		return $localObj;
+		 		 
+		return $arrlocalObj;
 		
 	}
+
 }
 ?>
