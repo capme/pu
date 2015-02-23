@@ -88,6 +88,7 @@ class Awbprinting_m extends MY_Model {
 	
 	public function setAsPrinted($ids) {
 		$this->db->where_in("ordernr", $ids);
+		$this->db->where("status !=", 3);
 		$this->db->update($this->table, array("status" => 1));
 	}
 	
