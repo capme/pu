@@ -1,4 +1,5 @@
 <script>
+
 var FormValidation = function () {
 
     var apiFormValidate = function() {
@@ -48,7 +49,9 @@ var FormValidation = function () {
                 },
 
                 submitHandler: function (form) {
-                    //success1.show();
+                    if ($("#name").val() == false && $("#namea").val() == false){
+                    alert("Option name is required");
+                    return false;}                   
                     error1.hide();
                     form.submit();
                 }

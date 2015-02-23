@@ -60,29 +60,25 @@ class Clientoptions_m extends MY_Model {
 	}
 	
 	public function getClientById($id){
-		$this->db = $this->load->database('mysql', TRUE);
 		$this->db->select('*');
 		$this->db->where('id',$id); 
 		return $this->db->get($this->tableClient);		
 	}
 	
 	public function getOptions($id){
-		$this->db = $this->load->database('mysql', TRUE);
 		$this->db->select('*');		
 		$this->db->where('client_id',$id);
 		return $this->db->get($this->table)->result_array();
 	}
 	
-	public function clientOptionSave($data){
-		$this->db = $this->load->database('mysql', TRUE);		
+	public function clientOptionSave($data){		
 		$update['option_value']= $data['value'];		
 		$this->db->where($this->pkField, $data['update']);			
 		$this->db->update($this->table,$update);		
 		return $data['update'];	
 	}
 	
-	public function clientOptionUpdate($data){
-		$this->db = $this->load->database('mysql', TRUE);	
+	public function clientOptionUpdate($data){	
 		$update['option_value']=$data['value'];
 		$this->db->where($this->pkField, $data['id']);
 		$this->db->update($this->table, $update);
@@ -90,25 +86,31 @@ class Clientoptions_m extends MY_Model {
 	}
 	
 	public function clientOptionDelete($data){
-		$this->db = $this->load->database('mysql', TRUE);
 		$this->db->delete($this->table, array('id' => $data['delete'])); 
 		return $data['delete'];
 	}
 	
 	public function newClientOptions($post){
-		$this->db = $this->load->database('mysql', TRUE);
-		$msg = array();
-		
+		$msg = array();        
+
 		if(!empty($post['client'])) {
 			$data['client_id'] = $post['client'];
 		} else {
 		}
-		
-		if(!empty($post['option_name'])) {
-			$data['option_name'] = $post['option_name'];
+        
+        if(!empty($post['option_name'])) {
+			if ($post['option_name'][0]== null && $post['option_name'][1] != null){
+		     $data['option_name']=$post['option_name'][1];
+            }
+            else if($post['option_name'][0]!= null && $post['option_name'][1]!= null){
+             $data['option_name']=$post['option_name'][0];
+            }
+            else{
+              $data['option_name']=$post['option_name'][0];  
+            }
+           
 		} else {
 		}
-		
 		
 		if(!empty($post['option_value'])) {
 			$data['option_value'] = $post['option_value'];
@@ -200,6 +202,12 @@ class Clientoptions_m extends MY_Model {
 		
 		return $this->_option[self::VELA_3PL_CUSTOMER_NAME];
 	}
-
+    
+    public function getOptionName(){
+        $this->db->select('option_name');
+        $this->db->from($this->table);
+        $this->db->group_by('option_name');
+       return  $this->db->get();
+    }
 
 }
