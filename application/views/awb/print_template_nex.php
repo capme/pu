@@ -121,7 +121,7 @@ $html = <<<EOF
 			<td></td>
 		</tr>
 		<tr>
-			<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $chkOneDay</td>
+			<td></td>
 		</tr>
 		</table>
 		</th>
@@ -129,7 +129,7 @@ $html = <<<EOF
 		<th height="41" width="33%" colspan="2" style="font-size:8pt;">$data->address</th>
 	</tr>
 	<tr>
-		<th width="42%"></th>
+		<th width="42%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $chkOneDay</th>
 		<td width="25%"></td>
 		<td width="22%">$data->city</td>
 		<td width="11%">$data->zipcode</td>
