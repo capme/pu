@@ -166,11 +166,11 @@ $htm =<<<EOF
 		<th width="35%"></th>
 	</tr>
 	
-		<tr>
+	<tr>
 		<th width="20%"></th>
 		<th width="25%">$date</th>
-		<th width="20%"></th>
-		<th width="35%">X</th>
+		<th width="42%"></th>
+		<th width="13%">X</th>
 	</tr>
 		<tr>
 		<th></th>
