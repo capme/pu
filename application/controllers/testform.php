@@ -9,8 +9,75 @@ class Testform extends MY_Controller {
 	public function index() 
 	{
 		
-		$this->_page();		
+		$this->_page1();		
 
+	}
+	
+	private function _page1(){
+		$this->data['content'] = "form_v.php";
+		$this->data['pageTitle'] = "test ajah form custom";
+		$this->data['formTitle'] = "test ajah form custom";
+		$this->data['breadcrumb'] = array("Test Form"=> "", "View Test Form" => "");
+		$this->load->library("va_input", array("group" => "testform"));
+		$arrayObject =
+			array(
+				0 => array(
+						"objectname" => "div",
+						"id" => "div1",
+						"class" => "panel panel-default",
+						"style" => "width:50%",
+						"sub" =>
+								array(
+									0 => array(
+												"objectname" => "table",
+												"id" => "tab1e1",
+												"class" => "table",
+												"sub" => 
+													array(
+														0 => array(
+																"objectname" => "tr",
+																"id" => "tr11",
+																"sub" => 
+																		array(
+																			0 => array(
+																					"objectname" => "td",
+																					"setText" => "ITEM (SKU)"
+																				),
+																			1 => array(
+																					"objectname" => "td",
+																					"setText" => "QTY"
+																				)
+																		
+																		)
+															),
+														1 => array(
+																"objectname" => "tr",
+																"id" => "tr2",
+																"sub" => 
+																		array(
+																			0 => array(
+																					"objectname" => "td",
+																					"setText" => "data item sku 1"
+																				),
+																			1 => array(
+																					"objectname" => "td",
+																					"setText" => "data qty 1"
+																				)
+																		
+																		)
+															)															
+													)
+											
+										)
+								)
+					)
+			
+			);
+
+		$this->va_input->addCustomForm( $arrayObject );
+		$this->va_input->addSelect( array("name" => "status", "label" => "Status *", "list" => array("1"=>"Processing","3" => "Receive","4"=>"Cancel"), "value" => "isi value", "msg" => "isi msg"));	
+		$this->data['script'] = $this->load->view("script/client_add", array(), true);
+		$this->load->view('template', $this->data);
 	}
 	
 	private function _page(){
@@ -21,6 +88,8 @@ class Testform extends MY_Controller {
 		
 		$this->load->library("va_input", array("group" => "returnorder"));
 		//$this->va_input->setJustView();
+		$this->va_input->setGroupedForm(TRUE)->setGroupName( array(0 => "Group 1", 1 => "Group 2") )->setActiveGroup(0);
+				
 		  
 		$arrayObject =  
 			array(			
@@ -130,6 +199,9 @@ class Testform extends MY_Controller {
 			);
 	
 		$this->va_input->addCustomForm( $arrayObject );
+		
+		$this->va_input->commitForm(0);
+		
 		$arrayObject = array(
 							0 => array(
 								"objectname" => "span",
@@ -152,7 +224,10 @@ class Testform extends MY_Controller {
 							)		
 				);
 		$this->va_input->addCustomForm( $arrayObject );
+		$this->va_input->addSelect( array("name" => "status", "label" => "Status *", "list" => array("1"=>"Processing","3" => "Receive","4"=>"Cancel"), "value" => "isi value", "msg" => "isi msg"));	
 				
+		$this->va_input->commitForm(1);
+		
 		$this->data['script'] = $this->load->view("script/client_add", array(), true);
 		$this->load->view('template', $this->data);
 		
