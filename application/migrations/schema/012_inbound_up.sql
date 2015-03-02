@@ -2,6 +2,7 @@ CREATE TABLE `inb_document` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `doc_number` varchar(30) NOT NULL,
   `client_id` int(11) NOT NULL,
+  `note` varchar(300) NULL,
   `type` tinyint(1) NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
