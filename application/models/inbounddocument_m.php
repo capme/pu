@@ -17,7 +17,12 @@ class Inbounddocument_m extends MY_Model {
         parent::__construct();
 		$this->db = $this->load->database('mysql', TRUE);
 		$this->path = BASEPATH ."../public/inbound/catalog_product"; 
+		$this->relation = array(
+			array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} AND {$this->table}.status = 1")
+		);
+		$this->select = array("{$this->table}.*", "{$this->tableClient}.client_code");
 		$this->filters = array("client_id"=>"client_id");
+		$this->group = array("client_id");
     }
 
 	function getInboundDocumentInfo($client) 
@@ -31,11 +36,6 @@ class Inbounddocument_m extends MY_Model {
 	
 	function getInboundDocumentList() 
 	{
-		$this->relation = array(
-			array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} AND {$this->table}.status = 1")
-		);
-		$this->select = array("{$this->table}.*", "{$this->tableClient}.client_code");
-		
 		$this->db = $this->load->database('mysql', TRUE); 
 		$iTotalRecords = $this->_doGetTotalRow();
 		$iDisplayLength = intval($this->input->post('iDisplayLength'));
