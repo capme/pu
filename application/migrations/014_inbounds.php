@@ -5,18 +5,18 @@ class Migration_Inbounds extends Base_migration {
 		$this->db->trans_start();
 		$this->db->query("DELETE FROM module WHERE slug like 'inbo%'");	
 		$new= array(
-			"inbounds" => array("name" => "Inbound", "slug" => "inbounds", "icon" => "fa-user", "hidden" => 0, "status" => 1, "parent" => 4),
-			);
+			"inbounds" => array("name" => "Inbound", "slug" => "inbounds", "icon" => "fa-user", "hidden" => 0, "status" => 1, "parent" => 74),
+			);            
 		$newIds = array();
-		
+       
 		$parentTags = array();
 		foreach($new as $tag => $module) {
 			$this->db->insert("module", $module);
 			$newIds[] = $parentTags[$tag] = $this->db->insert_id();
 		}
-		
+        
 		$newModule = array(
-                array("name" => "Inbound List", "slug" => "inbounds/inboundsList", "hidden" => 1, "status" => 1, "parent" => $parentTags['inbounds']),
+                array("name" => "Inbound List", "slug" => "inbounds/InboundList", "hidden" => 1, "status" => 1, "parent" => $parentTags['inbounds']),
 				array("name" => "Inbound Download", "slug" => "inbounds/download", "hidden" => 1, "status" => 1, "parent" => $parentTags['inbounds']),
 				array("name" => "Inbound Delete", "slug" => "inbounds/delete", "hidden" => 1, "status" => 1, "parent" => $parentTags['inbounds']),
 				array("name" => "Inbound Add", "slug" => "inbounds/add", "hidden" => 1, "status" => 1, "parent" => $parentTags['inbounds']),
