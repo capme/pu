@@ -15,6 +15,16 @@
 		<!-- BEGIN TOP NAVIGATION MENU -->
 
 		<ul class="nav navbar-nav pull-right">
+            <?php
+            $notif = buildNotification(@$notification,'notification');
+            echo $notif;
+
+//            $inbox = buildNotification(@$inbox,'inbox');
+//            echo $inbox;
+//
+//            $task = buildNotification(@$task,'tasks');
+//            echo $task;
+            ?>
 <?php /*
 			<!-- BEGIN NOTIFICATION DROPDOWN -->
 			<li class="dropdown" id="header_notification_bar">
