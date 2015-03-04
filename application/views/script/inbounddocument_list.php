@@ -65,10 +65,9 @@ var TableAjax = function () {
 						for (var i in records) {
 							ids.push(records[i]["value"]);    
 						}								
-						var courier = action.val();	
+						var command = action.val();	
 						grid.clearAjaxParams();
-							var win = window.open("awbprinting/doPrintAwb?ids="+ids.join(",") +"&courier="+courier, '_blank');
-							win.focus();
+							document.location = "listinbounddoc/revise?ids="+ids.join(",") +"&command="+command;
 					}					
                     grid.addAjaxParam("sAction", "group_action");
 					grid.addAjaxParam("sGroupActionName", action.val());

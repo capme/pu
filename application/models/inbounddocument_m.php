@@ -33,6 +33,13 @@ class Inbounddocument_m extends MY_Model {
 		return $rows;
 	}
 
+	function getInboundDocumentRow($id){
+		$mysql = $this->load->database('mysql', TRUE);
+		$query = $mysql->get_where('inb_document', array('id'=>$id));
+		$row = $query->row_array();		
+		return $row;
+	}
+
 	function getInboundDocumentInfo($client) 
 	{
 		if(!$client) return array();

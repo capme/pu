@@ -44,23 +44,6 @@ class Extractcatalogproduct extends CI_Controller {
 				        $arr_data[$row][$column] = $data_value;
 					}
 					
-					/*
-					print_r($arr_data);
-					$sizeRowX = count($arr_data); //
-					$sizeRowY = count($arr_data[1]);
-					
-					$brandName = $arr_data[8]['C'];
-					
-					echo $brandName;
-					
-					foreach($arr_data as $keyItemX => $itemX){
-						foreach($itemX as $keyItemY => $itemY){
-							echo "(".$keyItemX.",".$keyItemY.") = ".$itemY."<br>";
-						}
-					}
-					 * 
-					 */
-					
 					try {
 						$return = $this->inbounddocument_m->saveToInboundInventory($client_id, $doc_number, $created_by, $arr_data);
 						echo "import inbound document for client ".$client_id."<br>";

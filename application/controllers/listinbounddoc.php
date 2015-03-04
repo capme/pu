@@ -19,6 +19,7 @@ class Listinbounddoc extends MY_Controller {
 				
 		$this->load->library("va_list");
 		$this->va_list->setListName("Inbound Document Listing")->disableAddPlugin()
+			->setMassAction(array("0" => "Revise"))
 			->setHeadingTitle(array("No #", "Client Name","DO Number","Note"))
 			->setHeadingWidth(array(2, 2,2,3,2));
 		$this->va_list->setDropdownFilter(1, array("name" => $this->inbounddocument_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));
@@ -26,6 +27,93 @@ class Listinbounddoc extends MY_Controller {
 		$this->data['script'] = $this->load->view("script/inbounddocument_list", array("ajaxSource" => site_url("listinbounddoc/inboundDocList")), true);	
 		$this->load->view("template", $this->data);
 	}
+	
+	public function save(){
+		if($_SERVER['REQUEST_METHOD'] != "POST") {
+			redirect("listinbounddoc");
+		}		
+		$post = $this->input->post("listinbounddoc");
+		if(empty($post)) {
+			redirect("listinbounddoc");
+		}		
+		
+		if($post['method'] == "revise"){
+			$filename=$this->_uploadFile($post['listid']);
+			if ($filename == null){
+				$this->session->set_flashdata( array("listinbounddocError" => json_encode(array("msg" => $hasil, "data" => $post))) );
+				redirect("listinbounddoc/revise?ids=".$post['listid']."&command=".$post['command']);								 
+			}else{
+				//parse excel file
+				print_r($filename);
+				redirect("listinbounddoc");
+			}
+		}
+	}
+	
+	public function revise(){
+		$this->data['content'] = "form_v.php";
+		$this->data['pageTitle'] = "Inbound Document";
+		$this->data['formTitle'] = "Inbound Document - Revise";
+		$this->data['breadcrumb'] = array("Inbound Document"=> "");
+		$this->load->library("va_input", array("group" => "listinbounddoc"));
+		
+		$flashData = $this->session->flashdata("inboundError");
+		if($flashData !== false) 
+		{
+			$flashData = json_decode($flashData, true);
+			$value = $flashData['data'];
+			$msg = $flashData['msg'];
+		} 
+		else 
+		{
+			$msg = $value = array();
+		}
+		
+	    $this->va_input->addCustomField( array("name" =>"userfile[]", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg['userfile'], "label" => "Upload File *", "view"=>"form/upload_csv"));
+		$this->va_input->addHidden( array("name" => "listid", "value" => $_GET['ids']) );
+		$this->va_input->addHidden( array("name" => "method", "value" => "revise") );		
+		$this->va_input->addHidden( array("name" => "command", "value" => $_GET['command']) );		
+				
+		$this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("layout/inboundDocRevise.php");
+
+		$this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
+		$this->load->view('template', $this->data);
+				
+				
+	}
+	
+	private function _uploadFile($listid) {
+		$arrItemId = explode(",", $listid);
+ 		$return = array('error' => false, 'data' => array());
+		$config['upload_path'] = '../public/inbound/catalog_product/';
+		$config['allowed_types'] = 'xls|xlsx';
+		$config['max_size']	= '2000';
+		
+		$this->load->library('upload', $config);		
+		$files = $_FILES;
+	    $cpt = count($_FILES['userfile']['name']);
+	    for($i=0; $i<$cpt; $i++)
+	    {
+			
+	        $_FILES['userfile']['name']= $files['userfile']['name'][$i];
+	        $_FILES['userfile']['type']= $files['userfile']['type'][$i];
+	        $_FILES['userfile']['tmp_name']= $files['userfile']['tmp_name'][$i];
+	        $_FILES['userfile']['error']= $files['userfile']['error'][$i];
+	        $_FILES['userfile']['size']= $files['userfile']['size'][$i];    
+			
+	
+    	    $config['file_name'] = "temp_".$arrItemId[$i];
+		
+	    	$this->upload->initialize($config);
+			if ( ! $this->upload->do_upload()) {			
+				return null;
+			}	
+	
+	    }
+		return $arrItemId;
+		
+	}
+
 	
 	public function inboundDocList()
 	{
@@ -148,17 +236,10 @@ class Listinbounddoc extends MY_Controller {
 			$lup++;
 		}
 								
-		//$this->va_excel->getActiveSheet()->getStyle('A1')->getFont()->setSize(20);
-		
-		//$this->va_excel->getActiveSheet()->getStyle('A1')->getFont()->setBold(true);
-		
-		//$this->va_excel->getActiveSheet()->mergeCells('A1:D1');
-		
-		//$this->va_excel->getActiveSheet()->getStyle('A1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-		$filename='Form Item Import.xls'; //save our workbook as this file name
-		header('Content-Type: application/vnd.ms-excel'); //mime type
-		header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
-		header('Cache-Control: max-age=0'); //no cache
+		$filename='Form Item Import.xls'; 
+		header('Content-Type: application/vnd.ms-excel'); 
+		header('Content-Disposition: attachment;filename="'.$filename.'"'); 
+		header('Cache-Control: max-age=0');
 		            
 		
 		$objWriter = PHPExcel_IOFactory::createWriter($this->va_excel, 'Excel5');  

@@ -18,6 +18,8 @@ class Migration_Inbound_Document extends Base_migration {
 		$newModule = array(
 				array("name" => "Inbound Document List", "slug" => "listinbounddoc/inboundDocList", "hidden" => 1, "status" => 1, "parent" => $parentTags['listinbounddoc']),
 				array("name" => "Inbound Document Export", "slug" => "listinbounddoc/exportFormItemImport", "hidden" => 1, "status" => 1, "parent" => $parentTags['listinbounddoc']),
+				array("name" => "Inbound Document Revise", "slug" => "listinbounddoc/revise", "hidden" => 1, "status" => 1, "parent" => $parentTags['listinbounddoc']),
+				array("name" => "Inbound Document Save", "slug" => "listinbounddoc/save", "hidden" => 1, "status" => 1, "parent" => $parentTags['listinbounddoc']),
 				
 		);
 		
