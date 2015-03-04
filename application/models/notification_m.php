@@ -73,8 +73,8 @@ class Notification_m extends MY_Model{
     }
 
     /**
-     * @param $from : array['name' => '', 'email' => '']
-     * @param $to : array['name' => '', 'email' => '']
+     * @param $from : array['fullname' => '', 'email' => '']
+     * @param $to : array['fullname' => '', 'email' => '']
      * @param $subject
      * @param $message
      * @return bool

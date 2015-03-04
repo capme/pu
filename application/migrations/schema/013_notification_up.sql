@@ -1,4 +1,4 @@
-CREATE TABLE `notification` (
+CREATE TABLE IF NOT EXISTS `notification` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sender_id` int(11) NOT NULL,
   `url` varchar(50) NOT NULL,
