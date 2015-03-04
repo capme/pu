@@ -24,6 +24,14 @@ class Inbounddocument_m extends MY_Model {
 		$this->filters = array("client_id"=>"client_id");
 		$this->group = array("client_id");
     }
+	
+	function getInboundInvItem($client, $doc){
+		if(!$client) return array();
+		$mysql = $this->load->database('mysql', TRUE);
+		$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc));
+		$rows = $query->result_array();
+		return $rows;
+	}
 
 	function getInboundDocumentInfo($client) 
 	{
@@ -66,7 +74,7 @@ class Inbounddocument_m extends MY_Model {
 					$_result->client_code,
 					$_result->doc_number,
 					$_result->note,
-					'<a href="'.base_url().'inbound/catalog_product/'.$_result->filename.'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> Download Form Import</a>'
+					'<a href="'.base_url().'listinbounddoc/exportFormItemImport?client='.$_result->client_id.'&doc='.$_result->doc_number.'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> Download Form Import</a>'
 					
 			);
 		}
