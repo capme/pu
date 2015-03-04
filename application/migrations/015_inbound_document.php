@@ -1,4 +1,4 @@
-<?php 
+<?php  
 class Migration_Inbound_Document extends Base_migration {
 	public function up() {
 		parent::up();

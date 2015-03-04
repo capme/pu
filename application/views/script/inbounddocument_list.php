@@ -2,8 +2,8 @@
 function viewClick()
 	{
 	document.getElementById('view').disabled = true
-  }
-
+ }
+ 
 var TableAjax = function () {
 
     var initPickers = function () {
