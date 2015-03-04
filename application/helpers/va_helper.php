@@ -62,7 +62,6 @@ function buildNotification($list = array(), $type = ''){
             if($diff->format('%h') > 0) $statDiff = $diff->format('%h hrs');
             if($diff->format('%d') > 0) $statDiff = $diff->format('%d days');
 
-            if($now->diff($created)->format('%h') > 0 )
             $result .= '<li>'.
                 '<a href="'.site_url('notification/read?id='.$val['id'].'&url='.$val['url']).'">'.
                 '<span class="label label-sm label-icon label-warning"><i class="fa fa-bell-o"></i></span>'.
