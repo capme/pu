@@ -1,6 +1,6 @@
 <?php 
 /*
- * cron for extract xls uploaded doc into table inb_inventory_item(client_id) 
+ * cron for extract xls uploaded doc into table inb_inventory_item(client_id)  
  */
 
 class Extractcatalogproduct extends CI_Controller {

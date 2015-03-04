@@ -1,4 +1,4 @@
-<script>
+<script> 
 function viewClick()
 	{
 	document.getElementById('view').disabled = true

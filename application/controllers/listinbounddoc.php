@@ -1,5 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+ 
 class Listinbounddoc extends MY_Controller {
 	var $data = array();
 	public function __construct()

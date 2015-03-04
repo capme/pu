@@ -1,6 +1,6 @@
 <?php
 /*
- * model for handle extracted xls data into table inb_inventory_item(client_id) 
+ * model for handle extracted xls data into table inb_inventory_item(client_id)  
  */
 class Inbounddocument_m extends MY_Model {
 	
