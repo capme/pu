@@ -9,7 +9,7 @@ class Extractcatalogproduct extends CI_Controller {
     {
         parent::__construct();
 		$this->load->library('va_excel');
-		$this->load->model( array("client_m", "inbounddocument_m"));
+		$this->load->model( array("client_m", "inbounddocument_m","notification_m"));
 		$this->load->helper('path');
     }
 	
@@ -65,6 +65,13 @@ class Extractcatalogproduct extends CI_Controller {
 						$return = $this->inbounddocument_m->saveToInboundInventory($client_id, $doc_number, $created_by, $arr_data);
 						echo "import inbound document for client ".$client_id."<br>";
 						$return = $this->inbounddocument_m->updateStatusInboundDocumentList($id);
+                        
+                        $from=$this->session->userdata('pkUserId');	
+                        $to=1;
+                        $url="listinbounddoc";
+                        $message="Inbound document was imported";
+                        $this->notification_m->add($from, $to, $url, $message);
+                        
 					} catch( Exception $e ) {
 						echo $e->getMessage();	
 					}
