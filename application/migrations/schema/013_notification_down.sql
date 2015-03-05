@@ -1,1 +1,1 @@
-drop table if EXISTS notification;
+DELETE FROM notification;
