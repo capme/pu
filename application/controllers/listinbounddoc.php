@@ -40,21 +40,172 @@ class Listinbounddoc extends MY_Controller {
 		if($post['method'] == "revise"){
 			$filename=$this->_uploadFile($post['listid']);
 			if ($filename == null){
-				$this->session->set_flashdata( array("listinbounddocError" => json_encode(array("msg" => $hasil, "data" => $post))) );
+				$this->session->set_flashdata( array("listinbounddocError" => json_encode(array("msg" => "Upload failed.", "data" => $post))) );
 				redirect("listinbounddoc/revise?ids=".$post['listid']."&command=".$post['command']);								 
 			}else{
 				//parse excel file
+				$return = true;
 				foreach($filename as $itemFilename){
 					$datas = $this->inbounddocument_m->getInboundDocumentRow($itemFilename);
 					$doc_number = $datas['doc_number']; 
 					$client_id = $datas['client_id']; 
 					$res = $this->_parseFile($itemFilename, $doc_number, $client_id);
+					$return = $return && $res;
 					unlink($this->inbounddocument_m->path."/tmp_".$itemFilename."_".$doc_number.".xls");
 				}
-				redirect("listinbounddoc");
+				if(!$return){
+					$this->session->set_flashdata( array("listinbounddocError" => json_encode(array("msg" => "Wrong excel file format. Please check your format data.", "data" => $post))) );
+					redirect("listinbounddoc/revise?ids=".$post['listid']."&command=".$post['command']);
+				}else{
+					redirect("listinbounddoc");
+				}
 			}
 		}
 	}
+	
+	private function _validateFile($data){
+		if(strtoupper($data[2]['A']) != strtoupper("SKU Code")){
+			return false;
+		}
+		if(strtoupper($data[2]['B']) != strtoupper("SKU Description")){
+			return false;
+		}
+		if(strtoupper($data[2]['C']) != strtoupper("SKU Configs")){
+			return false;
+		}
+		if(strtoupper($data[2]['D']) != strtoupper("Min")){
+			return false;
+		}
+		if(strtoupper($data[2]['E']) != strtoupper("Max")){
+			return false;
+		}
+		if(strtoupper($data[2]['F']) != strtoupper("CycleCount")){
+			return false;
+		}
+		if(strtoupper($data[2]['G']) != strtoupper("ReorderQty")){
+			return false;
+		}
+		if(strtoupper($data[2]['H']) != strtoupper("InventoryMethod")){
+			return false;
+		}
+		if(strtoupper($data[2]['I']) != strtoupper("Temperature")){
+			return false;
+		}
+		if(strtoupper($data[2]['J']) != strtoupper("Cost")){
+			return false;
+		}
+		if(strtoupper($data[2]['K']) != strtoupper("UPC")){
+			return false;
+		}
+		if(strtoupper($data[2]['L']) != strtoupper("Track Lot")){
+			return false;
+		}
+		if(strtoupper($data[2]['M']) != strtoupper("Track Serial")){
+			return false;
+		}
+		if(strtoupper($data[2]['N']) != strtoupper("Track ExpDate")){
+			return false;
+		}
+		if(strtoupper($data[2]['O']) != strtoupper("Primary Unit of Measure")){
+			return false;
+		}
+		if(strtoupper($data[2]['P']) != strtoupper("Packaging Unit")){
+			return false;
+		}
+		if(strtoupper($data[2]['Q']) != strtoupper("Packing UoM QTY")){
+			return false;
+		}
+		if(strtoupper($data[2]['R']) != strtoupper("Length")){
+			return false;
+		}
+		if(strtoupper($data[2]['S']) != strtoupper("Width")){
+			return false;
+		}
+		if(strtoupper($data[2]['T']) != strtoupper("Height")){
+			return false;
+		}
+		if(strtoupper($data[2]['U']) != strtoupper("Weight")){
+			return false;
+		}
+		if(strtoupper($data[2]['V']) != strtoupper("Qualifiers")){
+			return false;
+		}
+		if(strtoupper($data[2]['W']) != strtoupper("Storage Setup")){
+			return false;
+		}
+		if(strtoupper($data[2]['X']) != strtoupper("Variable Setup")){
+			return false;
+		}
+		if(strtoupper($data[2]['Y']) != strtoupper("NMFC#")){
+			return false;
+		}
+		if(strtoupper($data[2]['Z']) != strtoupper("Lot Number Required")){
+			return false;
+		}
+		if(strtoupper($data[2]['AA']) != strtoupper("Serial Number Required")){
+			return false;
+		}
+		if(strtoupper($data[2]['AB']) != strtoupper("Serial Number Must Be Unique")){
+			return false;
+		}
+		if(strtoupper($data[2]['AC']) != strtoupper("Exp Date Req")){
+			return false;
+		}
+		if(strtoupper($data[2]['AD']) != strtoupper("Enable Cost")){
+			return false;
+		}
+		if(strtoupper($data[2]['AE']) != strtoupper("Cost Required")){
+			return false;
+		}
+		if(strtoupper($data[2]['AF']) != strtoupper("IsHazMat")){
+			return false;
+		}
+		if(strtoupper($data[2]['AG']) != strtoupper("HazMatID")){
+			return false;
+		}
+		if(strtoupper($data[2]['AH']) != strtoupper("HazMatShippingName")){
+			return false;
+		}
+		if(strtoupper($data[2]['AI']) != strtoupper("HazMatHazardClass")){
+			return false;
+		}
+		if(strtoupper($data[2]['AJ']) != strtoupper("HazMatPackingGroup")){
+			return false;
+		}
+		if(strtoupper($data[2]['AK']) != strtoupper("HazMatFlashPoint")){
+			return false;
+		}
+		if(strtoupper($data[2]['AL']) != strtoupper("HazMatLabelCode")){
+			return false;
+		}
+		if(strtoupper($data[2]['AM']) != strtoupper("HazMatFlag")){
+			return false;
+		}
+		if(strtoupper($data[2]['AN']) != strtoupper("ImageURL")){
+			return false;
+		}
+		if(strtoupper($data[2]['AO']) != strtoupper("StorageCountScriptTemplateID")){
+			return false;
+		}
+		if(strtoupper($data[2]['AP']) != strtoupper("StorageRates")){
+			return false;
+		}
+		if(strtoupper($data[2]['AQ']) != strtoupper("OutboundMobileSerializationBehavior")){
+			return false;
+		}
+		if(strtoupper($data[2]['AR']) != strtoupper("Price")){
+			return false;
+		}
+		if(strtoupper($data[2]['AS']) != strtoupper("TotalQty")){
+			return false;
+		}
+		if(strtoupper($data[2]['AT']) != strtoupper("UnitType")){
+			return false;
+		}
+						
+		return true;
+	}
+	
 	
 	private function _parseFile($itemFilename, $doc_number, $client_id){
 		$path_file = $this->inbounddocument_m->path;
@@ -70,12 +221,16 @@ class Listinbounddoc extends MY_Controller {
 					
 	        $arr_data[$row][$column] = $data_value;
 		}
-					
+		if(!$this->_validateFile($arr_data)){
+			return false;
+		}				
 					try {
 						$return = $this->inbounddocument_m->updateToInboundInventory($client_id, $doc_number, $arr_data);
 					} catch( Exception $e ) {
 						echo $e->getMessage();	
 					}
+					
+					return true;
 		
 	}
 	
@@ -86,7 +241,7 @@ class Listinbounddoc extends MY_Controller {
 		$this->data['breadcrumb'] = array("Inbound Document"=> "");
 		$this->load->library("va_input", array("group" => "listinbounddoc"));
 		
-		$flashData = $this->session->flashdata("inboundError");
+		$flashData = $this->session->flashdata("listinbounddocError");
 		if($flashData !== false) 
 		{
 			$flashData = json_decode($flashData, true);
@@ -98,7 +253,7 @@ class Listinbounddoc extends MY_Controller {
 			$msg = $value = array();
 		}
 		
-	    $this->va_input->addCustomField( array("name" =>"userfile[]", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg['userfile'], "label" => "Upload File *", "view"=>"form/upload_csv"));
+	    $this->va_input->addCustomField( array("name" =>"userfile[]", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg, "label" => "Upload File *", "view"=>"form/upload_csv"));
 		$this->va_input->addHidden( array("name" => "listid", "value" => $_GET['ids']) );
 		$this->va_input->addHidden( array("name" => "method", "value" => "revise") );		
 		$this->va_input->addHidden( array("name" => "command", "value" => $_GET['command']) );		
@@ -168,55 +323,55 @@ class Listinbounddoc extends MY_Controller {
 		
 		$this->va_excel->getActiveSheet()->setTitle('Standard Import - Tab1');
 		
-		$this->va_excel->getActiveSheet()->setCellValue('A1', 'SKU Code');
-		$this->va_excel->getActiveSheet()->setCellValue('B1', 'SKU Description');
-		$this->va_excel->getActiveSheet()->setCellValue('C1', 'SKU Configs');
-		$this->va_excel->getActiveSheet()->setCellValue('D1', 'Min');
-		$this->va_excel->getActiveSheet()->setCellValue('E1', 'Max');
-		$this->va_excel->getActiveSheet()->setCellValue('F1', 'CycleCount');
-		$this->va_excel->getActiveSheet()->setCellValue('G1', 'ReorderQty');
-		$this->va_excel->getActiveSheet()->setCellValue('H1', 'InventoryMethod');
-		$this->va_excel->getActiveSheet()->setCellValue('I1', 'Temperature');
-		$this->va_excel->getActiveSheet()->setCellValue('J1', 'Cost');
-		$this->va_excel->getActiveSheet()->setCellValue('K1', 'UPC');
-		$this->va_excel->getActiveSheet()->setCellValue('L1', 'Track Lot');
-		$this->va_excel->getActiveSheet()->setCellValue('M1', 'Track Serial');
-		$this->va_excel->getActiveSheet()->setCellValue('N1', 'Track ExpDate');
-		$this->va_excel->getActiveSheet()->setCellValue('O1', 'Primary Unit of Measure');
-		$this->va_excel->getActiveSheet()->setCellValue('P1', 'Packaging Unit');
-		$this->va_excel->getActiveSheet()->setCellValue('Q1', 'Packing UoM QTY');
-		$this->va_excel->getActiveSheet()->setCellValue('R1', 'Length');
-		$this->va_excel->getActiveSheet()->setCellValue('S1', 'Width');
-		$this->va_excel->getActiveSheet()->setCellValue('T1', 'Height');
-		$this->va_excel->getActiveSheet()->setCellValue('U1', 'Weight');
-		$this->va_excel->getActiveSheet()->setCellValue('V1', 'Qualifiers');
-		$this->va_excel->getActiveSheet()->setCellValue('W1', 'Storage Setup');
-		$this->va_excel->getActiveSheet()->setCellValue('X1', 'Variable Setup');
-		$this->va_excel->getActiveSheet()->setCellValue('Y1', 'NMFC#');
-		$this->va_excel->getActiveSheet()->setCellValue('Z1', 'Lot Number Required');
-		$this->va_excel->getActiveSheet()->setCellValue('AA1', 'Serial Number Required');
-		$this->va_excel->getActiveSheet()->setCellValue('AB1', 'Serial Number Must Be Unique');
-		$this->va_excel->getActiveSheet()->setCellValue('AC1', 'Exp Date Req');
-		$this->va_excel->getActiveSheet()->setCellValue('AD1', 'Enable Cost');
-		$this->va_excel->getActiveSheet()->setCellValue('AE1', 'Cost Required');
-		$this->va_excel->getActiveSheet()->setCellValue('AF1', 'IsHazMat');
-		$this->va_excel->getActiveSheet()->setCellValue('AG1', 'HazMatID');
-		$this->va_excel->getActiveSheet()->setCellValue('AH1', 'HazMatShippingName');
-		$this->va_excel->getActiveSheet()->setCellValue('AI1', 'HazMatHazardClass');
-		$this->va_excel->getActiveSheet()->setCellValue('AJ1', 'HazMatPackingGroup');
-		$this->va_excel->getActiveSheet()->setCellValue('AK1', 'HazMatFlashPoint');
-		$this->va_excel->getActiveSheet()->setCellValue('AL1', 'HazMatLabelCode');
-		$this->va_excel->getActiveSheet()->setCellValue('AM1', 'HazMatFlag');
-		$this->va_excel->getActiveSheet()->setCellValue('AN1', 'ImageURL');
-		$this->va_excel->getActiveSheet()->setCellValue('AO1', 'StorageCountScriptTemplateID');
-		$this->va_excel->getActiveSheet()->setCellValue('AP1', 'StorageRates');
-		$this->va_excel->getActiveSheet()->setCellValue('AQ1', 'OutboundMobileSerializationBehavior');
-		$this->va_excel->getActiveSheet()->setCellValue('AR1', 'Price');
-		$this->va_excel->getActiveSheet()->setCellValue('AS1', 'TotalQty');
-		$this->va_excel->getActiveSheet()->setCellValue('AT1', 'UnitType');
+		$this->va_excel->getActiveSheet()->setCellValue('A2', 'SKU Code');
+		$this->va_excel->getActiveSheet()->setCellValue('B2', 'SKU Description');
+		$this->va_excel->getActiveSheet()->setCellValue('C2', 'SKU Configs');
+		$this->va_excel->getActiveSheet()->setCellValue('D2', 'Min');
+		$this->va_excel->getActiveSheet()->setCellValue('E2', 'Max');
+		$this->va_excel->getActiveSheet()->setCellValue('F2', 'CycleCount');
+		$this->va_excel->getActiveSheet()->setCellValue('G2', 'ReorderQty');
+		$this->va_excel->getActiveSheet()->setCellValue('H2', 'InventoryMethod');
+		$this->va_excel->getActiveSheet()->setCellValue('I2', 'Temperature');
+		$this->va_excel->getActiveSheet()->setCellValue('J2', 'Cost');
+		$this->va_excel->getActiveSheet()->setCellValue('K2', 'UPC');
+		$this->va_excel->getActiveSheet()->setCellValue('L2', 'Track Lot');
+		$this->va_excel->getActiveSheet()->setCellValue('M2', 'Track Serial');
+		$this->va_excel->getActiveSheet()->setCellValue('N2', 'Track ExpDate');
+		$this->va_excel->getActiveSheet()->setCellValue('O2', 'Primary Unit of Measure');
+		$this->va_excel->getActiveSheet()->setCellValue('P2', 'Packaging Unit');
+		$this->va_excel->getActiveSheet()->setCellValue('Q2', 'Packing UoM QTY');
+		$this->va_excel->getActiveSheet()->setCellValue('R2', 'Length');
+		$this->va_excel->getActiveSheet()->setCellValue('S2', 'Width');
+		$this->va_excel->getActiveSheet()->setCellValue('T2', 'Height');
+		$this->va_excel->getActiveSheet()->setCellValue('U2', 'Weight');
+		$this->va_excel->getActiveSheet()->setCellValue('V2', 'Qualifiers');
+		$this->va_excel->getActiveSheet()->setCellValue('W2', 'Storage Setup');
+		$this->va_excel->getActiveSheet()->setCellValue('X2', 'Variable Setup');
+		$this->va_excel->getActiveSheet()->setCellValue('Y2', 'NMFC#');
+		$this->va_excel->getActiveSheet()->setCellValue('Z2', 'Lot Number Required');
+		$this->va_excel->getActiveSheet()->setCellValue('AA2', 'Serial Number Required');
+		$this->va_excel->getActiveSheet()->setCellValue('AB2', 'Serial Number Must Be Unique');
+		$this->va_excel->getActiveSheet()->setCellValue('AC2', 'Exp Date Req');
+		$this->va_excel->getActiveSheet()->setCellValue('AD2', 'Enable Cost');
+		$this->va_excel->getActiveSheet()->setCellValue('AE2', 'Cost Required');
+		$this->va_excel->getActiveSheet()->setCellValue('AF2', 'IsHazMat');
+		$this->va_excel->getActiveSheet()->setCellValue('AG2', 'HazMatID');
+		$this->va_excel->getActiveSheet()->setCellValue('AH2', 'HazMatShippingName');
+		$this->va_excel->getActiveSheet()->setCellValue('AI2', 'HazMatHazardClass');
+		$this->va_excel->getActiveSheet()->setCellValue('AJ2', 'HazMatPackingGroup');
+		$this->va_excel->getActiveSheet()->setCellValue('AK2', 'HazMatFlashPoint');
+		$this->va_excel->getActiveSheet()->setCellValue('AL2', 'HazMatLabelCode');
+		$this->va_excel->getActiveSheet()->setCellValue('AM2', 'HazMatFlag');
+		$this->va_excel->getActiveSheet()->setCellValue('AN2', 'ImageURL');
+		$this->va_excel->getActiveSheet()->setCellValue('AO2', 'StorageCountScriptTemplateID');
+		$this->va_excel->getActiveSheet()->setCellValue('AP2', 'StorageRates');
+		$this->va_excel->getActiveSheet()->setCellValue('AQ2', 'OutboundMobileSerializationBehavior');
+		$this->va_excel->getActiveSheet()->setCellValue('AR2', 'Price');
+		$this->va_excel->getActiveSheet()->setCellValue('AS2', 'TotalQty');
+		$this->va_excel->getActiveSheet()->setCellValue('AT2', 'UnitType');
 		
 		$result = $this->inbounddocument_m->getInboundInvItem($client, $doc);
-		$lup = 2;
+		$lup = 3;
 		
 		foreach($result as $item){
 			$this->va_excel->getActiveSheet()->setCellValue('A'.$lup, $item['sku_simple']);

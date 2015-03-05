@@ -22,7 +22,7 @@ class Inbounddocument_m extends MY_Model {
 		);
 		$this->select = array("{$this->table}.*", "{$this->tableClient}.client_code");
 		$this->filters = array("client_id"=>"client_id");
-		$this->group = array("client_id");
+		//$this->group = array("client_id");
     }
 	
 	function getInboundInvItem($client, $doc){
@@ -106,7 +106,7 @@ class Inbounddocument_m extends MY_Model {
 		//delete record that related to the doc number
 		$this->db->where('doc_number', $doc_number);
 		$this->db->delete($this->tableInv."_".$client);
-		for($x=2;$x<=$sizeRowX;$x++){
+		for($x=3;$x<=$sizeRowX;$x++){
 			//------------------get the field items--------------------------
 			//sku code
 			if(isset($arr_data[$x]['A'])){
