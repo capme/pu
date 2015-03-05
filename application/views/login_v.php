@@ -15,7 +15,7 @@ Purchase: http://themeforest.net/item/metronic-responsive-admin-dashboard-templa
 <!-- BEGIN HEAD -->
 <head>
 <meta charset="utf-8"/>
-<title>Dart | Admin Dashboard</title>
+<title>BAYMAX | Admin Dashboard</title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <meta content="" name="description"/>
@@ -46,7 +46,8 @@ Purchase: http://themeforest.net/item/metronic-responsive-admin-dashboard-templa
 <!-- BEGIN LOGO -->
 <div class="logo">
 	<a href="http://dart.velaasia.com">
-		<img width="150" src="/assets/img/logo-big.png" alt=""/>
+		<img width="150" src="/assets/img/logo-white.png" alt=""/>
+		<img height="70" src="/assets/img/baymax.png" alt=""/>
 	</a>
 </div>
 <!-- END LOGO -->

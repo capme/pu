@@ -749,7 +749,7 @@ Extra Small Devices Only
   	/* Header logo */
 	.header.navbar .navbar-brand {
   		margin-left: 0px !important;
-  		width: 110px;
+  		width: 60%;
 	}
 
 	/***
