@@ -235,6 +235,9 @@ class Listinbounddoc extends MY_Controller {
 	}
 	
 	public function revise(){
+		if($_GET['ids'] == ""){
+			redirect("listinbounddoc");	
+		}
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "Inbound Document";
 		$this->data['formTitle'] = "Inbound Document - Revise";
