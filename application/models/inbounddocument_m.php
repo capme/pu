@@ -81,7 +81,7 @@ class Inbounddocument_m extends MY_Model {
 					$_result->client_code,
 					$_result->doc_number,
 					$_result->note,
-					'<a href="'.base_url().'listinbounddoc/exportFormItemImport?client='.$_result->client_id.'&doc='.$_result->doc_number.'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> Download Form Import</a>'
+					'<a href="'.base_url().'listinbounddoc/exportFormItemImport?client='.$_result->client_id.'&doc='.$_result->doc_number.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Download Form Import</a>'
 					
 			);
 		}
