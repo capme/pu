@@ -97,6 +97,369 @@ class Inbounddocument_m extends MY_Model {
 		$this->db->update('inb_document',$data);
 	}
 	
+	function updateToInboundInventory($client, $doc_number, $arr_data){
+		$sizeRowX = count($arr_data); 
+		$sizeRowY = count($arr_data[1]);
+		
+		
+		$this->db->trans_start();
+		//delete record that related to the doc number
+		$this->db->where('doc_number', $doc_number);
+		$this->db->delete($this->tableInv."_".$client);
+		for($x=2;$x<=$sizeRowX;$x++){
+			//------------------get the field items--------------------------
+			//sku code
+			if(isset($arr_data[$x]['A'])){
+				$skuSimple = $arr_data[$x]['A']; 				
+			}else{
+				$skuSimple = "";
+			}
+			//sku description
+			if(isset($arr_data[$x]['B'])){
+				$skuDescription = $arr_data[$x]['B']; 				
+			}else{
+				$skuDescription = "";
+			}
+						
+			//sku configs
+			if(isset($arr_data[$x]['C'])){
+				$skuConfig = $arr_data[$x]['C']; 				
+			}else{
+				$skuConfig = "";
+			}
+						
+			//min
+			if(isset($arr_data[$x]['D'])){
+				$min = $arr_data[$x]['D']; 				
+			}else{
+				$min = "";
+			}
+						
+			//max
+			if(isset($arr_data[$x]['E'])){
+				$max = $arr_data[$x]['E']; 				
+			}else{
+				$max = 0;
+			}
+						
+			//CycleCount
+			if(isset($arr_data[$x]['F'])){
+				$cycleCount = $arr_data[$x]['F']; 				
+			}else{
+				$cycleCount = 0;
+			}
+						
+			//reorderqty
+			if(isset($arr_data[$x]['G'])){
+				$reorderQty = $arr_data[$x]['G']; 				
+			}else{
+				$reorderQty = 0;
+			}
+						
+			//inventory method
+			if(isset($arr_data[$x]['H'])){
+				$inventoryMethod = $arr_data[$x]['H']; 				
+			}else{
+				$inventoryMethod = "";
+			}
+						
+			//temperature
+			if(isset($arr_data[$x]['I'])){
+				$temperature = $arr_data[$x]['I']; 				
+			}else{
+				$temperature = "";
+			}
+						
+			//cost
+			if(isset($arr_data[$x]['J'])){
+				$cost = $arr_data[$x]['J']; 				
+			}else{
+				$cost = "";
+			}
+						
+			//upc
+			if(isset($arr_data[$x]['K'])){
+				$upc = $arr_data[$x]['K']; 				
+			}else{
+				$upc = "";
+			}
+						
+			//track lot
+			if(isset($arr_data[$x]['L'])){
+				$trackLot = $arr_data[$x]['L']; 				
+			}else{
+				$trackLot = "";
+			}
+						
+			//track serial
+			if(isset($arr_data[$x]['M'])){
+				$trackSerial = $arr_data[$x]['M']; 				
+			}else{
+				$trackSerial = "";
+			}
+						
+			//track expdate
+			if(isset($arr_data[$x]['N'])){
+				$trackExpdate = $arr_data[$x]['N']; 				
+			}else{
+				$trackExpdate = "";
+			}
+						
+			//primary unit of measure
+			if(isset($arr_data[$x]['O'])){
+				$primaryUnitOfMeasure = $arr_data[$x]['O']; 				
+			}else{
+				$primaryUnitOfMeasure = "";
+			}
+						
+			//packaging unit
+			if(isset($arr_data[$x]['P'])){
+				$packagingUnit = $arr_data[$x]['P']; 				
+			}else{
+				$packagingUnit = "";
+			}
+						
+			//packing uom qty
+			if(isset($arr_data[$x]['Q'])){
+				$packingUomQty = $arr_data[$x]['Q']; 				
+			}else{
+				$packingUomQty = "";
+			}
+						
+			//length
+			if(isset($arr_data[$x]['R'])){
+				$length = $arr_data[$x]['R']; 				
+			}else{
+				$length = "";
+			}
+						
+			//width
+			if(isset($arr_data[$x]['S'])){
+				$width = $arr_data[$x]['S']; 				
+			}else{
+				$width = "";
+			}
+						
+			//height
+			if(isset($arr_data[$x]['T'])){
+				$height = $arr_data[$x]['T']; 				
+			}else{
+				$height = "";
+			}
+						
+			//weight
+			if(isset($arr_data[$x]['U'])){
+				$weight = $arr_data[$x]['U']; 				
+			}else{
+				$weight = "";
+			}
+						
+			//qualifiers
+			if(isset($arr_data[$x]['V'])){
+				$qualifiers = $arr_data[$x]['V']; 				
+			}else{
+				$qualifiers = "";
+			}
+						
+			//storage setup
+			if(isset($arr_data[$x]['W'])){
+				$storageSetup = $arr_data[$x]['W']; 				
+			}else{
+				$storageSetup = "";
+			}
+						
+			//variable setup
+			if(isset($arr_data[$x]['X'])){
+				$variableSetup = $arr_data[$x]['X']; 				
+			}else{
+				$variableSetup = "";
+			}
+						
+			//nmfc
+			if(isset($arr_data[$x]['Y'])){
+				$nmfc = $arr_data[$x]['Y']; 				
+			}else{
+				$nmfc = "";
+			}
+						
+			//lot number required
+			if(isset($arr_data[$x]['Z'])){
+				$lotNumberReq = $arr_data[$x]['Z']; 				
+			}else{
+				$lotNumberReq = "";
+			}
+						
+			//serial number required
+			if(isset($arr_data[$x]['AA'])){
+				$serialNumberReq = $arr_data[$x]['AA']; 				
+			}else{
+				$serialNumberReq = "";
+			}
+						
+			//serial number must be unique
+			if(isset($arr_data[$x]['AB'])){
+				$serialNumberMustBeUnique = $arr_data[$x]['AB']; 				
+			}else{
+				$serialNumberMustBeUnique = "";
+			}
+						
+			//exp date req
+			if(isset($arr_data[$x]['AC'])){
+				$expDateReq = $arr_data[$x]['AC']; 				
+			}else{
+				$expDateReq = "";
+			}
+						
+			//enable cost
+			if(isset($arr_data[$x]['AD'])){
+				$enableCost = $arr_data[$x]['AD']; 				
+			}else{
+				$enableCost = "";
+			}
+						
+			//cost required
+			if(isset($arr_data[$x]['AE'])){
+				$costRequired = $arr_data[$x]['AE']; 				
+			}else{
+				$costRequired = "";
+			}
+						
+			//is haz mat
+			if(isset($arr_data[$x]['AF'])){
+				$isHazMat = $arr_data[$x]['AF']; 				
+			}else{
+				$isHazMat = "";
+			}
+						
+			//haz mat id
+			if(isset($arr_data[$x]['AG'])){
+				$hazMatId = $arr_data[$x]['AG']; 				
+			}else{
+				$hazMatId = "";
+			}
+						
+			//hazmatshippingname
+			if(isset($arr_data[$x]['AH'])){
+				$hazMatShippingName = $arr_data[$x]['AH']; 				
+			}else{
+				$hazMatShippingName = "";
+			}
+						
+			//HazMatHazardClass
+			if(isset($arr_data[$x]['AI'])){
+				$hazMatHazardClass = $arr_data[$x]['AI']; 				
+			}else{
+				$hazMatHazardClass = "";
+			}
+						
+			//HazMatPackingGroup
+			if(isset($arr_data[$x]['AJ'])){
+				$hazMatPackingGroup = $arr_data[$x]['AJ']; 				
+			}else{
+				$hazMatPackingGroup = "";
+			}
+						
+			//HazMatFlashPoint
+			if(isset($arr_data[$x]['AK'])){
+				$hazMatFlashPoint = $arr_data[$x]['AK']; 				
+			}else{
+				$hazMatFlashPoint = "";
+			}
+						
+			//HazMatLabelCode
+			if(isset($arr_data[$x]['AL'])){
+				$hazMatLabelCode = $arr_data[$x]['AL']; 				
+			}else{
+				$hazMatLabelCode = "";
+			}
+						
+			//HazMatFlag
+			if(isset($arr_data[$x]['AM'])){
+				$hazMatFlag = $arr_data[$x]['AM']; 				
+			}else{
+				$hazMatFlag = "";
+			}
+						
+			//ImageURL
+			if(isset($arr_data[$x]['AN'])){
+				$imageUrl = $arr_data[$x]['AN']; 				
+			}else{
+				$imageUrl = "";
+			}
+						
+			//StorageCountScriptTemplateID
+			if(isset($arr_data[$x]['AO'])){
+				$storageCountScriptTemplateId = $arr_data[$x]['AO']; 				
+			}else{
+				$storageCountScriptTemplateId = "";
+			}
+						
+			//StorageRates
+			if(isset($arr_data[$x]['AP'])){
+				$storageRates = $arr_data[$x]['AP']; 				
+			}else{
+				$storageRates = "";
+			}
+						
+			//OutboundMobileSerializationBehavior
+			if(isset($arr_data[$x]['AQ'])){
+				$outboundMobileSerializationBehavior = $arr_data[$x]['AQ']; 				
+			}else{
+				$outboundMobileSerializationBehavior = "";
+			}
+						
+			//Price
+			if(isset($arr_data[$x]['AR'])){
+				$price = $arr_data[$x]['AR']; 				
+			}else{
+				$price = "";
+			}
+						
+			//TotalQty
+			if(isset($arr_data[$x]['AS'])){
+				$totalQty = $arr_data[$x]['AS']; 				
+			}else{
+				$totalQty = "";
+			}
+						
+			//UnitType
+			if(isset($arr_data[$x]['AT'])){
+				$unitType = $arr_data[$x]['AT']; 				
+			}else{
+				$unitType = "";
+			}
+			
+			//updated
+			$updatedBy = $user=$this->session->userdata('pkUserId');
+						
+			if($price <> ""){
+				
+			//update the record
+			$sql = "INSERT INTO ".$this->tableInv."_".$client." (doc_number, sku_config, sku_simple, sku_description, min, max, cycle_count,";
+			$sql .= " reorder_qty, inventor_method, temperature, cost, upc, track_lot, track_serial, track_expdate, primary_unit_of_measure,";
+			$sql .= " packaging_unit, packaging_uom_qty, length, width, height, weiight, qualifiers, storage_setup, variable_setup, ";
+			$sql .= " nmfc, lot_number_required, serial_number_required, serial_number_must_be_unique, exp_date_req, enable_cost, ";
+			$sql .= " cost_required, is_haz_mat, haz_mat_id, haz_mat_shipping_name, haz_mat_hazard_class, haz_mat_packing_group,";
+			$sql .= " haz_mat_flash_point, haz_mat_label_code, haz_mat_flat, image_url, storage_count_stript_template_id, storage_rates,";
+			$sql .= " outbound_mobile_serialization_behavior, price, total_qty, unit_type, updated_by) VALUES";
+			$sql .= " (".$doc_number.", '".strtoupper($skuConfig)."', '".strtoupper($skuSimple)."', '".$skuDescription."', '".$min."', ".$max.", ".$cycleCount.",";
+			$sql .= " ".$reorderQty.", '".$inventoryMethod."', '".$temperature."', '".$cost."', '".$upc."', '".$trackLot."', '".$trackSerial."', '".$trackExpdate."', '".$primaryUnitOfMeasure."',";
+			$sql .= " '".$packagingUnit."', '".$packingUomQty."', '".$length."', '".$width."', '".$height."', '".$weight."', '".$qualifiers."', '".$storageSetup."', '".$variableSetup."', ";
+			$sql .= " '".$nmfc."', '".$lotNumberReq."', '".$serialNumberReq."', '".$serialNumberMustBeUnique."', '".$expDateReq."', '".$enableCost."', ";
+			$sql .= " '".$costRequired."', '".$isHazMat."', '".$hazMatId."', '".$hazMatShippingName."', '".$hazMatHazardClass."', '".$hazMatPackingGroup."',";
+			$sql .= " '".$hazMatFlashPoint."', '".$hazMatLabelCode."', '".$hazMatFlag."', '".$imageUrl."', '".$storageCountScriptTemplateId."', '".$storageRates."',";
+			$sql .= " '".$outboundMobileSerializationBehavior."', '".$price."', '".$totalQty."', '".$unitType."',".$updatedBy.")";
+			
+			$this->db->query($sql);
+			
+			}
+						
+		}
+
+		$this->db->trans_complete();
+		
+	}
+	
 	function saveToInboundInventory($client, $doc_number, $created_by, $arr_data){
 		//start parse the array from excel
 		$sizeRowX = count($arr_data); 

@@ -44,10 +44,39 @@ class Listinbounddoc extends MY_Controller {
 				redirect("listinbounddoc/revise?ids=".$post['listid']."&command=".$post['command']);								 
 			}else{
 				//parse excel file
-				print_r($filename);
+				foreach($filename as $itemFilename){
+					$datas = $this->inbounddocument_m->getInboundDocumentRow($itemFilename);
+					$doc_number = $datas['doc_number']; 
+					$client_id = $datas['client_id']; 
+					$res = $this->_parseFile($itemFilename, $doc_number, $client_id);
+					unlink($this->inbounddocument_m->path."/tmp_".$itemFilename."_".$doc_number.".xls");
+				}
 				redirect("listinbounddoc");
 			}
 		}
+	}
+	
+	private function _parseFile($itemFilename, $doc_number, $client_id){
+		$path_file = $this->inbounddocument_m->path;
+
+		$objPHPExcel = PHPExcel_IOFactory::load($path_file."/tmp_".$itemFilename."_".$doc_number.".xls");
+					
+		$cell_collection = $objPHPExcel->getActiveSheet()->getCellCollection();
+					
+		foreach ($cell_collection as $cell) {
+		    $column = $objPHPExcel->getActiveSheet()->getCell($cell)->getColumn();
+		    $row = $objPHPExcel->getActiveSheet()->getCell($cell)->getRow();
+		    $data_value = $objPHPExcel->getActiveSheet()->getCell($cell)->getValue();
+					
+	        $arr_data[$row][$column] = $data_value;
+		}
+					
+					try {
+						$return = $this->inbounddocument_m->updateToInboundInventory($client_id, $doc_number, $arr_data);
+					} catch( Exception $e ) {
+						echo $e->getMessage();	
+					}
+		
 	}
 	
 	public function revise(){
@@ -89,12 +118,12 @@ class Listinbounddoc extends MY_Controller {
 		$config['allowed_types'] = 'xls|xlsx';
 		$config['max_size']	= '2000';
 		
-		$this->load->library('upload', $config);		
+		$this->load->library('upload');		
 		$files = $_FILES;
-	    $cpt = count($_FILES['userfile']['name']);
+	    $cpt = count($_FILES['userfile']['name']); 
 	    for($i=0; $i<$cpt; $i++)
 	    {
-			
+	    				
 	        $_FILES['userfile']['name']= $files['userfile']['name'][$i];
 	        $_FILES['userfile']['type']= $files['userfile']['type'][$i];
 	        $_FILES['userfile']['tmp_name']= $files['userfile']['tmp_name'][$i];
@@ -102,7 +131,10 @@ class Listinbounddoc extends MY_Controller {
 	        $_FILES['userfile']['size']= $files['userfile']['size'][$i];    
 			
 	
-    	    $config['file_name'] = "temp_".$arrItemId[$i];
+				$datas = $this->inbounddocument_m->getInboundDocumentRow($arrItemId[$i]);
+				$doc_number = $datas['doc_number'];
+				 
+	    	    $config['file_name'] = "tmp_".$arrItemId[$i]."_".$doc_number;
 		
 	    	$this->upload->initialize($config);
 			if ( ! $this->upload->do_upload()) {			
@@ -165,23 +197,23 @@ class Listinbounddoc extends MY_Controller {
 		$this->va_excel->getActiveSheet()->setCellValue('AA1', 'Serial Number Required');
 		$this->va_excel->getActiveSheet()->setCellValue('AB1', 'Serial Number Must Be Unique');
 		$this->va_excel->getActiveSheet()->setCellValue('AC1', 'Exp Date Req');
-		$this->va_excel->getActiveSheet()->setCellValue('AE1', 'Enable Cost');
-		$this->va_excel->getActiveSheet()->setCellValue('AF1', 'Cost Required');
-		$this->va_excel->getActiveSheet()->setCellValue('AG1', 'IsHazMat');
-		$this->va_excel->getActiveSheet()->setCellValue('AH1', 'HazMatID');
-		$this->va_excel->getActiveSheet()->setCellValue('AI1', 'HazMatShippingName');
-		$this->va_excel->getActiveSheet()->setCellValue('AJ1', 'HazMatHazardClass');
-		$this->va_excel->getActiveSheet()->setCellValue('AK1', 'HazMatPackingGroup');
-		$this->va_excel->getActiveSheet()->setCellValue('AL1', 'HazMatFlashPoint');
-		$this->va_excel->getActiveSheet()->setCellValue('AM1', 'HazMatLabelCode');
-		$this->va_excel->getActiveSheet()->setCellValue('AN1', 'HazMatFlag');
-		$this->va_excel->getActiveSheet()->setCellValue('AO1', 'ImageURL');
-		$this->va_excel->getActiveSheet()->setCellValue('AP1', 'StorageCountScriptTemplateID');
-		$this->va_excel->getActiveSheet()->setCellValue('AQ1', 'StorageRates');
-		$this->va_excel->getActiveSheet()->setCellValue('AR1', 'OutboundMobileSerializationBehavior');
-		$this->va_excel->getActiveSheet()->setCellValue('AS1', 'Price');
-		$this->va_excel->getActiveSheet()->setCellValue('AT1', 'TotalQty');
-		$this->va_excel->getActiveSheet()->setCellValue('AU1', 'UnitType');
+		$this->va_excel->getActiveSheet()->setCellValue('AD1', 'Enable Cost');
+		$this->va_excel->getActiveSheet()->setCellValue('AE1', 'Cost Required');
+		$this->va_excel->getActiveSheet()->setCellValue('AF1', 'IsHazMat');
+		$this->va_excel->getActiveSheet()->setCellValue('AG1', 'HazMatID');
+		$this->va_excel->getActiveSheet()->setCellValue('AH1', 'HazMatShippingName');
+		$this->va_excel->getActiveSheet()->setCellValue('AI1', 'HazMatHazardClass');
+		$this->va_excel->getActiveSheet()->setCellValue('AJ1', 'HazMatPackingGroup');
+		$this->va_excel->getActiveSheet()->setCellValue('AK1', 'HazMatFlashPoint');
+		$this->va_excel->getActiveSheet()->setCellValue('AL1', 'HazMatLabelCode');
+		$this->va_excel->getActiveSheet()->setCellValue('AM1', 'HazMatFlag');
+		$this->va_excel->getActiveSheet()->setCellValue('AN1', 'ImageURL');
+		$this->va_excel->getActiveSheet()->setCellValue('AO1', 'StorageCountScriptTemplateID');
+		$this->va_excel->getActiveSheet()->setCellValue('AP1', 'StorageRates');
+		$this->va_excel->getActiveSheet()->setCellValue('AQ1', 'OutboundMobileSerializationBehavior');
+		$this->va_excel->getActiveSheet()->setCellValue('AR1', 'Price');
+		$this->va_excel->getActiveSheet()->setCellValue('AS1', 'TotalQty');
+		$this->va_excel->getActiveSheet()->setCellValue('AT1', 'UnitType');
 		
 		$result = $this->inbounddocument_m->getInboundInvItem($client, $doc);
 		$lup = 2;
@@ -216,27 +248,30 @@ class Listinbounddoc extends MY_Controller {
 			$this->va_excel->getActiveSheet()->setCellValue('AA'.$lup, $item['serial_number_required']);
 			$this->va_excel->getActiveSheet()->setCellValue('AB'.$lup, $item['serial_number_must_be_unique']);
 			$this->va_excel->getActiveSheet()->setCellValue('AC'.$lup, $item['exp_date_req']);
-			$this->va_excel->getActiveSheet()->setCellValue('AE'.$lup, $item['enable_cost']);
-			$this->va_excel->getActiveSheet()->setCellValue('AF'.$lup, $item['cost_required']);
-			$this->va_excel->getActiveSheet()->setCellValue('AG'.$lup, $item['is_haz_mat']);
-			$this->va_excel->getActiveSheet()->setCellValue('AH'.$lup, $item['haz_mat_id']);
-			$this->va_excel->getActiveSheet()->setCellValue('AI'.$lup, $item['haz_mat_shipping_name']);
-			$this->va_excel->getActiveSheet()->setCellValue('AJ'.$lup, $item['haz_mat_hazard_class']);
-			$this->va_excel->getActiveSheet()->setCellValue('AK'.$lup, $item['haz_mat_packing_group']);
-			$this->va_excel->getActiveSheet()->setCellValue('AL'.$lup, $item['haz_mat_flash_point']);
-			$this->va_excel->getActiveSheet()->setCellValue('AM'.$lup, $item['haz_mat_label_code']);
-			$this->va_excel->getActiveSheet()->setCellValue('AN'.$lup, $item['haz_mat_flat']);
-			$this->va_excel->getActiveSheet()->setCellValue('AO'.$lup, $item['image_url']);
-			$this->va_excel->getActiveSheet()->setCellValue('AP'.$lup, $item['storage_count_stript_template_id']);
-			$this->va_excel->getActiveSheet()->setCellValue('AQ'.$lup, $item['storage_rates']);
-			$this->va_excel->getActiveSheet()->setCellValue('AR'.$lup, $item['outbound_mobile_serialization_behavior']);
-			$this->va_excel->getActiveSheet()->setCellValue('AS'.$lup, $item['price']);
-			$this->va_excel->getActiveSheet()->setCellValue('AT'.$lup, $item['total_qty']);
-			$this->va_excel->getActiveSheet()->setCellValue('AU'.$lup, $item['unit_type']);
+			$this->va_excel->getActiveSheet()->setCellValue('AD'.$lup, $item['enable_cost']);
+			$this->va_excel->getActiveSheet()->setCellValue('AE'.$lup, $item['cost_required']);
+			$this->va_excel->getActiveSheet()->setCellValue('AF'.$lup, $item['is_haz_mat']);
+			$this->va_excel->getActiveSheet()->setCellValue('AG'.$lup, $item['haz_mat_id']);
+			$this->va_excel->getActiveSheet()->setCellValue('AH'.$lup, $item['haz_mat_shipping_name']);
+			$this->va_excel->getActiveSheet()->setCellValue('AI'.$lup, $item['haz_mat_hazard_class']);
+			$this->va_excel->getActiveSheet()->setCellValue('AJ'.$lup, $item['haz_mat_packing_group']);
+			$this->va_excel->getActiveSheet()->setCellValue('AK'.$lup, $item['haz_mat_flash_point']);
+			$this->va_excel->getActiveSheet()->setCellValue('AL'.$lup, $item['haz_mat_label_code']);
+			$this->va_excel->getActiveSheet()->setCellValue('AM'.$lup, $item['haz_mat_flat']);
+			$this->va_excel->getActiveSheet()->setCellValue('AN'.$lup, $item['image_url']);
+			$this->va_excel->getActiveSheet()->setCellValue('AO'.$lup, $item['storage_count_stript_template_id']);
+			$this->va_excel->getActiveSheet()->setCellValue('AP'.$lup, $item['storage_rates']);
+			$this->va_excel->getActiveSheet()->setCellValue('AQ'.$lup, $item['outbound_mobile_serialization_behavior']);
+			$this->va_excel->getActiveSheet()->setCellValue('AR'.$lup, $item['price']);
+			$this->va_excel->getActiveSheet()->setCellValue('AS'.$lup, $item['total_qty']);
+			$this->va_excel->getActiveSheet()->setCellValue('AT'.$lup, $item['unit_type']);
 			$lup++;
 		}
 								
-		$filename='Form Item Import.xls'; 
+		$dataClient = $this->client_m->getClientById($client);
+		$dataClientRows = $dataClient->row_array();
+								
+		$filename='Form Item Import (Client : '.$dataClientRows['client_code'].' Do Number : '.$doc.').xls'; 
 		header('Content-Type: application/vnd.ms-excel'); 
 		header('Content-Disposition: attachment;filename="'.$filename.'"'); 
 		header('Cache-Control: max-age=0');
