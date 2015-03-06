@@ -256,7 +256,7 @@ class Listinbounddoc extends MY_Controller {
 			$msg = $value = array();
 		}
 		
-	    $this->va_input->addCustomField( array("name" =>"userfile[]", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg, "label" => "Upload File *", "view"=>"form/upload_csv"));
+	    $this->va_input->addCustomField( array("name" =>"userfile[]", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg, "label" => "Upload File *", "view"=>"form/upload_xls"));
 		$this->va_input->addHidden( array("name" => "listid", "value" => $_GET['ids']) );
 		$this->va_input->addHidden( array("name" => "method", "value" => "revise") );		
 		$this->va_input->addHidden( array("name" => "command", "value" => $_GET['command']) );		
