@@ -51,7 +51,7 @@ class Extractcatalogproduct extends CI_Controller {
 								echo "import inbound document for client ".$client_id." doc number ".$doc_number."<br>";
 								$return = $this->inbounddocument_m->updateStatusInboundDocumentList($id,1);
 		                        
-		                        $from=$this->session->userdata('pkUserId');	
+		                        $from=2;	
 		                        $to=1;
 		                        $url="listinbounddoc";
 		                        $message="Inbound document was imported";
