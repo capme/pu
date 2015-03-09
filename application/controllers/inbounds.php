@@ -87,16 +87,16 @@ class Inbounds extends MY_Controller {
 			redirect("inbound/add");
 		}		
 		if($post['method'] == "new"){
-			$filename=$this->_uploadFile();
+			$filename=$this->_uploadFile();			
 			$post['userfile']= $filename['file_name'] ;
-			$hasil=$this->inbound_m->UploadFile($post);
-			if ($filename == null){
-				$this->session->set_flashdata( array("inboundError" => json_encode(array("msg" => $hasil, "data" => $post))) );
-				redirect("inbounds/add");								 
+            $result=$this->inbound_m->UploadFile($post, $filename);
+            $message=array("msg"=>"error");	
+            if ($result == null){
+				$this->session->set_flashdata( array("inboundError" => json_encode(array($message, "data" => $post))) );
+                redirect("inbounds/add");								 
 			}
-            redirect("inbounds");					
-		}			
-		
+  	        redirect ("inbounds");		
+		}
 	}
 	
 	private function _uploadFile() {

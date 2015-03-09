@@ -80,38 +80,39 @@ class Inbound_m extends MY_Model {
         }        
     }
 
-	public function UploadFile($post)
+	public function UploadFile($post, $filename)
 	{
-        $user=$this->session->userdata('pkUserId');		
-    	
-		$msg = array();		
-		if(!empty($post['client'])) {
-			$data['client_id'] = $post['client'];
-		} else {}
-        
-        if(!empty($post['docnumber'])) {
-			$data['doc_number'] = $post['docnumber'];
-		} else {}
-        
-        if(!empty($post['note'])) {
-			$data['note'] = $post['note'];
-		} else {}
-        
-		if(!empty($post['userfile'])) {
-			$data['filename'] = $post['userfile'];
-		} else {}
-  
-        $data['created_by']=$user;
-        $data['status']=0;
-        $data['type']=1;
-        
-		if(empty($msg)) {
-			$this->db->insert($this->table, $data);
-			return $this->db->insert_id();
-		} 
-		else {
-			return $msg;
-		}
+	    $msg = array();	
+	    if ($filename == null){
+				return null;								 
+			}
+        else {   
+                $user=$this->session->userdata('pkUserId');
+        		if(!empty($post['client'])) {
+        			$data['client_id'] = $post['client'];
+        		} else {}
+                
+                if(!empty($post['docnumber'])) {
+        			$data['doc_number'] = $post['docnumber'];
+        		} else {}
+                
+                if(!empty($post['note'])) {
+        			$data['note'] = $post['note'];
+        		} else {}
+                
+        		if(!empty($post['userfile'])) {
+        			$data['filename'] = $post['userfile'];
+        		} else {}
+          
+                $data['created_by']=$user;
+                $data['status']=0;
+                $data['type']=1;
+                
+        		if(empty($msg)) {
+        			$this->db->insert($this->table, $data);
+        			return $this->db->insert_id();
+        		}      
+ 	        }       
 	}
 }
 ?>
