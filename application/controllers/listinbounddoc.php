@@ -60,6 +60,31 @@ class Listinbounddoc extends MY_Controller {
 					redirect("listinbounddoc");
 				}
 			}
+		}elseif($post['method'] == "updateattr"){
+			
+			
+			foreach($post as $keyItemPost => $itemPost){
+				if(strstr($keyItemPost,"attrset")){
+					$tmp = explode("_",$keyItemPost);
+					$data[$tmp[1]] = $itemPost;
+				}elseif($keyItemPost == "client"){
+					$client = $itemPost;
+				}elseif($keyItemPost == "doc"){
+					$doc_number = $itemPost;
+				}elseif($keyItemPost == "id"){
+					$id = $itemPost;
+				}
+			}
+			//updating attribute set
+			foreach($data as $keyItemData => $itemData){
+				$this->inbounddocument_m->updateAttrSetInboundInventory($client, $doc_number, $itemData, $keyItemData);
+			}
+			
+			//updating inbound document table
+			$this->inbounddocument_m->updateStatusInboundDocumentList($id,2);
+			
+			redirect("listinbounddoc");
+			
 		}
 	}
 	
@@ -372,6 +397,7 @@ class Listinbounddoc extends MY_Controller {
 		$this->va_excel->getActiveSheet()->setCellValue('AR2', 'Price');
 		$this->va_excel->getActiveSheet()->setCellValue('AS2', 'TotalQty');
 		$this->va_excel->getActiveSheet()->setCellValue('AT2', 'UnitType');
+		$this->va_excel->getActiveSheet()->setCellValue('AU2', 'AttributeSet');
 		
 		$result = $this->inbounddocument_m->getInboundInvItem($client, $doc);
 		$lup = 3;
@@ -423,6 +449,7 @@ class Listinbounddoc extends MY_Controller {
 			$this->va_excel->getActiveSheet()->setCellValue('AR'.$lup, $item['price']);
 			$this->va_excel->getActiveSheet()->setCellValue('AS'.$lup, $item['total_qty']);
 			$this->va_excel->getActiveSheet()->setCellValue('AT'.$lup, $item['unit_type']);
+			$this->va_excel->getActiveSheet()->setCellValue('AU'.$lup, $this->inbounddocument_m->attrSet[$client][$item['attribute_set']]);
 			$lup++;
 		}
 								
@@ -438,6 +465,34 @@ class Listinbounddoc extends MY_Controller {
 		$objWriter = PHPExcel_IOFactory::createWriter($this->va_excel, 'Excel5');  
 		
 		$objWriter->save('php://output');
+		
+	}
+
+	public function updateAttr(){
+		$this->data['content'] = "form_v.php";
+		$this->data['pageTitle'] = "Inbound Document";
+		$this->data['formTitle'] = "Inbound Document - Update Attribute";
+		$this->data['breadcrumb'] = array("Inbound Document"=> "");
+		$this->load->library("va_input", array("group" => "listinbounddoc"));
+
+		$this->va_input->addHidden( array("name" => "method", "value" => "updateattr") );
+		$this->va_input->addHidden( array("name" => "client", "value" => $_GET['client']) );		
+		$this->va_input->addHidden( array("name" => "doc", "value" => $_GET['doc']) );		
+		$this->va_input->addHidden( array("name" => "id", "value" => $_GET['id']) );		
+		$client = $_GET['client'];
+		$doc = $_GET['doc'];
+		$rows = $this->inbounddocument_m->getInboundInvItem($client, $doc);
+		foreach($rows as $itemRows){
+			if($itemRows['attribute_set'] <> ""){
+				$this->va_input->addSelect( array("name" => "attrset_".$itemRows['id'],"label" => "", "list" => $this->inbounddocument_m->attrSet[$_GET['client']], "value" => @$itemRows['attribute_set'], "msg" => @$msg['client']) );
+			}else{
+				$this->va_input->addSelect( array("name" => "attrset_".$itemRows['id'],"label" => "", "list" => $this->inbounddocument_m->attrSet[$_GET['client']], "value" => "", "msg" => @$msg['client']) );
+			}
+		}
+		$this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("layout/inboundDocUpdateAttrSet.php");
+
+		$this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
+		$this->load->view('template', $this->data);
 		
 	}
 	

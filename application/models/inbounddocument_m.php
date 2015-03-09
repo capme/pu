@@ -11,6 +11,7 @@ class Inbounddocument_m extends MY_Model {
 	var $sorts = array(1 => "id");
 	var $pkField = "id";
 	var $path = "";
+	var $attrSet = array();
 	
 	function __construct()
     {
@@ -18,12 +19,32 @@ class Inbounddocument_m extends MY_Model {
 		$this->db = $this->load->database('mysql', TRUE);
 		$this->path = BASEPATH ."../public/inbound/catalog_product"; 
 		$this->relation = array(
-			array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} AND {$this->table}.status = 1")
+			array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}")
 		);
-		$this->select = array("{$this->table}.*", "{$this->tableClient}.client_code");
+		//sampai sini error.
+		$this->select = array("{$this->table}.doc_number", "{$this->table}.client_id", "{$this->table}.note", "{$this->table}.type", "{$this->table}.status", "{$this->table}.created_at", "{$this->table}.updated_at", "{$this->table}.created_by", "{$this->table}.filename", "{$this->table}.id", "{$this->tableClient}.client_code");
 		$this->filters = array("client_id"=>"client_id");
-		//$this->group = array("client_id");
-    }
+		
+		//Attribute set
+		//the blow shoes
+		$this->attrSet[1] = array("Footwear");
+		//universo
+		$this->attrSet[5] = array("Havaianas Men", "Havaianas Women");
+		//paraplou
+		$this->attrSet[6] = array("mentop", "menbottom", "menfootwear", "menaccessories", "womentop", "womenbottom", "womenfootwear", "womenaccessories", "unisexaccessories");
+		//g2000
+		$this->attrSet[7] = array("topmen", "blazermen", "bottommen", "topwomen", "blazerwomen", "bottomwomen", "accessories");
+		//jobb trisula
+		$this->attrSet[8] = array("tops", "bottoms", "blazers", "accessories");
+		//leecooper
+		$this->attrSet[9] = array("Atasan Pria", "Bawahan Pria", "Atasan Wanita", "Bawahan Wanita", "Sandal", "Sepatu Pria", "Topi", "Tas", "Ikat Pinggang", "Dompet", "Gelang", "Jam Tangan");
+		//ekretek
+		$this->attrSet[10] = array("Default", "Cartridge", "eLiquid", "Starter Kit", "ecigarettes");
+		//agrapana
+		$this->attrSet[11] = array("Default");
+		//farishfs
+		$this->attrSet[12] = array("Footwear");
+	}
 	
 	function getInboundInvItem($client, $doc){
 		if(!$client) return array();
@@ -44,9 +65,10 @@ class Inbounddocument_m extends MY_Model {
 	{
 		if(!$client) return array();
 		$mysql = $this->load->database('mysql', TRUE);
-		$query = $mysql->get_where('inb_document', array('client_id'=>$client, 'status'=>0));
-		$row = $query->row_array();		
-		return $row;
+		$query = $this->db->query("SELECT * FROM inb_document WHERE client_id=".$client." AND status=0");
+		//$query = $mysql->get_where('inb_document', array('client_id'=>$client, 'status'=>0));
+		//$row = $query->row_array();		
+		return $query;
 	}
 	
 	function getInboundDocumentList() 
@@ -74,14 +96,22 @@ class Inbounddocument_m extends MY_Model {
 		$no=0;
 		
 		foreach($_row->result() as $_result) {
-			$status=$statList[$_result->status];
+			//$status=$statList[$_result->status];
+			if($_result->status == 1){
+				//shows only update attribute button
+				$btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->doc_number.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
+			}elseif($_result->status == 2){
+				//shows update attribute button and download form item
+				$btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->doc_number.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
+				$btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/exportFormItemImport?client='.$_result->client_id.'&doc='.$_result->doc_number.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Download Form Import</a>';
+			}
 			$records["aaData"][] = array(
 					'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
 					$no=$no+1,
 					$_result->client_code,
 					$_result->doc_number,
 					$_result->note,
-					'<a href="'.base_url().'listinbounddoc/exportFormItemImport?client='.$_result->client_id.'&doc='.$_result->doc_number.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Download Form Import</a>'
+					$btnAction
 					
 			);
 		}
@@ -91,8 +121,8 @@ class Inbounddocument_m extends MY_Model {
 		return $records;
 	}
 	
-	function updateStatusInboundDocumentList($id){
-		$data=array('status'=>1);
+	function updateStatusInboundDocumentList($id, $status){
+		$data=array('status'=>$status);
 		$this->db->where('id',$id);
 		$this->db->update('inb_document',$data);
 	}
@@ -882,5 +912,9 @@ class Inbounddocument_m extends MY_Model {
 		return TRUE;
 	}
 	
+	public function updateAttrSetInboundInventory($client, $doc_number, $data, $id){
+		$sql = "UPDATE ".$this->tableInv."_".$client." set attribute_set='".$data."' WHERE doc_number=".$doc_number." and id=".$id;
+		$this->db->query($sql);
+	}
 
 }

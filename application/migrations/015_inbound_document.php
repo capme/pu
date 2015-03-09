@@ -20,7 +20,8 @@ class Migration_Inbound_Document extends Base_migration {
 				array("name" => "Inbound Document Export", "slug" => "listinbounddoc/exportFormItemImport", "hidden" => 1, "status" => 1, "parent" => $parentTags['listinbounddoc']),
 				array("name" => "Inbound Document Revise", "slug" => "listinbounddoc/revise", "hidden" => 1, "status" => 1, "parent" => $parentTags['listinbounddoc']),
 				array("name" => "Inbound Document Save", "slug" => "listinbounddoc/save", "hidden" => 1, "status" => 1, "parent" => $parentTags['listinbounddoc']),
-				
+				array("name" => "Inbound Document Update Attribute Set", "slug" => "listinbounddoc/updateAttr", "hidden" => 1, "status" => 1, "parent" => $parentTags['listinbounddoc']),
+								
 		);
 		
 		foreach($newModule as $module) {
