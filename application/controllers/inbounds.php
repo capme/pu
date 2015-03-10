@@ -86,16 +86,19 @@ class Inbounds extends MY_Controller {
 		if(empty($post)) {
 			redirect("inbound/add");
 		}		
-		if($post['method'] == "new"){
-			$filename=$this->_uploadFile();			
-			$post['userfile']= $filename['file_name'] ;
-            $result=$this->inbound_m->UploadFile($post, $filename);
-            $message=array("msg"=>"error");	
-            if ($result == null){
-				$this->session->set_flashdata( array("inboundError" => json_encode(array($message, "data" => $post))) );
+		if($post['method'] == "new"){		  
+			$filename=$this->_uploadFile();            
+            $post['userfile']= $filename['file_name'] ;
+            $result=$this->inbound_m->uploadFile($post, $filename);
+            
+            if(is_numeric($result)){
+                redirect("inbounds");
+            }
+            else{          
+                $result['userfile'] = $this->upload->display_errors();
+                $this->session->set_flashdata( array("inboundError" => json_encode(array("msg"=>$result, "data" => $post))));
                 redirect("inbounds/add");								 
-			}
-  	        redirect ("inbounds");		
+			}   		
 		}
 	}
 	
