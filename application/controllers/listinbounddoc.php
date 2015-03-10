@@ -49,9 +49,10 @@ class Listinbounddoc extends MY_Controller {
 					$datas = $this->inbounddocument_m->getInboundDocumentRow($itemFilename);
 					$doc_number = $datas['doc_number']; 
 					$client_id = $datas['client_id']; 
-					$res = $this->_parseFile($itemFilename, $doc_number, $client_id);
+					$id = $datas['id'];
+					$res = $this->_parseFile($itemFilename, $id, $client_id);
 					$return = $return && $res;
-					unlink($this->inbounddocument_m->path."/tmp_".$itemFilename."_".$doc_number.".xls");
+					unlink($this->inbounddocument_m->path."/tmp_".$itemFilename."_".$id.".xls");
 				}
 				if(!$return){
 					$this->session->set_flashdata( array("listinbounddocError" => json_encode(array("msg" => "Wrong excel file format. Please check your format data.", "data" => $post))) );
@@ -316,8 +317,9 @@ class Listinbounddoc extends MY_Controller {
 	
 				$datas = $this->inbounddocument_m->getInboundDocumentRow($arrItemId[$i]);
 				$doc_number = $datas['doc_number'];
+				$id = $datas['id'];
 				 
-	    	    $config['file_name'] = "tmp_".$arrItemId[$i]."_".$doc_number;
+	    	    $config['file_name'] = "tmp_".$arrItemId[$i]."_".$id;
 		
 	    	$this->upload->initialize($config);
 			if ( ! $this->upload->do_upload()) {			

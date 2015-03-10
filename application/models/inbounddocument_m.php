@@ -97,23 +97,26 @@ class Inbounddocument_m extends MY_Model {
 		
 		foreach($_row->result() as $_result) {
 			//$status=$statList[$_result->status];
+			$btnAction = "";
 			if($_result->status == 1){
 				//shows only update attribute button
-				$btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->doc_number.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
+				$btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->id.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
 			}elseif($_result->status == 2){
 				//shows update attribute button and download form item
-				$btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->doc_number.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
-				$btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/exportFormItemImport?client='.$_result->client_id.'&doc='.$_result->doc_number.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Download Form Import</a>';
+				$btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->id.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
+				$btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/exportFormItemImport?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Download Form Import</a>';
 			}
-			$records["aaData"][] = array(
-					'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
-					$no=$no+1,
-					$_result->client_code,
-					$_result->doc_number,
-					$_result->note,
-					$btnAction
-					
-			);
+			if($_result->status == 1 or $_result->status == 2){
+				$records["aaData"][] = array(
+						'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
+						$no=$no+1,
+						$_result->client_code,
+						$_result->doc_number,
+						$_result->note,
+						$btnAction
+						
+				);
+			}
 		}
 		$records["sEcho"] = $sEcho;
 		$records["iTotalRecords"] = $iTotalRecords;
