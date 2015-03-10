@@ -69,50 +69,58 @@ class Inbound_m extends MY_Model {
 	}
     
     public function deleteInbound($id){
-        $name = $this->db->select('filename')->get($this->table)->row_array();
-        $path= BASEPATH .'../public/inbound/catalog_product/'.$name['filename'];        
+        $query=$this->db->get_where($this->table, array('id' => $id));
+        $name =$query->row(); 
+        $path= BASEPATH .'../public/inbound/catalog_product/'.$name->filename;        
         $result = unlink($path); 
         if($result == true){
            $this->db->where_in($this->pkField, $id)->delete($this->table); 
-        }else{
+        }
+        else{
           return false;
           redirect('inbounds');
         }        
     }
 
-	public function UploadFile($post, $filename)
+	public function uploadFile($post, $filename)
 	{
-	    $msg = array();	
-	    if ($filename == null){
-				return null;								 
-			}
-        else {   
-                $user=$this->session->userdata('pkUserId');
-        		if(!empty($post['client'])) {
-        			$data['client_id'] = $post['client'];
-        		} else {}
+	   $msg = array();         
+       $user=$this->session->userdata('pkUserId');
+       
+	   if(!empty($post['client']) ) {
+        $data['client_id'] = $post['client'];
+        } else {
+        $msg['client'] = "Invalid name";
+        }
                 
-                if(!empty($post['docnumber'])) {
-        			$data['doc_number'] = $post['docnumber'];
-        		} else {}
+        if(!empty($post['docnumber'])) {
+        $data['doc_number'] = $post['docnumber'];
+        } else {
+        $msg['docnumber'] = "Invalid docnumber";
+        }
                 
-                if(!empty($post['note'])) {
-        			$data['note'] = $post['note'];
-        		} else {}
+        if(!empty($post['note'])) {
+        $data['note'] = $post['note'];
+        } else {}
                 
-        		if(!empty($post['userfile'])) {
-        			$data['filename'] = $post['userfile'];
-        		} else {}
-          
-                $data['created_by']=$user;
-                $data['status']=0;
-                $data['type']=1;
+        if(!empty($post['userfile'])&& $filename !=null) {
+        $data['filename'] = $post['userfile'];
+        } else {
+        $msg['userfile'] = "Invalid filename";
+        }
+        
+        $data['created_by']=$user;
+        $data['status']=0;
+        $data['type']=1;
                 
-        		if(empty($msg)) {
-        			$this->db->insert($this->table, $data);
-        			return $this->db->insert_id();
-        		}      
- 	        }       
-	}
+        if(empty($msg)) {
+        $this->db->insert($this->table, $data);
+        return $this->db->insert_id();
+        }
+        
+        else {
+        return $msg;
+        }
+  }
 }
 ?>
