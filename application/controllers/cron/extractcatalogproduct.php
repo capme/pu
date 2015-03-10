@@ -47,6 +47,7 @@ class Extractcatalogproduct extends CI_Controller {
 							}
 							
 							try {
+								$doc_number = $id;
 								$return = $this->inbounddocument_m->saveToInboundInventory($client_id, $doc_number, $created_by, $arr_data);
 								echo "import inbound document for client ".$client_id." doc number ".$doc_number."<br>";
 								$return = $this->inbounddocument_m->updateStatusInboundDocumentList($id,1);
