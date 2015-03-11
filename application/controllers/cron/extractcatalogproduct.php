@@ -18,7 +18,7 @@ class Extractcatalogproduct extends CI_Controller {
 		$clients = $this->client_m->getClients();
 		
 		foreach($clients as $client) {
-			$inbound = $this->inbounddocument_m->getInboundDocumentInfo($client["id"]);
+			$inbound = $this->inbounddocument_m->getInboundDocumentInfo($client["id"]);            
 			if($inbound->num_rows>0){
 				foreach($inbound->result_array() as $rows ){
 					if(!empty($rows)){
@@ -52,11 +52,14 @@ class Extractcatalogproduct extends CI_Controller {
 								echo "import inbound document for client ".$client_id." doc number ".$doc_number."<br>";
 								$return = $this->inbounddocument_m->updateStatusInboundDocumentList($id,1);
 		                        
-		                        $from=2;	
+                                $from=2;	
 		                        $to=1;
-		                        $url="listinbounddoc";
+                                foreach($inbound->result_array() as $rows ){					
+                                $id = $rows['id'];
+                                $url="listinbounddoc/updateAttr?client=".$client_id."&doc=".$id."&id=".$id."";
 		                        $message="Inbound document was imported";
 		                        $this->notification_m->add($from, $to, $url, $message);
+                                }
 		                        
 							} catch( Exception $e ) {
 								echo $e->getMessage();	

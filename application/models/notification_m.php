@@ -5,10 +5,13 @@
  * Class Notification_m
  */
 class Notification_m extends MY_Model{
-
+    var $filterSession = "DB_USER_FILTER";
     var $db = null;
     var $table = 'notification';
     var $pkField = "id";
+    var $sorts = array(1 => "id");
+    var $tableUsers='auth_users';
+    
     var $mailStatus = ['unsend' => 0, 'sent' => 1];
     var $readStatus = ['unread' => 0, 'read' => 1];
 
@@ -29,6 +32,50 @@ class Notification_m extends MY_Model{
      * @param $group : auth_user.group
      * @return array
      */
+    
+    public function getNotificationList(){
+        $this->db = $this->load->database('mysql', TRUE);
+        $user=$this->session->userdata('pkUserId');
+        $this->relation = array(array("type" => "inner", "table" => $this->tableUsers, "link" => "{$this->table}.sender_id  = {$this->tableUsers}.pkUserId where group_ids=$user" ));
+		$this->select = array("{$this->table}.{$this->pkField}", "{$this->tableUsers}.fullname","{$this->table}.created_at", "{$this->table}.message","{$this->table}.url");
+        
+		$iTotalRecords = $this->_doGetTotalRow();
+		$iDisplayLength = intval($this->input->post('iDisplayLength'));
+		$iDisplayLength = $iDisplayLength < 0 ? $iTotalRecords : $iDisplayLength;
+		$iDisplayStart = intval($this->input->post('iDisplayStart'));
+		$sEcho = intval($this->input->post('sEcho'));
+	
+		$records = array();
+		$records["aaData"] = array();
+				
+		$end = $iDisplayStart + $iDisplayLength;
+		$end = $end > $iTotalRecords ? $iTotalRecords : $end;
+	
+		$_row = $this->_doGetRows($iDisplayStart, $iDisplayLength);
+		$no=0;
+		foreach($_row->result() as $_result) {				
+			$records["aaData"][] = array(
+					'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
+					$no=$no+1,
+					$_result->fullname,
+                    $_result->message,
+                    $_result->created_at,
+                    '<a href="'.site_url($_result->url).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>'
+			);
+		}
+	
+		$records["sEcho"] = $sEcho;
+		$records["iTotalRecords"] = $iTotalRecords;
+		$records["iTotalDisplayRecords"] = $iTotalRecords;
+		return $records;
+    }
+    
+    public function removeNotification($id, $action){
+        $this->db = $this->load->database("mysql", TRUE);
+		$this->db->where_in($this->pkField, $id);
+		$this->db->delete($this->table);
+    }
+    
     public function getUnreadNotification($group){
         $notif = [];
 

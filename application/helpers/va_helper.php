@@ -61,9 +61,9 @@ function buildNotification($list = array(), $type = ''){
             $statDiff = $diff->format('%i mins');
             if($diff->format('%h') > 0) $statDiff = $diff->format('%h hrs');
             if($diff->format('%d') > 0) $statDiff = $diff->format('%d days');
-
+            
             $result .= '<li>'.
-                '<a href="'.site_url('notification/read?id='.$val['id'].'&url='.$val['url']).'">'.
+                '<a href="'.site_url('notification/read?ids='.$val['id'].'&url='.$val['url']).'">'.
                 '<span class="label label-sm label-icon label-warning"><i class="fa fa-bell-o"></i></span>'.
                 $val['message'].'. <span class="time">'.$statDiff.'</span>'.
                 '</a></li>';
@@ -72,7 +72,7 @@ function buildNotification($list = array(), $type = ''){
         $result .= '</ul></li>';
     }
 
-    $result .= '<li class="external"><a href="#">See all '.$type.'s <i class="m-icon-swapright"></i></a></li></ul></li>'.
+    $result .= '<li class="external"><a href="'.site_url("notification").'">See all '.$type.'s <i class="m-icon-swapright"></i></a></li></ul></li>'.
         '<!-- END '.strtoupper($type).' DROPDOWN -->';
 
     return $result;
