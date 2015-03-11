@@ -6,7 +6,6 @@ class Migration_Notification extends Base_migration {
         $this->db->query("DELETE FROM module WHERE slug like 'notification%'");
         $new= array(
             "notifications" => array("name" => "Notification", "slug" => "notification", "hidden" => 1, "status" => 1, "parent" => 5),
-            "notification" => array("name" => "Notification", "slug" => "notification", "icon" => "fa-warning", "hidden" => 0, "status" => 1, "parent" => 74),
         );
         $newIds = array();
 
@@ -18,7 +17,7 @@ class Migration_Notification extends Base_migration {
 
         $newModule = array(
             array("name" => "Notification Read", "slug" => "notification/read", "hidden" => 1, "status" => 1, "parent" => $parentTags['notifications']),
-            array("name" => "Notification List", "slug" => "notification/notificationList", "hidden" => 1, "status" => 1, "parent" => $parentTags['notification']),
+            array("name" => "Notification List", "slug" => "notification/notificationList", "hidden" => 1, "status" => 1, "parent" => $parentTags['notifications']),
         );
 
         foreach($newModule as $module) {

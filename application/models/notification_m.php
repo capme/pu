@@ -60,7 +60,7 @@ class Notification_m extends MY_Model{
 					$_result->fullname,
                     $_result->message,
                     $_result->created_at,
-                    '<a href="'.site_url($_result->url).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>'
+                    '<a href="'.site_url("notification/read?id=".$_result->id."&url=".urlencode($_result->url)).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>'
 			);
 		}
 	
@@ -73,6 +73,7 @@ class Notification_m extends MY_Model{
     public function removeNotification($id, $action){
         $this->db = $this->load->database("mysql", TRUE);
 		$this->db->where_in($this->pkField, $id);
+        $this->db->where('read',1);
 		$this->db->delete($this->table);
     }
     

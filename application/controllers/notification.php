@@ -16,7 +16,7 @@ class Notification extends MY_Controller {
 	{
 		$this->data['content'] = "list_v.php";
 		$this->data['pageTitle'] = "Notification";
-		$this->data['breadcrumb'] = array("Operation"=> "", "Notification" => "");
+		$this->data['breadcrumb'] = array("Notification" => "");
 	
 		$this->notification_m->clearCurrentFilter();
 	
@@ -44,13 +44,10 @@ class Notification extends MY_Controller {
     }
 
     public function read(){
-        $ids = $this->input->get('ids');
-        $url = $this->input->get('url');
-        $doc = $this->input->get('doc');
-        $id = $this->input->get('id');        
-        $urls=$url."&doc=".$doc."&id=".$id;
-       
-        $this->notification_m->setAsRead($ids);
-        redirect($urls);
+        $id = $this->input->get('id');
+        $url = urldecode($this->input->get('url'));
+                
+        $this->notification_m->setAsRead($id);
+        redirect($url);
     }
 }
