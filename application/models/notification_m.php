@@ -80,6 +80,7 @@ class Notification_m extends MY_Model{
         $notif = [];
 
         if(!empty($group)){
+            $this->db->order_by('id', 'desc');
             $notif = $this->db->get_where($this->table, array('group_ids' => $group, 'read' => $this->readStatus['unread'] ))->result_array();
         }
 

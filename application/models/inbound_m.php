@@ -44,9 +44,9 @@ class Inbound_m extends MY_Model {
 					'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
 					$no=$no+1,
 					$_result->client_code,
-					$_result->doc_number,                   					
+					$_result->doc_number,
+                    $_result->note,
 					$_result->created_at,
-					$_result->updated_at,
 					'<a href="'.site_url("inbounds/download/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Download</a>
                     <a href="'.site_url("inbounds/delete/".$_result->id).'" onClick="return deletechecked()" class="btn btn-xs default"  ><i class="fa fa-trash-o"></i>Delete<a>'
 					

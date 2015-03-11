@@ -1,5 +1,10 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-  
+
+/**
+ * Class Listinbounddoc
+ * @property Inbounddocument_m $inbounddocument_m
+ * @property Clientoptions_m $clientoptions_m
+ */
 class Listinbounddoc extends MY_Controller {
 	var $data = array();
 	public function __construct()
@@ -62,32 +67,36 @@ class Listinbounddoc extends MY_Controller {
 				}
 			}
 		}elseif($post['method'] == "updateattr"){
-			
-			
-			foreach($post as $keyItemPost => $itemPost){
-				if(strstr($keyItemPost,"attrset")){
-					$tmp = explode("_",$keyItemPost);
-					$data[$tmp[1]] = $itemPost;
-				}elseif($keyItemPost == "client"){
-					$client = $itemPost;
-				}elseif($keyItemPost == "doc"){
-					$doc_number = $itemPost;
-				}elseif($keyItemPost == "id"){
-					$id = $itemPost;
-				}
-			}
-			//updating attribute set
-			foreach($data as $keyItemData => $itemData){
-				$this->inbounddocument_m->updateAttrSetInboundInventory($client, $doc_number, $itemData, $keyItemData);
-			}
-			
-			//updating inbound document table
-			$this->inbounddocument_m->updateStatusInboundDocumentList($id,2);
-			
+			$this->_saveAttributeSet($post);
 			redirect("listinbounddoc");
 			
 		}
 	}
+
+    private function _saveAttributeSet($post) {
+        foreach($post as $keyItemPost => $itemPost){
+            if(strstr($keyItemPost,"attrset")){
+                $tmp = explode("_",$keyItemPost);
+                $data[$tmp[1]]['attribute_set'] = $itemPost;
+            }elseif(strstr($keyItemPost,"upc")){
+                $tmp = explode("_",$keyItemPost);
+                $data[$tmp[1]]['upc'] = json_encode(explode('|', $itemPost));
+            }elseif($keyItemPost == "client"){
+                $client = $itemPost;
+            }elseif($keyItemPost == "doc"){
+                $doc_number = $itemPost;
+            }elseif($keyItemPost == "id"){
+                $id = $itemPost;
+            }
+        }
+        //updating attribute set
+        foreach($data as $keyItemData => $itemData){
+            $this->inbounddocument_m->updateAttrSetInboundInventory($client, $doc_number, $itemData, $keyItemData);
+        }
+
+        //updating inbound document table
+        $this->inbounddocument_m->updateStatusInboundDocumentList($id,2);
+    }
 	
 	private function _validateFile($data){
 		if(strtoupper($data[2]['A']) != strtoupper("SKU Code")){
@@ -346,6 +355,7 @@ class Listinbounddoc extends MY_Controller {
 	}
 	
 	public function exportFormItemImport(){
+        $this->load->model("clientoptions_m");
 		$client = $this->input->get('client');
 		$doc = $this->input->get('doc');
 				
@@ -399,11 +409,13 @@ class Listinbounddoc extends MY_Controller {
 		$this->va_excel->getActiveSheet()->setCellValue('AR2', 'Price');
 		$this->va_excel->getActiveSheet()->setCellValue('AS2', 'TotalQty');
 		$this->va_excel->getActiveSheet()->setCellValue('AT2', 'UnitType');
-		$this->va_excel->getActiveSheet()->setCellValue('AU2', 'AttributeSet');
-		
+
 		$result = $this->inbounddocument_m->getInboundInvItem($client, $doc);
 		$lup = 3;
-		
+
+        $attrList = $this->clientoptions_m->get($client, 'attribute_set');
+        $attrList = json_decode($attrList['option_value'], true);
+
 		foreach($result as $item){
 			$this->va_excel->getActiveSheet()->setCellValue('A'.$lup, $item['sku_simple']);
 			$this->va_excel->getActiveSheet()->setCellValue('B'.$lup, $item['sku_description']);
@@ -451,7 +463,6 @@ class Listinbounddoc extends MY_Controller {
 			$this->va_excel->getActiveSheet()->setCellValue('AR'.$lup, $item['price']);
 			$this->va_excel->getActiveSheet()->setCellValue('AS'.$lup, $item['total_qty']);
 			$this->va_excel->getActiveSheet()->setCellValue('AT'.$lup, $item['unit_type']);
-			$this->va_excel->getActiveSheet()->setCellValue('AU'.$lup, $this->inbounddocument_m->attrSet[$client][$item['attribute_set']]);
 			$lup++;
 		}
 								
@@ -471,6 +482,7 @@ class Listinbounddoc extends MY_Controller {
 	}
 
 	public function updateAttr(){
+        $this->load->model("clientoptions_m");
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "Inbound Document";
 		$this->data['formTitle'] = "Inbound Document - Update Attribute";
@@ -481,15 +493,20 @@ class Listinbounddoc extends MY_Controller {
 		$this->va_input->addHidden( array("name" => "client", "value" => $_GET['client']) );		
 		$this->va_input->addHidden( array("name" => "doc", "value" => $_GET['doc']) );		
 		$this->va_input->addHidden( array("name" => "id", "value" => $_GET['id']) );		
-		$client = $_GET['client'];
+
+        $client = $_GET['client'];
 		$doc = $_GET['doc'];
 		$rows = $this->inbounddocument_m->getInboundInvItem($client, $doc);
+        $attrList = $this->clientoptions_m->get($client, 'attribute_set');
+        $attrList = json_decode($attrList['option_value'], true);
+
 		foreach($rows as $itemRows){
 			if($itemRows['attribute_set'] <> ""){
-				$this->va_input->addSelect( array("name" => "attrset_".$itemRows['id'],"label" => "", "list" => $this->inbounddocument_m->attrSet[$_GET['client']], "value" => @$itemRows['attribute_set'], "msg" => @$msg['client']) );
+				$this->va_input->addSelect( array("name" => "attrset_".$itemRows['id'],"label" => "", "list" => $attrList, "value" => @$itemRows['attribute_set'], "msg" => @$msg['client']) );
 			}else{
-				$this->va_input->addSelect( array("name" => "attrset_".$itemRows['id'],"label" => "", "list" => $this->inbounddocument_m->attrSet[$_GET['client']], "value" => "", "msg" => @$msg['client']) );
+				$this->va_input->addSelect( array("name" => "attrset_".$itemRows['id'],"label" => "", "list" => $attrList, "value" => "", "msg" => @$msg['client']) );
 			}
+            $this->va_input->addHidden( array("name" => "upc_".$itemRows['id'], "value" => $itemRows['upc']) );
 		}
 		$this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("layout/inboundDocUpdateAttrSet.php");
 
