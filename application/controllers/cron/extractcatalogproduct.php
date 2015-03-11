@@ -3,6 +3,10 @@
  * cron for extract xls uploaded doc into table inb_inventory_item(client_id)   
  */
 
+/**
+ * Class Extractcatalogproduct
+ * @property Inbounddocument_m $inbounddocument_m
+ */
 class Extractcatalogproduct extends CI_Controller {
 
 	function __construct()
@@ -52,10 +56,10 @@ class Extractcatalogproduct extends CI_Controller {
 								echo "import inbound document for client ".$client_id." doc number ".$doc_number."<br>";
 								$return = $this->inbounddocument_m->updateStatusInboundDocumentList($id,1);
 		                        
-		                        $from=2;	
-		                        $to=1;
-		                        $url="listinbounddoc";
-		                        $message="Inbound document was imported";
+		                        $from = USER_CRON;
+		                        $to = GROUP_OPERATION;
+		                        $url = "listinbounddoc";
+		                        $message="Catalog product (".$rows['doc_number'].") was imported";
 		                        $this->notification_m->add($from, $to, $url, $message);
 		                        
 							} catch( Exception $e ) {
