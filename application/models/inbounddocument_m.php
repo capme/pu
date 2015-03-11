@@ -7,16 +7,19 @@ class Inbounddocument_m extends MY_Model {
 	var $db = null;
 	var $table = 'inb_document';
 	var $tableInv = 'inb_inventory_item';
+	var $tableInvStock = 'inb_inventory_stock';
 	var $tableClient ='client';
 	var $sorts = array(1 => "id");
 	var $pkField = "id";
 	var $path = "";
-
+	var $pathInboundForm = "";
+	
 	function __construct()
     {
         parent::__construct();
 		$this->db = $this->load->database('mysql', TRUE);
 		$this->path = BASEPATH ."../public/inbound/catalog_product"; 
+		$this->pathInboundForm = BASEPATH ."../public/inbound/inbound_form"; 
 		$this->relation = array(
 			array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}")
 		);
@@ -33,6 +36,22 @@ class Inbounddocument_m extends MY_Model {
 		return $rows;
 	}
 
+	function getInboundInvItemById($client, $id){
+		if(!$client) return array();
+		$mysql = $this->load->database('mysql', TRUE);
+		$query = $mysql->get_where('inb_inventory_item_'.$client, array('id'=>$id));
+		$rows = $query->result_array();
+		return $rows;
+	}
+
+	function getInboundInvStock($client, $doc){
+		if(!$client) return array();
+		$mysql = $this->load->database('mysql', TRUE);
+		$query = $mysql->get_where('inb_inventory_stock_'.$client, array('doc_number'=>$doc));
+		$rows = $query->result_array();
+		return $rows;
+	}
+
 	function getInboundDocumentRow($id){
 		$mysql = $this->load->database('mysql', TRUE);
 		$query = $mysql->get_where('inb_document', array('id'=>$id));
@@ -40,13 +59,18 @@ class Inbounddocument_m extends MY_Model {
 		return $row;
 	}
 
-	function getInboundDocumentInfo($client) 
+	function getInboundDocumentInfo($client,$type) 
 	{
 		if(!$client) return array();
 		$mysql = $this->load->database('mysql', TRUE);
-		$query = $this->db->query("SELECT * FROM inb_document WHERE client_id=".$client." AND status=0");
+		$query = $this->db->query("SELECT * FROM inb_document WHERE client_id=".$client." AND type=".$type." AND status=0");
 		//$query = $mysql->get_where('inb_document', array('client_id'=>$client, 'status'=>0));
 		//$row = $query->row_array();		
+		return $query;
+	}
+
+	function getInboundDocumentByReferenceId($reference_id){
+		$query = $this->db->query("SELECT * FROM inb_document WHERE reference_id=".$reference_id." ORDER BY id DESC limit 1");
 		return $query;
 	}
 	
@@ -77,24 +101,32 @@ class Inbounddocument_m extends MY_Model {
 		foreach($_row->result() as $_result) {
 			//$status=$statList[$_result->status];
 			$btnAction = "";
-			if($_result->status == 1){
-				//shows only update attribute button
-				$btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->id.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
-			}elseif($_result->status == 2){
-				//shows update attribute button and download form item
-				$btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->id.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
-				$btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/exportFormItemImport?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Download Form Import</a>';
-			}
-			if($_result->status == 1 or $_result->status == 2){
-				$records["aaData"][] = array(
-						'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
-						$no=$no+1,
-						$_result->client_code,
-						$_result->doc_number,
-						$_result->note,
-						$btnAction
-						
-				);
+			if($_result->type == 1){
+				if($_result->status == 1){
+					//shows only update attribute button
+					$btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->id.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
+				}elseif($_result->status == 2){
+					//shows update attribute button and download form item
+					$btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->id.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
+					$btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/exportFormItemImport?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Form Import</a>';
+					$btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/downloadInboundForm?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Inbound Form</a>';
+				}elseif($_result->status == 3){
+					$btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->id.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
+					$btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/exportFormItemImport?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Form Import</a>';
+					$btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/downloadInboundForm?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Inbound Form</a>';
+					$btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/downloadReceivingForm?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Receiving Form</a>';
+									}
+				if($_result->status == 1 or $_result->status == 2 or $_result->status == 3){
+					$records["aaData"][] = array(
+							'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
+							$no=$no+1,
+							$_result->client_code,
+							$_result->doc_number,
+							$_result->note,
+							$btnAction
+							
+					);
+				}
 			}
 		}
 		$records["sEcho"] = $sEcho;
@@ -910,6 +942,88 @@ class Inbounddocument_m extends MY_Model {
         $upc[0] = $data['attribute_set'];
 		$sql = "UPDATE ".$this->tableInv."_".$client." set attribute_set='".$data['attribute_set']."', upc='".implode('|', $upc)."' WHERE doc_number=".$doc_number." and id=".$id;
 		$this->db->query($sql);
+	}
+	
+	public function insertInboundDocument($doc_number, $client_id, $note, $type, $status, $created_by, $filename, $reference_id){
+		$sql = "INSERT INTO ".$this->table."(doc_number, client_id, note, type, status, created_by, filename, reference_id) VALUES";
+		$sql .= " ('".$doc_number."',".$client_id.",'".$note."',".$type.",".$status.",".$created_by.",'".$filename."',".$reference_id.")";
+		$this->db->query($sql);
+	}
+
+	function saveToInboundInventoryStock($client, $doc_number, $created_by, $arr_data, $reference_id){
+		//start parse the array from excel
+		$sizeRowX = count($arr_data)+4; 
+		$sizeRowY = count($arr_data[1]);
+
+		$this->db->trans_start();
+		for($x=12;$x<=$sizeRowX;$x++){
+			if(isset($arr_data[$x]['A'])){
+				//------------------get the field items--------------------------
+				//sku code
+				$skuCode = $arr_data[$x]['A'];
+				
+				//sku description
+				$skuDescription = $arr_data[$x]['B'];	
+	
+				//size
+				$size = $arr_data[$x]['C'];	
+				
+				//qty
+				$qty = $arr_data[$x]['D'];
+					
+				//qty inbound
+				$qtyInbound = $arr_data[$x]['E'];	
+	
+				//note
+				$note = $arr_data[$x]['F'];	
+	
+				//problem
+				$problem = $arr_data[$x]['G'];
+					
+				//actionTaken
+				$actionTaken = $arr_data[$x]['H'];
+					
+				//loc bin
+				$locBin = $arr_data[$x]['I'];	
+										
+				//------------------ready for processing the query----------------------------
+				$query = $this->db->query("SELECT * FROM inb_inventory_item_".$client." WHERE sku_description='".$skuDescription."' AND doc_number=".$reference_id);
+				$row = $query->result_array();
+				if(isset($row[0]['id'])){
+					// item_id
+					$item_id = $row[0]['id'];
+					
+					//doc_number
+					//same value with param $doc_number
+					
+					//reference_num
+					$tmpInisialBrand = explode(",",$row[0]['sku_description']);
+						$reference_num = "REC".$tmpInisialBrand[0].date("dmy");
+						
+					//quantity
+					//same value with field excel $qty
+					
+					//bin_location
+					//same value with field excel $locBin
+					
+					//created_at
+					$created_at = date("Y-m-d H:i:s");
+					
+					//created_by
+					//same value with param $created_by
+								
+					$sql = "INSERT INTO ".$this->tableInvStock."_".$client." (item_id, doc_number, reference_num, quantity";
+					$sql .= ", bin_location, created_at, created_by) VALUES";
+					$sql .= " (".$item_id.", ".$doc_number.", '".$reference_num."', ".$qty.", '".$locBin."', '".$created_at."', ".$created_by.")";
+					$this->db->query($sql);
+				}					
+			}
+		}
+		$this->db->trans_complete();
+		//end parse the array from excel
+		
+		
+		return TRUE;
 	}
 
 }

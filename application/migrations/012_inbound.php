@@ -94,6 +94,8 @@ class Migration_Inbound extends Base_migration {
   `quantity` int(11) NOT NULL,
   `bin_location` varchar(30) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` int NOT NULL,
+  `updated_at` datetime NULL 
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
 	}

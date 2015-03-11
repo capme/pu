@@ -22,7 +22,8 @@ class Extractcatalogproduct extends CI_Controller {
 		$clients = $this->client_m->getClients();
 		
 		foreach($clients as $client) {
-			$inbound = $this->inbounddocument_m->getInboundDocumentInfo($client["id"]);            
+			$inbound = $this->inbounddocument_m->getInboundDocumentInfo($client["id"],1);
+
 			if($inbound->num_rows>0){
 				foreach($inbound->result_array() as $rows ){
 					if(!empty($rows)){
