@@ -11,8 +11,7 @@ class Inbounddocument_m extends MY_Model {
 	var $sorts = array(1 => "id");
 	var $pkField = "id";
 	var $path = "";
-	var $attrSet = array();
-	
+
 	function __construct()
     {
         parent::__construct();
@@ -24,26 +23,6 @@ class Inbounddocument_m extends MY_Model {
 		//sampai sini error.
 		$this->select = array("{$this->table}.doc_number", "{$this->table}.client_id", "{$this->table}.note", "{$this->table}.type", "{$this->table}.status", "{$this->table}.created_at", "{$this->table}.updated_at", "{$this->table}.created_by", "{$this->table}.filename", "{$this->table}.id", "{$this->tableClient}.client_code");
 		$this->filters = array("client_id"=>"client_id");
-		
-		//Attribute set
-		//the blow shoes
-		$this->attrSet[1] = array("Footwear");
-		//universo
-		$this->attrSet[5] = array("Havaianas Men", "Havaianas Women");
-		//paraplou
-		$this->attrSet[6] = array("mentop", "menbottom", "menfootwear", "menaccessories", "womentop", "womenbottom", "womenfootwear", "womenaccessories", "unisexaccessories");
-		//g2000
-		$this->attrSet[7] = array("topmen", "blazermen", "bottommen", "topwomen", "blazerwomen", "bottomwomen", "accessories");
-		//jobb trisula
-		$this->attrSet[8] = array("tops", "bottoms", "blazers", "accessories");
-		//leecooper
-		$this->attrSet[9] = array("Atasan Pria", "Bawahan Pria", "Atasan Wanita", "Bawahan Wanita", "Sandal", "Sepatu Pria", "Topi", "Tas", "Ikat Pinggang", "Dompet", "Gelang", "Jam Tangan");
-		//ekretek
-		$this->attrSet[10] = array("Default", "Cartridge", "eLiquid", "Starter Kit", "ecigarettes");
-		//agrapana
-		$this->attrSet[11] = array("Default");
-		//farishfs
-		$this->attrSet[12] = array("Footwear");
 	}
 	
 	function getInboundInvItem($client, $doc){
@@ -671,6 +650,7 @@ class Inbounddocument_m extends MY_Model {
 					}else{
 						$iBrand = substr($tmp[0], 0, 1);
 					}
+                $iBrand = strtoupper($iBrand);
 				//get 3 digit inisial product name
 				$tmp = explode(" ",$productname);
 				if(isset($tmp[1])){
@@ -690,7 +670,7 @@ class Inbounddocument_m extends MY_Model {
 					$inWarna = substr($colorname,0,2);
 				}
 				//compose the sku config
-				$sku_config = $inBrand."-".$inProdName." ".$inWarna; 
+				$sku_config = $iBrand."-".$inProdName." ".$inWarna;
 			}else{
 				//sku exist
 				//get 4 digit inisial product name
@@ -713,6 +693,7 @@ class Inbounddocument_m extends MY_Model {
 			//sku simple
 			if($size == ""){
 				$sku_simple = $sku_config."-"."OS";
+                $size = 'One Size';
 			}else{
 				$sku_simple = $sku_config."-".$size;
 			}
@@ -726,6 +707,7 @@ class Inbounddocument_m extends MY_Model {
 					}else{
 						$iBrand = substr($tmp[0], 0, 1);
 					}
+                $iBrand = strtoupper($iBrand);
 				//get 1 digit inisial gender
 				$inGender = substr($gender, 0, 1);
 				//get category
@@ -772,7 +754,7 @@ class Inbounddocument_m extends MY_Model {
 					}else{
 						$iBrand = substr($tmp[0], 0, 1);
 					}
-				
+				$iBrand = strtoupper($iBrand);
 				$itemAttrSet = "";
 				$itemSize = $size;
 				$itemColor = $colorname;
@@ -789,34 +771,34 @@ class Inbounddocument_m extends MY_Model {
 			}
 			
 			//track lot
-			$track_lot = "";
+			$track_lot = "0";
 			
 			//track serial
-			$track_serial = "";
+			$track_serial = "0";
 			
 			//track expdate
-			$track_expdate = "";
+			$track_expdate = "0";
 			
 			//primary unit of measure
-			$primary_unit_of_measure = "";
+			$primary_unit_of_measure = "EACH";
 			
 			//packaging unit
-			$packaging_unit = "";
+			$packaging_unit = "EACH";
 			
 			//packaging uom qty
-			$packaging_uom_qty = "";
+			$packaging_uom_qty = "1";
 			
 			//length
-			$length = "";
+			$length = "1";
 			
 			//width
-			$width = "";
+			$width = "1";
 			
 			//height
-			$height = "";
+			$height = "1";
 			
 			//weiight
-			$weiight = "";
+			$weiight = "1";
 			
 			//qualifiers
 			$qualifiers = "";
@@ -831,22 +813,22 @@ class Inbounddocument_m extends MY_Model {
 			$nmfc = "";
 			
 			//lot_number_required
-			$lot_number_required = "";
+			$lot_number_required = "0";
 			
 			//serial_number_required
-			$serial_number_required = "";
+			$serial_number_required = "0";
 			
 			//serial_number_must_be_unique
-			$serial_number_must_be_unique = "";
+			$serial_number_must_be_unique = "0";
 			
 			//exp_date_req
-			$exp_date_req = "";
+			$exp_date_req = "0";
 			
 			//enable_cost
-			$enable_cost = "";
+			$enable_cost = "0";
 			
 			//cost_required
-			$cost_required = "";
+			$cost_required = "0";
 			
 			//is_haz_mat
 			$is_haz_mat = "";
@@ -924,7 +906,9 @@ class Inbounddocument_m extends MY_Model {
 	}
 	
 	public function updateAttrSetInboundInventory($client, $doc_number, $data, $id){
-		$sql = "UPDATE ".$this->tableInv."_".$client." set attribute_set='".$data."' WHERE doc_number=".$doc_number." and id=".$id;
+        $upc = json_decode($data['upc'], true);
+        $upc[0] = $data['attribute_set'];
+		$sql = "UPDATE ".$this->tableInv."_".$client." set attribute_set='".$data['attribute_set']."', upc='".implode('|', $upc)."' WHERE doc_number=".$doc_number." and id=".$id;
 		$this->db->query($sql);
 	}
 

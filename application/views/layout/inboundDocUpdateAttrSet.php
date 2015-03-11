@@ -15,7 +15,7 @@ $rows = $this->inbounddocument_m->getInboundInvItem($client, $doc);
 		<th width="25%">SKU</th>
 		<th width="25%">Product Name</th>
 		<th width="15%">Category</th>
-		<th width="35%">Attribute Set</th>
+		<th width="35%" style="text-align:center;">Attribute Set</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -30,12 +30,12 @@ $rows = $this->inbounddocument_m->getInboundInvItem($client, $doc);
 		<td><?php echo $itemRows['sku_simple'];?></td>
 		<td><?php echo $productName;?></td>
 		<td><?php echo $category;?></td>
-		<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[$num]);?></td>
+		<td>
+            <?php echo $this->va_input->getFieldInput($this->va_input->fields[$num]); $num++;?>
+            <?php echo $this->va_input->getFieldInput($this->va_input->fields[$num]); $num++;?>
+        </td>
 	</tr>
-	<?php
-		$num++;
-	}
-	?>
+	<?php } ?>
 	</tbody>
 	</table>
 </div>
