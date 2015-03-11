@@ -72,7 +72,7 @@ function buildNotification($list = array(), $type = ''){
         $result .= '</ul></li>';
     }
 
-    $result .= '</ul></li>'.
+    $result .= '<li class="external"><a href="#">See all '.$type.'s <i class="m-icon-swapright"></i></a></li></ul></li>'.
         '<!-- END '.strtoupper($type).' DROPDOWN -->';
 
     return $result;
