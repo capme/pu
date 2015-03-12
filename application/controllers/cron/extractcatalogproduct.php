@@ -76,8 +76,7 @@ class Extractcatalogproduct extends CI_Controller {
 			}else{
 				echo "no available inbound document need to imported for client ".$client["id"]."<br>";
 			}
-			/*
-			*/
+
 		}
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 /*
- * model for handle extracted xls data into table inb_inventory_item(client_id)   
+ * model for handle operation table inb_inventory_item(client_id),inb_inventory_stock(client_id),inb_document    
  */
 class Inbounddocument_m extends MY_Model {
 	
@@ -23,7 +23,7 @@ class Inbounddocument_m extends MY_Model {
 		$this->relation = array(
 			array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}")
 		);
-		//sampai sini error.
+		
 		$this->select = array("{$this->table}.doc_number", "{$this->table}.client_id", "{$this->table}.note", "{$this->table}.type", "{$this->table}.status", "{$this->table}.created_at", "{$this->table}.updated_at", "{$this->table}.created_by", "{$this->table}.filename", "{$this->table}.id", "{$this->tableClient}.client_code");
 		$this->filters = array("client_id"=>"client_id");
 	}
@@ -64,8 +64,6 @@ class Inbounddocument_m extends MY_Model {
 		if(!$client) return array();
 		$mysql = $this->load->database('mysql', TRUE);
 		$query = $this->db->query("SELECT * FROM inb_document WHERE client_id=".$client." AND type=".$type." AND status=0");
-		//$query = $mysql->get_where('inb_document', array('client_id'=>$client, 'status'=>0));
-		//$row = $query->row_array();		
 		return $query;
 	}
 
@@ -99,7 +97,6 @@ class Inbounddocument_m extends MY_Model {
 		$no=0;
 		
 		foreach($_row->result() as $_result) {
-			//$status=$statList[$_result->status];
 			$btnAction = "";
 			if($_result->type == 1){
 				if($_result->status == 1){

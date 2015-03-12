@@ -8,7 +8,7 @@ $arrIds = explode(",", $ids);
 <table width="100%">
 <?php
 foreach($arrIds as $row){
-	//echo $row;
+
 	$datas = $this->inbounddocument_m->getInboundDocumentRow($row);
 	$dataClient = $this->client_m->getClientById($datas['client_id']);
 	$dataClientRows = $dataClient->row_array();
