@@ -82,7 +82,7 @@ class Migration_Inbound extends Base_migration {
   `attribute_set` varchar(200) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NULL,
-  `updated_by` int NOT NULL,
+  `updated_by` int NOT NULL
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
 
