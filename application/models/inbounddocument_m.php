@@ -70,7 +70,7 @@ class Inbounddocument_m extends MY_Model {
 	}
 
 	function getInboundDocumentByReferenceId($reference_id){
-		$query = $this->db->query("SELECT * FROM inb_document WHERE reference_id=".$reference_id." ORDER BY id DESC limit 1");
+		$query = $this->db->query("SELECT * FROM inb_document WHERE reference_id=".$reference_id." AND status=1 ORDER BY id DESC limit 1");
 		return $query;
 	}
 	
