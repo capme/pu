@@ -9,24 +9,33 @@ class Testform extends MY_Controller {
 	public function index() 
 	{
 		
-		$this->_page4();		
+		$this->_mageCreateItem();		
 
 	}
 	
-	private function _page4(){
-		$this->data['content'] = "form_v.php";
-		$this->data['pageTitle'] = "test ajah form custom";
-		$this->data['formTitle'] = "test ajah form custom";
-		$this->data['breadcrumb'] = array("Test Form 2"=> "");
-		$this->load->library("va_input", array("group" => "codconfirmation"));
+	private function _mageCreateItem(){
+		$this->load->library("Mageapi");
+		$this->load->model( array("client_m", "inbounddocument_m") );
 		
-		$this->va_input->addSelect( array("name" => "status", "label" => "Status *", "list" => array("1"=>"Processing","3" => "Receive","4"=>"Cancel"), "value" => "isi value", "msg" => "isi msg"));	
-		$this->va_input->addInput( array("name" => "client_code_1", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value" => "value 2", "msg" => "test", "disabled"=>"disabled"));
+			$config = array(
+				"auth" => "dart:Vela123!",
+				"url" => "http://leecooper.localhost/api/soap/?wsdl"
+			);
+			
+		$client = $_GET['client'];
+		$doc = $_GET['doc'];
 		
-		$this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("layout/custom1.php");
-		$this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
-		$this->load->view('template', $this->data);
-				
+		$param = $this->inbounddocument_m->getParamInboundMage($client, $doc);		
+							
+		if( $this->mageapi->initSoap($config) ) {
+				$return = $this->mageapi->inboundCreateItem($param);
+				if(is_array($return)){
+					print_r($return);
+				}else{
+					echo $return;
+				}
+		}
+		
 	}
 	
 }

@@ -23,6 +23,7 @@ class Mageapi {
 	const METHOD_CATLOGINVENTORY = "cataloginventory_stock_item.list";
 	const METHOD_ATTRIBUTE_LIST = "product_attribute.list";
 	const METHOD_ATTRIBUTE_INFO = "product_attribute.info";
+	const METHOD_PRODUCT_CREATE = "product.create";
 	const METHOD_VELA_SHIPMENT = "vela_shipment.create";
 	const METHOD_VELA_RETURN_NEW = "vela_return.new";
 	const METHOD_VELA_RETURN_EXPORTED = "vela_return.exported";
@@ -383,5 +384,21 @@ class Mageapi {
 			log_message('error', "MAGEAPI ==> ". $e->getMessage());
 			return false;
 		}
+	}
+	
+	public function inboundCreateItem($params){
+		try {
+			$calls = array();
+			foreach($params as $param) {
+				$calls[] = array(self::METHOD_PRODUCT_CREATE, $param);
+			}
+			$returns = $this->soapClient->multiCall($this->soapSession, $calls);
+
+			return $returns;
+		} catch( Exception $e ) {
+			log_message('error', "MAGEAPI ==> ". $e->getMessage());
+			return false;
+		}
+		
 	}
 }

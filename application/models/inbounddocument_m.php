@@ -1023,4 +1023,197 @@ class Inbounddocument_m extends MY_Model {
 		return TRUE;
 	}
 
+	public function getParamInboundMage($client, $doc){
+		$param = array();
+		
+		//get data from table inb_inventory_item_<client_id>
+		$result = $this->getInboundInvItem($client, $doc);
+		foreach($result as $item){
+			$sku = $item['sku_simple'];
+			$set = $item['attribute_set'];
+			$type = "simple";
+			/*
+			 * 'simple' : Simple Product 
+			 * 'grouped' : Grouped Product
+			 * 'configurable' : Configurable Product
+			 * 'virtual' : Virtual Product
+			 * 'bundle' : Bundle Product
+			 */
+			
+			$categories = array();
+			$websites = array();
+				$sku_description =  explode(",",$item['sku_description']);
+			$name = $sku_description[4];
+			$description = $name." description";
+			$short_description = $name." short description";
+			$weight = $item['weiight'];
+			$status = "1";
+			/*
+			 1 : enabled
+			 2 : disabled
+			 */
+			$url_key = "";
+			$url_path = "";
+			$visibility = "1"; 
+				/*
+				1 : Not Visible Individualy
+				2 : Catalog
+				3 : Search
+				4 : Catalog, Search
+				*/
+			$category_ids = array();
+			$website_ids = array(1);
+			$gift_message_available = "";
+			$price = $item['price'];
+			$tax_class_id = "";
+			$meta_title = "";
+			$meta_keyword = "";
+			$meta_description = "";
+			$qty = $item['total_qty'];
+			
+			$param[] = array($type, $set, $sku, array(
+			    'categories' => $categories,
+			    'websites' => $websites,
+			    'name' => $name,
+			    'description' => $description,
+			    'short_description' => $short_description,
+			    'weight' => $weight,
+			    'status' => $status,
+			    'url_key' => $url_key,
+			    'url_path' => $url_path,
+			    'visibility' => $visibility,
+			    'price' => $price,
+			    'tax_class_id' => $tax_class_id,
+			    'meta_title' => $meta_title,
+			    'meta_keyword' => $meta_keyword,
+			    'meta_description' => $meta_description,
+			    'stock_data' => array(
+			    					'qty' => $qty
+								)
+			));			
+			
+		}
+
+		return $param;
+	}
+
+	public function getParamInbound3PL($client, $doc){
+		$param = array();
+
+		//get data from table inb_inventory_item_<client_id>
+		$result = $this->getInboundInvItem($client, $doc);
+		foreach($result as $item){
+			$sku_config = $item['sku_config'];
+			$sku_simple = $item['sku_simple'];
+			$sku_description =  explode(",",$item['sku_description']);
+				$name = $sku_description[4];
+				$description = $sku_description[2];
+				$description2 = $sku_description[3];
+			$min = $item['min'];
+			$max = $item['max'];
+			$cycle_count = $item['cycle_count'];
+			$reorder_qty = $item['reorder_qty'];
+			$inventor_method = $item['inventor_method'];
+			$temperature = $item['temperature'];
+			$cost = $item['cost'];
+			$upc = $item['upc'];
+			$track_lot = $item['track_lot'];
+			$track_serial = $item['track_serial'];
+			$track_expdate = $item['track_expdate'];
+			$primary_unit_of_measure = $item['primary_unit_of_measure'];
+			$packaging_unit = $item['packaging_unit'];
+			$packaging_uom_qty = $item['packaging_uom_qty'];
+			$length = $item['length'];
+			$width = $item['width'];
+			$height = $item['height'];
+			$weiight = $item['weiight'];
+			$qualifiers = $item['qualifiers'];
+			$storage_setup = $item['storage_setup'];
+			$variable_setup = $item['variable_setup'];
+			$nmfc = $item['nmfc'];
+			$lot_number_required = $item['lot_number_required'];
+			$serial_number_required = $item['serial_number_required'];
+			$serial_number_must_be_unique = $item['serial_number_must_be_unique'];
+			$exp_date_req = $item['exp_date_req'];
+			$enable_cost = $item['enable_cost'];
+			$cost_required = $item['cost_required'];
+			$is_haz_mat = $item['is_haz_mat'];
+			$haz_mat_id = $item['haz_mat_id'];
+			$haz_mat_shipping_name = $item['haz_mat_shipping_name'];
+			$haz_mat_hazard_class = $item['haz_mat_hazard_class'];
+			$haz_mat_packing_group = $item['haz_mat_packing_group'];
+			$haz_mat_flash_point = $item['haz_mat_flash_point'];
+			$haz_mat_label_code = $item['haz_mat_label_code'];
+			$haz_mat_flat = $item['haz_mat_flat'];
+			$image_url = $item['image_url'];
+			$storage_count_stript_template_id = $item['storage_count_stript_template_id'];
+			$storage_rates = $item['storage_rates'];
+			$outbound_mobile_serialization_behavior = $item['outbound_mobile_serialization_behavior'];
+			$price = $item['price'];
+			$total_qty = $item['total_qty'];
+			$unit_type = $item['unit_type'];
+			$attribute_set = $item['attribute_set'];
+			
+			$strItem .= "
+	         <vias:Item>
+	            <!--Optional:-->
+	            <vias:SKU>".$sku_simple."</vias:SKU>
+	            <!--Optional:-->
+	            <vias:Description>".$description."</vias:Description>
+	            <!--Optional:-->
+	            <vias:Description2>".$description2."</vias:Description2>
+	            <!--vias:CustomerID>XXX</vias:CustomerID-->
+	            <vias:Min>6</vias:Min>
+	            <vias:Max>16</vias:Max>
+	            <vias:ReorderQty>5</vias:ReorderQty>
+	            <vias:CycleCount>30</vias:CycleCount>
+	            <!--Optional:-->
+	            <vias:InventoryCategory>?</vias:InventoryCategory>
+	            <vias:InventoryMethod>FIFO</vias:InventoryMethod>
+	            <vias:Cost>1500000</vias:Cost>
+	            <!--Optional:-->
+	            <vias:UPC>|One Size|YELLOW</vias:UPC>
+	            <vias:IsTrackLotNumber>0</vias:IsTrackLotNumber>
+	            <vias:IsTrackLotNumberRequired>0</vias:IsTrackLotNumberRequired>
+	            <vias:IsTrackSerialNumber>0</vias:IsTrackSerialNumber>
+	            <vias:IsTrackSerialNumberRequired>0</vias:IsTrackSerialNumberRequired>
+	            <vias:IsTrackSerialNumberUnique>0</vias:IsTrackSerialNumberUnique>
+	            <vias:IsTrackExpirationDate>0</vias:IsTrackExpirationDate>
+	            <vias:IsTrackExpirationDateRequired>0</vias:IsTrackExpirationDateRequired>
+	            <vias:IsTrackCost>0</vias:IsTrackCost>
+	            <vias:IsTrackCostRequired>0</vias:IsTrackCostRequired>
+	            <!--Optional:-->
+	            <vias:NMFC></vias:NMFC>
+	            <!--Optional:-->
+	            <vias:InventoryUnitOfMeasure>EACH</vias:InventoryUnitOfMeasure>
+	            <!--Optional:-->
+	            <vias:LabelingUnitLength>1</vias:LabelingUnitLength>
+	            <vias:LabelingUnitWidth>1</vias:LabelingUnitWidth>
+	            <vias:LabelingUnitHeight>1</vias:LabelingUnitHeight>
+	            <vias:LabelingUnitWeight>1</vias:LabelingUnitWeight>
+	            <vias:IsHazMat>0</vias:IsHazMat>
+	            <!--Optional:-->
+	            <vias:HazMatID>field haz_mat_id</vias:HazMatID>
+	            <!--Optional:-->
+	            <vias:HazMatShippingName>field haz_mat_shipping_name</vias:HazMatShippingName>
+	            <!--Optional:-->
+	            <vias:HazMatHazardClass>field haz_mat_hazard_class</vias:HazMatHazardClass>
+	            <vias:HazMatPackingGroup>Default</vias:HazMatPackingGroup>
+	            <!--Optional:-->
+	            <vias:HazMatFlashPoint>field haz_mat_flash_point</vias:HazMatFlashPoint>
+	            <!--Optional:-->
+	            <vias:HazMatLabelCode>field haz_mat_label_code</vias:HazMatLabelCode>
+	            <vias:HazMatFlag>Default</vias:HazMatFlag>
+	            <!--Optional:-->
+	            <vias:ImageUrl>field image_url</vias:ImageUrl>
+	            <!--Optional:-->
+	            <vias:ItemQualifiers>
+	               <!--Zero or more repetitions:-->
+	               <vias:string>field qualifiers</vias:string>
+	            </vias:ItemQualifiers>
+	         </vias:Item>			
+			";			
+		}
+	}
+	
 }
