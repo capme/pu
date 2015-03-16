@@ -386,6 +386,11 @@ class Mageapi {
 		}
 	}
 	
+	/**
+	 * create mage's items for each client
+	 * @param array $ItemsToCreate
+	 * @return array created items
+	 */
 	public function inboundCreateItem($params){
 		try {
 			$calls = array();

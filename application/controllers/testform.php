@@ -9,7 +9,11 @@ class Testform extends MY_Controller {
 	public function index() 
 	{
 		
-		$this->_mageCreateItem();		
+		//create items in magento
+		$this->_mageCreateItem();
+		echo "<br><br>";
+		//create items in 3PL
+		$this->_3PLCreateItem();			
 
 	}
 	
@@ -36,6 +40,27 @@ class Testform extends MY_Controller {
 				}
 		}
 		
+	}
+	
+	private function _3PLCreateItem(){
+		$this->load->add_package_path(APPPATH."third_party/threepl/");
+		$this->load->library("inbound_threepl", null, "inbound_threepl");
+		$this->load->model( array("client_m", "inbounddocument_m") );
+		
+		$client = $_GET['client'];
+		$doc = $_GET['doc'];
+		
+		$c['threepluser'] = "dev_test";
+		$c['threeplpass'] = "Vela123!";
+		
+		$this->inbound_threepl->setConfig( array("username" => $c['threepluser'], "password" => $c['threeplpass']) );
+		$returnMsgItem = $this->inbounddocument_m->getParamInbound3PL($client, $doc);
+		$return = $this->inbound_threepl->createItems($returnMsgItem);
+				if(is_array($return)){
+					print_r($return);
+				}else{
+					echo $return;
+				}
 	}
 	
 }

@@ -1102,15 +1102,22 @@ class Inbounddocument_m extends MY_Model {
 
 		//get data from table inb_inventory_item_<client_id>
 		$result = $this->getInboundInvItem($client, $doc);
+		$strItem = "";
 		foreach($result as $item){
 			$sku_config = $item['sku_config'];
 			$sku_simple = $item['sku_simple'];
 			$sku_description =  explode(",",$item['sku_description']);
 				$name = $sku_description[4];
-				$description = $sku_description[2];
-				$description2 = $sku_description[3];
-			$min = $item['min'];
-			$max = $item['max'];
+			if($item['min'] == ""){
+				$min = 0;
+			}else{
+				$min = $item['min'];	
+			}
+			if($item['max'] == ""){
+				$max = 0;
+			}else{
+				$max = $item['max'];	
+			}
 			$cycle_count = $item['cycle_count'];
 			$reorder_qty = $item['reorder_qty'];
 			$inventor_method = $item['inventor_method'];
@@ -1138,6 +1145,9 @@ class Inbounddocument_m extends MY_Model {
 			$enable_cost = $item['enable_cost'];
 			$cost_required = $item['cost_required'];
 			$is_haz_mat = $item['is_haz_mat'];
+			if($is_haz_mat == ""){
+				$is_haz_mat = 0;
+			}
 			$haz_mat_id = $item['haz_mat_id'];
 			$haz_mat_shipping_name = $item['haz_mat_shipping_name'];
 			$haz_mat_hazard_class = $item['haz_mat_hazard_class'];
@@ -1159,61 +1169,62 @@ class Inbounddocument_m extends MY_Model {
 	            <!--Optional:-->
 	            <vias:SKU>".$sku_simple."</vias:SKU>
 	            <!--Optional:-->
-	            <vias:Description>".$description."</vias:Description>
+	            <vias:Description>".$item['sku_description']."</vias:Description>
 	            <!--Optional:-->
-	            <vias:Description2>".$description2."</vias:Description2>
+	            <vias:Description2></vias:Description2>
 	            <!--vias:CustomerID>XXX</vias:CustomerID-->
-	            <vias:Min>6</vias:Min>
-	            <vias:Max>16</vias:Max>
-	            <vias:ReorderQty>5</vias:ReorderQty>
-	            <vias:CycleCount>30</vias:CycleCount>
+	            <vias:Min>".$min."</vias:Min>
+	            <vias:Max>".$max."</vias:Max>
+	            <vias:ReorderQty>".$reorder_qty."</vias:ReorderQty>
+	            <vias:CycleCount>".$cycle_count."</vias:CycleCount>
 	            <!--Optional:-->
 	            <vias:InventoryCategory>?</vias:InventoryCategory>
-	            <vias:InventoryMethod>FIFO</vias:InventoryMethod>
-	            <vias:Cost>1500000</vias:Cost>
+	            <vias:InventoryMethod>".$inventor_method."</vias:InventoryMethod>
+	            <vias:Cost>".$cost."</vias:Cost>
 	            <!--Optional:-->
-	            <vias:UPC>|One Size|YELLOW</vias:UPC>
-	            <vias:IsTrackLotNumber>0</vias:IsTrackLotNumber>
-	            <vias:IsTrackLotNumberRequired>0</vias:IsTrackLotNumberRequired>
-	            <vias:IsTrackSerialNumber>0</vias:IsTrackSerialNumber>
-	            <vias:IsTrackSerialNumberRequired>0</vias:IsTrackSerialNumberRequired>
-	            <vias:IsTrackSerialNumberUnique>0</vias:IsTrackSerialNumberUnique>
-	            <vias:IsTrackExpirationDate>0</vias:IsTrackExpirationDate>
+	            <vias:UPC>".$upc."</vias:UPC>
+	            <vias:IsTrackLotNumber>".$track_lot."</vias:IsTrackLotNumber>
+	            <vias:IsTrackLotNumberRequired>".$lot_number_required."</vias:IsTrackLotNumberRequired>
+	            <vias:IsTrackSerialNumber>".$track_serial."</vias:IsTrackSerialNumber>
+	            <vias:IsTrackSerialNumberRequired>".$serial_number_required."</vias:IsTrackSerialNumberRequired>
+	            <vias:IsTrackSerialNumberUnique>".$serial_number_must_be_unique."</vias:IsTrackSerialNumberUnique>
+	            <vias:IsTrackExpirationDate>".$track_expdate."</vias:IsTrackExpirationDate>
 	            <vias:IsTrackExpirationDateRequired>0</vias:IsTrackExpirationDateRequired>
 	            <vias:IsTrackCost>0</vias:IsTrackCost>
-	            <vias:IsTrackCostRequired>0</vias:IsTrackCostRequired>
+	            <vias:IsTrackCostRequired>".$cost_required."</vias:IsTrackCostRequired>
 	            <!--Optional:-->
-	            <vias:NMFC></vias:NMFC>
+	            <vias:NMFC>".$nmfc."</vias:NMFC>
 	            <!--Optional:-->
-	            <vias:InventoryUnitOfMeasure>EACH</vias:InventoryUnitOfMeasure>
+	            <vias:InventoryUnitOfMeasure>".$primary_unit_of_measure."</vias:InventoryUnitOfMeasure>
 	            <!--Optional:-->
-	            <vias:LabelingUnitLength>1</vias:LabelingUnitLength>
-	            <vias:LabelingUnitWidth>1</vias:LabelingUnitWidth>
-	            <vias:LabelingUnitHeight>1</vias:LabelingUnitHeight>
-	            <vias:LabelingUnitWeight>1</vias:LabelingUnitWeight>
-	            <vias:IsHazMat>0</vias:IsHazMat>
+	            <vias:LabelingUnitLength>".$length."</vias:LabelingUnitLength>
+	            <vias:LabelingUnitWidth>".$width."</vias:LabelingUnitWidth>
+	            <vias:LabelingUnitHeight>".$height."</vias:LabelingUnitHeight>
+	            <vias:LabelingUnitWeight>".$weiight."</vias:LabelingUnitWeight>
+	            <vias:IsHazMat>".$is_haz_mat."</vias:IsHazMat>
 	            <!--Optional:-->
-	            <vias:HazMatID>field haz_mat_id</vias:HazMatID>
+	            <vias:HazMatID>".$haz_mat_id."</vias:HazMatID>
 	            <!--Optional:-->
-	            <vias:HazMatShippingName>field haz_mat_shipping_name</vias:HazMatShippingName>
+	            <vias:HazMatShippingName>".$haz_mat_shipping_name."</vias:HazMatShippingName>
 	            <!--Optional:-->
-	            <vias:HazMatHazardClass>field haz_mat_hazard_class</vias:HazMatHazardClass>
+	            <vias:HazMatHazardClass>".$haz_mat_hazard_class."</vias:HazMatHazardClass>
 	            <vias:HazMatPackingGroup>Default</vias:HazMatPackingGroup>
 	            <!--Optional:-->
-	            <vias:HazMatFlashPoint>field haz_mat_flash_point</vias:HazMatFlashPoint>
+	            <vias:HazMatFlashPoint>".$haz_mat_flash_point."</vias:HazMatFlashPoint>
 	            <!--Optional:-->
-	            <vias:HazMatLabelCode>field haz_mat_label_code</vias:HazMatLabelCode>
+	            <vias:HazMatLabelCode>".$haz_mat_label_code."</vias:HazMatLabelCode>
 	            <vias:HazMatFlag>Default</vias:HazMatFlag>
 	            <!--Optional:-->
-	            <vias:ImageUrl>field image_url</vias:ImageUrl>
+	            <vias:ImageUrl>".$image_url."</vias:ImageUrl>
 	            <!--Optional:-->
 	            <vias:ItemQualifiers>
 	               <!--Zero or more repetitions:-->
-	               <vias:string>field qualifiers</vias:string>
+	               <vias:string>".$qualifiers."</vias:string>
 	            </vias:ItemQualifiers>
 	         </vias:Item>			
 			";			
 		}
+		return "<vias:Items>".$strItem."</vias:Items>";
 	}
 	
 }
