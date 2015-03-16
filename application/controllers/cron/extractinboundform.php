@@ -1,13 +1,9 @@
 <?php 
 /*
- * cron for extract xls uploaded doc into table inb_inventory_item(client_id)   
+ * cron for extract xls uploaded doc into table inb_inventory_stock_<client_id>   
  */
 
-/**
- * Class Extractcatalogproduct
- * @property Inbounddocument_m $inbounddocument_m
- */
-class Extractcatalogproduct extends CI_Controller {
+class Extractinboundform extends CI_Controller {
 
 	function __construct()
     {
@@ -18,12 +14,11 @@ class Extractcatalogproduct extends CI_Controller {
     }
 	
 	public function run() {
-		$path_file = $this->inbounddocument_m->path;
+		$path_file = $this->inbounddocument_m->pathInboundForm;
 		$clients = $this->client_m->getClients();
-		
-		foreach($clients as $client) {
-			$inbound = $this->inbounddocument_m->getInboundDocumentInfo($client["id"],1);
 
+		foreach($clients as $client) {
+			$inbound = $this->inbounddocument_m->getInboundDocumentInfo($client["id"],2);
 			if($inbound->num_rows>0){
 				foreach($inbound->result_array() as $rows ){
 					if(!empty($rows)){
@@ -37,6 +32,7 @@ class Extractcatalogproduct extends CI_Controller {
 						$updated_at = $rows['updated_at'];
 						$created_by = $rows['created_by'];
 						$filename = $rows['filename'];
+						$reference_id = $rows['reference_id'];
 						
 						if($status == "0"){
 							$objPHPExcel = PHPExcel_IOFactory::load($path_file."/".$filename);
@@ -53,18 +49,18 @@ class Extractcatalogproduct extends CI_Controller {
 							
 							try {
 								$doc_number = $id;
-								$return = $this->inbounddocument_m->saveToInboundInventory($client_id, $doc_number, $created_by, $arr_data);
-								echo "import inbound document for client ".$client_id." doc number ".$doc_number."<br>";
+								$return = $this->inbounddocument_m->saveToInboundInventoryStock($client_id, $doc_number, $created_by, $arr_data, $reference_id);
+								echo "import inbound form for client ".$client_id." doc number ".$doc_number."<br>";
+								//updating inbound form record into 1
 								$return = $this->inbounddocument_m->updateStatusInboundDocumentList($id,1);
+								//updating inbound document record into 3
+								$return = $this->inbounddocument_m->updateStatusInboundDocumentList($reference_id,3);
 		                        
-                                $from = USER_CRON;
-		                        $to = GROUP_OPERATION;
-                                foreach($inbound->result_array() as $rows ){					
-                                $id = $rows['id'];
-                                $url="listinbounddoc/updateAttr?client=".$client_id."&doc=".$id."&id=".$id."";
-		                        $message="Catalog product (".$rows['doc_number'].") was imported";
+		                        $from=2;	
+		                        $to=1;
+		                        $url="listinbounddoc";
+		                        $message="Inbound form was imported";
 		                        $this->notification_m->add($from, $to, $url, $message);
-                                }
 		                        
 							} catch( Exception $e ) {
 								echo $e->getMessage();	
@@ -74,9 +70,8 @@ class Extractcatalogproduct extends CI_Controller {
 					}
 				}
 			}else{
-				echo "no available inbound document need to imported for client ".$client["id"]."<br>";
+				echo "no available inbound form need to imported for client ".$client["id"]."<br>";
 			}
-
 		}
 	}
 }

@@ -67,7 +67,11 @@ var TableAjax = function () {
 						}								
 						var command = action.val();	
 						grid.clearAjaxParams();
+						if(action.val() == 0){
 							document.location = "listinbounddoc/revise?ids="+ids.join(",") +"&command="+command;
+						}else if(action.val() == 1){
+							document.location = "listinbounddoc/uploadInboundForm?ids="+ids.join(",") +"&command="+command;
+						}
 					}					
                     grid.addAjaxParam("sAction", "group_action");
 					grid.addAjaxParam("sGroupActionName", action.val());

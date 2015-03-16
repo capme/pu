@@ -9,6 +9,7 @@ CREATE TABLE `inb_document` (
   `updated_at` datetime DEFAULT NULL,
   `created_by` int(11) NOT NULL,
   `filename` varchar(200) NOT NULL,
+  `reference_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `doc_number` (`doc_number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

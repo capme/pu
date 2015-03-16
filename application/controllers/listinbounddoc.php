@@ -24,7 +24,7 @@ class Listinbounddoc extends MY_Controller {
 				
 		$this->load->library("va_list");
 		$this->va_list->setListName("Inbound Document Listing")->disableAddPlugin()
-			->setMassAction(array("0" => "Revise"))
+			->setMassAction(array("0" => "Revise", "1" => "Upload Inbound Form"))
 			->setHeadingTitle(array("No #", "Client Name","DO Number","Note"))
 			->setHeadingWidth(array(2, 2,2,3,2));
 		$this->va_list->setDropdownFilter(1, array("name" => $this->inbounddocument_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));
@@ -43,7 +43,7 @@ class Listinbounddoc extends MY_Controller {
 		}		
 		
 		if($post['method'] == "revise"){
-			$filename=$this->_uploadFile($post['listid']);
+			$filename=$this->_uploadFile($post['listid'], $post['method']);
 			if ($filename == null){
 				$this->session->set_flashdata( array("listinbounddocError" => json_encode(array("msg" => "Upload failed.", "data" => $post))) );
 				redirect("listinbounddoc/revise?ids=".$post['listid']."&command=".$post['command']);								 
@@ -69,7 +69,31 @@ class Listinbounddoc extends MY_Controller {
 		}elseif($post['method'] == "updateattr"){
 			$this->_saveAttributeSet($post);
 			redirect("listinbounddoc");
-			
+		
+		}elseif($post['method'] == "uploadinbform"){
+				
+			$filename=$this->_uploadFile($post['listid'], $post['method']);
+			if ($filename == null){
+				$this->session->set_flashdata( array("listinbounddocError" => json_encode(array("msg" => "Upload failed.", "data" => $post))) );
+				redirect("listinbounddoc/uploadInboundForm?ids=".$post['listid']."&command=".$post['command']);
+			}else{
+				//saving into table
+				foreach($filename as $key => $itemFilename){
+					$param_reference_id = $key;
+						$datas = $this->inbounddocument_m->getInboundDocumentRow($key);
+						$param_doc_number = $datas['doc_number'];
+						$param_client_id =  $datas['client_id'];
+						$param_note =  $datas['note'];
+					
+					$param_filename = $itemFilename;
+					$param_status = 0;
+					$param_type = 2;
+					$param_created_by = $user=$this->session->userdata('pkUserId');
+					$this->inbounddocument_m->insertInboundDocument($param_doc_number, $param_client_id, $param_note, $param_type, $param_status, $param_created_by, $param_filename, $param_reference_id);
+				}
+				redirect("listinbounddoc");
+			}								 
+						
 		}
 	}
 
@@ -304,39 +328,72 @@ class Listinbounddoc extends MY_Controller {
 				
 	}
 	
-	private function _uploadFile($listid) {
+	private function _uploadFile($listid, $method) {
 		$arrItemId = explode(",", $listid);
  		$return = array('error' => false, 'data' => array());
-		$config['upload_path'] = '../public/inbound/catalog_product/';
+		if($method == "revise"){
+			$config['upload_path'] = '../public/inbound/catalog_product/';
+		}elseif($method == "uploadinbform"){
+			$config['upload_path'] = '../public/inbound/inbound_form/';
+		}
 		$config['allowed_types'] = 'xls|xlsx';
 		$config['max_size']	= '2000';
 		
-		$this->load->library('upload');		
-		$files = $_FILES;
-	    $cpt = count($_FILES['userfile']['name']); 
-	    for($i=0; $i<$cpt; $i++)
-	    {
-	    				
-	        $_FILES['userfile']['name']= $files['userfile']['name'][$i];
-	        $_FILES['userfile']['type']= $files['userfile']['type'][$i];
-	        $_FILES['userfile']['tmp_name']= $files['userfile']['tmp_name'][$i];
-	        $_FILES['userfile']['error']= $files['userfile']['error'][$i];
-	        $_FILES['userfile']['size']= $files['userfile']['size'][$i];    
+		if($method == "revise"){
 			
-	
-				$datas = $this->inbounddocument_m->getInboundDocumentRow($arrItemId[$i]);
-				$doc_number = $datas['doc_number'];
-				$id = $datas['id'];
-				 
-	    	    $config['file_name'] = "tmp_".$arrItemId[$i]."_".$id;
+			$this->load->library('upload');		
+			$files = $_FILES;
+		    $cpt = count($_FILES['userfile']['name']); 
+		    for($i=0; $i<$cpt; $i++)
+		    {
+		    				
+		        $_FILES['userfile']['name']= $files['userfile']['name'][$i];
+		        $_FILES['userfile']['type']= $files['userfile']['type'][$i];
+		        $_FILES['userfile']['tmp_name']= $files['userfile']['tmp_name'][$i];
+		        $_FILES['userfile']['error']= $files['userfile']['error'][$i];
+		        $_FILES['userfile']['size']= $files['userfile']['size'][$i];    
+				
 		
-	    	$this->upload->initialize($config);
-			if ( ! $this->upload->do_upload()) {			
-				return null;
-			}	
-	
-	    }
-		return $arrItemId;
+					$datas = $this->inbounddocument_m->getInboundDocumentRow($arrItemId[$i]);
+					$doc_number = $datas['doc_number'];
+					$id = $datas['id'];
+					 
+		    	    $config['file_name'] = "tmp_".$arrItemId[$i]."_".$id;
+			
+		    	$this->upload->initialize($config);
+				if ( ! $this->upload->do_upload()) {			
+					return null;
+				}	
+		
+		    }
+			return $arrItemId;
+			
+		}elseif($method == "uploadinbform"){
+			
+			$this->load->library('upload');		
+			$files = $_FILES;
+		    $cpt = count($_FILES['userfile']['name']);
+			$listFileName = array(); 
+		    for($i=0; $i<$cpt; $i++)
+		    {
+		        $_FILES['userfile']['name']= $files['userfile']['name'][$i];
+		        $_FILES['userfile']['type']= $files['userfile']['type'][$i];
+		        $_FILES['userfile']['tmp_name']= $files['userfile']['tmp_name'][$i];
+		        $_FILES['userfile']['error']= $files['userfile']['error'][$i];
+		        $_FILES['userfile']['size']= $files['userfile']['size'][$i];    
+		    	
+		    	    $config['file_name'] = time();
+			
+		    	$this->upload->initialize($config);
+				if ( ! $this->upload->do_upload()) {			
+					return null;
+				}else{
+					$listFileName[$arrItemId[$i]] = $config['file_name'].".xls"; 
+				}	
+			}
+			return $listFileName;
+			
+		}
 		
 	}
 
@@ -513,6 +570,153 @@ class Listinbounddoc extends MY_Controller {
 		$this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
 		$this->load->view('template', $this->data);
 		
+	}
+	
+	public function downloadInboundForm(){
+		$client = $this->input->get('client');
+		$doc = $this->input->get('doc');
+		
+		$dataClient = $this->client_m->getClientById($client);
+		$dataClientRows = $dataClient->row_array();
+				
+		$this->va_excel->setActiveSheetIndex(0);
+		
+		$this->va_excel->getActiveSheet()->setTitle('Standard Import - Tab1');
+
+		$this->va_excel->getActiveSheet()->setCellValue('A1', 'INBOUND REPORT');
+		$this->va_excel->getActiveSheet()->setCellValue('A3', 'Clients :');
+			$this->va_excel->getActiveSheet()->setCellValue('B3', $dataClientRows['client_code']);
+		$this->va_excel->getActiveSheet()->setCellValue('A4', 'Physical Inbound Date :');
+		$this->va_excel->getActiveSheet()->setCellValue('A6', 'Berikut adalah hasil pengecekan (Quality Control) atas barang masuk ke Warehouse - Taman Tekno yang telah dilakukan sebelumnya:');
+		
+			$this->va_excel->getActiveSheet()->mergeCells('A8:A11');
+		$this->va_excel->getActiveSheet()->setCellValue('A8', 'SKU Code');
+			$this->va_excel->getActiveSheet()->mergeCells('B8:B11');
+		$this->va_excel->getActiveSheet()->setCellValue('B8', 'SKU Description');
+		$this->va_excel->getActiveSheet()->setCellValue('C8', 'Product Catalog');
+			$this->va_excel->getActiveSheet()->mergeCells('C9:C11');
+		$this->va_excel->getActiveSheet()->setCellValue('C9', 'Size');
+			$this->va_excel->getActiveSheet()->mergeCells('D9:D11');
+		$this->va_excel->getActiveSheet()->setCellValue('D9', 'Qty');
+			$this->va_excel->getActiveSheet()->mergeCells('E8:E11');
+		$this->va_excel->getActiveSheet()->setCellValue('E8', 'Qty Inbound (SJ)');
+			$this->va_excel->getActiveSheet()->mergeCells('F8:F11');
+		$this->va_excel->getActiveSheet()->setCellValue('F8', 'Note');
+			$this->va_excel->getActiveSheet()->mergeCells('G8:G11');
+		$this->va_excel->getActiveSheet()->setCellValue('G8', 'Problem');
+			$this->va_excel->getActiveSheet()->mergeCells('H8:H11');
+		$this->va_excel->getActiveSheet()->setCellValue('H8', 'Action Taken');
+			$this->va_excel->getActiveSheet()->mergeCells('I8:I11');
+		$this->va_excel->getActiveSheet()->setCellValue('I8', 'Loc. Bin');
+		
+		$result = $this->inbounddocument_m->getInboundInvItem($client, $doc);
+		$lup = 12;
+		
+		foreach($result as $item){
+			$skuDescription = $item['sku_description'];
+			$arrTmp = explode("S:",$skuDescription);
+				$arrTmp1 = explode(",",$arrTmp[1]);
+				$size = $arrTmp1[0]; 
+			$this->va_excel->getActiveSheet()->setCellValue('A'.$lup, $item['sku_simple']);
+			$this->va_excel->getActiveSheet()->setCellValue('B'.$lup, $item['sku_description']);
+			$this->va_excel->getActiveSheet()->setCellValue('C'.$lup, $size);
+			$this->va_excel->getActiveSheet()->setCellValue('D'.$lup, $item['total_qty']);
+			$lup++;
+		}
+		
+		$filename='Form Inbound ('.$dataClientRows['client_code'].' Do Number : '.$doc.').xls'; 
+		header('Content-Type: application/vnd.ms-excel'); 
+		header('Content-Disposition: attachment;filename="'.$filename.'"'); 
+		header('Cache-Control: max-age=0');
+		            
+		
+		$objWriter = PHPExcel_IOFactory::createWriter($this->va_excel, 'Excel5');  
+		
+		$objWriter->save('php://output');
+		
+	}
+
+	public function downloadReceivingForm(){
+		$client = $this->input->get('client');
+		$doc = $this->input->get('doc');
+				$query = $this->inbounddocument_m->getInboundDocumentByReferenceId($doc);
+				$row = $query->result_array();
+				$id = $row[0]['id'];
+				$doc = $id;
+		
+		$dataClient = $this->client_m->getClientById($client);
+		$dataClientRows = $dataClient->row_array();
+				
+		$this->va_excel->setActiveSheetIndex(0);
+		
+		$this->va_excel->getActiveSheet()->setTitle('Standard Import - Tab1');
+
+		$this->va_excel->getActiveSheet()->setCellValue('A1', 'ReferenceNumber');
+		$this->va_excel->getActiveSheet()->setCellValue('B1', 'Sku');
+		$this->va_excel->getActiveSheet()->setCellValue('C1', 'Quantity');
+		$this->va_excel->getActiveSheet()->setCellValue('D1', 'LocationField1');
+		
+		$result = $this->inbounddocument_m->getInboundInvStock($client, $doc);
+		$lup = 2;
+		
+		foreach($result as $item){
+			$item_id = $item['item_id'];
+			//get sku code
+			$query = $this->inbounddocument_m->getInboundInvItemById($client, $item_id);
+			$sku_simple = $query[0]['sku_simple']; 
+			
+			$this->va_excel->getActiveSheet()->setCellValue('A'.$lup, $item['reference_num']);
+			$this->va_excel->getActiveSheet()->setCellValue('B'.$lup, $sku_simple);
+			$this->va_excel->getActiveSheet()->setCellValue('C'.$lup, $item['quantity']);
+			$this->va_excel->getActiveSheet()->setCellValue('D'.$lup, $item['bin_location']);
+			$lup++;
+		}
+		
+		$filename='Receiving Form ('.$dataClientRows['client_code'].' Do Number : '.$doc.').xls'; 
+		header('Content-Type: application/vnd.ms-excel'); 
+		header('Content-Disposition: attachment;filename="'.$filename.'"'); 
+		header('Cache-Control: max-age=0');
+		            
+		
+		$objWriter = PHPExcel_IOFactory::createWriter($this->va_excel, 'Excel5');  
+		
+		$objWriter->save('php://output');
+		
+	}
+	
+	public function uploadInboundForm(){
+		if($_GET['ids'] == ""){
+			redirect("listinbounddoc"); 	
+		}
+		$this->data['content'] = "form_v.php";
+		$this->data['pageTitle'] = "Inbound Document";
+		$this->data['formTitle'] = "Inbound Document - Upload Inb. Form";
+		$this->data['breadcrumb'] = array("Inbound Document"=> "");
+		$this->load->library("va_input", array("group" => "listinbounddoc"));
+		
+		$flashData = $this->session->flashdata("listinbounddocError");
+		if($flashData !== false) 
+		{
+			$flashData = json_decode($flashData, true);
+			$value = $flashData['data'];
+			$msg = $flashData['msg'];
+		} 
+		else 
+		{
+			$msg = $value = array();
+		}
+		
+	    $this->va_input->addCustomField( array("name" =>"userfile[]", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg, "label" => "Upload File *", "view"=>"form/upload_xls"));
+		$this->va_input->addHidden( array("name" => "listid", "value" => $_GET['ids']) );
+		$this->va_input->addHidden( array("name" => "method", "value" => "uploadinbform") );		
+		$this->va_input->addHidden( array("name" => "command", "value" => $_GET['command']) );		
+				
+		$this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("layout/inboundDocRevise.php");
+
+		$this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
+		$this->load->view('template', $this->data);
+				
+				
 	}
 	
 }

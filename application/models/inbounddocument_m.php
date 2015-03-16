@@ -1,26 +1,29 @@
 <?php
 /*
- * model for handle extracted xls data into table inb_inventory_item(client_id)   
+ * model for handle operation table inb_inventory_item(client_id),inb_inventory_stock(client_id),inb_document    
  */
 class Inbounddocument_m extends MY_Model {
 	
 	var $db = null;
 	var $table = 'inb_document';
 	var $tableInv = 'inb_inventory_item';
+	var $tableInvStock = 'inb_inventory_stock';
 	var $tableClient ='client';
 	var $sorts = array(1 => "id");
 	var $pkField = "id";
 	var $path = "";
-
+	var $pathInboundForm = "";
+	
 	function __construct()
     {
         parent::__construct();
 		$this->db = $this->load->database('mysql', TRUE);
 		$this->path = BASEPATH ."../public/inbound/catalog_product"; 
+		$this->pathInboundForm = BASEPATH ."../public/inbound/inbound_form"; 
 		$this->relation = array(
 			array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}")
 		);
-		//sampai sini error.
+		
 		$this->select = array("{$this->table}.doc_number", "{$this->table}.client_id", "{$this->table}.note", "{$this->table}.type", "{$this->table}.status", "{$this->table}.created_at", "{$this->table}.updated_at", "{$this->table}.created_by", "{$this->table}.filename", "{$this->table}.id", "{$this->tableClient}.client_code");
 		$this->filters = array("client_id"=>"client_id");
 	}
@@ -33,6 +36,22 @@ class Inbounddocument_m extends MY_Model {
 		return $rows;
 	}
 
+	function getInboundInvItemById($client, $id){
+		if(!$client) return array();
+		$mysql = $this->load->database('mysql', TRUE);
+		$query = $mysql->get_where('inb_inventory_item_'.$client, array('id'=>$id));
+		$rows = $query->result_array();
+		return $rows;
+	}
+
+	function getInboundInvStock($client, $doc){
+		if(!$client) return array();
+		$mysql = $this->load->database('mysql', TRUE);
+		$query = $mysql->get_where('inb_inventory_stock_'.$client, array('doc_number'=>$doc));
+		$rows = $query->result_array();
+		return $rows;
+	}
+
 	function getInboundDocumentRow($id){
 		$mysql = $this->load->database('mysql', TRUE);
 		$query = $mysql->get_where('inb_document', array('id'=>$id));
@@ -40,13 +59,16 @@ class Inbounddocument_m extends MY_Model {
 		return $row;
 	}
 
-	function getInboundDocumentInfo($client) 
+	function getInboundDocumentInfo($client,$type) 
 	{
 		if(!$client) return array();
 		$mysql = $this->load->database('mysql', TRUE);
-		$query = $this->db->query("SELECT * FROM inb_document WHERE client_id=".$client." AND status=0");
-		//$query = $mysql->get_where('inb_document', array('client_id'=>$client, 'status'=>0));
-		//$row = $query->row_array();		
+		$query = $this->db->query("SELECT * FROM inb_document WHERE client_id=".$client." AND type=".$type." AND status=0");
+		return $query;
+	}
+
+	function getInboundDocumentByReferenceId($reference_id){
+		$query = $this->db->query("SELECT * FROM inb_document WHERE reference_id=".$reference_id." AND status=1 ORDER BY id DESC limit 1");
 		return $query;
 	}
 	
@@ -75,26 +97,33 @@ class Inbounddocument_m extends MY_Model {
 		$no=0;
 		
 		foreach($_row->result() as $_result) {
-			//$status=$statList[$_result->status];
 			$btnAction = "";
-			if($_result->status == 1){
-				//shows only update attribute button
-				$btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->id.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
-			}elseif($_result->status == 2){
-				//shows update attribute button and download form item
-				$btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->id.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
-				$btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/exportFormItemImport?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Download Form Import</a>';
-			}
-			if($_result->status == 1 or $_result->status == 2){
-				$records["aaData"][] = array(
-						'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
-						$no=$no+1,
-						$_result->client_code,
-						$_result->doc_number,
-						$_result->note,
-						$btnAction
-						
-				);
+			if($_result->type == 1){
+				if($_result->status == 1){
+					//shows only update attribute button
+					$btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->id.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
+				}elseif($_result->status == 2){
+					//shows update attribute button and download form item
+					$btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->id.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
+					$btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/exportFormItemImport?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Form Import</a>';
+					$btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/downloadInboundForm?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Inbound Form</a>';
+				}elseif($_result->status == 3){
+					$btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->id.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
+					$btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/exportFormItemImport?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Form Import</a>';
+					$btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/downloadInboundForm?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Inbound Form</a>';
+					$btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/downloadReceivingForm?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Receiving Form</a>';
+									}
+				if($_result->status == 1 or $_result->status == 2 or $_result->status == 3){
+					$records["aaData"][] = array(
+							'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
+							$no=$no+1,
+							$_result->client_code,
+							$_result->doc_number,
+							$_result->note,
+							$btnAction
+							
+					);
+				}
 			}
 		}
 		$records["sEcho"] = $sEcho;
@@ -911,5 +940,280 @@ class Inbounddocument_m extends MY_Model {
 		$sql = "UPDATE ".$this->tableInv."_".$client." set attribute_set='".$data['attribute_set']."', upc='".implode('|', $upc)."' WHERE doc_number=".$doc_number." and id=".$id;
 		$this->db->query($sql);
 	}
+	
+	public function insertInboundDocument($doc_number, $client_id, $note, $type, $status, $created_by, $filename, $reference_id){
+		$sql = "INSERT INTO ".$this->table."(doc_number, client_id, note, type, status, created_by, filename, reference_id) VALUES";
+		$sql .= " ('".$doc_number."',".$client_id.",'".$note."',".$type.",".$status.",".$created_by.",'".$filename."',".$reference_id.")";
+		$this->db->query($sql);
+	}
 
+	function saveToInboundInventoryStock($client, $doc_number, $created_by, $arr_data, $reference_id){
+		//start parse the array from excel
+		$sizeRowX = count($arr_data)+4; 
+		$sizeRowY = count($arr_data[1]);
+
+		$this->db->trans_start();
+		for($x=12;$x<=$sizeRowX;$x++){
+			if(isset($arr_data[$x]['A'])){
+				//------------------get the field items--------------------------
+				//sku code
+				$skuCode = $arr_data[$x]['A'];
+				
+				//sku description
+				$skuDescription = $arr_data[$x]['B'];	
+	
+				//size
+				$size = $arr_data[$x]['C'];	
+				
+				//qty
+				$qty = $arr_data[$x]['D'];
+					
+				//qty inbound
+				$qtyInbound = $arr_data[$x]['E'];	
+	
+				//note
+				$note = $arr_data[$x]['F'];	
+	
+				//problem
+				$problem = $arr_data[$x]['G'];
+					
+				//actionTaken
+				$actionTaken = $arr_data[$x]['H'];
+					
+				//loc bin
+				$locBin = $arr_data[$x]['I'];	
+										
+				//------------------ready for processing the query----------------------------
+				$query = $this->db->query("SELECT * FROM inb_inventory_item_".$client." WHERE sku_description='".$skuDescription."' AND doc_number=".$reference_id);
+				$row = $query->result_array();
+				if(isset($row[0]['id'])){
+					// item_id
+					$item_id = $row[0]['id'];
+					
+					//doc_number
+					//same value with param $doc_number
+					
+					//reference_num
+					$tmpInisialBrand = explode(",",$row[0]['sku_description']);
+						$reference_num = "REC".$tmpInisialBrand[0].date("dmy");
+						
+					//quantity
+					//same value with field excel $qty
+					
+					//bin_location
+					//same value with field excel $locBin
+					
+					//created_at
+					$created_at = date("Y-m-d H:i:s");
+					
+					//created_by
+					//same value with param $created_by
+								
+					$sql = "INSERT INTO ".$this->tableInvStock."_".$client." (item_id, doc_number, reference_num, quantity";
+					$sql .= ", bin_location, created_at, created_by) VALUES";
+					$sql .= " (".$item_id.", ".$doc_number.", '".$reference_num."', ".$qty.", '".$locBin."', '".$created_at."', ".$created_by.")";
+					$this->db->query($sql);
+				}					
+			}
+		}
+		$this->db->trans_complete();
+		//end parse the array from excel
+		
+		
+		return TRUE;
+	}
+
+	public function getParamInboundMage($client, $doc){
+		$param = array();
+		
+		//get data from table inb_inventory_item_<client_id>
+		$result = $this->getInboundInvItem($client, $doc);
+		foreach($result as $item){
+			$sku = $item['sku_simple'];
+			$set = $item['attribute_set'];
+			$type = "simple";
+			/*
+			 * 'simple' : Simple Product 
+			 * 'grouped' : Grouped Product
+			 * 'configurable' : Configurable Product
+			 * 'virtual' : Virtual Product
+			 * 'bundle' : Bundle Product
+			 */
+			
+			$categories = array();
+			$websites = array();
+				$sku_description =  explode(",",$item['sku_description']);
+			$name = $sku_description[4];
+			$description = $name." description";
+			$short_description = $name." short description";
+			$weight = $item['weiight'];
+			$status = "1";
+			/*
+			 1 : enabled
+			 2 : disabled
+			 */
+			$url_key = "";
+			$url_path = "";
+			$visibility = "1"; 
+				/*
+				1 : Not Visible Individualy
+				2 : Catalog
+				3 : Search
+				4 : Catalog, Search
+				*/
+			$category_ids = array();
+			$website_ids = array(1);
+			$gift_message_available = "";
+			$price = $item['price'];
+			$tax_class_id = "";
+			$meta_title = "";
+			$meta_keyword = "";
+			$meta_description = "";
+			$qty = $item['total_qty'];
+			
+			$param[] = array($type, $set, $sku, array(
+			    'categories' => $categories,
+			    'websites' => $websites,
+			    'name' => $name,
+			    'description' => $description,
+			    'short_description' => $short_description,
+			    'weight' => $weight,
+			    'status' => $status,
+			    'url_key' => $url_key,
+			    'url_path' => $url_path,
+			    'visibility' => $visibility,
+			    'price' => $price,
+			    'tax_class_id' => $tax_class_id,
+			    'meta_title' => $meta_title,
+			    'meta_keyword' => $meta_keyword,
+			    'meta_description' => $meta_description,
+			    'stock_data' => array(
+			    					'qty' => $qty
+								)
+			));			
+			
+		}
+
+		return $param;
+	}
+
+	public function getParamInbound3PL($client, $doc){
+		$param = array();
+
+		//get data from table inb_inventory_item_<client_id>
+		$result = $this->getInboundInvItem($client, $doc);
+		foreach($result as $item){
+			$sku_config = $item['sku_config'];
+			$sku_simple = $item['sku_simple'];
+			$sku_description =  explode(",",$item['sku_description']);
+				$name = $sku_description[4];
+				$description = $sku_description[2];
+				$description2 = $sku_description[3];
+			$min = $item['min'];
+			$max = $item['max'];
+			$cycle_count = $item['cycle_count'];
+			$reorder_qty = $item['reorder_qty'];
+			$inventor_method = $item['inventor_method'];
+			$temperature = $item['temperature'];
+			$cost = $item['cost'];
+			$upc = $item['upc'];
+			$track_lot = $item['track_lot'];
+			$track_serial = $item['track_serial'];
+			$track_expdate = $item['track_expdate'];
+			$primary_unit_of_measure = $item['primary_unit_of_measure'];
+			$packaging_unit = $item['packaging_unit'];
+			$packaging_uom_qty = $item['packaging_uom_qty'];
+			$length = $item['length'];
+			$width = $item['width'];
+			$height = $item['height'];
+			$weiight = $item['weiight'];
+			$qualifiers = $item['qualifiers'];
+			$storage_setup = $item['storage_setup'];
+			$variable_setup = $item['variable_setup'];
+			$nmfc = $item['nmfc'];
+			$lot_number_required = $item['lot_number_required'];
+			$serial_number_required = $item['serial_number_required'];
+			$serial_number_must_be_unique = $item['serial_number_must_be_unique'];
+			$exp_date_req = $item['exp_date_req'];
+			$enable_cost = $item['enable_cost'];
+			$cost_required = $item['cost_required'];
+			$is_haz_mat = $item['is_haz_mat'];
+			$haz_mat_id = $item['haz_mat_id'];
+			$haz_mat_shipping_name = $item['haz_mat_shipping_name'];
+			$haz_mat_hazard_class = $item['haz_mat_hazard_class'];
+			$haz_mat_packing_group = $item['haz_mat_packing_group'];
+			$haz_mat_flash_point = $item['haz_mat_flash_point'];
+			$haz_mat_label_code = $item['haz_mat_label_code'];
+			$haz_mat_flat = $item['haz_mat_flat'];
+			$image_url = $item['image_url'];
+			$storage_count_stript_template_id = $item['storage_count_stript_template_id'];
+			$storage_rates = $item['storage_rates'];
+			$outbound_mobile_serialization_behavior = $item['outbound_mobile_serialization_behavior'];
+			$price = $item['price'];
+			$total_qty = $item['total_qty'];
+			$unit_type = $item['unit_type'];
+			$attribute_set = $item['attribute_set'];
+			
+			$strItem .= "
+	         <vias:Item>
+	            <!--Optional:-->
+	            <vias:SKU>".$sku_simple."</vias:SKU>
+	            <!--Optional:-->
+	            <vias:Description>".$description."</vias:Description>
+	            <!--Optional:-->
+	            <vias:Description2>".$description2."</vias:Description2>
+	            <!--vias:CustomerID>XXX</vias:CustomerID-->
+	            <vias:Min>6</vias:Min>
+	            <vias:Max>16</vias:Max>
+	            <vias:ReorderQty>5</vias:ReorderQty>
+	            <vias:CycleCount>30</vias:CycleCount>
+	            <!--Optional:-->
+	            <vias:InventoryCategory>?</vias:InventoryCategory>
+	            <vias:InventoryMethod>FIFO</vias:InventoryMethod>
+	            <vias:Cost>1500000</vias:Cost>
+	            <!--Optional:-->
+	            <vias:UPC>|One Size|YELLOW</vias:UPC>
+	            <vias:IsTrackLotNumber>0</vias:IsTrackLotNumber>
+	            <vias:IsTrackLotNumberRequired>0</vias:IsTrackLotNumberRequired>
+	            <vias:IsTrackSerialNumber>0</vias:IsTrackSerialNumber>
+	            <vias:IsTrackSerialNumberRequired>0</vias:IsTrackSerialNumberRequired>
+	            <vias:IsTrackSerialNumberUnique>0</vias:IsTrackSerialNumberUnique>
+	            <vias:IsTrackExpirationDate>0</vias:IsTrackExpirationDate>
+	            <vias:IsTrackExpirationDateRequired>0</vias:IsTrackExpirationDateRequired>
+	            <vias:IsTrackCost>0</vias:IsTrackCost>
+	            <vias:IsTrackCostRequired>0</vias:IsTrackCostRequired>
+	            <!--Optional:-->
+	            <vias:NMFC></vias:NMFC>
+	            <!--Optional:-->
+	            <vias:InventoryUnitOfMeasure>EACH</vias:InventoryUnitOfMeasure>
+	            <!--Optional:-->
+	            <vias:LabelingUnitLength>1</vias:LabelingUnitLength>
+	            <vias:LabelingUnitWidth>1</vias:LabelingUnitWidth>
+	            <vias:LabelingUnitHeight>1</vias:LabelingUnitHeight>
+	            <vias:LabelingUnitWeight>1</vias:LabelingUnitWeight>
+	            <vias:IsHazMat>0</vias:IsHazMat>
+	            <!--Optional:-->
+	            <vias:HazMatID>field haz_mat_id</vias:HazMatID>
+	            <!--Optional:-->
+	            <vias:HazMatShippingName>field haz_mat_shipping_name</vias:HazMatShippingName>
+	            <!--Optional:-->
+	            <vias:HazMatHazardClass>field haz_mat_hazard_class</vias:HazMatHazardClass>
+	            <vias:HazMatPackingGroup>Default</vias:HazMatPackingGroup>
+	            <!--Optional:-->
+	            <vias:HazMatFlashPoint>field haz_mat_flash_point</vias:HazMatFlashPoint>
+	            <!--Optional:-->
+	            <vias:HazMatLabelCode>field haz_mat_label_code</vias:HazMatLabelCode>
+	            <vias:HazMatFlag>Default</vias:HazMatFlag>
+	            <!--Optional:-->
+	            <vias:ImageUrl>field image_url</vias:ImageUrl>
+	            <!--Optional:-->
+	            <vias:ItemQualifiers>
+	               <!--Zero or more repetitions:-->
+	               <vias:string>field qualifiers</vias:string>
+	            </vias:ItemQualifiers>
+	         </vias:Item>			
+			";			
+		}
+	}
+	
 }

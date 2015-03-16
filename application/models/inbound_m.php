@@ -40,6 +40,7 @@ class Inbound_m extends MY_Model {
 		$no=0;
 		
 		foreach($_row->result() as $_result) {
+			if($_result->type == 1){
 			$records["aaData"][] = array(
 					'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
 					$no=$no+1,
@@ -51,6 +52,7 @@ class Inbound_m extends MY_Model {
                     <a href="'.site_url("inbounds/delete/".$_result->id).'" onClick="return deletechecked()" class="btn btn-xs default"  ><i class="fa fa-trash-o"></i>Delete<a>'
 					
 			);
+			}
 		}
 		$records["sEcho"] = $sEcho;
 		$records["iTotalRecords"] = $iTotalRecords;

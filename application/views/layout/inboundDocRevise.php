@@ -8,10 +8,12 @@ $arrIds = explode(",", $ids);
 <table width="100%">
 <?php
 foreach($arrIds as $row){
-	//echo $row;
+
 	$datas = $this->inbounddocument_m->getInboundDocumentRow($row);
 	$dataClient = $this->client_m->getClientById($datas['client_id']);
 	$dataClientRows = $dataClient->row_array();
+	
+	if($_GET['command'] == 1 and $datas['type'] == 1 and $datas['status'] <= 1) continue;
 ?>
 <tr>
 	<td width="25%">
