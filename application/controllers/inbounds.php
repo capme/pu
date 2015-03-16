@@ -12,6 +12,7 @@ class Inbounds extends MY_Controller {
 	{
 		parent::__construct();
 		$this->load->model( array("client_m", "inbound_m") );
+        $this->load->library('va_excel');
 	}
 	
 	public function index(){
@@ -73,7 +74,7 @@ class Inbounds extends MY_Controller {
 		$this->va_input->addInput( array("name" => "docnumber", "placeholder" => "DOC Number", "help" => "DOC Number", "label" => "DOC Number *", "value" => @$value['docnumber'], "msg" => @$msg['docnumber']) );
         $this->va_input->addSelect( array("name" => "client","label" => "Client *", "list" => $this->client_m->getClientCodeList(), "value" => @$value['client'], "msg" => @$msg['client']) );
         $this->va_input->addTextarea( array("name" => "note", "placeholder" => "Note", "help" => "Note", "label" => "Note", "value" => '', "msg" => @$msg['note']) );
-	    $this->va_input->addCustomField( array("name" =>"userfile", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg['userfile'], "label" => "Upload File *", "view"=>"form/upload_inbound"));
+	    $this->va_input->addCustomField( array("name" =>"userfile", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg['userfile'][0]?:@$msg['userfile'][1], "label" => "Upload File *", "view"=>"form/upload_inbound"));
 		$this->data['script'] = $this->load->view("script/inbound_add", array(), true);
 		$this->load->view('template', $this->data);
     }		
@@ -87,15 +88,16 @@ class Inbounds extends MY_Controller {
 			redirect("inbound/add");
 		}		
 		if($post['method'] == "new"){		  
-			$filename=$this->_uploadFile();            
+			$filename=$this->_uploadFile();                        
             $post['userfile']= $filename['file_name'] ;
-            $result=$this->inbound_m->uploadFile($post, $filename);
+            $post['full_path']=$filename['full_path'];
             
+            $result=$this->inbound_m->uploadFile($post, $filename);            
             if(is_numeric($result)){
                 redirect("inbounds");
             }
-            else{          
-                $result['userfile'] = $this->upload->display_errors();
+            else{
+                $result['userfile'][0]= $this->upload->display_errors();
                 $this->session->set_flashdata( array("inboundError" => json_encode(array("msg"=>$result, "data" => $post))));
                 redirect("inbounds/add");								 
 			}   		
@@ -114,7 +116,7 @@ class Inbounds extends MY_Controller {
 		if ( ! $this->upload->do_upload()) {			
 			return null;
 		} else {			
-			$data=$this->upload->data();            
+			$data=$this->upload->data();                       
 			$dataupload=array('file_name'=>$data['file_name'], 'full_path'=>$data['full_path']);			
             return $dataupload;			
 		}

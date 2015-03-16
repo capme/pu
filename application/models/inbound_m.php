@@ -84,7 +84,7 @@ class Inbound_m extends MY_Model {
 
 	public function uploadFile($post, $filename)
 	{
-	   $msg = array();         
+	   $msg = array();       
        $user=$this->session->userdata('pkUserId');
        
 	   if(!empty($post['client']) ) {
@@ -106,13 +106,50 @@ class Inbound_m extends MY_Model {
         if(!empty($post['userfile'])&& $filename !=null) {
         $data['filename'] = $post['userfile'];
         } else {
-        $msg['userfile'] = "Invalid filename";
+        $msg['userfile'][0]="Invalid filename";
+        return $msg;
         }
         
         $data['created_by']=$user;
         $data['status']=0;
         $data['type']=1;
-                
+        
+       $objPHPExcel = PHPExcel_IOFactory::load($post['full_path']);            
+       $cell_collection = $objPHPExcel->getActiveSheet()->getCellCollection();
+                            
+       foreach ($cell_collection as $cell) {                
+               $column = $objPHPExcel->getActiveSheet()->getCell($cell)->getColumn();
+               $row = $objPHPExcel->getActiveSheet()->getCell($cell)->getRow();
+               $data_value = $objPHPExcel->getActiveSheet()->getCell($cell)->getValue();               
+               $arr_data[$row][$column] = $data_value;                
+            }
+        if ($arr_data[15]['A']!='NO' 
+            && $arr_data[15]['B'] != 'PO TYPE' 
+            && $arr_data[15]['C'] != 'SEASON' 
+            && $arr_data[15]['D'] != 'YEAR' 
+            && $arr_data[15]['E'] != 'GENDER (M/F/U)'
+            && $arr_data[15]['F'] != 'CATEGORY (TOP / BOTTOM / FOOTWEAR / ACCESSORIES' 
+            && $arr_data[15]['G'] != 'SUB CATEGORY'
+            && $arr_data[15]['H'] != 'CONSIGNMENT or DIRECT PURCHASE'
+            && $arr_data[15]['I'] != 'SUPPLIER STYLE CODE / SKU'
+            && $arr_data[15]['J'] != 'SUPPLIER'
+            && $arr_data[15]['N'] != 'FABRIC/MATERIAL COMPOSITION'
+            && $arr_data[15]['O'] != 'DETAIL INFO'
+            && $arr_data[15]['R'] != 'Product Name Revisions'
+            && $arr_data[15]['S'] != 'SHORT DESCRIPTION'
+            && $arr_data[15]['T'] != 'Meta Description'
+            && $arr_data[15]['U'] != 'Meta Keywords'
+            && $arr_data[15]['V'] != 'PICTURES'
+            && $arr_data[15]['X'] != 'VALUE'
+            && $arr_data[15]['AA'] != 'QTY / SIZES'
+            && $arr_data[15]['AC'] != 'TOTAL VALUE (Rp)'
+            && $arr_data[15]['AE'] != 'EXP. DELIV. DATE'
+            && $arr_data[15]['AF'] != 'EXP. DELIV. SLOT')            
+            {
+                unlink($post['full_path']);
+                $msg['userfile'][1]="Uploaded file using invalid format";               
+            }
+                    
         if(empty($msg)) {
         $this->db->insert($this->table, $data);
         return $this->db->insert_id();
