@@ -11,7 +11,7 @@ class Inbounds extends MY_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model( array("client_m", "inbound_m") );
+		$this->load->model( array("client_m", "inbound_m","clientoptions_m") );
         $this->load->library('va_excel');
 	}
 	
@@ -71,8 +71,7 @@ class Inbounds extends MY_Controller {
 			$msg = $value = array();
 		}
 		$this->va_input->addHidden( array("name" => "method", "value" => "new") );		
-		$this->va_input->addInput( array("name" => "docnumber", "placeholder" => "DOC Number", "help" => "DOC Number", "label" => "DOC Number *", "value" => @$value['docnumber'], "msg" => @$msg['docnumber']) );
-        $this->va_input->addSelect( array("name" => "client","label" => "Client *", "list" => $this->client_m->getClientCodeList(), "value" => @$value['client'], "msg" => @$msg['client']) );
+		$this->va_input->addSelect( array("name" => "client","label" => "Client *", "list" => $this->client_m->getClientCodeList(), "value" => @$value['client'], "msg" => @$msg['client']) );
         $this->va_input->addTextarea( array("name" => "note", "placeholder" => "Note", "help" => "Note", "label" => "Note", "value" => '', "msg" => @$msg['note']) );
 	    $this->va_input->addCustomField( array("name" =>"userfile", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg['userfile'][0]?:@$msg['userfile'][1], "label" => "Upload File *", "view"=>"form/upload_inbound"));
 		$this->data['script'] = $this->load->view("script/inbound_add", array(), true);
@@ -91,7 +90,6 @@ class Inbounds extends MY_Controller {
 			$filename=$this->_uploadFile();                        
             $post['userfile']= $filename['file_name'] ;
             $post['full_path']=$filename['full_path'];
-            
             $result=$this->inbound_m->uploadFile($post, $filename);            
             if(is_numeric($result)){
                 redirect("inbounds");

@@ -83,24 +83,45 @@ class Inbound_m extends MY_Model {
           redirect('inbounds');
         }        
     }
+    
+   public function countDocClient($client)
+	{
+       $this->db->select('*');
+       $this->db->from($this->table);
+       $this->db->where('client_id', $client);
+       $this->db->where('type',1);
+       $this->db->where('created_at >',date('Y-m').'-01 00:00:00');
+       $this->db->where('created_at <',date('Y-m').'-31 00:00:00');
+       $query = $this->db->get();
+       return $rowcount = $query->num_rows();  
+	}
 
 	public function uploadFile($post, $filename)
-	{
-	   $msg = array();       
+	{      
+       $msg = array();       
        $user=$this->session->userdata('pkUserId');
        
 	   if(!empty($post['client']) ) {
-        $data['client_id'] = $post['client'];
-        } else {
-        $msg['client'] = "Invalid name";
+            $data['client_id'] = $post['client'];
+            $count= $this->countDocClient($post['client']);
+            $docnumber= $count + 1;
+            $client_option=$this->clientoptions_m->getOptions($post['client']);
+            foreach ($client_option as $option){}
+            
+            if ($option['option_name'] == 'brand_initial'){ 
+                $data['doc_number']="PC/".date('Y')."/".date('m')."/".$option['option_value']."-".$docnumber;
+                }
+            else{
+                 $client=$this->client_m->getClientCodeList();
+                 foreach($client as $inisial){          
+                 $data['doc_number']="PC/".date('Y')."/".date('m')."/".$client[$post['client']]."-".$docnumber;
+                 }
+                }
+            
+        }else {
+            $msg['client'] = "Invalid name";
         }
-                
-        if(!empty($post['docnumber'])) {
-        $data['doc_number'] = $post['docnumber'];
-        } else {
-        $msg['docnumber'] = "Invalid docnumber";
-        }
-                
+        
         if(!empty($post['note'])) {
         $data['note'] = $post['note'];
         } else {}
@@ -114,7 +135,7 @@ class Inbound_m extends MY_Model {
         
         $data['created_by']=$user;
         $data['status']=0;
-        $data['type']=1;
+        $data['type']=1;  
         
        $objPHPExcel = PHPExcel_IOFactory::load($post['full_path']);            
        $cell_collection = $objPHPExcel->getActiveSheet()->getCellCollection();
