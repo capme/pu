@@ -6,6 +6,8 @@
  * @property Clientoptions_m $clientoptions_m
  */
 class Listinbounddoc extends MY_Controller {
+	const TAG = "[Inbound import]";
+	
 	var $data = array();
 	public function __construct()
 	{
@@ -720,6 +722,78 @@ class Listinbounddoc extends MY_Controller {
 		$this->load->view('template', $this->data);
 				
 				
+	}
+
+	public function importItem3PL(){
+		$this->load->add_package_path(APPPATH."third_party/threepl/");
+		$this->load->library("inbound_threepl", null, "inbound_threepl");
+		$this->load->model( array("client_m", "inbounddocument_m") );
+		
+		$client = $_GET['client'];
+		$doc = $_GET['doc'];
+		
+		$client = $this->client_m->getClientById($client);
+		$client = $client->row_array();
+		
+		if(!$client['threepl_user'] && !$client['threepl_pass']) {
+			log_message("debug", self::TAG . " Client doesn't had 3PL detail");
+			die;
+		}
+		
+		
+		$c['threepluser'] = $client['threepl_user'];
+		$c['threeplpass'] = $client['threepl_pass'];
+		
+		$this->inbound_threepl->setConfig( array("username" => $c['threepluser'], "password" => $c['threeplpass']) );
+		$returnMsgItem = $this->inbounddocument_m->getParamInbound3PL($_GET['client'], $doc);
+		$return = $this->inbound_threepl->createItems($returnMsgItem);
+				if(is_array($return)){
+					redirect("listinbounddoc");
+				}else{
+					echo "Something wrong when calling 3PL. See the log file.<input type='button' value='Back' onclick='window.history.back()'>";
+				}
+	}
+
+	public function importItemMage(){
+		$this->load->library("Mageapi");
+		$this->load->model( array("client_m", "inbounddocument_m") );
+		
+		$client = $_GET['client'];
+		$doc = $_GET['doc'];
+
+		$client = $this->client_m->getClientById($client);
+		$client = $client->row_array();
+		
+		if(!$client['mage_auth'] && !$client['mage_wsdl']) {
+			log_message("debug", self::TAG . " Client doesn't had Mage detail");
+			die;
+		}
+		
+		$config = array(
+			"auth" => $client['mage_auth'],
+			"url" => $client['mage_wsdl']
+		);
+			
+		$param = $this->inbounddocument_m->getParamInboundMage($_GET['client'], $doc);		
+							
+		if( $this->mageapi->initSoap($config) ) {
+				$return = $this->mageapi->inboundCreateItem($param);
+				if(is_array($return)){
+					$flagError = false;
+					foreach($return as $itemReturn){
+						if(isset($itemReturn['isFault'])){
+							$flagError = true;
+						}
+					}
+					if(!$flagError){
+						redirect("listinbounddoc");
+					}else{
+						echo "Something wrong when calling Mage. See the log file.<input type='button' value='Back' onclick='window.history.back()'>";
+					}
+				}else{
+					echo "Something wrong when calling Mage. See the log file.<input type='button' value='Back' onclick='window.history.back()'>";
+				}
+		}
 	}
 	
 }

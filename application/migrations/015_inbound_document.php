@@ -24,6 +24,8 @@ class Migration_Inbound_Document extends Base_migration {
 				array("name" => "Inbound Document Download Inb Form", "slug" => "listinbounddoc/downloadInboundForm", "hidden" => 1, "status" => 1, "parent" => $parentTags['listinbounddoc']),
 				array("name" => "Inbound Document Upload Inb Form", "slug" => "listinbounddoc/uploadInboundForm", "hidden" => 1, "status" => 1, "parent" => $parentTags['listinbounddoc']),
 				array("name" => "Inbound Document Download Receiving Form", "slug" => "listinbounddoc/downloadReceivingForm", "hidden" => 1, "status" => 1, "parent" => $parentTags['listinbounddoc']),
+				array("name" => "Inbound Document Import 3PL", "slug" => "listinbounddoc/importItem3PL", "hidden" => 1, "status" => 1, "parent" => $parentTags['listinbounddoc']),		
+				array("name" => "Inbound Document Import Mage", "slug" => "listinbounddoc/importItemMage", "hidden" => 1, "status" => 1, "parent" => $parentTags['listinbounddoc']),		
 		);
 		
 		foreach($newModule as $module) {

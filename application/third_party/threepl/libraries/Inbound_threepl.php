@@ -94,14 +94,19 @@ class Inbound_threepl {
 			try{
 				$xml = new SimpleXMLElement($result);
 				//var_dump($xml->soapBody->CreateItemsResult->ItemID);
-				foreach($xml->soapBody->CreateItemsResult->ItemID as $item){
-					$return[] = (string)$item;
+				if($xml->soapBody->CreateItemsResult->ItemID){
+					foreach($xml->soapBody->CreateItemsResult->ItemID as $item){
+						$return[] = (string)$item;
+					}
+				}else{
+					return false;
 				}
 				return $return;
 			} catch(Exception $e) {
 				log_message("error", "{3PL} ".$e->__toString());
 				log_message("error", "{3PL} something wrong when call " . self::API_CREATE_ITEMS ." action.");
 				log_message("error", "{3PL} config values: " . serialize($this->config->getAll()));
+				return false;
 			}				
 		}
 		 
