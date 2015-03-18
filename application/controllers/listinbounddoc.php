@@ -10,7 +10,7 @@ class Listinbounddoc extends MY_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model( array("users_m", "client_m", "inbounddocument_m") );
+		$this->load->model( array("users_m", "client_m", "inbounddocument_m", "inbound_m") );
 		$this->load->library('va_excel');
 	}
 	
@@ -412,7 +412,7 @@ class Listinbounddoc extends MY_Controller {
 	}
 	
 	public function exportFormItemImport(){
-        $this->load->model("clientoptions_m");
+        $this->load->model(array("clientoptions_m", "inbound_m"));
 		$client = $this->input->get('client');
 		$doc = $this->input->get('doc');
 				
@@ -468,6 +468,7 @@ class Listinbounddoc extends MY_Controller {
 		$this->va_excel->getActiveSheet()->setCellValue('AT2', 'UnitType');
 
 		$result = $this->inbounddocument_m->getInboundInvItem($client, $doc);
+        $docDetail = $this->inbound_m->getInboundById($doc);
 		$lup = 3;
 
         $attrList = $this->clientoptions_m->get($client, 'attribute_set');
@@ -526,7 +527,7 @@ class Listinbounddoc extends MY_Controller {
 		$dataClient = $this->client_m->getClientById($client);
 		$dataClientRows = $dataClient->row_array();
 								
-		$filename='Form Item Import (Client : '.$dataClientRows['client_code'].' Do Number : '.$doc.').xls'; 
+		$filename='Form Item Import (Client : '.$dataClientRows['client_code'].' Do Number : '.$docDetail['doc_number'].').xls';
 		header('Content-Type: application/vnd.ms-excel'); 
 		header('Content-Disposition: attachment;filename="'.$filename.'"'); 
 		header('Cache-Control: max-age=0');
@@ -575,7 +576,8 @@ class Listinbounddoc extends MY_Controller {
 	public function downloadInboundForm(){
 		$client = $this->input->get('client');
 		$doc = $this->input->get('doc');
-		
+
+        $docDetail = $this->inbound_m->getInboundById($doc);
 		$dataClient = $this->client_m->getClientById($client);
 		$dataClientRows = $dataClient->row_array();
 				
@@ -624,7 +626,7 @@ class Listinbounddoc extends MY_Controller {
 			$lup++;
 		}
 		
-		$filename='Form Inbound ('.$dataClientRows['client_code'].' Do Number : '.$doc.').xls'; 
+		$filename='Form Inbound ('.$dataClientRows['client_code'].' Do Number : '.$docDetail['doc_number'].').xls';
 		header('Content-Type: application/vnd.ms-excel'); 
 		header('Content-Disposition: attachment;filename="'.$filename.'"'); 
 		header('Cache-Control: max-age=0');
@@ -643,7 +645,8 @@ class Listinbounddoc extends MY_Controller {
 				$row = $query->result_array();
 				$id = $row[0]['id'];
 				$doc = $id;
-		
+
+        $docDetail = $this->inbound_m->getInboundById($doc);
 		$dataClient = $this->client_m->getClientById($client);
 		$dataClientRows = $dataClient->row_array();
 				
@@ -672,7 +675,7 @@ class Listinbounddoc extends MY_Controller {
 			$lup++;
 		}
 		
-		$filename='Receiving Form ('.$dataClientRows['client_code'].' Do Number : '.$doc.').xls'; 
+		$filename='Receiving Form ('.$dataClientRows['client_code'].' Do Number : '.$docDetail['doc_number'].').xls';
 		header('Content-Type: application/vnd.ms-excel'); 
 		header('Content-Disposition: attachment;filename="'.$filename.'"'); 
 		header('Cache-Control: max-age=0');

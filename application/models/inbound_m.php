@@ -63,7 +63,6 @@ class Inbound_m extends MY_Model {
 	
 	public function getInboundById($id)
 	{
-		$this->db->select('filename');
 		$this->db->from($this->table);
 		$this->db->where('id', $id);		
 		return $this->db->get()->row_array(); 
@@ -105,11 +104,10 @@ class Inbound_m extends MY_Model {
             $data['client_id'] = $post['client'];
             $count= $this->countDocClient($post['client']);
             $docnumber= $count + 1;
-            $client_option=$this->clientoptions_m->getOptions($post['client']);
-            foreach ($client_option as $option){}
+            $client_option=$this->clientoptions_m->get($post['client'], 'brand_initial');
             
-            if ($option['option_name'] == 'brand_initial'){ 
-                $data['doc_number']="PC/".date('Y')."/".date('m')."/".$option['option_value']."-".$docnumber;
+            if ( !empty($client_option) && isset($client_option['option_name']) ){
+                $data['doc_number']="PC/".date('Y')."/".date('m')."/".$client_option['option_value']."-".$docnumber;
                 }
             else{
                  $client=$this->client_m->getClientCodeList();
