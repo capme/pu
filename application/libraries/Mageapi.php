@@ -35,6 +35,7 @@ class Mageapi {
 	const METHOD_VELA_COD_RECEIVED = "vela_cod.payment";
 	const METHOD_VELA_COD_NEW = "vela_cod.new";
 	const METHOD_VELA_COD_EXPORTED = "vela_cod.exported";
+    const METHOD_ATTRIBUTE_SET_LIST = "product_attribute_set.list";
 	
 	public function __construct( $config = array() ) {
 		if(!empty($config)) {
@@ -406,4 +407,25 @@ class Mageapi {
 		}
 		
 	}
+
+    public function getProductAttributeSet(){
+
+        try {
+            $attributeSet = array();
+            $data = $this->soapClient->call($this->soapSession, self::METHOD_ATTRIBUTE_SET_LIST);
+
+            if(!empty($data)){
+                foreach($data as $d){
+                    if(isset($d['set_id']) && isset($d['name'])){
+                        $attributeSet[$d['set_id']] = $d['name'];
+                    }
+                }
+            }
+
+            return $attributeSet;
+        } catch( Exception $e ) {
+            log_message('error', "MAGEAPI ==> ". $e->getMessage());
+            return false;
+        }
+    }
 }
