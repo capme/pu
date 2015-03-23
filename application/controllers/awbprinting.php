@@ -223,12 +223,8 @@ class Awbprinting extends MY_Controller {
 	}
 	
 	private function _fetchOrderAmount($clientId) {
-		$cmd = PHP_BINDIR."/php " . FCPATH . "index.php cron/awb getAmountOrder/".$clientId;
-		if (substr(php_uname(), 0, 7) == "Windows"){
-			pclose(popen("start /B ". $cmd, "r"));
-		} else {
-			exec($cmd . " > /dev/null &");
-		}
+        $command = "cron/awb getAmountOrder/".$clientId;
+        execProcess($command);
 	}
 
 	private function _uploadFile() {

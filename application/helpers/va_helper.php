@@ -78,4 +78,17 @@ function buildNotification($list = array(), $type = ''){
     return $result;
 }
 
+function execProcess($command = null) {
+    if(is_null($command) || empty($command)) {
+        return false;
+    }
+
+    $cmd = PHP_BINDIR."/php " . FCPATH . "index.php ".$command;
+    if (substr(php_uname(), 0, 7) == "Windows"){
+        pclose(popen("start /B ". $cmd, "r"));
+    } else {
+        exec($cmd . " > /dev/null &");
+    }
+}
+
 ?>

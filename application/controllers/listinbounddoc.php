@@ -93,6 +93,9 @@ class Listinbounddoc extends MY_Controller {
 					$param_created_by = $user=$this->session->userdata('pkUserId');
 					$this->inbounddocument_m->insertInboundDocument($param_doc_number, $param_client_id, $param_note, $param_type, $param_status, $param_created_by, $param_filename, $param_reference_id);
 				}
+                $command = "cron/extractinboundform run";
+                execProcess($command);
+
 				redirect("listinbounddoc");
 			}								 
 						
