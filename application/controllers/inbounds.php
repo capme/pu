@@ -17,8 +17,8 @@ class Inbounds extends MY_Controller {
 	
 	public function index(){
 		$this->data['content'] = "list_v.php";
-		$this->data['pageTitle'] = "Inbound";
-		$this->data['breadcrumb'] = array("Akuma" => "","Inbound"=>"inbound");
+		$this->data['pageTitle'] = "Product Catalogue";
+		$this->data['breadcrumb'] = array("Product Catalogue"=>"inbound");
 		
 		$this->inbound_m->clearCurrentFilter();
 				
@@ -78,6 +78,39 @@ class Inbounds extends MY_Controller {
 		$this->load->view('template', $this->data);
     }		
 	
+    
+    public function edit($id){
+        $data = $this->inbound_m->getInboundById($id);
+		if(empty ($data)) {
+			redirect("inbounds");
+		}
+		
+		$this->data['content'] = "form_v.php";
+		$this->data['pageTitle'] = "Product Catalogue";
+		$this->data['breadcrumb'] = array("Product Catalogue"=> "inbounds", "Edit Product Catalogue" => "");
+		$this->data['formTitle'] = "Edit Product Catalogue";
+	
+		$this->load->library("va_input", array("group" => "inbound"));
+				
+		$flashData = $this->session->flashdata("inboundError");
+		if($flashData !== false) {
+			$flashData = json_decode($flashData, true);
+			$value = $flashData['data'];
+			$msg = $flashData['msg'];
+		} else {
+			$msg = array();
+			$value=$data;
+		}
+        $this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
+        $this->va_input->addHidden( array("name" => "client_id", "value" => $value['client_id']) );
+        $this->va_input->addHidden( array("name" => "filename", "value" => $value['filename']) );
+		$this->va_input->addHidden( array("name" => "method", "value" => "edit") );
+        $this->va_input->addInput( array("name" => "client", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value"=>@$value['client_code'], "msg" => @$msg['client'], "disabled"=>"disabled"));
+		$this->va_input->addCustomField( array("name" =>"userfile", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg['userfile'][0]?:@$msg['userfile'][1], "label" => "Upload File *", "view"=>"form/upload_inbound"));
+        $this->data['script'] = $this->load->view("script/client_add", array(), true);
+		$this->load->view('template', $this->data);  
+    }
+    
 	public function save ()	{
 		if($_SERVER['REQUEST_METHOD'] != "POST") {
 			redirect("inbound/add");
@@ -100,6 +133,20 @@ class Inbounds extends MY_Controller {
                 redirect("inbounds/add");								 
 			}   		
 		}
+        if ($post['method']== "edit"){
+            $filename=$this->_uploadFile();                        
+            $post['userfile']= $filename['file_name'] ;
+            $post['full_path']=$filename['full_path'];
+            $result=$this->inbound_m->editProductCatalogue($post);
+             if(is_numeric($result)){
+                redirect("inbounds");
+            }
+            else{
+                $result['userfile'][0]= $this->upload->display_errors();
+                $this->session->set_flashdata( array("inboundError" => json_encode(array("msg"=>$result, "data" => $post))));
+                redirect("inbounds/edit");								 
+			} 
+        }
 	}
 	
 	private function _uploadFile() {

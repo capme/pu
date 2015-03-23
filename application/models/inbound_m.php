@@ -39,8 +39,17 @@ class Inbound_m extends MY_Model {
 		$_row = $this->_doGetRows($iDisplayStart, $iDisplayLength);
 		$no=0;
 		
-		foreach($_row->result() as $_result) {
+		foreach($_row->result() as $_result) {		  
 			if($_result->type == 1){
+			 if($_result->status < 3){
+		          $btnAction='<a href="'.site_url("inbounds/edit/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-edit" ></i> Edit</a>
+                  <a href="'.site_url("inbounds/download/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Download</a>
+                    <a href="'.site_url("inbounds/delete/".$_result->id).'" onClick="return deletechecked()" class="btn btn-xs default"  ><i class="fa fa-trash-o"></i>Delete<a>';
+		      }
+              else {
+		          $btnAction='<a href="'.site_url("inbounds/download/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Download</a>
+                    <a href="'.site_url("inbounds/delete/".$_result->id).'" onClick="return deletechecked()" class="btn btn-xs default"  ><i class="fa fa-trash-o"></i>Delete<a>';  
+		      }		      
 			$records["aaData"][] = array(
 					'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
 					$no=$no+1,
@@ -48,9 +57,7 @@ class Inbound_m extends MY_Model {
 					$_result->doc_number,
                     $_result->note,
 					$_result->created_at,
-					'<a href="'.site_url("inbounds/download/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Download</a>
-                    <a href="'.site_url("inbounds/delete/".$_result->id).'" onClick="return deletechecked()" class="btn btn-xs default"  ><i class="fa fa-trash-o"></i>Delete<a>'
-					
+					$btnAction
 			);
 			}
 		}
@@ -63,10 +70,11 @@ class Inbound_m extends MY_Model {
 	
 	public function getInboundById($id)
 	{
+		$this->db->select('*, inb_document.id');
 		$this->db->from($this->table);
-		$this->db->where('id', $id);		
-		return $this->db->get()->row_array(); 
-         
+		$this->db->join('client','client.id=inb_document.client_id');
+		$this->db->where('inb_document.id', $id);
+        return $this->db->get()->row_array(); 
 	}
     
     public function deleteInbound($id){
@@ -175,6 +183,76 @@ class Inbound_m extends MY_Model {
         if(empty($msg)) {
         $this->db->insert($this->table, $data);
         return $this->db->insert_id();
+        }
+        
+        else {
+        return $msg;
+        }
+  }
+  
+    public function editProductCatalogue($post){
+       $msg = array();       
+       $user=$this->session->userdata('pkUserId');
+    
+       if(!empty($post['userfile'])&& $post['full_path'] !=null) {
+            $data['filename'] = $post['userfile'];
+            } else {
+            $msg['userfile'][0]="Invalid filename";
+            return $msg;
+        }
+        
+        $data['created_by']=$user;
+        $data['status']=0;
+        $data['type']=1;  
+        
+       $objPHPExcel = PHPExcel_IOFactory::load($post['full_path']);            
+       $cell_collection = $objPHPExcel->getActiveSheet()->getCellCollection();
+                            
+       foreach ($cell_collection as $cell) {                
+               $column = $objPHPExcel->getActiveSheet()->getCell($cell)->getColumn();
+               $row = $objPHPExcel->getActiveSheet()->getCell($cell)->getRow();
+               $data_value = $objPHPExcel->getActiveSheet()->getCell($cell)->getValue();               
+               $arr_data[$row][$column] = $data_value;                
+            }
+            
+        if (strtoupper($arr_data[15]['A'])!='NO' 
+            && strtoupper($arr_data[15]['B']) != 'PO TYPE' 
+            && strtoupper($arr_data[15]['C']) != 'SEASON' 
+            && strtoupper($arr_data[15]['D']) != 'YEAR' 
+            && strtoupper($arr_data[15]['E']) != 'GENDER (M/F/U)'
+            && strtoupper($arr_data[15]['F']) != 'CATEGORY (TOP / BOTTOM / FOOTWEAR / ACCESSORIES' 
+            && strtoupper($arr_data[15]['G']) != 'SUB CATEGORY'
+            && strtoupper($arr_data[15]['H']) != 'CONSIGNMENT OR DIRECT PURCHASE'
+            && strtoupper($arr_data[15]['I']) != 'SUPPLIER STYLE CODE / SKU'
+            && strtoupper($arr_data[15]['J']) != 'SUPPLIER'
+            && strtoupper($arr_data[15]['N']) != 'FABRIC/MATERIAL COMPOSITION'
+            && strtoupper($arr_data[15]['O']) != 'DETAIL INFO'
+            && strtoupper($arr_data[15]['R']) != 'PRODUCT NAME REVISIONS'
+            && strtoupper($arr_data[15]['S']) != 'SHORT DESCRIPTION'
+            && strtoupper($arr_data[15]['T']) != 'META DESCRIPTION'
+            && strtoupper($arr_data[15]['U']) != 'META KEYWORDS'
+            && strtoupper($arr_data[15]['V']) != 'PICTURES'
+            && strtoupper($arr_data[15]['X']) != 'VALUE'
+            && strtoupper($arr_data[15]['AA']) != 'QTY / SIZES'
+            && strtoupper($arr_data[15]['AC']) != 'TOTAL VALUE (Rp)'
+            && strtoupper($arr_data[15]['AE']) != 'EXP. DELIV. DATE'
+            && strtoupper($arr_data[15]['AF']) != 'EXP. DELIV. SLOT')            
+            {
+                unlink($post['full_path']);
+                $msg['userfile'][1]="Uploaded file using invalid format";               
+            }
+                    
+        if(empty($msg)) {
+            $path= BASEPATH .'../public/inbound/catalog_product/'.$post['filename'];        
+            $result = unlink($path);
+            
+            $this->db->where($this->pkField, $post['id']);			
+    		$this->db->update($this->table, $data);
+            
+            $this->db->where('doc_number', $post['id']);
+            $this->db->delete('inb_inventory_item_'.$post['client_id']);            
+                      
+            return $post['id'];
         }
         
         else {
