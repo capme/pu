@@ -677,13 +677,13 @@ class Listinbounddoc extends MY_Controller {
 			$lup++;
 		}
 		
-		$filename='Receiving Form ('.$dataClientRows['client_code'].' Do Number : '.$docDetail['doc_number'].').xls';
+		$filename='Receiving Form ('.$dataClientRows['client_code'].' Do Number : '.$docDetail['doc_number'].').xlsx';
 		header('Content-Type: application/vnd.ms-excel'); 
 		header('Content-Disposition: attachment;filename="'.$filename.'"'); 
 		header('Cache-Control: max-age=0');
 		            
 		
-		$objWriter = PHPExcel_IOFactory::createWriter($this->va_excel, 'Excel5');  
+		$objWriter = PHPExcel_IOFactory::createWriter($this->va_excel, 'Excel2007');
 		
 		$objWriter->save('php://output');
 		
