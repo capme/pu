@@ -5,7 +5,7 @@ class Migration_Inbound_Document extends Base_migration {
 		$this->db->trans_start();
 		$this->db->query("DELETE FROM module WHERE slug like 'listinbounddoc%'");	
 		$new= array(
-			"listinbounddoc" => array("name" => "Inbound Document", "slug" => "listinbounddoc", "icon" => "fa-file", "hidden" => 0, "status" => 1, "parent" => 74),
+			"listinbounddoc" => array("name" => "Inbounding", "slug" => "listinbounddoc", "icon" => "fa-file", "hidden" => 0, "status" => 1, "parent" => 74),
 			);
 		$newIds = array();
 		

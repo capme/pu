@@ -3,13 +3,23 @@ class Migration_Inbounds extends Base_migration {
 	public function up() {
 		parent::up();
 		$this->db->trans_start();
-		$this->db->query("DELETE FROM module WHERE slug like 'inbo%'");	
+
+        $this->db->query("DELETE FROM module WHERE name like 'Merchandising'");
+        $new = array(
+            "merchandising" => array("name" => "Merchandising", "slug" => "", "icon" => "fa-user", "hidden" => 0, "status" => 1, "parent" => 0),
+        );
+        $parentTags = array();
+        foreach($new as $tag => $module) {
+            $this->db->insert("module", $module);
+            $newIds[] = $parentTags[$tag] = $this->db->insert_id();
+        }
+
+
+        $this->db->query("DELETE FROM module WHERE slug like 'inbo%'");
 		$new= array(
-			"inbounds" => array("name" => "Inbound", "slug" => "inbounds", "icon" => "fa-user", "hidden" => 0, "status" => 1, "parent" => 74),
-			);            
-		$newIds = array();
-       
-		$parentTags = array();
+			"inbounds" => array("name" => "Upload Product Catalogue", "slug" => "inbounds", "icon" => "fa-user", "hidden" => 0, "status" => 1, "parent" => $parentTags['merchandising']),
+		);
+
 		foreach($new as $tag => $module) {
 			$this->db->insert("module", $module);
 			$newIds[] = $parentTags[$tag] = $this->db->insert_id();
