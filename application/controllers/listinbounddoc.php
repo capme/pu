@@ -421,73 +421,193 @@ class Listinbounddoc extends MY_Controller {
 		$this->va_excel->setActiveSheetIndex(0);
 		
 		$this->va_excel->getActiveSheet()->setTitle('Standard Import - Tab1');
+        $this->va_excel->getActiveSheet()->getRowDimension('2')->setRowHeight(20);
+        $this->va_excel->getActiveSheet()->getRowDimension('1')->setRowHeight(40);
+        $this->va_excel->getActiveSheet()->freezePane('D3');
+        
+        
+        $sharedStyle1 = new PHPExcel_Style();
+        $sharedStyle2 = new PHPExcel_Style();
+        $sharedStyle3 = new PHPExcel_Style();
+        $sharedStyle4 = new PHPExcel_Style();
+        $yellow       = new PHPExcel_Style();
+        $pinkDinamis  = new PHPExcel_Style();
+        $blue         = new PHPExcel_Style();
+        $title         = new PHPExcel_Style();
+        
+        $sharedStyle1->applyFromArray(
+        array('fill' 	=> array(
+								'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+								'color'		=> array('rgb' => '48D1CC')
+							),
+		  'borders' => array(
+								'bottom'	=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                'left'	    => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                'top'	    => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+								'right'		=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM)
+							),
+          'font' => array('bold' => true,'size'  => 12),
+          'alignment' => array(
+                                'wrap'       => true,
+                                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                                'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER
+                                        )                   
+		 ));
+                
+        $title->applyFromArray(
+        array('fill' 	=> array(
+								'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+								'color'		=> array('rgb' => 'FFFFFF')
+							),
+		  'borders' => array(
+								'bottom'	=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                'left'	    => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                'top'	    => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+								'right'		=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM)
+							),
+          'font' => array('bold' => true,'size'  => 16),
+          'alignment' => array(
+                                'wrap'       => true,
+                                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                                'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER
+                                        )                   
+		 ));
 		
-		$this->va_excel->getActiveSheet()->setCellValue('A2', 'SKU Code');
-		$this->va_excel->getActiveSheet()->setCellValue('B2', 'SKU Description');
-		$this->va_excel->getActiveSheet()->setCellValue('C2', 'SKU Configs');
-		$this->va_excel->getActiveSheet()->setCellValue('D2', 'Min');
-		$this->va_excel->getActiveSheet()->setCellValue('E2', 'Max');
-		$this->va_excel->getActiveSheet()->setCellValue('F2', 'CycleCount');
-		$this->va_excel->getActiveSheet()->setCellValue('G2', 'ReorderQty');
-		$this->va_excel->getActiveSheet()->setCellValue('H2', 'InventoryMethod');
-		$this->va_excel->getActiveSheet()->setCellValue('I2', 'Temperature');
-		$this->va_excel->getActiveSheet()->setCellValue('J2', 'Cost');
-		$this->va_excel->getActiveSheet()->setCellValue('K2', 'UPC');
-		$this->va_excel->getActiveSheet()->setCellValue('L2', 'Track Lot');
-		$this->va_excel->getActiveSheet()->setCellValue('M2', 'Track Serial');
-		$this->va_excel->getActiveSheet()->setCellValue('N2', 'Track ExpDate');
-		$this->va_excel->getActiveSheet()->setCellValue('O2', 'Primary Unit of Measure');
-		$this->va_excel->getActiveSheet()->setCellValue('P2', 'Packaging Unit');
-		$this->va_excel->getActiveSheet()->setCellValue('Q2', 'Packing UoM QTY');
-		$this->va_excel->getActiveSheet()->setCellValue('R2', 'Length');
+        $sharedStyle2->applyFromArray(
+        array('fill' 	=> array(
+								'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+								'color'		=> array('rgb' => 'FFFAFA')
+							),
+		  'borders' => array(
+								'bottom'	=> array('style' => PHPExcel_Style_Border::BORDER_THIN),
+                                'left'  	=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                'top'	    => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+								'right'		=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM)
+							),
+           'font' => array('bold' => true,'size'  => 12),
+           'alignment' => array(
+                                'wrap'       => true,
+                                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                                'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER
+                                        )
+		 ));
+         
+        $sharedStyle3->applyFromArray(
+        array('fill' 	=> array(
+								'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+								'color'		=> array('rgb' => 'AFEEEE')
+							),
+		  'borders' => array(
+								'bottom'	=> array('style' => PHPExcel_Style_Border::BORDER_THIN),
+                                'left'	    => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                'top'	    => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+								'right'		=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM)
+							),
+          'font' => array('bold' => true,'size'  => 12)
+		 ));
+         
+         $sharedStyle4->applyFromArray(
+        array('fill' 	=> array(
+								'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+								'color'		=> array('rgb' => 'F08080')
+							),
+		  'borders' => array(
+								'bottom'	=> array('style' => PHPExcel_Style_Border::BORDER_THIN),
+                                'left'	    => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                'top'	    => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+								'right'		=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM)
+							),
+          'font' => array('bold' => true,'size'  => 12)
+		 ));
+         
+        $yellow->applyFromArray(
+        array('fill' 	=> array(
+								'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+								'color'		=> array('rgb' => 'FFFF00')
+							)
+		 ));
+         
+        $pinkDinamis->applyFromArray(
+        array('fill' 	=> array(
+								'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+								'color'		=> array('rgb' => 'F08080')
+							)
+		 ));
+         
+        $blue->applyFromArray(
+        array('fill' 	=> array(
+								'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+								'color'		=> array('rgb' => '48D1CC')
+							)
+		 ));
+        $this->va_excel->getActiveSheet()->mergeCells('A1:C1');
+        $this->va_excel->getActiveSheet()->setCellValue('A1', 'ITEM IMPORT SPREADSHEET')->setSharedStyle($title, "A1");
+		$this->va_excel->getActiveSheet()->setCellValue('A2', 'SKU Code')->setSharedStyle($sharedStyle1, "A2:B2")->getColumnDimension('A')->setWidth(25);
+		$this->va_excel->getActiveSheet()->setCellValue('B2', 'SKU Description')->setSharedStyle($sharedStyle2, "C2:K2")->getColumnDimension('B')->setWidth(90);
+		$this->va_excel->getActiveSheet()->setCellValue('C2', 'SKU Configs')->getColumnDimension('C')->setWidth(25);
+		$this->va_excel->getActiveSheet()->setCellValue('D2', 'Min')->getColumnDimension('D')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('E2', 'Max')->getColumnDimension('E')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('F2', 'CycleCount')->getColumnDimension('F')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('G2', 'ReorderQty')->getColumnDimension('G')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('H2', 'InventoryMethod')->getColumnDimension('H')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('I2', 'Temperature')->getColumnDimension('I')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('J2', 'Cost')->getColumnDimension('J')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('K2', 'UPC')->getColumnDimension('K')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('L2', 'Track Lot')->setSharedStyle($sharedStyle1,"L2:Q2")->getColumnDimension('L')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('M2', 'Track Serial')->getColumnDimension('M')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('N2', 'Track ExpDate')->getColumnDimension('N')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('O2', 'Primary Unit of Measure')->getColumnDimension('O')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('P2', 'Packaging Unit')->getColumnDimension('P')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('Q2', 'Packing UoM QTY')->getColumnDimension('Q')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('R2', 'Length')->setSharedStyle($sharedStyle3,"R2:U2");
 		$this->va_excel->getActiveSheet()->setCellValue('S2', 'Width');
 		$this->va_excel->getActiveSheet()->setCellValue('T2', 'Height');
 		$this->va_excel->getActiveSheet()->setCellValue('U2', 'Weight');
-		$this->va_excel->getActiveSheet()->setCellValue('V2', 'Qualifiers');
-		$this->va_excel->getActiveSheet()->setCellValue('W2', 'Storage Setup');
-		$this->va_excel->getActiveSheet()->setCellValue('X2', 'Variable Setup');
-		$this->va_excel->getActiveSheet()->setCellValue('Y2', 'NMFC#');
-		$this->va_excel->getActiveSheet()->setCellValue('Z2', 'Lot Number Required');
-		$this->va_excel->getActiveSheet()->setCellValue('AA2', 'Serial Number Required');
-		$this->va_excel->getActiveSheet()->setCellValue('AB2', 'Serial Number Must Be Unique');
-		$this->va_excel->getActiveSheet()->setCellValue('AC2', 'Exp Date Req');
-		$this->va_excel->getActiveSheet()->setCellValue('AD2', 'Enable Cost');
-		$this->va_excel->getActiveSheet()->setCellValue('AE2', 'Cost Required');
-		$this->va_excel->getActiveSheet()->setCellValue('AF2', 'IsHazMat');
-		$this->va_excel->getActiveSheet()->setCellValue('AG2', 'HazMatID');
-		$this->va_excel->getActiveSheet()->setCellValue('AH2', 'HazMatShippingName');
-		$this->va_excel->getActiveSheet()->setCellValue('AI2', 'HazMatHazardClass');
-		$this->va_excel->getActiveSheet()->setCellValue('AJ2', 'HazMatPackingGroup');
-		$this->va_excel->getActiveSheet()->setCellValue('AK2', 'HazMatFlashPoint');
-		$this->va_excel->getActiveSheet()->setCellValue('AL2', 'HazMatLabelCode');
-		$this->va_excel->getActiveSheet()->setCellValue('AM2', 'HazMatFlag');
-		$this->va_excel->getActiveSheet()->setCellValue('AN2', 'ImageURL');
-		$this->va_excel->getActiveSheet()->setCellValue('AO2', 'StorageCountScriptTemplateID');
-		$this->va_excel->getActiveSheet()->setCellValue('AP2', 'StorageRates');
-		$this->va_excel->getActiveSheet()->setCellValue('AQ2', 'OutboundMobileSerializationBehavior');
-		$this->va_excel->getActiveSheet()->setCellValue('AR2', 'Price');
-		$this->va_excel->getActiveSheet()->setCellValue('AS2', 'TotalQty');
-		$this->va_excel->getActiveSheet()->setCellValue('AT2', 'UnitType');
+		$this->va_excel->getActiveSheet()->setCellValue('V2', 'Qualifiers')->setSharedStyle($sharedStyle2, "V2")->getColumnDimension('V')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('W2', 'Storage Setup')->setSharedStyle($sharedStyle4, "W2:Y2")->getColumnDimension('W')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('X2', 'Variable Setup')->getColumnDimension('X')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('Y2', 'NMFC#')->getColumnDimension('Y')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('Z2', 'Lot Number Required')->setSharedStyle($sharedStyle1, "Z2:AE2")->getColumnDimension('Z')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AA2', 'Serial Number Required')->getColumnDimension('AA')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AB2', 'Serial Number Must Be Unique')->getColumnDimension('AB')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AC2', 'Exp Date Req')->getColumnDimension('AC')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AD2', 'Enable Cost')->getColumnDimension('AD')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AE2', 'Cost Required')->getColumnDimension('AE')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AF2', 'IsHazMat')->setSharedStyle($sharedStyle2, "AF2:AR2")->getColumnDimension('AF')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AG2', 'HazMatID')->getColumnDimension('AG')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AH2', 'HazMatShippingName')->getColumnDimension('AH')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AI2', 'HazMatHazardClass')->getColumnDimension('AI')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AJ2', 'HazMatPackingGroup')->getColumnDimension('AJ')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AK2', 'HazMatFlashPoint')->getColumnDimension('AK')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AL2', 'HazMatLabelCode')->getColumnDimension('AL')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AM2', 'HazMatFlag')->getColumnDimension('AM')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AN2', 'ImageURL')->getColumnDimension('AN')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AO2', 'StorageCountScriptTemplateID')->getColumnDimension('AO')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AP2', 'StorageRates')->getColumnDimension('AP')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AQ2', 'OutboundMobileSerializationBehavior')->getColumnDimension('AQ')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AR2', 'Price')->getColumnDimension('AR')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AS2', 'TotalQty')->setSharedStyle($sharedStyle1, "AS2:AT2")->getColumnDimension('AS')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AT2', 'UnitType')->getColumnDimension('AT')->setAutoSize(true);
 
 		$result = $this->inbounddocument_m->getInboundInvItem($client, $doc);
-        $docDetail = $this->inbound_m->getInboundById($doc);
+        $docDetail = $this->inbound_m->getInboundById($doc);        
 		$lup = 3;
 
         $attrList = $this->clientoptions_m->get($client, 'attribute_set');
         $attrList = json_decode($attrList['option_value'], true);
 
 		foreach($result as $item){
-			$this->va_excel->getActiveSheet()->setCellValue('A'.$lup, $item['sku_simple']);
-			$this->va_excel->getActiveSheet()->setCellValue('B'.$lup, $item['sku_description']);
-			$this->va_excel->getActiveSheet()->setCellValue('C'.$lup, $item['sku_config']);
+			$this->va_excel->getActiveSheet()->setCellValue('A'.$lup, $item['sku_simple'])->setSharedStyle($yellow, "A".$lup);
+			$this->va_excel->getActiveSheet()->setCellValue('B'.$lup, $item['sku_description'])->setSharedStyle($yellow, "B".$lup);
+			$this->va_excel->getActiveSheet()->setCellValue('C'.$lup, $item['sku_config'])->setSharedStyle($yellow, "C".$lup);
 			$this->va_excel->getActiveSheet()->setCellValue('D'.$lup, $item['min']);
 			$this->va_excel->getActiveSheet()->setCellValue('E'.$lup, $item['max']);
-			$this->va_excel->getActiveSheet()->setCellValue('F'.$lup, $item['cycle_count']);
+			$this->va_excel->getActiveSheet()->setCellValue('F'.$lup, $item['cycle_count'])->setSharedStyle($yellow, "F".$lup);
 			$this->va_excel->getActiveSheet()->setCellValue('G'.$lup, $item['reorder_qty']);
-			$this->va_excel->getActiveSheet()->setCellValue('H'.$lup, $item['inventor_method']);
+			$this->va_excel->getActiveSheet()->setCellValue('H'.$lup, $item['inventor_method'])->setSharedStyle($yellow, "H".$lup);
 			$this->va_excel->getActiveSheet()->setCellValue('I'.$lup, $item['temperature']);
-			$this->va_excel->getActiveSheet()->setCellValue('J'.$lup, $item['cost']);
-			$this->va_excel->getActiveSheet()->setCellValue('K'.$lup, $item['upc']);
+			$this->va_excel->getActiveSheet()->setCellValue('J'.$lup, $item['cost'])->setSharedStyle($yellow, "J".$lup);
+			$this->va_excel->getActiveSheet()->setCellValue('K'.$lup, $item['upc'])->setSharedStyle($yellow, "K".$lup);
 			$this->va_excel->getActiveSheet()->setCellValue('L'.$lup, $item['track_lot']);
 			$this->va_excel->getActiveSheet()->setCellValue('M'.$lup, $item['track_serial']);
 			$this->va_excel->getActiveSheet()->setCellValue('N'.$lup, $item['track_expdate']);
@@ -499,9 +619,9 @@ class Listinbounddoc extends MY_Controller {
 			$this->va_excel->getActiveSheet()->setCellValue('T'.$lup, $item['height']);
 			$this->va_excel->getActiveSheet()->setCellValue('U'.$lup, $item['weiight']);
 			$this->va_excel->getActiveSheet()->setCellValue('V'.$lup, $item['qualifiers']);
-			$this->va_excel->getActiveSheet()->setCellValue('W'.$lup, $item['storage_setup']);
-			$this->va_excel->getActiveSheet()->setCellValue('X'.$lup, $item['variable_setup']);
-			$this->va_excel->getActiveSheet()->setCellValue('Y'.$lup, $item['nmfc']);
+			$this->va_excel->getActiveSheet()->setCellValue('W'.$lup, $item['storage_setup'])->setSharedStyle($pinkDinamis, "W".$lup);
+			$this->va_excel->getActiveSheet()->setCellValue('X'.$lup, $item['variable_setup'])->setSharedStyle($pinkDinamis, "X".$lup);
+			$this->va_excel->getActiveSheet()->setCellValue('Y'.$lup, $item['nmfc'])->setSharedStyle($pinkDinamis, "Y".$lup);
 			$this->va_excel->getActiveSheet()->setCellValue('Z'.$lup, $item['lot_number_required']);
 			$this->va_excel->getActiveSheet()->setCellValue('AA'.$lup, $item['serial_number_required']);
 			$this->va_excel->getActiveSheet()->setCellValue('AB'.$lup, $item['serial_number_must_be_unique']);
@@ -522,14 +642,17 @@ class Listinbounddoc extends MY_Controller {
 			$this->va_excel->getActiveSheet()->setCellValue('AQ'.$lup, $item['outbound_mobile_serialization_behavior']);
 			$this->va_excel->getActiveSheet()->setCellValue('AR'.$lup, $item['price']);
 			$this->va_excel->getActiveSheet()->setCellValue('AS'.$lup, $item['total_qty']);
-			$this->va_excel->getActiveSheet()->setCellValue('AT'.$lup, $item['unit_type']);
+			$this->va_excel->getActiveSheet()->setCellValue('AT'.$lup, $item['unit_type'])->setSharedStyle($blue, "AT".$lup);
 			$lup++;
 		}
 								
 		$dataClient = $this->client_m->getClientById($client);
 		$dataClientRows = $dataClient->row_array();
-								
-		$filename='Form Item Import (Client : '.$dataClientRows['client_code'].' Do Number : '.$docDetail['doc_number'].').xls';
+        
+        $sheetName=explode("/",$docDetail['doc_number']);
+        $this->va_excel->getActiveSheet()->setTitle($sheetName[0]."-".$sheetName[1]."-".$sheetName[2]."-".$sheetName[3]);
+        
+        $filename='Form Item Import (Client : '.$dataClientRows['client_code'].' Do Number : '.$docDetail['doc_number'].').xls';
 		header('Content-Type: application/vnd.ms-excel'); 
 		header('Content-Disposition: attachment;filename="'.$filename.'"'); 
 		header('Cache-Control: max-age=0');
@@ -584,47 +707,152 @@ class Listinbounddoc extends MY_Controller {
 		$dataClientRows = $dataClient->row_array();
 				
 		$this->va_excel->setActiveSheetIndex(0);
-		
+        $this->va_excel->getActiveSheet()->getRowDimension('2')->setRowHeight(20);
+        $this->va_excel->getActiveSheet()->getRowDimension('1')->setRowHeight(30);
+        $this->va_excel->getActiveSheet()->getRowDimension('11')->setRowHeight(30);
+		$this->va_excel->getActiveSheet()->freezePane('A13');
+        
+        $styleReport1 = new PHPExcel_Style();
+        $styleReport1Dinamis = new PHPExcel_Style();
+        $styleReport2 = new PHPExcel_Style();
+        $styleReport3 = new PHPExcel_Style();
+        $styleReport4 = new PHPExcel_Style();
+        
+        $styleReport1->applyFromArray(
+        array('fill' 	=> array(
+								'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+								'color'		=> array('rgb' => 'FFD700')
+							),
+		  'borders' => array(
+								'bottom'	=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                'left'	    => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                'top'	    => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+								'right'		=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM)
+							),
+          'font' => array('bold' => true,'size'  => 13),
+          'alignment' => array(
+                                'wrap'       => true,
+                                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                                'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER
+                                        )
+                   
+		 ));
+         
+        $styleReport1Dinamis->applyFromArray(
+        array('fill' 	=> array(
+								'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+								'color'		=> array('rgb' => 'FFD700')
+							),
+		  'borders' => array(
+								'bottom'	=> array('style' => PHPExcel_Style_Border::BORDER_THIN),
+                                'left'	    => array('style' => PHPExcel_Style_Border::BORDER_THIN),
+                                'top'	    => array('style' => PHPExcel_Style_Border::BORDER_THIN),
+								'right'		=> array('style' => PHPExcel_Style_Border::BORDER_THIN)
+							)               
+		 ));
+         
+        $styleReport2->applyFromArray(
+        array('fill' 	=> array(
+								'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+								'color'		=> array('rgb' => '00BFFF')
+							),
+		  'borders' => array(
+								'bottom'	=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                'left'	    => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                'top'	    => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+								'right'		=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM)
+							),
+          'font' => array('bold' => true,'size'  => 13),
+          'alignment' => array(
+                                'wrap'       => true,
+                                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                                'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER
+                                )
+                   
+		 ));
+         
+        $styleReport3->applyFromArray(
+        array('fill' 	=> array(
+								'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+								'color'		=> array('rgb' => '98FB98')
+							),
+		  'borders' => array(
+								'bottom'	=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                'left'	    => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                'top'	    => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+								'right'		=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM)
+							),
+          'font' => array('bold' => true,'size'  => 13),
+          'alignment' => array(
+                                'wrap'       => true,
+                                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                                'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER
+                                )
+                   
+		 ));
+         
+        $styleReport4->applyFromArray(
+        array('fill' 	=> array(
+								'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+								'color'		=> array('rgb' => '32CD32')
+							),
+		  'borders' => array(
+								'bottom'	=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                'left'	    => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                'top'   	=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+								'right'		=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM)
+							),
+          'font' => array('bold' => true,'size'  => 13),
+          'alignment' => array(
+                                'wrap'       => true,
+                                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                                'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER
+                                )
+         ));
+        
 		$this->va_excel->getActiveSheet()->setTitle('Standard Import - Tab1');
 
-		$this->va_excel->getActiveSheet()->setCellValue('A1', 'INBOUND REPORT');
-		$this->va_excel->getActiveSheet()->setCellValue('A3', 'Clients :');
-			$this->va_excel->getActiveSheet()->setCellValue('B3', $dataClientRows['client_code']);
-		$this->va_excel->getActiveSheet()->setCellValue('A4', 'Physical Inbound Date :');
-		$this->va_excel->getActiveSheet()->setCellValue('A6', 'Berikut adalah hasil pengecekan (Quality Control) atas barang masuk ke Warehouse - Taman Tekno yang telah dilakukan sebelumnya:');
+		$this->va_excel->getActiveSheet()->setCellValue('A1', 'INBOUND REPORT')->mergeCells('A1:B1')->getStyle('A1:B1')->getFont()->setSize(15)->setBold(true);
+		$this->va_excel->getActiveSheet()->setCellValue('A3', 'Clients :')->getStyle('A3')->getFont()->setSize(12)->setBold(true);
+		$this->va_excel->getActiveSheet()->setCellValue('B3', $dataClientRows['client_code'])->getStyle('B3')->getFont()->setSize(12)->setBold(true);
+		$this->va_excel->getActiveSheet()->setCellValue('A4', 'Physical Inbound Date :')->getStyle('A4')->getFont()->setSize(12)->setBold(true);
+		$this->va_excel->getActiveSheet()->setCellValue('A5', 'Doc Number :')->getStyle('A5')->getFont()->setSize(12)->setBold(true);
+        $this->va_excel->getActiveSheet()->setCellValue('B5', $docDetail['doc_number'])->getStyle('B5')->getFont()->setSize(12)->setBold(true);
+		$this->va_excel->getActiveSheet()->setCellValue('A7', 'Berikut adalah hasil pengecekan (Quality Control) atas barang masuk ke Warehouse - Taman Tekno yang telah dilakukan sebelumnya:');
 		
-			$this->va_excel->getActiveSheet()->mergeCells('A8:A11');
-		$this->va_excel->getActiveSheet()->setCellValue('A8', 'SKU Code');
-			$this->va_excel->getActiveSheet()->mergeCells('B8:B11');
-		$this->va_excel->getActiveSheet()->setCellValue('B8', 'SKU Description');
-		$this->va_excel->getActiveSheet()->setCellValue('C8', 'Product Catalog');
-			$this->va_excel->getActiveSheet()->mergeCells('C9:C11');
-		$this->va_excel->getActiveSheet()->setCellValue('C9', 'Size');
-			$this->va_excel->getActiveSheet()->mergeCells('D9:D11');
-		$this->va_excel->getActiveSheet()->setCellValue('D9', 'Qty');
-			$this->va_excel->getActiveSheet()->mergeCells('E8:E11');
-		$this->va_excel->getActiveSheet()->setCellValue('E8', 'Qty Inbound (SJ)');
-			$this->va_excel->getActiveSheet()->mergeCells('F8:F11');
-		$this->va_excel->getActiveSheet()->setCellValue('F8', 'Note');
-			$this->va_excel->getActiveSheet()->mergeCells('G8:G11');
-		$this->va_excel->getActiveSheet()->setCellValue('G8', 'Problem');
-			$this->va_excel->getActiveSheet()->mergeCells('H8:H11');
-		$this->va_excel->getActiveSheet()->setCellValue('H8', 'Action Taken');
-			$this->va_excel->getActiveSheet()->mergeCells('I8:I11');
-		$this->va_excel->getActiveSheet()->setCellValue('I8', 'Loc. Bin');
+			$this->va_excel->getActiveSheet()->mergeCells('A9:A12');
+		$this->va_excel->getActiveSheet()->setCellValue('A9', 'SKU Code')->setSharedStyle($styleReport1, "A9")->getColumnDimension('A')->setWidth(25);
+			$this->va_excel->getActiveSheet()->mergeCells('B9:B12');
+		$this->va_excel->getActiveSheet()->setCellValue('B9', 'SKU Description')->setSharedStyle($styleReport1, "B9")->getColumnDimension('B')->setWidth(80);
+            $this->va_excel->getActiveSheet()->mergeCells('C9:D9')->setSharedStyle($styleReport1, "C10");
+        $this->va_excel->getActiveSheet()->setCellValue('C9', 'Product Catalog')->setSharedStyle($styleReport1, "C9")->getColumnDimension('C')->setWidth(15);
+			$this->va_excel->getActiveSheet()->mergeCells('C10:C12')->setSharedStyle($styleReport1, "C10");
+		$this->va_excel->getActiveSheet()->setCellValue('C10', 'Size');
+			$this->va_excel->getActiveSheet()->mergeCells('D10:D12')->setSharedStyle($styleReport1, "D10");
+		$this->va_excel->getActiveSheet()->setCellValue('D10', 'Qty');
+			$this->va_excel->getActiveSheet()->mergeCells('E9:E12');
+		$this->va_excel->getActiveSheet()->setCellValue('E9', 'Qty Inbound (SJ)')->setSharedStyle($styleReport2, "E9")->getColumnDimension('E')->setAutoSize(true);
+			$this->va_excel->getActiveSheet()->mergeCells('F9:F12');
+		$this->va_excel->getActiveSheet()->setCellValue('F9', 'Note')->setSharedStyle($styleReport3, "F9:H9")->getColumnDimension('F')->setAutoSize(true);
+			$this->va_excel->getActiveSheet()->mergeCells('G9:G12');
+		$this->va_excel->getActiveSheet()->setCellValue('G9', 'Problem')->getColumnDimension('G')->setAutoSize(true);
+			$this->va_excel->getActiveSheet()->mergeCells('H9:H12');
+		$this->va_excel->getActiveSheet()->setCellValue('H9', 'Action Taken')->getColumnDimension('H')->setAutoSize(true);
+			$this->va_excel->getActiveSheet()->mergeCells('I9:I12');
+		$this->va_excel->getActiveSheet()->setCellValue('I9', 'Loc. Bin')->setSharedStyle($styleReport4, "I9")->getColumnDimension('I')->setWidth(25);
 		
 		$result = $this->inbounddocument_m->getInboundInvItem($client, $doc);
-		$lup = 12;
+		$lup = 13;
 		
 		foreach($result as $item){
 			$skuDescription = $item['sku_description'];
 			$arrTmp = explode("S:",$skuDescription);
 				$arrTmp1 = explode(",",$arrTmp[1]);
 				$size = $arrTmp1[0]; 
-			$this->va_excel->getActiveSheet()->setCellValue('A'.$lup, $item['sku_simple']);
-			$this->va_excel->getActiveSheet()->setCellValue('B'.$lup, $item['sku_description']);
-			$this->va_excel->getActiveSheet()->setCellValue('C'.$lup, $size);
-			$this->va_excel->getActiveSheet()->setCellValue('D'.$lup, $item['total_qty']);
+			$this->va_excel->getActiveSheet()->setCellValue('A'.$lup, $item['sku_simple'])->setSharedStyle($styleReport1Dinamis, "A".$lup);
+			$this->va_excel->getActiveSheet()->setCellValue('B'.$lup, $item['sku_description'])->setSharedStyle($styleReport1Dinamis, "B".$lup);
+			$this->va_excel->getActiveSheet()->setCellValue('C'.$lup, $size)->setSharedStyle($styleReport1Dinamis, "C".$lup);
+			$this->va_excel->getActiveSheet()->setCellValue('D'.$lup, $item['total_qty'])->setSharedStyle($styleReport1Dinamis, "D".$lup);
 			$lup++;
 		}
 		
@@ -653,13 +881,48 @@ class Listinbounddoc extends MY_Controller {
 		$dataClientRows = $dataClient->row_array();
 				
 		$this->va_excel->setActiveSheetIndex(0);
-		
+		$this->va_excel->getActiveSheet()->freezePane('A2');
+        $this->va_excel->getActiveSheet()->getRowDimension('1')->setRowHeight(25);
 		$this->va_excel->getActiveSheet()->setTitle('Standard Import - Tab1');
+        
+        $receivStyle1 = new PHPExcel_Style();    
+        $receivStyle2 = new PHPExcel_Style();     
+        $receivStyle1->applyFromArray(
+        array('fill' 	=> array(
+								'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+								'color'		=> array('rgb' => '1E90FF')
+							),
+		  'borders' => array(
+								'bottom'	=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                'left'	    => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                'top'	    => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+								'right'		=> array('style' => PHPExcel_Style_Border::BORDER_MEDIUM)
+							),
+          'font' => array('bold' => true,'size'=>12),
+          'alignment' => array(
+                                'wrap'       => true,
+                                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                                'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER
+                                        )                   
+		 ));
+         
+        $receivStyle2->applyFromArray(
+        array('fill' 	=> array(
+								'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
+								'color'		=> array('rgb' => 'FFD700')
+							),
+		  'borders' => array(
+								'bottom'	=> array('style' => PHPExcel_Style_Border::BORDER_THIN),
+                                'left'	    => array('style' => PHPExcel_Style_Border::BORDER_THIN),
+                                'top'	    => array('style' => PHPExcel_Style_Border::BORDER_THIN),
+								'right'		=> array('style' => PHPExcel_Style_Border::BORDER_THIN)
+							)               
+		 ));
 
-		$this->va_excel->getActiveSheet()->setCellValue('A1', 'ReferenceNumber');
-		$this->va_excel->getActiveSheet()->setCellValue('B1', 'Sku');
-		$this->va_excel->getActiveSheet()->setCellValue('C1', 'Quantity');
-		$this->va_excel->getActiveSheet()->setCellValue('D1', 'LocationField1');
+		$this->va_excel->getActiveSheet()->setCellValue('A1', 'ReferenceNumber')->setSharedStyle($receivStyle1, 'A1:D1')->getColumnDimension('A')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('B1', 'Sku')->getColumnDimension('B')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('C1', 'Quantity')->getColumnDimension('C')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('D1', 'LocationField1')->getColumnDimension('D')->setAutoSize(true);
 		
 		$result = $this->inbounddocument_m->getInboundInvStock($client, $doc);
 		$lup = 2;
@@ -671,7 +934,7 @@ class Listinbounddoc extends MY_Controller {
 			$sku_simple = $query[0]['sku_simple']; 
 			
 			$this->va_excel->getActiveSheet()->setCellValue('A'.$lup, $item['reference_num']);
-			$this->va_excel->getActiveSheet()->setCellValue('B'.$lup, $sku_simple);
+			$this->va_excel->getActiveSheet()->setCellValue('B'.$lup, $sku_simple)->setSharedStyle($receivStyle2, 'B'.$lup);
 			$this->va_excel->getActiveSheet()->setCellValue('C'.$lup, $item['quantity']);
 			$this->va_excel->getActiveSheet()->setCellValue('D'.$lup, $item['bin_location']);
 			$lup++;
