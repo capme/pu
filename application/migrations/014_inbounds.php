@@ -30,7 +30,8 @@ class Migration_Inbounds extends Base_migration {
 				array("name" => "Inbound Download", "slug" => "inbounds/download", "hidden" => 1, "status" => 1, "parent" => $parentTags['inbounds']),
 				array("name" => "Inbound Delete", "slug" => "inbounds/delete", "hidden" => 1, "status" => 1, "parent" => $parentTags['inbounds']),
 				array("name" => "Inbound Add", "slug" => "inbounds/add", "hidden" => 1, "status" => 1, "parent" => $parentTags['inbounds']),
-                array("name" => "Inbound Save", "slug" => "inbounds/save", "hidden" => 1, "status" => 1, "parent" => $parentTags['inbounds']),        
+                array("name" => "Inbound Save", "slug" => "inbounds/save", "hidden" => 1, "status" => 1, "parent" => $parentTags['inbounds']), 
+                array("name" => "Inbound Edit", "slug" => "inbounds/edit", "hidden" => 1, "status" => 1, "parent" => $parentTags['inbounds']),       
 		);
 		
 		foreach($newModule as $module) {
