@@ -18,6 +18,9 @@ define('FILE_WRITE_MODE', 0666);
 define('DIR_READ_MODE', 0755);
 define('DIR_WRITE_MODE', 0777);
 
+define('GROUP_OPERATION', 1);
+define('USER_CRON', 2);
+
 /*
 |--------------------------------------------------------------------------
 | File Stream Modes
@@ -36,7 +39,7 @@ define('FOPEN_READ_WRITE_CREATE',				'a+b');
 define('FOPEN_WRITE_CREATE_STRICT',				'xb');
 define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 
-define('DART_URL', 'http://dart.velaasia.dev/xhr_threepl/');
+define('DART_URL', 'http://dart.velaasia.com/xhr_threepl/');
 define('DART_KEY', 'Vela123!');
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

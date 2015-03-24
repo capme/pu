@@ -23,6 +23,7 @@ class Mageapi {
 	const METHOD_CATLOGINVENTORY = "cataloginventory_stock_item.list";
 	const METHOD_ATTRIBUTE_LIST = "product_attribute.list";
 	const METHOD_ATTRIBUTE_INFO = "product_attribute.info";
+	const METHOD_PRODUCT_CREATE = "product.create";
 	const METHOD_VELA_SHIPMENT = "vela_shipment.create";
 	const METHOD_VELA_RETURN_NEW = "vela_return.new";
 	const METHOD_VELA_RETURN_EXPORTED = "vela_return.exported";
@@ -34,6 +35,7 @@ class Mageapi {
 	const METHOD_VELA_COD_RECEIVED = "vela_cod.payment";
 	const METHOD_VELA_COD_NEW = "vela_cod.new";
 	const METHOD_VELA_COD_EXPORTED = "vela_cod.exported";
+    const METHOD_ATTRIBUTE_SET_LIST = "product_attribute_set.list";
 	
 	public function __construct( $config = array() ) {
 		if(!empty($config)) {
@@ -384,4 +386,46 @@ class Mageapi {
 			return false;
 		}
 	}
+	
+	/**
+	 * create mage's items for each client
+	 * @param array $ItemsToCreate
+	 * @return array created items
+	 */
+	public function inboundCreateItem($params){
+		try {
+			$calls = array();
+			foreach($params as $param) {
+				$calls[] = array(self::METHOD_PRODUCT_CREATE, $param);
+			}
+			$returns = $this->soapClient->multiCall($this->soapSession, $calls);
+
+			return $returns;
+		} catch( Exception $e ) {
+			log_message('error', "MAGEAPI ==> ". $e->getMessage());
+			return false;
+		}
+		
+	}
+
+    public function getProductAttributeSet(){
+
+        try {
+            $attributeSet = array();
+            $data = $this->soapClient->call($this->soapSession, self::METHOD_ATTRIBUTE_SET_LIST);
+
+            if(!empty($data)){
+                foreach($data as $d){
+                    if(isset($d['set_id']) && isset($d['name'])){
+                        $attributeSet[$d['set_id']] = $d['name'];
+                    }
+                }
+            }
+
+            return $attributeSet;
+        } catch( Exception $e ) {
+            log_message('error', "MAGEAPI ==> ". $e->getMessage());
+            return false;
+        }
+    }
 }

@@ -92,7 +92,6 @@ class Awbprinting extends MY_Controller {
 		}
 		
 		$this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value" => @$value['client_code'], "msg" => @$msg['client_code']) );
-		
 		$this->va_input->addInput( array("name" => "sku", "placeholder" => "Order Number", "help" => "Order Number", "label" => "Order Number", "value" => @$value['ordernr'], "msg" => @$msg['ordernr']) );
 		$this->va_input->addInput( array("name" => "status", "value" => $this->getStatus()[@$value['status']], "msg" => @$msg['status'], "label" => "Status", "help" => "Status") );		
 		$this->va_input->addInput( array("name" => "receiver", "value" => @$value['receiver'], "msg" => @$msg['receiver'], "label" => "Name", "help" => "Receiver") );
@@ -224,12 +223,8 @@ class Awbprinting extends MY_Controller {
 	}
 	
 	private function _fetchOrderAmount($clientId) {
-		$cmd = PHP_BINDIR."/php " . FCPATH . "index.php cron/awb getAmountOrder/".$clientId;
-		if (substr(php_uname(), 0, 7) == "Windows"){
-			pclose(popen("start /B ". $cmd, "r"));
-		} else {
-			exec($cmd . " > /dev/null &");
-		}
+        $command = "cron/awb getAmountOrder/".$clientId;
+        execProcess($command);
 	}
 
 	private function _uploadFile() {

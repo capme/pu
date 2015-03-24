@@ -46,6 +46,16 @@ class Client_m extends MY_Model {
 			$data['mage_wsdl'] = $post['mage_wsdl'];
 		} else {
 		}
+
+        if(!empty($post['threepl_user'])) {
+            $data['threepl_user'] = $post['threepl_user'];
+        } else {
+        }
+
+        if(!empty($post['threepl_pass'])) {
+            $data['threepl_pass'] = $post['threepl_pass'];
+        } else {
+        }
 	
 		if(empty($msg)) {			
 			
@@ -82,6 +92,7 @@ class Client_m extends MY_Model {
 					$_result->client_code,
 					$mageUser,
 					$_result->mage_wsdl,
+                    $_result->threepl_user,
 					'<a href="'.site_url("clients/view/".$_result->id).'" class="btn btn-xs default"><i class="fa fa-search"></i> View</a>',
 			);
 		}
@@ -121,6 +132,18 @@ class Client_m extends MY_Model {
 			$data['mage_wsdl'] = $post['mage_wsdl'];
 		} else {
 		}
+
+        if(!empty($post['threepl_user'])) {
+            $data['threepl_user'] = $post['threepl_user'];
+        } else {
+            $data['threepl_user'] = '';
+        }
+
+        if(!empty($post['threepl_pass'])) {
+            $data['threepl_pass'] = $post['threepl_pass'];
+        } else {
+            $data['threepl_pass'] = '';
+        }
 				
 		if(empty($msg)) 
 		{
