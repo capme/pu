@@ -29,7 +29,7 @@ var TableAjax = function () {
                 	"aoColumns": [
                           { "bSortable": false },
 						  null, //{ "bSortable": false },
-						  { "bSortable": false },
+                          { "bSortable": false },
 						  { "bSortable": false },
 						  { "bSortable": false },
 						  { "bSortable": false },
