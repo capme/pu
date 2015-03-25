@@ -944,9 +944,31 @@ class Inbounddocument_m extends MY_Model {
 	}
 	
 	public function insertInboundDocument($doc_number, $client_id, $note, $type, $status, $created_by, $filename, $reference_id){
-		$sql = "INSERT INTO ".$this->table."(doc_number, client_id, note, type, status, created_by, filename, reference_id) VALUES";
-		$sql .= " ('".$doc_number."',".$client_id.",'".$note."',".$type.",".$status.",".$created_by.",'".$filename."',".$reference_id.")";
-		$this->db->query($sql);
+		//check first, if upload inbound form is not new data
+		$sqlCheck = "SELECT * FROM ".$this->table." WHERE reference_id=".$reference_id;
+		$queryCheck = $this->db->query($sqlCheck);
+		$rowCheck = $queryCheck->result_array();
+
+		if(empty($rowCheck)){
+			//insert
+			$sql = "INSERT INTO ".$this->table."(doc_number, client_id, note, type, status, created_by, filename, reference_id) VALUES";
+			$sql .= " ('".$doc_number."',".$client_id.",'".$note."',".$type.",".$status.",".$created_by.",'".$filename."',".$reference_id.")";
+			$this->db->query($sql);
+		}else{
+			$this->db->trans_start();
+			
+			//delete table inb_inventory_stock_<$client_id>
+			$sql = "DELETE FROM ".$this->tableInvStock."_".$client_id." WHERE doc_number=".$rowCheck[0]['id'];
+			$this->db->query($sql);
+			//update row regarding to upload inb_document
+			$sql = "UPDATE ".$this->table." SET filename='".$filename."', type=".$type.", status=".$status.", updated_at='".date("Y-m-d H:i:s")."' WHERE id=".$rowCheck[0]['id'];
+			$this->db->query($sql);
+			//update row regarding to upload merchandising
+			$sql = "UPDATE ".$this->table." SET status=2 WHERE id=".$reference_id;
+			$this->db->query($sql);
+			
+			$this->db->trans_complete();
+		}
 	}
 
 	function saveToInboundInventoryStock($client, $doc_number, $created_by, $arr_data, $reference_id){
