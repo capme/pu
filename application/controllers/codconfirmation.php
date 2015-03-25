@@ -24,11 +24,11 @@ class Codconfirmation extends MY_Controller {
 				
 		$this->load->library("va_list");
 		$this->va_list->disableAddPlugin()->setListName("COD Order Confirmation")
-		->setHeadingTitle(array("Record #", "Client Name","Status","Order Number","Cust. Name", "Phone / Email","Updated By"))
+		->setHeadingTitle(array("#", "Created Date", "Client Name","Status","Order Number","Cust. Name", "Phone / Email"))
 		->setHeadingWidth(array(2,2,2,2,2,2,2));
 		
-		$this->va_list->setInputFilter(3, array("name" => $this->codconfirmation_m->filters['order_number']))
-			->setDropdownFilter(1, array("name" => $this->codconfirmation_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
+		$this->va_list->setInputFilter(4, array("name" => $this->codconfirmation_m->filters['order_number']))
+			->setDropdownFilter(2, array("name" => $this->codconfirmation_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
 				
 		$this->data['script'] = $this->load->view("script/codconfirmation_list", array("ajaxSource" => site_url("codconfirmation/CodConfirmationList")), true);	
 		$this->load->view("template", $this->data);
