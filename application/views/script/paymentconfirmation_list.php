@@ -30,16 +30,13 @@ var TableAjax = function () {
                           { "bSortable": false },
 						  null, //{ "bSortable": false },
 						  { "bSortable": false },
+                          { "bSortable": false },
 						  { "bSortable": false },
 						  { "bSortable": false },
 						  { "bSortable": false },
 						  { "bSortable": false },
 						  { "bSortable": false },
-						  { "bSortable": false },
-						  { "bSortable": false },
-						  { "bSortable": false },
-						  
-						{ "bSortable": false },							  
+						  { "bSortable": false }
 						  
                     ],
                     /* 

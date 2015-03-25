@@ -15,7 +15,7 @@
 <!-- page specific scripts (on footer) -->
 
 </head>
-<body class="page-header-fixed">
+<body class="page-header-fixed page-sidebar-closed">
 
 
 <?php
