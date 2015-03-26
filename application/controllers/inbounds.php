@@ -119,7 +119,20 @@ class Inbounds extends MY_Controller {
 		if(empty($post)) {
 			redirect("inbound/add");
 		}		
-		if($post['method'] == "new"){		  
+		if($post['method'] == "new"){
+			//validate file xls first
+			$msg = $this->_validate();
+			if($msg['info'][0] <> "OK"){
+				$completeMsg = "<br>Warning : <br>";
+				foreach($msg['info'] as $item){
+					$completeMsg .= $item."<br>";	
+				}
+				//echo $completeMsg;die();
+				$result['userfile'][0]= $completeMsg;
+				$this->session->set_flashdata( array("inboundError" => json_encode(array("msg" => $result, "data" => $post))) );
+				redirect("inbounds/add");
+			}
+					  
 			$filename=$this->_uploadFile();                        
             $post['userfile']= $filename['file_name'] ;
             $post['full_path']=$filename['full_path'];
@@ -157,11 +170,12 @@ class Inbounds extends MY_Controller {
 		$config['max_size']	= '2000';
         $config['file_name'] = $datestring;
 		
+		
 		$this->load->library('upload', $config);		
 		if ( ! $this->upload->do_upload()) {			
 			return null;
 		} else {			
-			$data=$this->upload->data();                       
+			$data=$this->upload->data();          
 			$dataupload=array('file_name'=>$data['file_name'], 'full_path'=>$data['full_path']);			
             return $dataupload;			
 		}
@@ -182,6 +196,55 @@ class Inbounds extends MY_Controller {
 		$opsi[$row['id']] = $row['client_code'];
 		}
 		return $opsi;
+	}
+	
+	private function _validate(){
+        $datestring = date("YmdHis");
+ 		$return = array('error' => false, 'data' => array());
+		$config['upload_path'] = '../public/inbound/catalog_product/';
+		$config['allowed_types'] = 'xls|xlsx';
+		$config['max_size']	= '2000';
+        $config['file_name'] = $datestring;
+		
+		$this->load->library('upload', $config);		
+		if ( ! $this->upload->do_upload()) {			
+			$msg['info'][] = "upload failed";
+		} else {			
+            //start validate
+			$data=$this->upload->data();
+			//file_name, full_path                       
+            
+			$objPHPExcel = PHPExcel_IOFactory::load($data['full_path']);            
+       		$cell_collection = $objPHPExcel->getActiveSheet()->getCellCollection();
+                            
+			foreach ($cell_collection as $cell) {
+			    $column = $objPHPExcel->getActiveSheet()->getCell($cell)->getColumn();
+			    $row = $objPHPExcel->getActiveSheet()->getCell($cell)->getRow();
+			    $data_value = $objPHPExcel->getActiveSheet()->getCell($cell)->getValue();
+						
+		        $arr_data[$row][$column] = $data_value;
+			}
+			
+			$msg['info'][] = "OK";
+			foreach($arr_data as $k => $v){
+				if(trim($arr_data[$k]['J']) <> "" and $k >= 19){
+					//check gender support
+					$arrCheckGender = array('MAN', 'MEN', 'LADIES', 'WOMAN', 'WOMEN', 'M', 'F', 'U', '');
+					if(!in_array(strtoupper(trim($arr_data[$k]['E'])), $arrCheckGender)){
+						if($msg['info'][0] == "OK") unset($msg);
+						$msg['info'][] = "Gender on row ".$k."(".$arr_data[$k]['E'].") is not supported";
+					}
+					//check category support
+					$arrCheckCategory = array('TOP', 'BOTTOM', 'FOOTWARE', 'ACCESSORIES', '');
+					if(!in_array(strtoupper(trim($arr_data[$k]['F'])), $arrCheckCategory)){
+						if($msg['info'][0] == "OK") unset($msg);
+						$msg['info'][] = "Category on row ".$k."(".$arr_data[$k]['F'].") is not supported";
+					}
+				}
+			}
+		}
+		unlink($data['full_path']);
+		return $msg;
 	}
 	
 }
