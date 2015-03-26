@@ -3,6 +3,7 @@ class Inbound_threepl {
 	const SOAP_ACTION = "http://www.JOI.com/schemas/ViaSub.WMS/";
 	const API_ENDPOINT = "https://secure-wms.com/webserviceexternal/contracts.asmx";
 	const API_CREATE_ITEMS = "CreateItems";
+	const API_GET_ITEMS = "ReportStockStatus";
 	
 	public $config;
 	
@@ -56,6 +57,61 @@ class Inbound_threepl {
 		curl_close($soap_do);
 		return $response;
 	}
+
+	/**
+	 * get 3pl's items for each client
+	 * @return array list items
+	 **/
+	 public function getItems(){
+	 	$soapRequest = "
+			<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:vias=\"http://www.JOI.com/schemas/ViaSub.WMS/\">
+			   <soapenv:Header/>
+			   <soapenv:Body>
+			      <vias:userLoginData>
+			         <vias:ThreePLID>".$this->config->get("apiid")."</vias:ThreePLID>
+			         <!--Optional:-->
+			         <vias:Login>".$this->config->get("username")."</vias:Login>
+			         <!--Optional:-->
+			         <vias:Password>".$this->config->get("password")."</vias:Password>
+			      </vias:userLoginData>
+			   </soapenv:Body>
+			</soapenv:Envelope>	 	
+	 	";
+		
+		$result = $this->_sendRequest($soapRequest, self::API_GET_ITEMS);
+		$return = array();
+		if($result !== false) {
+			$result = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $result);
+			log_message("debug", $result);
+			try{
+				$xml = new SimpleXMLElement($result);
+				if($xml->soapBody->string){
+					$return = (string) $xml->soapBody->string;
+					$return = "<?xml version='1.0' encoding='UTF-8'?>".$return;
+					$xml = simplexml_load_string($return) or die("Error: Cannot create object");
+					$return = (array)$xml;
+					$items = array();
+					$lup = 0;
+					foreach($return['Q'] as $itemReturn){
+						$arrItemReturn = (array)$itemReturn;
+						$items[$lup]['SKU'] = $arrItemReturn['SKU'];
+						$items[$lup]['I_DESCRIPTION'] = $arrItemReturn['I_DESCRIPTION'];
+						$lup++;
+					}
+					return $items;
+				}else{
+					return (string) $xml->soapBody->soapFault->faultstring;
+				}
+				
+			} catch(Exception $e) {
+				log_message("error", "{3PL} ".$e->__toString());
+				log_message("error", "{3PL} something wrong when call " . self::API_GET_ITEMS ." action.");
+				log_message("error", "{3PL} config values: " . serialize($this->config->getAll()));
+				return "{3PL} something wrong when call " . self::API_GET_ITEMS ." action. See the log file.";
+			}				
+		}
+		
+	 }
 
 	/**
 	 * create 3pl's items for each client
