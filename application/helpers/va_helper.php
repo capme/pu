@@ -91,4 +91,14 @@ function execProcess($command = null) {
     }
 }
 
+function checkIfInArrayString($searchingFor, $array) {
+    log_message('debug', print_r($array, true).'::'.print_r($searchingFor, true));
+    foreach ($array as $element) {
+        if (strpos($searchingFor, $element) !== false) {
+            return true;
+        }
+    }
+    return false;
+}
+
 ?>

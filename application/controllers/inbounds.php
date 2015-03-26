@@ -230,7 +230,7 @@ class Inbounds extends MY_Controller {
 				if(trim($arr_data[$k]['J']) <> "" and $k >= 19){
 					//check gender support
 					$arrCheckGender = array('MAN', 'MEN', 'LADIES', 'WOMAN', 'WOMEN', 'M', 'F', 'U', '');
-					if(!in_array(strtoupper(trim($arr_data[$k]['E'])), $arrCheckGender)){
+					if(!checkIfInArrayString(strtoupper(trim($arr_data[$k]['E'])), $arrCheckGender)){
 						if($msg['info'][0] == "OK") unset($msg);
 						$msg['info'][] = "Gender on row ".$k."(".$arr_data[$k]['E'].") is not supported";
 					}
