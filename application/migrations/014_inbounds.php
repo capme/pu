@@ -6,7 +6,7 @@ class Migration_Inbounds extends Base_migration {
 
         $this->db->query("DELETE FROM module WHERE name like 'Merchandising'");
         $new = array(
-            "merchandising" => array("name" => "Merchandising", "slug" => "", "icon" => "fa-user", "hidden" => 0, "status" => 1, "parent" => 0),
+            "merchandising" => array("name" => "Merchandising", "slug" => "", "icon" => "fa-user", "hidden" => 0, "status" => 1, "parent" => 0, 'sort' => 15),
         );
         $parentTags = array();
         foreach($new as $tag => $module) {
@@ -17,7 +17,7 @@ class Migration_Inbounds extends Base_migration {
 
         $this->db->query("DELETE FROM module WHERE slug like 'inbo%'");
 		$new= array(
-			"inbounds" => array("name" => "Upload Product Catalogue", "slug" => "inbounds", "icon" => "fa-user", "hidden" => 0, "status" => 1, "parent" => $parentTags['merchandising']),
+			"inbounds" => array("name" => "Product Catalogue", "slug" => "inbounds", "icon" => "fa-user", "hidden" => 0, "status" => 1, "parent" => $parentTags['merchandising'], 'sort' => 15),
 		);
 
 		foreach($new as $tag => $module) {
