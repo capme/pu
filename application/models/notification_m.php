@@ -37,7 +37,7 @@ class Notification_m extends MY_Model{
         $this->db = $this->load->database('mysql', TRUE);
         $user=$this->session->userdata('pkUserId');
         $this->relation = array(array("type" => "inner", "table" => $this->tableUsers, "link" => "{$this->table}.sender_id  = {$this->tableUsers}.pkUserId where group_ids=$user" ));
-		$this->select = array("{$this->table}.{$this->pkField}", "{$this->tableUsers}.fullname","{$this->table}.created_at", "{$this->table}.message","{$this->table}.url");
+		$this->select = array("{$this->table}.{$this->pkField}", "{$this->tableUsers}.fullname","{$this->table}.created_at", "{$this->table}.message","{$this->table}.url", "{$this->table}.read");
         
 		$iTotalRecords = $this->_doGetTotalRow();
 		$iDisplayLength = intval($this->input->post('iDisplayLength'));
@@ -58,7 +58,7 @@ class Notification_m extends MY_Model{
 					'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
 					$no=$no+1,
 					$_result->fullname,
-                    $_result->message,
+                ($_result->read == 0 ? '<span class="badge badge-roundless badge-important">new</span> ' : '') .$_result->message,
                     $_result->created_at,
                     '<a href="'.site_url("notification/read?id=".$_result->id."&url=".urlencode($_result->url)).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>'
 			);
