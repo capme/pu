@@ -561,6 +561,12 @@ class Inbounddocument_m extends MY_Model {
 			//gender
 			if(isset($arr_data[$x]['E'])){
 				if($arr_data[$x]['E'] <> ""){
+					if(strtoupper(trim($arr_data[$x]['E'])) == "MAN" or strtoupper(trim($arr_data[$x]['E'])) == "MEN"){
+						$arr_data[$x]['E'] = "M";
+					}
+					if(strtoupper(trim($arr_data[$x]['E'])) == "LADIES" or strtoupper(trim($arr_data[$x]['E'])) == "WOMAN" or strtoupper(trim($arr_data[$x]['E'])) == "WOMEN"){
+						$arr_data[$x]['E'] = "F";
+					}
 					$gender = $arr_data[$x]['E'];
 					$tmp_E = $gender;
 				} 	
@@ -718,6 +724,9 @@ class Inbounddocument_m extends MY_Model {
 			
 			//sku simple
 			if($size == ""){
+				$sku_simple = $sku_config."-"."OS";
+                $size = 'One Size';
+			}elseif(strtoupper(trim($size)) == "F"){
 				$sku_simple = $sku_config."-"."OS";
                 $size = 'One Size';
 			}else{
