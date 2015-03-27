@@ -80,6 +80,7 @@ class Migration_Inbound extends Base_migration {
   `total_qty` varchar(200) NOT NULL,
   `unit_type` varchar(200) NOT NULL,
   `attribute_set` varchar(200) NOT NULL,
+  `po_type` varchar(10) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NULL,
   `updated_by` int NOT NULL,

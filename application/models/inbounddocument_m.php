@@ -8,6 +8,7 @@ class Inbounddocument_m extends MY_Model {
 	var $table = 'inb_document';
 	var $tableInv = 'inb_inventory_item';
 	var $tableInvStock = 'inb_inventory_stock';
+	var $tableInvItems = 'inv_items';
 	var $tableClient ='client';
 	var $sorts = array(1 => "id");
 	var $pkField = "id";
@@ -1253,6 +1254,19 @@ class Inbounddocument_m extends MY_Model {
 			";			
 		}
 		return "<vias:Items>".$strItem."</vias:Items>";
+	}
+	
+	public function saveToInvItems($client, $data){
+		$this->db->trans_start();
+		$lup=1;
+		foreach($data as $k => $v){
+			$sql = "INSERT INTO ".$this->tableInvItems."_".$client." VALUES";
+			$sql .= " (".$lup.", \"".$v['SKU']."\", \"".$v['I_DESCRIPTION']."\",\"".date("Y-m-d H:i:s")."\")";
+			$sql .= " ON DUPLICATE KEY UPDATE updated_at='".date("Y-m-d H:i:s")."', sku_simple='".$v['SKU']."', sku_description='".$v['I_DESCRIPTION']."'";
+			$this->db->query($sql);
+			$lup++;
+		}
+		$this->db->trans_complete();
 	}
 	
 }
