@@ -115,7 +115,7 @@ class Paymentconfirmation extends MY_Controller {
 	
 	public function cancel($id)
 	{
-		$data = $this->paymentconfirmation_m->getConfirmationById($id);
+		$data = $this->paymentconfirmation_m->getConfirmationById($id);        
 		if($data->num_rows() < 1) {
 			redirect("paymentconfirmation");
 		}
@@ -138,6 +138,8 @@ class Paymentconfirmation extends MY_Controller {
 	
 		$this->va_input->addHidden( array("name" => "method", "value" => "update") );
 		$this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
+        $this->va_input->addHidden( array("name" => "client_id", "value" => $value['client_id']) );
+        $this->va_input->addHidden( array("name" => "order_number", "value" => $value['order_number']) );
 		$this->va_input->addTextarea( array("name" => "reason", "placeholder" => "Cancel reason", "help" => "Cancel reason", "label" => "Cancel Reason", "value" => @$value['reason'], "msg" => @$msg['reason']) );
 		
 		$this->data['script'] = $this->load->view("script/paymentconfirmation_add", array(), true);
@@ -153,6 +155,7 @@ class Paymentconfirmation extends MY_Controller {
 		
 		else if($post['method'] == "update") {
 			$result = $this->paymentconfirmation_m->Reason($post);
+                       
 			if(is_numeric($result)) 
 			{
 				redirect("paymentconfirmation");
