@@ -56,7 +56,7 @@ class Extractcatalogproduct extends CI_Controller {
 								$doc_number = $id;
 								$return = $this->inbounddocument_m->saveToInboundInventory($client_id, $doc_number, $created_by, $arr_data);
 								//compose HTML report
-								if(count($return['problem'])>0){
+								if(isset($return['problem'])){
 									//list problems
 									$client = $this->client_m->getClientById($client_id)->row_array();
 									$clientCode = $client['client_code']; 
