@@ -22,21 +22,28 @@ class Sync3pl extends CI_Controller {
 		$this->load->add_package_path(APPPATH."third_party/threepl/");
 		$this->load->library("inbound_threepl", null, "inbound_threepl");
 		
-		//leecooper
-		$c['threepluser'] = "apileecooper";
-		$c['threeplpass'] = "leecooper4vela17!";
-		$client = 14;
-		//sampai sini : besok, each client
-		
-		$this->inbound_threepl->setConfig( array("username" => $c['threepluser'], "password" => $c['threeplpass']) );
-		$return = $this->inbound_threepl->getItems();
-		if(is_array($return)){
-			//insert ignore into table inv_items
-			$this->inbounddocument_m->saveToInvItems($client, $return);
-			print_r($return);
-		}else{
-			echo $return;
+		$clients = $this->client_m->getClients();
+		foreach($clients as $itemClient){
+			$id = $itemClient['id'];
+			$client_code = $itemClient['client_code'];
+			$threepl_user = $itemClient['threepl_user'];
+			$threepl_pass = $itemClient['threepl_pass'];
+			
+			$c['threepluser'] = $threepl_user;
+			$c['threeplpass'] = $threepl_pass;
+			$client = $id;
+			
+			$this->inbound_threepl->setConfig( array("username" => $c['threepluser'], "password" => $c['threeplpass']) );
+			$return = $this->inbound_threepl->getItems();
+			if(is_array($return)){
+				//insert ignore into table inv_items
+				$this->inbounddocument_m->saveToInvItems($client, $return);
+				echo "Client ".$client_code." sync ".count($return)." items<br>";
+			}else{
+				echo "Client ".$client_code." sync failed.<br>";
+				echo $return;
+			}
+			echo "<br><br>";
 		}
-		
 	}
 }

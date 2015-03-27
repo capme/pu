@@ -52,8 +52,45 @@ class Extractcatalogproduct extends CI_Controller {
 							}
 							
 							try {
+								$realDocNumber = $doc_number; 
 								$doc_number = $id;
 								$return = $this->inbounddocument_m->saveToInboundInventory($client_id, $doc_number, $created_by, $arr_data);
+								//compose HTML report
+								if(count($return['problem'])>0){
+									//list problems
+									$client = $this->client_m->getClientById($client_id)->row_array();
+									$clientCode = $client['client_code']; 
+									$strProblem = "<table border='1' cellpadding='2' cellspacing='2'>";
+									$strProblem .= "<tr><td colspan='2'>".$clientCode." (".$realDocNumber.")</td></tr>";
+									$strProblem .= "<tr>";
+									$strProblem .= "<td>PO Type</td>";
+									$strProblem .= "<td>SKU Simple</td>";
+									$strProblem .= "</tr>";
+									foreach($return['problem'] as $itemProblem){
+										$problem_id = $itemProblem['id'];
+										$problem_sku_simple = $itemProblem['sku_simple'];
+										$problem_sku_description = $itemProblem['sku_description'];
+										$problem_updated_at = $itemProblem['updated_at'];
+										$problem_po_type = $itemProblem['poType'];
+										
+										$strProblem .= "<tr>";
+										$strProblem .= "<td>";
+										$strProblem .= $problem_po_type;
+										$strProblem .= "</td>";
+										$strProblem .= "<td>";
+										$strProblem .= $problem_sku_simple;
+										$strProblem .= "</td>";
+										$strProblem .= "</tr>";
+									}
+									$strProblem .= "</table>";
+	                                $from = USER_CRON;
+			                        $to = GROUP_OPERATION;
+	                                $url="inbounds";
+			                        $message=$strProblem;
+			                        $this->notification_m->add($from, $to, $url, $message);
+									
+								}
+								
 								echo "import inbound document for client ".$client_id." doc number ".$doc_number."<br>";
 								$return = $this->inbounddocument_m->updateStatusInboundDocumentList($id,1);
 		                        

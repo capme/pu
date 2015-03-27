@@ -508,6 +508,8 @@ class Inbounddocument_m extends MY_Model {
 	}
 	
 	function saveToInboundInventory($client, $doc_number, $created_by, $arr_data){
+		$this->load->model("invsync_m");
+		
 		//start parse the array from excel
 		$sizeRowX = count($arr_data); 
 		$sizeRowY = count($arr_data[1]);
@@ -521,6 +523,7 @@ class Inbounddocument_m extends MY_Model {
 		$tmp_F = "";
 		$tmp_G = "";
 		$tmp_H = "";
+		$msgRet = array();
 		for($x=19;$x<=$sizeRowX;$x++){
 			//------------------get the field items--------------------------
 			//no
@@ -915,22 +918,31 @@ class Inbounddocument_m extends MY_Model {
 			$updated_by = $created_by;
 			
 			if($retailprice <> ""){
-									
-			$sql = "INSERT INTO ".$this->tableInv."_".$client." (doc_number, sku_config, sku_simple, sku_description, min, max, cycle_count,";
-			$sql .= " reorder_qty, inventor_method, temperature, cost, upc, track_lot, track_serial, track_expdate, primary_unit_of_measure,";
-			$sql .= " packaging_unit, packaging_uom_qty, length, width, height, weiight, qualifiers, storage_setup, variable_setup, ";
-			$sql .= " nmfc, lot_number_required, serial_number_required, serial_number_must_be_unique, exp_date_req, enable_cost, ";
-			$sql .= " cost_required, is_haz_mat, haz_mat_id, haz_mat_shipping_name, haz_mat_hazard_class, haz_mat_packing_group,";
-			$sql .= " haz_mat_flash_point, haz_mat_label_code, haz_mat_flat, image_url, storage_count_stript_template_id, storage_rates,";
-			$sql .= " outbound_mobile_serialization_behavior, price, total_qty, unit_type, updated_by) VALUES";
-			$sql .= " (".$doc_number.", '".strtoupper($sku_config)."', '".strtoupper($sku_simple)."', '".$sku_description."', '".$min."', ".$max.", ".$cycle_count.",";
-			$sql .= " ".$reorder_qty.", '".$inventor_method."', '".$temperature."', '".$cost."', '".$upc."', '".$track_lot."', '".$track_serial."', '".$track_expdate."', '".$primary_unit_of_measure."',";
-			$sql .= " '".$packaging_unit."', '".$packaging_uom_qty."', '".$length."', '".$width."', '".$height."', '".$weiight."', '".$qualifiers."', '".$storage_setup."', '".$variable_setup."', ";
-			$sql .= " '".$nmfc."', '".$lot_number_required."', '".$serial_number_required."', '".$serial_number_must_be_unique."', '".$exp_date_req."', '".$enable_cost."', ";
-			$sql .= " '".$cost_required."', '".$is_haz_mat."', '".$haz_mat_id."', '".$haz_mat_shipping_name."', '".$haz_mat_hazard_class."', '".$haz_mat_packing_group."',";
-			$sql .= " '".$haz_mat_flash_point."', '".$haz_mat_label_code."', '".$haz_mat_flat."', '".$image_url."', '".$storage_count_stript_template_id."', '".$storage_rates."',";
-			$sql .= " '".$outbound_mobile_serialization_behavior."', '".$price."', '".$total_qty."', '".$unit_type."', ".$updated_by.")";
-			$this->db->query($sql);
+				
+				//check sku simple from 3pl sync table
+				$checkReturn = $this->invsync_m->findBySku(strtoupper($sku_simple), $client);
+				
+				if(!empty($checkReturn) and strtoupper($poType)=='NEW'){
+					//problem detected
+					$checkReturn[0]['poType'] = $poType;
+					$msgRet['problem'][] = $checkReturn[0];
+				}
+													
+				$sql = "INSERT INTO ".$this->tableInv."_".$client." (doc_number, sku_config, sku_simple, sku_description, min, max, cycle_count,";
+				$sql .= " reorder_qty, inventor_method, temperature, cost, upc, track_lot, track_serial, track_expdate, primary_unit_of_measure,";
+				$sql .= " packaging_unit, packaging_uom_qty, length, width, height, weiight, qualifiers, storage_setup, variable_setup, ";
+				$sql .= " nmfc, lot_number_required, serial_number_required, serial_number_must_be_unique, exp_date_req, enable_cost, ";
+				$sql .= " cost_required, is_haz_mat, haz_mat_id, haz_mat_shipping_name, haz_mat_hazard_class, haz_mat_packing_group,";
+				$sql .= " haz_mat_flash_point, haz_mat_label_code, haz_mat_flat, image_url, storage_count_stript_template_id, storage_rates,";
+				$sql .= " outbound_mobile_serialization_behavior, price, total_qty, unit_type, updated_by) VALUES";
+				$sql .= " (".$doc_number.", '".strtoupper($sku_config)."', '".strtoupper($sku_simple)."', '".$sku_description."', '".$min."', ".$max.", ".$cycle_count.",";
+				$sql .= " ".$reorder_qty.", '".$inventor_method."', '".$temperature."', '".$cost."', '".$upc."', '".$track_lot."', '".$track_serial."', '".$track_expdate."', '".$primary_unit_of_measure."',";
+				$sql .= " '".$packaging_unit."', '".$packaging_uom_qty."', '".$length."', '".$width."', '".$height."', '".$weiight."', '".$qualifiers."', '".$storage_setup."', '".$variable_setup."', ";
+				$sql .= " '".$nmfc."', '".$lot_number_required."', '".$serial_number_required."', '".$serial_number_must_be_unique."', '".$exp_date_req."', '".$enable_cost."', ";
+				$sql .= " '".$cost_required."', '".$is_haz_mat."', '".$haz_mat_id."', '".$haz_mat_shipping_name."', '".$haz_mat_hazard_class."', '".$haz_mat_packing_group."',";
+				$sql .= " '".$haz_mat_flash_point."', '".$haz_mat_label_code."', '".$haz_mat_flat."', '".$image_url."', '".$storage_count_stript_template_id."', '".$storage_rates."',";
+				$sql .= " '".$outbound_mobile_serialization_behavior."', '".$price."', '".$total_qty."', '".$unit_type."', ".$updated_by.")";
+				$this->db->query($sql);
 			
 			}
 		}
@@ -938,7 +950,7 @@ class Inbounddocument_m extends MY_Model {
 		//end parse the array from excel
 		
 		
-		return TRUE;
+		return $msgRet;
 	}
 	
 	public function updateAttrSetInboundInventory($client, $doc_number, $data, $id){
@@ -1262,7 +1274,7 @@ class Inbounddocument_m extends MY_Model {
 		foreach($data as $k => $v){
 			$sql = "INSERT INTO ".$this->tableInvItems."_".$client." VALUES";
 			$sql .= " (".$lup.", \"".$v['SKU']."\", \"".$v['I_DESCRIPTION']."\",\"".date("Y-m-d H:i:s")."\")";
-			$sql .= " ON DUPLICATE KEY UPDATE updated_at='".date("Y-m-d H:i:s")."', sku_simple='".$v['SKU']."', sku_description='".$v['I_DESCRIPTION']."'";
+			$sql .= " ON DUPLICATE KEY UPDATE updated_at=\"".date("Y-m-d H:i:s")."\", sku_simple=\"".$v['SKU']."\", sku_description=\"".$v['I_DESCRIPTION']."\"";
 			$this->db->query($sql);
 			$lup++;
 		}
