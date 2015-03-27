@@ -19,12 +19,12 @@ class Paymentconfirmation extends MY_Controller {
 				
 		$this->load->library("va_list");
 		$this->va_list->disableAddPlugin()->setListName("Payment Confirmation")
-		->setHeadingTitle(array("Record #", "Client Name","Order Number","Name","Origin Bank","Amount","Status","Transfer Date","Receipt","Updated By"))
-		->setHeadingWidth(array(2, 2,2,3,2,3,4,2,2,4));
+		->setHeadingTitle(array("#", "Created Date", "Client Name","Order Number","Name","Origin Bank","Amount","Status"))
+		->setHeadingWidth(array(2,2,2,2,3,2,3,4));
 		
-		$this->va_list->setInputFilter(2, array("name" => $this->paymentconfirmation_m->filters['order_number']))
-			->setDropdownFilter(1, array("name" => $this->paymentconfirmation_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
-		$this->va_list->setDropdownFilter(6, array("name" => $this->paymentconfirmation_m->filters['status'], "option" => $this->getStatus()));
+		$this->va_list->setInputFilter(3, array("name" => $this->paymentconfirmation_m->filters['order_number']))
+			->setDropdownFilter(2, array("name" => $this->paymentconfirmation_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
+		$this->va_list->setDropdownFilter(7, array("name" => $this->paymentconfirmation_m->filters['status'], "option" => $this->getStatus()));
 		
 		$this->data['script'] = $this->load->view("script/paymentconfirmation_list", array("ajaxSource" => site_url("paymentconfirmation/paymentConfirmationList")), true);	
 		$this->load->view("template", $this->data);
