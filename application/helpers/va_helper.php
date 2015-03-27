@@ -92,6 +92,9 @@ function execProcess($command = null) {
 }
 
 function checkIfInArrayString($searchingFor, $array) {
+    if(empty($searchingFor)) {
+        return true;
+    }
     log_message('debug', print_r($array, true).'::'.print_r($searchingFor, true));
     foreach ($array as $element) {
         if (strpos($searchingFor, $element) !== false) {
