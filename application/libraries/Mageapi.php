@@ -30,6 +30,7 @@ class Mageapi {
 	const METHOD_VELA_CONFIRMATION_EXPORTED = "vela_confirmation.exported";
 	const METHOD_VELA_CONFIRMATION_APPROVE = "vela_confirmation.approve";
 	const METHOD_VELA_COD_APPROVE = "vela_cod.verify";
+    const METHOD_VELA_CONFIRMATION_CANCEL = "vela_confirmation.cancel";
 	const METHOD_VELA_COD_CANCEL ="vela_cod.cancel";
 	const METHOD_VELA_COD_RECEIVED = "vela_cod.payment";
 	const METHOD_VELA_COD_NEW = "vela_cod.new";
@@ -384,4 +385,14 @@ class Mageapi {
 			return false;
 		}
 	}
+
+    public function cancelPayment($orderNr, $comment){
+        try {
+            $this->soapClient->call($this->soapSession, self::METHOD_VELA_CONFIRMATION_CANCEL, array('order_id'=>$orderNr, 'comment'=>$comment));
+            return true;
+        } catch( Exception $e ) {
+            log_message('error', "MAGEAPI ==> ". $e->getMessage());
+            return false;
+        }
+    }
 }
