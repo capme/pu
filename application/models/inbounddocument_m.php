@@ -962,21 +962,22 @@ class Inbounddocument_m extends MY_Model {
 	
 	public function insertInboundDocument($doc_number, $client_id, $note, $type, $status, $created_by, $filename, $reference_id){
 		//check first, if upload inbound form is not new data
-		$sqlCheck = "SELECT * FROM ".$this->table." WHERE reference_id=".$reference_id;
-		$queryCheck = $this->db->query($sqlCheck);
-		$rowCheck = $queryCheck->result_array();
+		//$sqlCheck = "SELECT * FROM ".$this->table." WHERE reference_id=".$reference_id;
+		//$queryCheck = $this->db->query($sqlCheck);
+		//$rowCheck = $queryCheck->result_array();
 
-		if(empty($rowCheck)){
+		//if(empty($rowCheck)){
 			//insert
 			$sql = "INSERT INTO ".$this->table."(doc_number, client_id, note, type, status, created_by, filename, reference_id) VALUES";
 			$sql .= " ('".$doc_number."',".$client_id.",'".$note."',".$type.",".$status.",".$created_by.",'".$filename."',".$reference_id.")";
 			$this->db->query($sql);
-		}else{
+		//}else{
+		/*
 			$this->db->trans_start();
 			
 			//delete table inb_inventory_stock_<$client_id>
-			$sql = "DELETE FROM ".$this->tableInvStock."_".$client_id." WHERE doc_number=".$rowCheck[0]['id'];
-			$this->db->query($sql);
+			//$sql = "DELETE FROM ".$this->tableInvStock."_".$client_id." WHERE doc_number=".$rowCheck[0]['id'];
+			//$this->db->query($sql);
 			//update row regarding to upload inb_document
 			$sql = "UPDATE ".$this->table." SET filename='".$filename."', type=".$type.", status=".$status.", updated_at='".date("Y-m-d H:i:s")."' WHERE id=".$rowCheck[0]['id'];
 			$this->db->query($sql);
@@ -986,6 +987,7 @@ class Inbounddocument_m extends MY_Model {
 			
 			$this->db->trans_complete();
 		}
+		 */
 	}
 
 	function saveToInboundInventoryStock($client, $doc_number, $created_by, $arr_data, $reference_id){
@@ -1010,20 +1012,46 @@ class Inbounddocument_m extends MY_Model {
 				$qty = $arr_data[$x]['D'];
 					
 				//qty inbound
-				$qtyInbound = $arr_data[$x]['E'];	
+				if(isset($arr_data[$x]['E'])){
+					$qtyInbound = $arr_data[$x]['E'];
+				}else{
+					$qtyInbound = "";
+				}	
 	
 				//note
-				$note = $arr_data[$x]['F'];	
+				if(isset($arr_data[$x]['F'])){
+					$note = $arr_data[$x]['F'];
+				}else{
+					$note = "";
+				}	
 	
 				//problem
-				$problem = $arr_data[$x]['G'];
+				if(isset($arr_data[$x]['G'])){
+					$problem = $arr_data[$x]['G'];
+				}else{
+					$problem = "";
+				}
 					
 				//actionTaken
-				$actionTaken = $arr_data[$x]['H'];
+				if(isset($arr_data[$x]['H'])){
+					$actionTaken = $arr_data[$x]['H'];
+				}else{
+					$actionTaken = "";
+				}
 					
 				//loc bin
-				$locBin = $arr_data[$x]['I'];	
-										
+				if(isset($arr_data[$x]['I'])){
+					$locBin = $arr_data[$x]['I'];
+				}else{
+					$locBin = "";
+				}	
+				
+				//check if receiving inbound form more than one time
+				$query = $this->db->query("SELECT * FROM inb_document WHERE reference_id=".$reference_id." AND DATE(created_at)='".date("Y-m-d")."'");
+				$strRec = "";
+				if ($query->num_rows() > 1){
+					$strRec = "".($query->num_rows());
+				}		
 				//------------------ready for processing the query----------------------------
 				$query = $this->db->query("SELECT * FROM inb_inventory_item_".$client." WHERE sku_description='".$skuDescription."' AND doc_number=".$reference_id);
 				$row = $query->result_array();
@@ -1036,7 +1064,7 @@ class Inbounddocument_m extends MY_Model {
 					
 					//reference_num
 					$tmpInisialBrand = explode(",",$row[0]['sku_description']);
-						$reference_num = "REC".$tmpInisialBrand[0].date("dmy");
+						$reference_num = "REC".$strRec.$tmpInisialBrand[0].date("dmy");
 						
 					//quantity
 					//same value with field excel $qty
