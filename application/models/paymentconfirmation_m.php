@@ -17,7 +17,7 @@ class Paymentconfirmation_m extends MY_Model {
 			array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}")
 		);
 		
-		$this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->table}.origin_bank", "{$this->table}.dest_bank", "{$this->table}.transaction_method", "{$this->table}.amount", "{$this->table}.name", "{$this->table}.transaction_date", "{$this->table}.updated_at", "{$this->table}.status", "{$this->table}.receipt_url","{$this->table}.updated_by", "{$this->tableClient}.client_code");
+		$this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->table}.created_at", "{$this->table}.origin_bank", "{$this->table}.dest_bank", "{$this->table}.transaction_method", "{$this->table}.amount", "{$this->table}.name", "{$this->table}.transaction_date", "{$this->table}.updated_at", "{$this->table}.status", "{$this->table}.receipt_url","{$this->table}.updated_by", "{$this->tableClient}.client_code");
 		
 		$this->filters = array("status"=>"status","order_number"=>"order_number","client_id"=>"client_id");
 	}
@@ -62,18 +62,17 @@ class Paymentconfirmation_m extends MY_Model {
 				$action='<a href="'.site_url("paymentconfirmation/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>';
 			}
 			
+			$date = explode(' ', $_result->created_at);
 			$records["aaData"][] = array(
 					'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
 					$no=$no+1,
+					$date[0],
 					$_result->client_code,
 					$_result->order_number,
 					$_result->name,
-					$_result->origin_bank,
-					$_result->transaction_method,					
+					$_result->origin_bank . ($_result->origin_bank ? '<br /> (<a '.anchor($_result->receipt_url, 'Receipt', 'style="font-size:12px;" target="_blank" enabled="enabled" class="fa fa-search btn btn-xs default"').'</a>)' : ''),
+					"Rp. ".number_format($_result->amount),					
 					'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
-					$_result->transaction_date,					
-					'<a '.anchor($_result->receipt_url,'View','target="_blank" enabled="enabled" class="fa fa-search btn btn-xs default"').'</a>',
-					@$opsiarray[$_result->updated_by],					
 					$action				
 			);
 		}
@@ -141,7 +140,7 @@ class Paymentconfirmation_m extends MY_Model {
 				$this->db->where(array("order_number" => $payment['order_number'], "client_id" => $client['id']));
 				$this->db->update(
 					$this->table, 
-					array("client_id" => $client['id'], "order_number" => $payment['order_number'], "origin_bank" => $payment['origin_bank'], "dest_bank" => $payment['dest_bank'], "transaction_method" => $payment['transaction_method'], "name" => $payment['name'], "transaction_date" => $payment['transaction_date'], "amount" => $payment['amount'], "receipt_url" => $payment['receipt_url'], "updated_by" => "2", "created_at" => date("Y-m-d H:i:s") )
+					array("client_id" => $client['id'], "order_number" => $payment['order_number'], "origin_bank" => $payment['origin_bank'], "dest_bank" => $payment['dest_bank'], "transaction_method" => $payment['transaction_method'], "name" => $payment['name'], "transaction_date" => $payment['transaction_date'], "amount" => $payment['amount'], "receipt_url" => $payment['receipt_url'], "updated_by" => "2", "updated_at" => date("Y-m-d H:i:s") )
 				);
 			} else {
 				$this->db->insert( 
