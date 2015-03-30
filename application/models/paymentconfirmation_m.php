@@ -110,6 +110,9 @@ class Paymentconfirmation_m extends MY_Model {
 	
 	public function Reason($post) 
 	{
+        $this->load->model("client_m");
+        $this->load->library("mageapi");
+
 		$msg = array();			
 		$user=$this->session->userdata('pkUserId');		
 		$time=date('Y-m-d H:i:s', now());
@@ -122,6 +125,17 @@ class Paymentconfirmation_m extends MY_Model {
 			
 			$this->db->where($this->pkField, $post['id']);			
 			$this->db->update($this->table, $data);
+
+            $client = $this->client_m->getClientById($post['client_id'])->row_array();
+            $config = array(
+                "auth" => $client['mage_auth'],
+                "url" => $client['mage_wsdl']
+            );
+
+            if( $this->mageapi->initSoap($config) ) {
+                $this->mageapi->cancelPayment($post['order_number'], $post['reason']);
+            }
+
 			return $post['id'];
 		} 
 		else {
