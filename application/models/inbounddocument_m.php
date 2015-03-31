@@ -971,6 +971,9 @@ class Inbounddocument_m extends MY_Model {
 			$sql = "INSERT INTO ".$this->table."(doc_number, client_id, note, type, status, created_by, filename, reference_id) VALUES";
 			$sql .= " ('".$doc_number."',".$client_id.",'".$note."',".$type.",".$status.",".$created_by.",'".$filename."',".$reference_id.")";
 			$this->db->query($sql);
+			//update row regarding to upload merchandising
+			$sql = "UPDATE ".$this->table." SET status=2 WHERE id=".$reference_id;
+			$this->db->query($sql);
 		//}else{
 		/*
 			$this->db->trans_start();
