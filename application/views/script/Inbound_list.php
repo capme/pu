@@ -1,6 +1,6 @@
 <script>
 function deletechecked(){
-        if(confirm("Delete selected file ?"))
+        if(confirm("Delete selected file ?\nAll related row will be deleted as well and cannot be undone."))
         {return true;}
         else
         {return false;} 

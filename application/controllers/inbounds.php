@@ -4,6 +4,7 @@
  * @property inbound_m
  * @property Va_list $va_list
  * @property client_m
+ * @property Inbound_m $inbound_m
  *
  */
 class Inbounds extends MY_Controller {
@@ -105,6 +106,7 @@ class Inbounds extends MY_Controller {
         $this->va_input->addHidden( array("name" => "client_id", "value" => $value['client_id']) );
         $this->va_input->addHidden( array("name" => "filename", "value" => $value['filename']) );
 		$this->va_input->addHidden( array("name" => "method", "value" => "edit") );
+        $this->va_input->addHidden( array("name" => "client_code", "value" => @$value['client_code']) );
         $this->va_input->addInput( array("name" => "client", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value"=>@$value['client_code'], "msg" => @$msg['client'], "disabled"=>"disabled"));
 		$this->va_input->addCustomField( array("name" =>"userfile", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg['userfile'][0]?:@$msg['userfile'][1], "label" => "Upload File *", "view"=>"form/upload_inbound"));
         $this->data['script'] = $this->load->view("script/client_add", array(), true);
@@ -118,67 +120,115 @@ class Inbounds extends MY_Controller {
 		$post = $this->input->post("inbound");
 		if(empty($post)) {
 			redirect("inbound/add");
-		}		
+		}
+
 		if($post['method'] == "new"){
 			//validate file xls first
-			$msg = $this->_validate();
-			if($msg['info'][0] <> "OK"){
-				$completeMsg = "<br>Warning : <br>";
-				foreach($msg['info'] as $item){
-					$completeMsg .= $item."<br>";	
-				}
-				//echo $completeMsg;die();
-				$result['userfile'][0]= $completeMsg;
-				$this->session->set_flashdata( array("inboundError" => json_encode(array("msg" => $result, "data" => $post))) );
-				redirect("inbounds/add");
-			}
-					  
-			$filename=$this->_uploadFile();                        
-            $post['userfile']= $filename['file_name'] ;
-            $post['full_path']=$filename['full_path'];
-            $result=$this->inbound_m->uploadFile($post, $filename);            
-            if(is_numeric($result)){
-                redirect("inbounds");
-            }
-            else{
-                $result['userfile'][0]= $this->upload->display_errors();
-                $this->session->set_flashdata( array("inboundError" => json_encode(array("msg"=>$result, "data" => $post))));
-                redirect("inbounds/add");								 
-			}   		
-		}
-        if ($post['method']== "edit"){
-            $filename=$this->_uploadFile();                        
-            $post['userfile']= $filename['file_name'] ;
-            $post['full_path']=$filename['full_path'];
-            $result=$this->inbound_m->editProductCatalogue($post);
-             if(is_numeric($result)){
-                redirect("inbounds");
-            }
-            else{
-                $result['userfile'][0]= $this->upload->display_errors();
-                $this->session->set_flashdata( array("inboundError" => json_encode(array("msg"=>$result, "data" => $post))));
-                redirect("inbounds/edit");								 
-			} 
+            $this->_saveNew($post);
+		} else if ($post['method']== "edit"){
+            $this->_saveEdit($post);
         }
 	}
+
+    private function _saveEdit($post) {
+        $msg = null;
+        $msg = $this->_doUploadFile();
+
+        if($msg['error'] == true) {
+            // upload failed
+            $result['userfile'][0] = $msg['data'];
+            $this->session->set_flashdata( array("inboundError" => json_encode(array("msg"=>$result, "data" => $post))));
+            redirect("inbounds/edit/".$post['id']);
+        } else {
+            $fileData = $msg['data'];
+        }
+
+        $msg = $this->_validate($fileData);
+
+        if($msg['info'][0] <> "OK"){
+            $completeMsg = "<br>Warning : <br>";
+            foreach($msg['info'] as $item){
+                $completeMsg .= $item."<br>";
+            }
+            //echo $completeMsg;die();
+            $result['userfile'][0] = $completeMsg;
+            $this->session->set_flashdata( array("inboundError" => json_encode(array("msg" => $result, "data" => $post))) );
+            redirect("inbounds/edit/".$post['id']);
+        }
+
+        $post['userfile']= $fileData['file_name'] ;
+        $post['full_path']=$fileData['full_path'];
+        $result=$this->inbound_m->editProductCatalogue($post);
+
+        if(is_numeric($result)){
+            redirect("inbounds");
+        } else{
+            $result['userfile'][0]= $this->upload->display_errors();
+            $this->session->set_flashdata( array("inboundError" => json_encode(array("msg"=>$result, "data" => $post))));
+            redirect("inbounds/edit/".$post['id']);
+        }
+    }
+
+    private function _saveNew($post) {
+        $msg = null;
+        $msg = $this->_doUploadFile();
+
+        if($msg['error'] == true) {
+            // upload failed
+            $result['userfile'][0] = $msg['data'];
+            $this->session->set_flashdata( array("inboundError" => json_encode(array("msg"=>$result, "data" => $post))));
+            redirect("inbounds/add");
+        } else {
+            $fileData = $msg['data'];
+        }
+
+        $msg = $this->_validate($fileData);
+
+        if($msg['info'][0] <> "OK"){
+            unlink($fileData['full_path']);
+            $completeMsg = "<br>Warning : <br>";
+            foreach($msg['info'] as $item){
+                $completeMsg .= $item."<br>";
+            }
+            //echo $completeMsg;die();
+            $result['userfile'][0] = $completeMsg;
+            $this->session->set_flashdata( array("inboundError" => json_encode(array("msg" => $result, "data" => $post))) );
+            redirect("inbounds/add");
+        }
+
+        $post['userfile']= $fileData['file_name'] ;
+        $post['full_path']=$fileData['full_path'];
+
+        $result=$this->inbound_m->saveFile($post);
+
+        if(is_numeric($result)){
+            redirect("inbounds");
+        } else {
+            $result['userfile'][0]= $this->upload->display_errors();
+            $this->session->set_flashdata( array("inboundError" => json_encode(array("msg"=>$result, "data" => $post))) );
+            redirect("inbounds/add");
+        }
+    }
 	
-	private function _uploadFile() {
-        $datestring = date("YmdHis");
- 		$return = array('error' => false, 'data' => array());
+	private function _doUploadFile() {
+        $return = array('error' => false, 'data' => array());
+
 		$config['upload_path'] = '../public/inbound/catalog_product/';
 		$config['allowed_types'] = 'xls|xlsx';
 		$config['max_size']	= '2000';
-        $config['file_name'] = $datestring;
+        $config['file_name'] = date("YmdHis");
 		
-		
-		$this->load->library('upload', $config);		
-		if ( ! $this->upload->do_upload()) {			
-			return null;
+		$this->load->library('upload', $config);
+
+		if ( ! $this->upload->do_upload()) {
+            $return['error'] = true;
+            $return['data'] = $this->upload->display_errors();
 		} else {			
-			$data=$this->upload->data();          
-			$dataupload=array('file_name'=>$data['file_name'], 'full_path'=>$data['full_path']);			
-            return $dataupload;			
+			$data = $this->upload->data();
+			$return['data'] = array('file_name'=>$data['file_name'], 'full_path'=>$data['full_path']);
 		}
+
+        return $return;
 	}
 	
     public function download($id){
@@ -198,53 +248,69 @@ class Inbounds extends MY_Controller {
 		return $opsi;
 	}
 	
-	private function _validate(){
-        $datestring = date("YmdHis");
- 		$return = array('error' => false, 'data' => array());
-		$config['upload_path'] = '../public/inbound/catalog_product/';
-		$config['allowed_types'] = 'xls|xlsx';
-		$config['max_size']	= '2000';
-        $config['file_name'] = $datestring;
-		
-		$this->load->library('upload', $config);		
-		if ( ! $this->upload->do_upload()) {			
-			$msg['info'][] = "upload failed";
-		} else {			
-            //start validate
-			$data=$this->upload->data();
-			//file_name, full_path                       
-            
-			$objPHPExcel = PHPExcel_IOFactory::load($data['full_path']);            
-       		$cell_collection = $objPHPExcel->getActiveSheet()->getCellCollection();
-                            
-			foreach ($cell_collection as $cell) {
-			    $column = $objPHPExcel->getActiveSheet()->getCell($cell)->getColumn();
-			    $row = $objPHPExcel->getActiveSheet()->getCell($cell)->getRow();
-			    $data_value = $objPHPExcel->getActiveSheet()->getCell($cell)->getValue();
-						
-		        $arr_data[$row][$column] = $data_value;
-			}
-			
-			$msg['info'][] = "OK";
-			foreach($arr_data as $k => $v){
-				if(trim($arr_data[$k]['J']) <> "" and $k >= 19){
-					//check gender support
-					$arrCheckGender = array('MAN', 'MEN', 'LADIES', 'WOMAN', 'WOMEN', 'M', 'F', 'U', '');
-					if(!checkIfInArrayString(strtoupper(trim($arr_data[$k]['E'])), $arrCheckGender)){
-						if($msg['info'][0] == "OK") unset($msg);
-						$msg['info'][] = "Gender on row ".$k."(".$arr_data[$k]['E'].") is not supported";
-					}
-					//check category support
-					$arrCheckCategory = array('TOP', 'BOTTOM', 'FOOTWARE', 'ACCESSORIES', '');
-					if(!in_array(strtoupper(trim($arr_data[$k]['F'])), $arrCheckCategory)){
-						if($msg['info'][0] == "OK") unset($msg);
-						$msg['info'][] = "Category on row ".$k."(".$arr_data[$k]['F'].") is not supported";
-					}
-				}
-			}
-		}
-		unlink($data['full_path']);
-		return $msg;
+	private function _validate($data){
+        $ext = explode('.', $data['file_name']);
+        if( end($ext) == 'xlsx' ){
+            // Use PCLZip rather than ZipArchive to read the Excel2007 OfficeOpenXML file
+            PHPExcel_Settings::setZipClass(PHPExcel_Settings::PCLZIP);
+            $objReader = PHPExcel_IOFactory::createReader('Excel2007');
+            $objReader->setReadDataOnly(true);
+            $objPHPExcel = $objReader->load($data['full_path']);
+        } else {
+            $objPHPExcel = PHPExcel_IOFactory::load($data['full_path']);
+        }
+
+        $cell_collection = $objPHPExcel->getActiveSheet()->getCellCollection();
+
+        foreach ($cell_collection as $cell) {
+            $column = $objPHPExcel->getActiveSheet()->getCell($cell)->getColumn();
+            $row = $objPHPExcel->getActiveSheet()->getCell($cell)->getRow();
+            $data_value = $objPHPExcel->getActiveSheet()->getCell($cell)->getValue();
+
+            $arr_data[$row][$column] = $data_value;
+        }
+
+        $msg['info'][] = "OK";
+        $cols = array(
+            'A' => $arr_data[15]['A'] !='NO',
+            'B' => strstr($arr_data[15]['B'], 'PO TYPE') === FALSE,
+            'E' => strstr($arr_data[15]['E'], 'GENDER') === FALSE,
+            'F' => strstr($arr_data[15]['F'], 'CATEGORY') === FALSE,
+            'G' => $arr_data[15]['G'] != 'SUB CATEGORY',
+            'H' => $arr_data[15]['H'] != 'SUPPLIER STYLE CODE / SKU'
+        );
+
+
+
+        if (in_array(TRUE, $cols)) {
+            unset($msg);
+            $msg['info'][] = "Uploaded file is using non supported format";
+            foreach($cols as $col => $val) {
+                if($val) {
+                    $msg['info'][] = "&nbsp;&nbsp;Row in: 15".$col." doesn't contains with mandatory format";
+                }
+            }
+        }
+
+        foreach($arr_data as $k => $v){
+            if( !isset($arr_data[$k]['J']) ) {continue;}
+            if(trim($arr_data[$k]['J']) <> "" and $k >= 19){
+                //check gender support
+                $arrCheckGender = array('MAN', 'MEN', 'LADIES', 'WOMAN', 'WOMEN', 'M', 'F', 'U', '');
+                if(!checkIfInArrayString(strtoupper(trim($arr_data[$k]['E'])), $arrCheckGender)){
+                    if($msg['info'][0] == "OK") unset($msg);
+                    $msg['info'][] = "Gender on row ".$k."(".$arr_data[$k]['E'].") is not supported";
+                }
+                //check category support
+                $arrCheckCategory = array('TOP', 'BOTTOM', 'FOOTWARE', 'ACCESSORIES', '');
+                if(!in_array(strtoupper(trim($arr_data[$k]['F'])), $arrCheckCategory)){
+                    if($msg['info'][0] == "OK") unset($msg);
+                    $msg['info'][] = "Category on row ".$k."(".$arr_data[$k]['F'].") is not supported";
+                }
+            }
+        }
+
+        return $msg;
 	}
 	
 }

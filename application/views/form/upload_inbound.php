@@ -5,6 +5,7 @@
 <span class="help-block">
 	 <?php echo $msg ? $msg : $help;?>
 </span>
+<b>Sample: </b><a href="<?php echo site_url('inbound/catalog_product/sample.xlsx')?>">Product Catalogue</a>
 </div>
 
 
