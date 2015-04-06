@@ -1,6 +1,11 @@
 <?php
 /*
- * model for handle operation table inb_inventory_item(client_id),inb_inventory_stock(client_id),inb_document    
+ * model for handle operation table inb_inventory_item(client_id),inb_inventory_stock(client_id),inb_document
+ *
+ */
+
+/**
+ * @property Clientoptions_m $clientoptions_m
  */
 class Inbounddocument_m extends MY_Model {
 	
@@ -14,6 +19,7 @@ class Inbounddocument_m extends MY_Model {
 	var $pkField = "id";
 	var $path = "";
 	var $pathInboundForm = "";
+    var $attrList = array();
 	
 	function __construct()
     {
@@ -508,13 +514,15 @@ class Inbounddocument_m extends MY_Model {
 	}
 	
 	function saveToInboundInventory($client, $doc_number, $created_by, $arr_data){
-		$this->load->model("invsync_m");
-		
+		$this->load->model( array("invsync_m", 'clientoptions_m') );
+
 		//start parse the array from excel
 		$sizeRowX = count($arr_data); 
 		$sizeRowY = count($arr_data[1]);
 		$brandName = trim($arr_data[8]['C']);
-		$this->db->trans_start();
+        $brandInitial = $this->clientoptions_m->get( $client, 'brand_initial' );
+        $iBrand = strtoupper($brandInitial['option_value']);
+        $this->db->trans_begin();
 		$tmp_A = "";
 		$tmp_B = "";
 		$tmp_C = "";
@@ -595,66 +603,34 @@ class Inbounddocument_m extends MY_Model {
 			}else{
 				$subcategory = $tmp_G;
 			}
-			//purchase
-			if(isset($arr_data[$x]['H'])){
-				if($arr_data[$x]['H'] <> ""){
-					$purchase = $arr_data[$x]['H'];
-					$tmp_H = $purchase; 	
-				}
-			}else{
-				$purchase = $tmp_H;
-			}
+
 			//sku
-			if($arr_data[$x]['I'] <> ""){
-				$sku = $arr_data[$x]['I'];	
+			if($arr_data[$x]['H'] <> ""){
+				$sku = $arr_data[$x]['H'];
 			}
 			//product name
-			if($arr_data[$x]['J'] <> ""){
-				$productname = $arr_data[$x]['J'];	
+			if($arr_data[$x]['I'] <> ""){
+				$productname = $arr_data[$x]['I'];
 			}
 			//color name
-			if($arr_data[$x]['K'] <> ""){
-				$colorname = $arr_data[$x]['K'];	
+			if($arr_data[$x]['J'] <> ""){
+				$colorname = $arr_data[$x]['J'];
 			}
 			
-			//color code
-			$colorcode = $arr_data[$x]['L'];
-				
-			//fitting
-			$fitting = $arr_data[$x]['M'];
-				
 			//material
-			if($arr_data[$x]['N'] <> ""){
-				$material = $arr_data[$x]['N'];	
+			if($arr_data[$x]['R'] <> ""){
+				$material = $arr_data[$x]['R'];
 			}
 			//description
-			$description = $arr_data[$x]['O'];	
+			$description = $arr_data[$x]['T'];
 
 			//product instruction
-			if($arr_data[$x]['P'] <> ""){
-				$productinstruction = $arr_data[$x]['P'];	
+			if($arr_data[$x]['U'] <> ""){
+				$productinstruction = $arr_data[$x]['U'];
 			}
-			//product description
-			if($arr_data[$x]['Q'] <> ""){
-				$productdescription = $arr_data[$x]['Q'];	
-			}
-			//product name revision
-			$productnamerevision = $arr_data[$x]['R'];	
 
-			//short description
-			$shortdescription = $arr_data[$x]['S'];	
-
-			//meta description
-			$metadescription = $arr_data[$x]['T'];	
-
-			//meta keyword
-			$metakeyword = $arr_data[$x]['U'];	
-
-			//retail price sing
-			$retailpricesing = $arr_data[$x]['W'];
-			
 			//retail price -> ?
-			$retailprice = $arr_data[$x]['X'];
+			$retailprice = $arr_data[$x]['K'];
 			//check if the string contain '=' which refer to another cell value
 			if (substr($retailprice, 0, 1) == "=") {
 				//remove except alphabet
@@ -666,10 +642,10 @@ class Inbounddocument_m extends MY_Model {
 			}			
 			
 			//size
-			$size = $arr_data[$x]['AA'];
+			$size = $arr_data[$x]['N'];
 			
 			//qty
-			$qty = $arr_data[$x]['AB'];
+			$qty = $arr_data[$x]['O'];
 			
 			//total value
 			$totalvalue = $retailprice*$qty;
@@ -679,14 +655,6 @@ class Inbounddocument_m extends MY_Model {
 			if($sku == ""){
 				//sku not exist
 				//get 2 digit inisial brand
-				$tmp = str_replace(":","",$brandName);
-				$tmp = explode(" ",trim($tmp));
-					if(count($tmp)>1){
-						$iBrand = substr($tmp[0], 0, 1).substr($tmp[1], 0, 1);
-					}else{
-						$iBrand = substr($tmp[0], 0, 1);
-					}
-                $iBrand = strtoupper($iBrand);
 				//get 3 digit inisial product name
 				$tmp = explode(" ",$productname);
 				if(isset($tmp[1])){
@@ -709,43 +677,22 @@ class Inbounddocument_m extends MY_Model {
 				$sku_config = $iBrand."-".$inProdName." ".$inWarna;
 			}else{
 				//sku exist
-				//get 4 digit inisial product name
-				$tmp = explode(" ",$productname);
-				if(isset($tmp[1])){
-					//more than 1 word
-					$inProdName = substr($tmp[0],0,2).substr($tmp[1],0,2);	
-				}else{
-					//only 1 word
-					if(strlen($productname) >= 4){
-						$inProdName = substr($productname,0,4);
-					}else{
-						$inProdName = substr($productname,0,strlen($productname));
-					}
-				}
 				//compose the sku config
-				$sku_config = $sku."-".$inProdName; 
+				$sku_config = trim($sku);
 			}
 			
 			//sku simple
 			if($size == ""){
-				$sku_simple = $sku_config."-"."OS";
+				$sku_simple = $sku_config."OS";
                 $size = 'One Size';
 			}elseif(strtoupper(trim($size)) == "F"){
-				$sku_simple = $sku_config."-"."OS";
+				$sku_simple = $sku_config."OS";
                 $size = 'One Size';
 			}else{
-				$sku_simple = $sku_config."-".$size;
+				$sku_simple = $sku_config.$size;
 			}
 						
-			//sku description
 				//get 2 digit inisial brand
-				$tmp = str_replace(":","",$brandName);
-				$tmp = explode(" ",trim($tmp));
-					if(count($tmp)>1){
-						$iBrand = substr($tmp[0], 0, 1).substr($tmp[1], 0, 1);
-					}else{
-						$iBrand = substr($tmp[0], 0, 1);
-					}
                 $iBrand = strtoupper($iBrand);
 				//get 1 digit inisial gender
 				$inGender = substr($gender, 0, 1);
@@ -788,17 +735,16 @@ class Inbounddocument_m extends MY_Model {
 				//get 2 digit inisial brand
 				$tmp = str_replace(":","",$brandName);
 				$tmp = explode(" ",trim($tmp));
-					if(count($tmp)>1){
-						$iBrand = substr($tmp[0], 0, 1).substr($tmp[1], 0, 1);
-					}else{
-						$iBrand = substr($tmp[0], 0, 1);
-					}
-				$iBrand = strtoupper($iBrand);
+                if(count($tmp)>1){
+                    $itemBrand = substr($tmp[0], 0, 1).substr($tmp[1], 0, 1);
+                }else{
+                    $itemBrand = substr($tmp[0], 0, 2);
+                }
+                $itemBrand = strtoupper($itemBrand);
 				$itemAttrSet = "";
 				$itemSize = $size;
 				$itemColor = $colorname;
-				$itemBrand = $iBrand;
-				
+
 				$upc = $itemAttrSet."|".$itemSize."|".$itemColor."|".$itemBrand;  
 			}else{
 				//e2e client
@@ -916,17 +862,25 @@ class Inbounddocument_m extends MY_Model {
 			
 			//updated_by
 			$updated_by = $created_by;
-			
-			if($retailprice <> ""){
+
+            // attribute set
+            $attributeSet = $this->_findAttrSet($client, $gender, $category);
+            $upc = $attributeSet['id'] . $upc;
+            $itemAttrSet = $attributeSet['id'];
+
+			log_message('debug', "skuconfig::".$sku_config."::retailprice::".$retailprice);
+
+            if($retailprice <> ""){
 				
 				//check sku simple from 3pl sync table
 				$checkReturn = $this->invsync_m->findBySku(strtoupper($sku_simple), $client);
-				
-				if(!empty($checkReturn) and strtoupper($poType)=='NEW'){
-					//problem detected
-					$checkReturn[0]['poType'] = $poType;
-					$msgRet['problem'][] = $checkReturn[0];
-				}
+
+                // check wheter problem detected
+				if( !empty($checkReturn) and strtoupper($poType)=='NEW') {
+                    $msgRet['problem'][] = array('sku_simple' => $sku_simple, 'poTypeInFile' => $poType, 'poTypeInSys' => 'REPEAT');
+				} else if( empty($checkReturn) && strtoupper($poType) != 'NEW' ) {
+                    $msgRet['problem'][] = array('sku_simple' => $sku_simple, 'poTypeInFile' => $poType, 'poTypeInSys' => 'NEW');
+                }
 													
 				$sql = "INSERT INTO ".$this->tableInv."_".$client." (doc_number, sku_config, sku_simple, sku_description, min, max, cycle_count,";
 				$sql .= " reorder_qty, inventor_method, temperature, cost, upc, track_lot, track_serial, track_expdate, primary_unit_of_measure,";
@@ -934,24 +888,66 @@ class Inbounddocument_m extends MY_Model {
 				$sql .= " nmfc, lot_number_required, serial_number_required, serial_number_must_be_unique, exp_date_req, enable_cost, ";
 				$sql .= " cost_required, is_haz_mat, haz_mat_id, haz_mat_shipping_name, haz_mat_hazard_class, haz_mat_packing_group,";
 				$sql .= " haz_mat_flash_point, haz_mat_label_code, haz_mat_flat, image_url, storage_count_stript_template_id, storage_rates,";
-				$sql .= " outbound_mobile_serialization_behavior, price, total_qty, unit_type, updated_by) VALUES";
+				$sql .= " outbound_mobile_serialization_behavior, price, total_qty, unit_type, updated_by, attribute_set) VALUES";
 				$sql .= " (".$doc_number.", '".strtoupper($sku_config)."', '".strtoupper($sku_simple)."', '".$sku_description."', '".$min."', ".$max.", ".$cycle_count.",";
 				$sql .= " ".$reorder_qty.", '".$inventor_method."', '".$temperature."', '".$cost."', '".$upc."', '".$track_lot."', '".$track_serial."', '".$track_expdate."', '".$primary_unit_of_measure."',";
 				$sql .= " '".$packaging_unit."', '".$packaging_uom_qty."', '".$length."', '".$width."', '".$height."', '".$weiight."', '".$qualifiers."', '".$storage_setup."', '".$variable_setup."', ";
 				$sql .= " '".$nmfc."', '".$lot_number_required."', '".$serial_number_required."', '".$serial_number_must_be_unique."', '".$exp_date_req."', '".$enable_cost."', ";
 				$sql .= " '".$cost_required."', '".$is_haz_mat."', '".$haz_mat_id."', '".$haz_mat_shipping_name."', '".$haz_mat_hazard_class."', '".$haz_mat_packing_group."',";
 				$sql .= " '".$haz_mat_flash_point."', '".$haz_mat_label_code."', '".$haz_mat_flat."', '".$image_url."', '".$storage_count_stript_template_id."', '".$storage_rates."',";
-				$sql .= " '".$outbound_mobile_serialization_behavior."', '".$price."', '".$total_qty."', '".$unit_type."', ".$updated_by.")";
+				$sql .= " '".$outbound_mobile_serialization_behavior."', '".$price."', '".$total_qty."', '".$unit_type."', ".$updated_by.", ".(int)$itemAttrSet.")";
 				$this->db->query($sql);
 			
 			}
 		}
-		$this->db->trans_complete();
-		//end parse the array from excel
-		
-		
+        //end parse the array from excel
+
+        if(empty($msgRet)) {
+            $this->db->trans_commit();
+        } else {
+            $this->db->trans_rollback();
+        }
 		return $msgRet;
 	}
+
+    protected function _findAttrSet($cId, $gender, $category) {
+        $key = $gender.$category;
+
+        if(!isset($this->attrList[$cId])) {
+            $this->attrList[$cId] = array();
+        }
+
+        if(!isset($this->attrList[$cId][$key])) {
+
+            $this->load->model('clientoptions_m');
+            $attrSetList = $this->clientoptions_m->get($cId, 'attribute_set');
+            if(!empty($attrSetList)) {
+                $attrSetList = json_decode($attrSetList['option_value'], true);
+            }
+
+            $attrSetName = array();
+
+            switch($gender) {
+                case 'M':
+                    $attrSetName[] = 'men'; break;
+                case 'F':
+                    $attrSetName[] = 'women'; break;
+                case 'U':
+                    $attrSetName[] = 'unisex'; break;
+            }
+
+            $attrSetName[] = strtolower($category);
+            $attrSetName = implode('', $attrSetName);
+            $attributeSet = array('name' => $attrSetName);
+            $attributeSet['id'] = array_search($attrSetName, $attrSetList);
+
+            log_message("debug", 'attribute set::'.$gender.'::'.$category.print_r($attributeSet, true));
+            $this->attrList[$cId][$key] = $attributeSet;
+
+        }
+
+        return $this->attrList[$cId][$key];
+    }
 	
 	public function updateAttrSetInboundInventory($client, $doc_number, $data, $id){
         $upc = json_decode($data['upc'], true);

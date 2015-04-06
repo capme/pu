@@ -39,8 +39,17 @@ class Extractcatalogproduct extends CI_Controller {
 						$filename = $rows['filename'];
 						
 						if($status == "0"){
-							$objPHPExcel = PHPExcel_IOFactory::load($path_file."/".$filename);
-							
+                            $ext = explode('.', $filename);
+                            if( end($ext) == 'xlsx' ){
+                                // Use PCLZip rather than ZipArchive to read the Excel2007 OfficeOpenXML file
+                                PHPExcel_Settings::setZipClass(PHPExcel_Settings::PCLZIP);
+                                $objReader = PHPExcel_IOFactory::createReader('Excel2007');
+                                $objReader->setReadDataOnly(true);
+                                $objPHPExcel = $objReader->load($path_file."/".$filename);
+                            } else {
+                                $objPHPExcel = PHPExcel_IOFactory::load($path_file."/".$filename);
+                            }
+
 							$cell_collection = $objPHPExcel->getActiveSheet()->getCellCollection();
 							
 							foreach ($cell_collection as $cell) {
@@ -55,16 +64,18 @@ class Extractcatalogproduct extends CI_Controller {
 								$realDocNumber = $doc_number; 
 								$doc_number = $id;
 								$return = $this->inbounddocument_m->saveToInboundInventory($client_id, $doc_number, $created_by, $arr_data);
+
 								//compose HTML report
 								if(isset($return['problem'])){
 									//list problems
 									$client = $this->client_m->getClientById($client_id)->row_array();
 									$clientCode = $client['client_code']; 
 									$strProblem = "<table border='1' cellpadding='2' cellspacing='2'>";
-									$strProblem .= "<tr><td colspan='2'>".$clientCode." (".$realDocNumber.")</td></tr>";
+									$strProblem .= "<tr><td colspan='3'>".$clientCode." (".$realDocNumber.")</td></tr>";
 									$strProblem .= "<tr>";
-									$strProblem .= "<td>PO Type</td>";
-									$strProblem .= "<td>SKU Simple</td>";
+                                    $strProblem .= "<td>SKU Simple</td>";
+									$strProblem .= "<td>Type in File</td>";
+                                    $strProblem .= "<td>Type in System</td>";
 									$strProblem .= "</tr>";
 									foreach($return['problem'] as $itemProblem){
 										$problem_id = $itemProblem['id'];
@@ -74,12 +85,15 @@ class Extractcatalogproduct extends CI_Controller {
 										$problem_po_type = $itemProblem['poType'];
 										
 										$strProblem .= "<tr>";
+                                        $strProblem .= "<td>";
+                                        $strProblem .= $itemProblem['sku_simple'];
+                                        $strProblem .= "</td>";
 										$strProblem .= "<td>";
-										$strProblem .= $problem_po_type;
+                                        $strProblem .= $itemProblem['poTypeInFile'];
 										$strProblem .= "</td>";
-										$strProblem .= "<td>";
-										$strProblem .= $problem_sku_simple;
-										$strProblem .= "</td>";
+                                        $strProblem .= "<td>";
+                                        $strProblem .= $itemProblem['poTypeInSys'];
+                                        $strProblem .= "</td>";
 										$strProblem .= "</tr>";
 									}
 									$strProblem .= "</table>";
@@ -89,20 +103,20 @@ class Extractcatalogproduct extends CI_Controller {
 			                        $message=$strProblem;
 			                        $this->notification_m->add($from, $to, $url, $message);
 									
-								}
-								
-								echo "import inbound document for client ".$client_id." doc number ".$doc_number."<br>";
-								$return = $this->inbounddocument_m->updateStatusInboundDocumentList($id,1);
-		                        
-                                $from = USER_CRON;
-		                        $to = GROUP_OPERATION;
-                                foreach($inbound->result_array() as $rows ){					
-                                $id = $rows['id'];
-                                $url="listinbounddoc/updateAttr?client=".$client_id."&doc=".$id."&id=".$id."";
-		                        $message="Catalog product (".$rows['doc_number'].") was imported";
-		                        $this->notification_m->add($from, $to, $url, $message);
+								} else {
+                                    echo "import inbound document for client ".$client_id." doc number ".$doc_number."<br>";
+                                    $return = $this->inbounddocument_m->updateStatusInboundDocumentList($id,1);
+
+                                    $from = USER_CRON;
+                                    $to = GROUP_OPERATION;
+                                    foreach($inbound->result_array() as $rows ){
+                                        $id = $rows['id'];
+                                        $url="listinbounddoc/updateAttr?client=".$client_id."&doc=".$id."&id=".$id."";
+                                        $message="Catalog product (".$rows['doc_number'].") was imported";
+                                        $this->notification_m->add($from, $to, $url, $message);
+                                    }
                                 }
-		                        
+
 							} catch( Exception $e ) {
 								echo $e->getMessage();	
 							}
