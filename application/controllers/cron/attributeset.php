@@ -9,7 +9,7 @@ class Attributeset extends CI_Controller {
 
     const OPTION_NAME_ATTRIBUTE_SET = 'attribute_set';
 
-    public function fetch(){
+    public function fetch($code = ''){
         $this->load->model(array('client_m','clientoptions_m'));
         $this->load->library('mageapi');
 
@@ -17,6 +17,10 @@ class Attributeset extends CI_Controller {
 
         foreach($clients as $client) {
             if(!$client['mage_auth'] && !$client['mage_wsdl']) {
+                continue;
+            }
+
+            if( $code && $code != $client['client_code']) {
                 continue;
             }
 
