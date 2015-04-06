@@ -65,7 +65,7 @@ function buildNotification($list = array(), $type = ''){
             $result .= '<li>'.
                 '<a href="'.site_url('notification/read?id='.$val['id'].'&url='.urlencode($val['url'])).'">'.
                 '<span class="label label-sm label-icon label-warning"><i class="fa fa-bell-o"></i></span>'.
-                $val['message'].'. <span class="time">'.$statDiff.'</span>'.
+                strip_tags($val['message']).'. <span class="time">'.$statDiff.'</span>'.
                 '</a></li>';
         }
 
