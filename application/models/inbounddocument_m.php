@@ -864,7 +864,7 @@ class Inbounddocument_m extends MY_Model {
 			$updated_by = $created_by;
 
             // attribute set
-            $attributeSet = $this->_findAttrSet($client, $gender, $category);
+            $attributeSet = $this->_findAttrSet($client, $inGender, $category);
             $upc = $attributeSet['id'] . $upc;
             $itemAttrSet = $attributeSet['id'];
 
