@@ -120,7 +120,7 @@ class Inbounddocument_m extends MY_Model {
 					$btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/downloadInboundForm?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Inbound Form</a>';
 					$btnAction .= '<hr /><a href="'.base_url().'listinbounddoc/importItem3PL?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-export" ></i> Import Item to 3PL</a>';
 					$btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/downloadReceivingForm?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Receiving Form</a>';
-                    $btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/importItemMage?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-export" ></i> Import Item to MAGE</a>';
+                    //$btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/importItemMage?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-export" ></i> Import Item to MAGE</a>';
 									}
 				if($_result->status == 1 or $_result->status == 2 or $_result->status == 3){
 					$records["aaData"][] = array(
