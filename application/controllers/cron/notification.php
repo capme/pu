@@ -18,7 +18,7 @@ class Notification extends CI_Controller {
         foreach( $notifications as $notification ){
             $sender = $this->users_m->getUser($notification['sender_id'])->row_array();
 
-            $subject = $notification['message'];
+            $subject = '[BAYMAX] Something new just happened';
             $message = '<a href="'.base_url('notification/read?id='.$notification['id'].'&url='.$notification['url']).'">'.$notification['message'].'</>';
 
             $users = $this->users_m->userListByGroup($notification['group_ids']);

@@ -78,6 +78,7 @@ class Extractcatalogproduct extends CI_Controller {
                                     $strProblem .= "<td>Type in System</td>";
 									$strProblem .= "</tr>";
 									foreach($return['problem'] as $itemProblem){
+										if(isset($itemProblem['id'])){
 										$problem_id = $itemProblem['id'];
 										$problem_sku_simple = $itemProblem['sku_simple'];
 										$problem_sku_description = $itemProblem['sku_description'];
@@ -95,6 +96,7 @@ class Extractcatalogproduct extends CI_Controller {
                                         $strProblem .= $itemProblem['poTypeInSys'];
                                         $strProblem .= "</td>";
 										$strProblem .= "</tr>";
+										}
 									}
 									$strProblem .= "</table>";
 	                                $from = USER_CRON;

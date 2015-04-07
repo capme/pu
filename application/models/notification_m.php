@@ -35,8 +35,8 @@ class Notification_m extends MY_Model{
     
     public function getNotificationList(){
         $this->db = $this->load->database('mysql', TRUE);
-        $user=$this->session->userdata('pkUserId');
-        $this->relation = array(array("type" => "inner", "table" => $this->tableUsers, "link" => "{$this->table}.sender_id  = {$this->tableUsers}.pkUserId where group_ids=$user" ));
+        $userGroup=$this->session->userdata('group');
+        $this->relation = array(array("type" => "inner", "table" => $this->tableUsers, "link" => "{$this->table}.sender_id  = {$this->tableUsers}.pkUserId where group_ids=$userGroup" ));
 		$this->select = array("{$this->table}.{$this->pkField}", "{$this->tableUsers}.fullname","{$this->table}.created_at", "{$this->table}.message","{$this->table}.url", "{$this->table}.read");
         
 		$iTotalRecords = $this->_doGetTotalRow();
