@@ -15,6 +15,7 @@ class Migration_Inventory_List extends Base_Migration {
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8');
         }
+        $this->db->trans_complete();
     }
 
     public function down() {
