@@ -80,10 +80,11 @@ class Codconfirmation_m extends MY_Model {
 	public function getCodConfirmationById($id)
 	{
 		$this->db = $this->load->database('mysql', TRUE);
-		$this->db->select('*, cod_confirmation.id', 'cod_confirmation.status');
+		$this->db->select('*, cod_confirmation.id', 'cod_confirmation.status', 'auth_users.username');
 		$this->db->from($this->table);
 		$this->db->join('client','client.id=cod_confirmation.client_id');
 		$this->db->join('cod_history', 'cod_history.cod_id=cod_confirmation.id');
+        $this->db->join('auth_users', 'auth_users.pkUserId=cod_history.created_by');
 		$this->db->where('cod_confirmation.id', $id);
 		return $this->db->get();  
 	}
@@ -160,35 +161,6 @@ class Codconfirmation_m extends MY_Model {
 		}
 	}
 	
-	public function Comment($post)
-	{
-		$msg = array();	
-		$user=$this->session->userdata('pkUserId');		
-		$time=date('Y-m-d H:i:s', now());
-		if (!empty($post['comment'])){
-				$note['cod_id']=$post['id'];
-				$note['note'] = $post['comment'];
-				$note['status'] = $post['status'];
-				$note['type']=1;
-				$note['created_by']=$user;
-				$note['created_at']=$time;
-				
-				$data['status'] = $post['status'];
-				$data['updated_by']=$user;
-				$data['updated_at']=$time;	
-				
-				$this->db->where($this->pkField, $post['id']);			
-				$this->db->update($this->table, $data);
-				
-				$this->db->insert("cod_history", array("cod_id" => $post['id'], "note" => $post['comment'], 'status' => $post['status'], 'type' => 1, 'created_by' => $this->session->userdata('pkUserId')));
-				
-				return $post['id'];	
-			}
-		else {
-		return $msg;
-		}	
-	}
-
 	public function add($client, $orders) {
 		$this->db = $this->load->database('mysql', TRUE);
 

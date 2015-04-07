@@ -72,29 +72,23 @@ class Codconfirmation extends MY_Controller {
 			$msg = $flashData['msg'];
 		} else {
 			$msg = array();
-			$value = $data->row_array();
+			$value = $data->result_array();
 		}
-		
-		$this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value" => @$value['client_code'], "msg" => @$msg['client_code'], "disabled"=>"disabled"));
-		$this->va_input->addInput( array("name" => "ordernumber", "placeholder" => "Order Number", "help" => "Order Number", "label" => "Order Number", "value" => @$value['order_number'], "msg" => @$msg['order_number'], "disabled"=>"disabled") );
-		$this->va_input->addInput( array("name" => "customer_name", "value" => @$value['customer_name'], "msg" => @$msg['customer_name'], "label" => "Customer Name", "help" => "Customer Name", "disabled"=>"disabled"));
-		$this->va_input->addInput( array("name" => "email", "value" => @$value['email'], "msg" => @$msg['email'], "label" => "Email Address", "help" => "Customer Email", "disabled"=>"disabled"));
-		$this->va_input->addInput( array("name" => "phone_number", "value" => @$value['phone_number'], "msg" => @$msg['phone_number'], "label" => "Customer Phone", "help" => "Customer Phone", "disabled"=>"disabled"));
-		$this->va_input->addInput( array("name" => "amount", "value" => number_format(@$value['amount'], 2), "msg" => @$msg['amount'], "label" => "Amount", "help" => "Amount", "disabled"=>"disabled"));
-		$this->va_input->addTextarea( array("name" => "shipping_address","placeholder" => "Shipping Addres","value" => @$value['shipping_address'], "msg" => @$msg['shipping_address'], "label" => "Shipping Address", "help" => "Shipping Address","disabled"=>"disabled"));
-		$this->va_input->addCustomField( array("name" =>"items", "placeholder" => "Items", "label" => "Items", "value" => @$value['items'], "msg" => @$msg['items'], "view"=>"form/customItemsCod"));		
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['updated_at'], "msg" => @$msg['updated_at'], "label" => "Updated At", "help" => "Updated At", "disabled"=>"disabled"));
-		$this->va_input->addInput( array("name" => "created_at", "value" => @$value['created_at'], "msg" => @$msg['created_at'], "label" => "Created At", "help" => "Created At", "disabled"=>"disabled"));
+
+		$this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value" => @$value[0]['client_code'], "msg" => @$msg['client_code'], "disabled"=>"disabled"));
+		$this->va_input->addInput( array("name" => "ordernumber", "placeholder" => "Order Number", "help" => "Order Number", "label" => "Order Number", "value" => @$value[0]['order_number'], "msg" => @$msg['order_number'], "disabled"=>"disabled") );
+		$this->va_input->addInput( array("name" => "customer_name", "value" => @$value[0]['customer_name'], "msg" => @$msg['customer_name'], "label" => "Customer Name", "help" => "Customer Name", "disabled"=>"disabled"));
+		$this->va_input->addInput( array("name" => "email", "value" => @$value[0]['email'], "msg" => @$msg['email'], "label" => "Email Address", "help" => "Customer Email", "disabled"=>"disabled"));
+		$this->va_input->addInput( array("name" => "phone_number", "value" => @$value[0]['phone_number'], "msg" => @$msg['phone_number'], "label" => "Customer Phone", "help" => "Customer Phone", "disabled"=>"disabled"));
+		$this->va_input->addInput( array("name" => "amount", "value" => number_format(@$value[0]['amount'], 2), "msg" => @$msg['amount'], "label" => "Amount", "help" => "Amount", "disabled"=>"disabled"));
+		$this->va_input->addTextarea( array("name" => "shipping_address","placeholder" => "Shipping Addres","value" => @$value[0]['shipping_address'], "msg" => @$msg['shipping_address'], "label" => "Shipping Address", "help" => "Shipping Address","disabled"=>"disabled"));
+		$this->va_input->addCustomField( array("name" =>"items", "placeholder" => "Items", "label" => "Items", "value" => @$value[0]['items'], "msg" => @$msg['items'], "view"=>"form/customItemsCod"));
+		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['updated_at'], "msg" => @$msg['updated_at'], "label" => "Updated At", "help" => "Updated At", "disabled"=>"disabled"));
+		$this->va_input->addInput( array("name" => "created_at", "value" => @$value[0]['created_at'], "msg" => @$msg['created_at'], "label" => "Created At", "help" => "Created At", "disabled"=>"disabled"));
 		$this->va_input->commitForm(0);
-		
-		$this->va_input->addHidden( array("name" => "method", "value" => "comment") );
-		$this->va_input->addHidden( array("name" => "client_id", "value" => $value['client_id']) );
-		$this->va_input->addHidden( array("name" => "order_number", "value" => $value['order_number']) );
-		$this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
-		$this->va_input->addSelect( array("name" => "status", "label" => "Status *", "list" => array("0" => "New Request", "1" => "Approve","2"=>"Cancel"), "value" => @$value['status'], "msg" => @$msg['status']));	
-		$this->va_input->addTextarea( array("name" => "comment", "value" => '', "msg" => @$msg['note'], "label" => "Comment *", "help" => "Comment") );
-		$this->va_input->addCustomField( array("name"=>"","value" =>'submit', "view"=>"form/customSubmit"));		
-		$this->va_input->commitForm(1);
+
+        $this->va_input->addCustomField( array("name" =>"","value" =>$value, "view"=>"form/customCommentHistory"));
+        $this->va_input->commitForm(1);
 		
 		$this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
 		$this->load->view('template', $this->data);
@@ -222,38 +216,7 @@ class Codconfirmation extends MY_Controller {
 				redirect("codconfirmation/cancel/".$post['id']);
 			}
 		}
-		
-		else if($post['method'] == "comment") {
-			$client = $this->client_m->getClientById($post['client_id'])->row_array();
-			$config = array(
-				"auth" => $client['mage_auth'],
-				"url" => $client['mage_wsdl']
-			);
-				
-			if( $this->mageapi->initSoap($config) ) {
-				if($post['status'] == 2) {
-					$apiResponse = $this->mageapi->setOrderToCancel($post['order_number'], $post['comment']);
-				} else if($post['status'] == 1) {
-					$apiResponse = $this->mageapi->setOrderToVerified($post['order_number'], $post['comment']);
-				}
-			}
-			
-			if(!$apiResponse) {
-				$this->session->set_flashdata( array("clientError" => json_encode(array("msg" => array("order_number" => "Magento client error"), "data" => $post))) );
-				redirect("codconfirmation/view/".$post['id']);
-			}
-			
-			$result = $this->codconfirmation_m->Comment($post);
-			if(is_numeric($result)) 
-			{
-				redirect("codconfirmation");
-			} 
-			else 
-			{
-				$this->session->set_flashdata( array("clientError" => json_encode(array("msg" => $result, "data" => $post))) );
-				redirect("codconfirmation/view/".$post['id']);
-			}
-		}
+
 	}
 		
 	private function getStatus() {
