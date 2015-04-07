@@ -39,8 +39,7 @@ $clientArr = $this->clientoptions_m->get($client, "attribute_set");
 		}elseif($gender == "U"){
 			$gender = "unisex";
 		}
-		$statusEmpty = empty(preg_grep( "/".$gender.$category."/i" , $listOption ));
-		if($statusEmpty){
+		if(empty($itemRows['attribute_set'])){
 			$bgColor = " bgcolor=\"#FBEFFB\"";
 		}else{
 			$bgColor = "";
