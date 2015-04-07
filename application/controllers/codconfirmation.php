@@ -63,7 +63,7 @@ class Codconfirmation extends MY_Controller {
 		$this->load->model("codconfirmation_m");
 		$this->load->library("va_input", array("group" => "codconfirmation"));
 		$this->va_input->setJustView();
-		$this->va_input->setGroupedForm(TRUE)->setGroupName( array(0 => "Order Info", 1 => "Status / Comment") )->setActiveGroup(0);
+		$this->va_input->setGroupedForm(TRUE)->setGroupName( array(0 => "Order Info", 1 => "Comment History") )->setActiveGroup(0);
 		
 		$flashData = $this->session->flashdata("clientError");
 		if($flashData !== false) {

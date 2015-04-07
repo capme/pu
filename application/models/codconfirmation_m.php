@@ -86,6 +86,7 @@ class Codconfirmation_m extends MY_Model {
 		$this->db->join('cod_history', 'cod_history.cod_id=cod_confirmation.id');
         $this->db->join('auth_users', 'auth_users.pkUserId=cod_history.created_by');
 		$this->db->where('cod_confirmation.id', $id);
+        $this->db->order_by('cod_history.id','asc');
 		return $this->db->get();  
 	}
 
