@@ -80,14 +80,14 @@ class Codconfirmation_m extends MY_Model {
 	public function getCodConfirmationById($id)
 	{
 		$this->db = $this->load->database('mysql', TRUE);
-		$this->db->select('*, cod_confirmation.id', 'cod_confirmation.status', 'auth_users.username');
+		$this->db->select('*, cod_confirmation.created_at,cod_confirmation.email, cod_confirmation.id, cod_confirmation.status, auth_users.username, order_history.type');
 		$this->db->from($this->table);
 		$this->db->join('client','client.id=cod_confirmation.client_id');
-		$this->db->join('cod_history', 'cod_history.cod_id=cod_confirmation.id');
-        $this->db->join('auth_users', 'auth_users.pkUserId=cod_history.created_by');
+		$this->db->join('order_history', 'order_history.order_id=cod_confirmation.id and type=1', 'left');
+        $this->db->join('auth_users', 'auth_users.pkUserId=order_history.created_by','left');
 		$this->db->where('cod_confirmation.id', $id);
-        $this->db->order_by('cod_history.id','asc');
-		return $this->db->get();  
+        $this->db->order_by('order_history.id','asc');
+		return $this->db->get();
 	}
 
 	public function getCodConfirmationByOrderNumber($orderNumber)
@@ -103,13 +103,13 @@ class Codconfirmation_m extends MY_Model {
 	{		
 		$user=$this->session->userdata('pkUserId');		
 		$time=date('Y-m-d H:i:s', now());
-		
-			$note['cod_id']=$post['id'];
+
 			$note['note'] = $post['approve'];
 			$note['status'] = $this->status['approve'];
 			$note['type']=1;
 			$note['created_by']=$user;
 			$note['created_at']=$time;
+            $note['order_id']=$post['id'];
 			
 			$data['status'] = $this->status['approve'];
 			$data['updated_by']=$user;
@@ -117,9 +117,8 @@ class Codconfirmation_m extends MY_Model {
 			
 			$this->db->where($this->pkField, $post['id']);			
 			$this->db->update($this->table, $data);
-			
-			$this->db->where('cod_id', $post['id']);
-			$this->db->insert('cod_history', $note);
+
+			$this->db->insert('order_history', $note);
 			return $post['id'];		
 	}
 	
@@ -131,22 +130,22 @@ class Codconfirmation_m extends MY_Model {
 		$user=$this->session->userdata('pkUserId');		
 		$time=date('Y-m-d H:i:s', now());
 		if (!empty($post['cancel'])){
-				$note['cod_id']=$post['id'];
+
 				$note['note'] = $post['cancel'];
 				$note['status'] = $this->status['cancel'];
 				$note['type']=1;
 				$note['created_by']=$user;
 				$note['created_at']=$time;
-				
+			    $note['order_id']=$post['id'];
+
 				$data['status'] = $this->status['cancel'];
 				$data['updated_by']=$user;
 				$data['updated_at']=$time;	
 				
 				$this->db->where($this->pkField, $post['id']);			
 				$this->db->update($this->table, $data);
-				
-				$this->db->where('cod_id', $post['id']);
-				$this->db->insert('cod_history', $note);
+
+				$this->db->insert('order_history', $note);
 
                 $client = $this->client_m->getClientById($post['client_id'])->row_array();
                 $config = array("auth" => $client['mage_auth'],"url" => $client['mage_wsdl']);
@@ -155,13 +154,13 @@ class Codconfirmation_m extends MY_Model {
                     $this->mageapi->cancelCod($post['order_number'], $post['reason']);
                 }
 
-				return $post['id'];	
+				return $post['id'];
 			}
 		else {
 		return $msg;
 		}
 	}
-	
+
 	public function add($client, $orders) {
 		$this->db = $this->load->database('mysql', TRUE);
 
@@ -175,15 +174,15 @@ class Codconfirmation_m extends MY_Model {
 
 			$this->db->insert(
 				$this->table,
-				array("client_id" => $client['id'], "order_number" => $order['order_number'], "customer_name" => $order['customer_fullname'], 
-						"shipping_address" => $order['full_shipping_address'], "amount" => $order['total_amount'], "items" => $order['items'], "updated_by" => "2", 
+				array("client_id" => $client['id'], "order_number" => $order['order_number'], "customer_name" => $order['customer_fullname'],
+						"shipping_address" => $order['full_shipping_address'], "amount" => $order['total_amount'], "items" => $order['items'], "updated_by" => "2",
 						"created_at" => date("Y-m-d H:i:s"), "email" => $order['email'], "phone_number" => $order['phone_number'] )
 			);
 
 			if( $codId = $this->db->insert_id() ){
 				$this->db->insert(
-					'cod_history',
-					array('cod_id' => $codId, 'note' => '== Order coming to oms', 'status' => 0, 'type' => 1, 'created_by' => '2', 'created_at' => date('Y-m-d H:i:s', now()))
+					'order_history',
+					array('order_id' => $codId, 'note' => '== Order coming to oms', 'status' => 0, 'type' => 1, 'created_by' => '2', 'created_at' => date('Y-m-d H:i:s', now()))
 				);
 				log_message('debug','inserted cod history: data '.$codId);
 			}

@@ -1,13 +1,17 @@
 <?php
 $statList= array(
-    0 =>array("New Request", "warning"),
+    0 =>array("New Request", "info"),
     1 =>array("Approve", "success"),
-    2 =>array("Cancel","danger")
+    2 =>array("Cancel","default"),
+    3 =>array("Received","primary"),
+    4 =>array("Canceled","danger")
 );
 
 foreach($value as $result){
     $date= date("d F Y", strtotime($result['created_at']));
     $time= date("h:i:s", strtotime($result['created_at']));
+    if(!isset($result['status'])) {continue;}
+
     $status=$statList[$result['status']];
 echo '<div class="tab-pane" id="tab_1_3" >
         <div class="row">

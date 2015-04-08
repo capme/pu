@@ -48,15 +48,14 @@ class Codpaymentconfirmation extends MY_Controller {
 	{
 		$data = $this->codpaymentconfirmation_m->getCodPaymentConfirmationById($id);
 		if($data->num_rows() < 1) {
-			redirect("codconfirmation");
+			redirect("codpaymentconfirmation");
 		}
 		
 		$this->data['content'] = "group_form_v.php";
 		$this->data['pageTitle'] = "COD Payment Confirmation";
 		$this->data['breadcrumb'] = array("View COD Payment Confirmation" => "");
 		$this->data['formTitle'] = "View COD Payment Confirmation";
-		
-		$this->load->model("codconfirmation_m");
+
 		$this->load->library("va_input", array("group" => "codpaymentconfirmation"));
 		$this->va_input->setJustView();
 		$this->va_input->setGroupedForm(TRUE)->setGroupName( array(0 => "Order Info", 1 => "Comment History") )->setActiveGroup(0);
@@ -70,7 +69,7 @@ class Codpaymentconfirmation extends MY_Controller {
 			$msg = array();
 			$value = $data->result_array();
 		}
-		
+
 		$this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value" => @$value[0]['client_code'], "msg" => @$msg['client_code'], "disabled"=>"disabled"));
 		$this->va_input->addInput( array("name" => "ordernumber", "placeholder" => "Order Number", "help" => "Order Number", "label" => "Order Number", "value" => @$value[0]['order_number'], "msg" => @$msg['order_number'], "disabled"=>"disabled") );
 		$this->va_input->addInput( array("name" => "customer_name", "value" => @$value[0]['customer_name'], "msg" => @$msg['customer_name'], "label" => "Customer Name", "help" => "Customer Name", "disabled"=>"disabled"));
@@ -82,11 +81,11 @@ class Codpaymentconfirmation extends MY_Controller {
 		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['updated_at'], "msg" => @$msg['updated_at'], "label" => "Updated At", "help" => "Updated At", "disabled"=>"disabled"));
 		$this->va_input->addInput( array("name" => "created_at", "value" => @$value[0]['created_at'], "msg" => @$msg['created_at'], "label" => "Created At", "help" => "Created At", "disabled"=>"disabled"));
 		$this->va_input->commitForm(0);
-		
-		$this->va_input->addCustomField( array("name"=>"","value" =>$value, "view"=>"form/customCommentHistory"));
-		$this->va_input->commitForm(1);
-		
-		$this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
+
+        $this->va_input->addCustomField(array("name" => "", "value" =>$value, "view" => "form/customCommentHistory"));
+        $this->va_input->commitForm(1);
+
+        $this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
 		$this->load->view('template', $this->data);
 	}
 	

@@ -59,8 +59,7 @@ class Codconfirmation extends MY_Controller {
 		$this->data['pageTitle'] = "COD Order Confirmation";
 		$this->data['breadcrumb'] = array("View COD Order Confirmation" => "");
 		$this->data['formTitle'] = "View COD Order Confirmation";
-		
-		$this->load->model("codconfirmation_m");
+
 		$this->load->library("va_input", array("group" => "codconfirmation"));
 		$this->va_input->setJustView();
 		$this->va_input->setGroupedForm(TRUE)->setGroupName( array(0 => "Order Info", 1 => "Comment History") )->setActiveGroup(0);
@@ -96,7 +95,7 @@ class Codconfirmation extends MY_Controller {
 	
 	public function approve($id)
 	{
-		$data = $this->codconfirmation_m->getCodConfirmationById($id);		
+		$data = $this->codconfirmation_m->getCodConfirmationById($id);
 		if($data->num_rows() < 1) {
 			redirect("codconfirmation");
 		}

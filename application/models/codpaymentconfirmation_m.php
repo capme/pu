@@ -80,27 +80,29 @@ class Codpaymentconfirmation_m extends MY_Model {
 	public function getCodPaymentConfirmationById($id)
 	{
 		$this->db = $this->load->database('mysql', TRUE);
-		$this->db->select('*, cod_confirmation.id', 'cod_confirmation.status','auth_users.username');
+		$this->db->select('*, cod_confirmation.id, cod_confirmation.email, cod_confirmation.created_at, cod_confirmation.status, auth_users.username');
 		$this->db->from($this->table);
 		$this->db->join($this->tableClient,'client.id = cod_confirmation.client_id');
-		$this->db->join('cod_history', 'cod_history.cod_id=cod_confirmation.id');
-        $this->db->join('auth_users', 'auth_users.pkUserId=cod_history.created_by');
+		$this->db->join('order_history', 'order_history.order_id=cod_confirmation.id and type=1','left');
+        $this->db->join('auth_users', 'auth_users.pkUserId=order_history.created_by', 'left');
 		$this->db->where('cod_confirmation.id', $id);
-        $this->db->order_by('cod_history.id','asc');
-		return $this->db->get();  
+        $this->db->order_by('order_history.id','asc');
+
+        return $this->db->get();
 	}
 	
 	public function Receive($post) 
-	{		
-		$user=$this->session->userdata('pkUserId');		
+	{
+        $this->db = $this->load->database('mysql', TRUE);
+        $user=$this->session->userdata('pkUserId');
 		$time=date('Y-m-d H:i:s', now());
-		
-			$note['cod_id']=$post['id'];
+
 			$note['note'] = $post['receive'];
 			$note['status'] = $this->status['receive'];
 			$note['type']=1;
 			$note['created_by']=$user;
 			$note['created_at']=$time;
+            $note['order_id']=$post['id'];
 			
 			$data['status'] = $this->status['receive'];
 			$data['updated_by']=$user;
@@ -108,34 +110,34 @@ class Codpaymentconfirmation_m extends MY_Model {
 			
 			$this->db->where($this->pkField, $post['id']);			
 			$this->db->update($this->table, $data);
-			
-			$this->db->where('cod_id', $post['id']);
-			$this->db->insert('cod_history', $note);
+
+			$this->db->insert('order_history', $note);
 			return $post['id'];		
 	}
 	
 	public function Cancel($post) 
-	{	
-		$msg = array();	
+	{
+        $this->db = $this->load->database('mysql', TRUE);
+        $msg = array();
 		$user=$this->session->userdata('pkUserId');		
 		$time=date('Y-m-d H:i:s', now());
 		if (!empty($post['cancel'])){
-				$note['cod_id']=$post['id'];
+
 				$note['note'] = $post['cancel'];
 				$note['status'] = $this->status['cancel'];
 				$note['type']=1;
 				$note['created_by']=$user;
 				$note['created_at']=$time;
-				
+                $note['order_id']=$post['id'];
+
 				$data['status'] = $this->status['cancel'];
 				$data['updated_by']=$user;
 				$data['updated_at']=$time;	
 				
 				$this->db->where($this->pkField, $post['id']);			
 				$this->db->update($this->table, $data);
-				
-				$this->db->where('cod_id', $post['id']);
-				$this->db->insert('cod_history', $note);
+
+				$this->db->insert('order_history', $note);
 				return $post['id'];	
 			}
 		else {
