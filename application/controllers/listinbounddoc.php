@@ -437,7 +437,6 @@ class Listinbounddoc extends MY_Controller {
         $pinkDinamis  = new PHPExcel_Style();
         $blue         = new PHPExcel_Style();
         $title         = new PHPExcel_Style();
-        $black         = new PHPExcel_Style();
         
         $sharedStyle1->applyFromArray(
         array('fill' 	=> array(
@@ -544,13 +543,7 @@ class Listinbounddoc extends MY_Controller {
 								'color'		=> array('rgb' => '48D1CC')
 							)
 		 ));
-        $black->applyFromArray(
-        array('fill' 	=> array(
-								'type'		=> PHPExcel_Style_Fill::FILL_SOLID,
-								'color'		=> array('rgb' => '000000')
-							)
-		 ));
-		$this->va_excel->getActiveSheet()->mergeCells('A1:C1');
+        $this->va_excel->getActiveSheet()->mergeCells('A1:C1');
         $this->va_excel->getActiveSheet()->setCellValue('A1', 'ITEM IMPORT SPREADSHEET')->setSharedStyle($title, "A1");
 		$this->va_excel->getActiveSheet()->setCellValue('A2', 'SKU Code')->setSharedStyle($sharedStyle1, "A2:B2")->getColumnDimension('A')->setWidth(25);
 		$this->va_excel->getActiveSheet()->setCellValue('B2', 'SKU Description')->setSharedStyle($sharedStyle2, "C2:K2")->getColumnDimension('B')->setWidth(90);
@@ -596,10 +589,9 @@ class Listinbounddoc extends MY_Controller {
 		$this->va_excel->getActiveSheet()->setCellValue('AP2', 'StorageRates')->getColumnDimension('AP')->setAutoSize(true);
 		$this->va_excel->getActiveSheet()->setCellValue('AQ2', 'OutboundMobileSerializationBehavior')->getColumnDimension('AQ')->setAutoSize(true);
 		$this->va_excel->getActiveSheet()->setCellValue('AR2', 'Price')->getColumnDimension('AR')->setAutoSize(true);
-		$this->va_excel->getActiveSheet()->setCellValue('AS2', 'TotalQty')->setSharedStyle($sharedStyle1, "AS2:AU2")->getColumnDimension('AS')->setAutoSize(true);
+		$this->va_excel->getActiveSheet()->setCellValue('AS2', 'TotalQty')->setSharedStyle($sharedStyle1, "AS2:AT2")->getColumnDimension('AS')->setAutoSize(true);
 		$this->va_excel->getActiveSheet()->setCellValue('AT2', 'UnitType')->getColumnDimension('AT')->setAutoSize(true);
-		$this->va_excel->getActiveSheet()->setCellValue('AU2', 'POType')->getColumnDimension('AU')->setAutoSize(true);
-		
+
 		$result = $this->inbounddocument_m->getInboundInvItem($client, $doc);
         $docDetail = $this->inbound_m->getInboundById($doc);        
 		$lup = 3;
@@ -654,7 +646,6 @@ class Listinbounddoc extends MY_Controller {
 			$this->va_excel->getActiveSheet()->setCellValue('AR'.$lup, $item['price']);
 			$this->va_excel->getActiveSheet()->setCellValue('AS'.$lup, $item['total_qty']);
 			$this->va_excel->getActiveSheet()->setCellValue('AT'.$lup, $item['unit_type'])->setSharedStyle($blue, "AT".$lup);
-			$this->va_excel->getActiveSheet()->setCellValue('AU'.$lup, $item['po_type'])->setSharedStyle($black, "AU".$lup);
 			$lup++;
 		}
 								
