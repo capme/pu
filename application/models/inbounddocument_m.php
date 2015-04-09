@@ -38,7 +38,7 @@ class Inbounddocument_m extends MY_Model {
 	function getInboundInvItem($client, $doc){
 		if(!$client) return array();
 		$mysql = $this->load->database('mysql', TRUE);
-		$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc));
+		$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc, 'po_type'=>'NEW'));
 		$rows = $query->result_array();
 		return $rows;
 	}
@@ -118,7 +118,13 @@ class Inbounddocument_m extends MY_Model {
 					$btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->id.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
 					$btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/exportFormItemImport?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Form Import</a>';
 					$btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/downloadInboundForm?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Inbound Form</a>';
-					$btnAction .= '<hr /><a href="'.base_url().'listinbounddoc/importItem3PL?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-export" ></i> Import Item to 3PL</a>';
+					//check if any visible PO_TYPE = NEW
+					$sql = "SELECT po_type FROM `inb_inventory_item_".$_result->client_id."` WHERE UPPER(po_type) = 'NEW'";
+					$query = $this->db->query($sql);
+					$num = $query->num_rows();
+					if($num > 0){					
+						$btnAction .= '<hr /><a href="'.base_url().'listinbounddoc/importItem3PL?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-export" ></i> Import Item to 3PL</a>';
+					}
 					$btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/downloadReceivingForm?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Receiving Form</a>';
                     //$btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/importItemMage?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-export" ></i> Import Item to MAGE</a>';
 									}
@@ -878,8 +884,10 @@ class Inbounddocument_m extends MY_Model {
                 // check wheter problem detected
 				if( !empty($checkReturn) and strtoupper($poType)=='NEW') {
                     $msgRet['problem'][] = array('sku_simple' => $sku_simple, 'poTypeInFile' => $poType, 'poTypeInSys' => 'REPEAT');
+                    $poType = "REPEAT";
 				} else if( empty($checkReturn) && strtoupper($poType) != 'NEW' ) {
                     $msgRet['problem'][] = array('sku_simple' => $sku_simple, 'poTypeInFile' => $poType, 'poTypeInSys' => 'NEW');
+                    $poType = "NEW";
                 }
 													
 				$sql = "INSERT INTO ".$this->tableInv."_".$client." (doc_number, sku_config, sku_simple, sku_description, min, max, cycle_count,";
@@ -888,14 +896,14 @@ class Inbounddocument_m extends MY_Model {
 				$sql .= " nmfc, lot_number_required, serial_number_required, serial_number_must_be_unique, exp_date_req, enable_cost, ";
 				$sql .= " cost_required, is_haz_mat, haz_mat_id, haz_mat_shipping_name, haz_mat_hazard_class, haz_mat_packing_group,";
 				$sql .= " haz_mat_flash_point, haz_mat_label_code, haz_mat_flat, image_url, storage_count_stript_template_id, storage_rates,";
-				$sql .= " outbound_mobile_serialization_behavior, price, total_qty, unit_type, updated_by, attribute_set) VALUES";
+				$sql .= " outbound_mobile_serialization_behavior, price, total_qty, unit_type, updated_by, attribute_set, po_type) VALUES";
 				$sql .= " (".$doc_number.", '".strtoupper($sku_config)."', '".strtoupper($sku_simple)."', '".$sku_description."', '".$min."', ".$max.", ".$cycle_count.",";
 				$sql .= " ".$reorder_qty.", '".$inventor_method."', '".$temperature."', '".$cost."', '".$upc."', '".$track_lot."', '".$track_serial."', '".$track_expdate."', '".$primary_unit_of_measure."',";
 				$sql .= " '".$packaging_unit."', '".$packaging_uom_qty."', '".$length."', '".$width."', '".$height."', '".$weiight."', '".$qualifiers."', '".$storage_setup."', '".$variable_setup."', ";
 				$sql .= " '".$nmfc."', '".$lot_number_required."', '".$serial_number_required."', '".$serial_number_must_be_unique."', '".$exp_date_req."', '".$enable_cost."', ";
 				$sql .= " '".$cost_required."', '".$is_haz_mat."', '".$haz_mat_id."', '".$haz_mat_shipping_name."', '".$haz_mat_hazard_class."', '".$haz_mat_packing_group."',";
 				$sql .= " '".$haz_mat_flash_point."', '".$haz_mat_label_code."', '".$haz_mat_flat."', '".$image_url."', '".$storage_count_stript_template_id."', '".$storage_rates."',";
-				$sql .= " '".$outbound_mobile_serialization_behavior."', '".$price."', '".$total_qty."', '".$unit_type."', ".$updated_by.", ".(int)$itemAttrSet.")";
+				$sql .= " '".$outbound_mobile_serialization_behavior."', '".$price."', '".$total_qty."', '".$unit_type."', ".$updated_by.", ".(int)$itemAttrSet.", '".strtoupper($poType)."')";
 				$this->db->query($sql);
 			
 			}
