@@ -1,18 +1,31 @@
 <?php
 $statList= array(
-    0 =>array("New Request", "info"),
-    1 =>array("Approve", "success"),
-    2 =>array("Cancel","default"),
-    3 =>array("Received","primary"),
-    4 =>array("Canceled","danger")
+    1 => array(
+        0 =>array("New Request", "warning"),
+        1 =>array("Approve", "success"),
+        2 =>array("Cancel","danger"),
+        3 =>array("Approve", "success"),
+        4 =>array("Cancel","danger"),
+    ),
+    2 =>array(
+        0 =>array("New Request", "warning"),
+        1 =>array("Approve", "success"),
+        2 =>array("Cancel","danger")
+    ),
+    3 =>array(
+        0 => array("Pending Payment", "warnig"),
+        1 => array("Processing","success"),
+        2 => array("Complete","primary"),
+        3 => array("Fraud","danger")
+   )
 );
 
 foreach($value as $result){
     $date= date("d F Y", strtotime($result['created_at']));
     $time= date("h:i:s", strtotime($result['created_at']));
-    if(!isset($result['status'])) {continue;}
+    if(!isset($result['status']) || !isset($result['type'])) {continue;}
 
-    $status=$statList[$result['status']];
+    $status=$statList[$result['type']][$result['status']];
 echo '<div class="tab-pane" id="tab_1_3" >
         <div class="row">
             <div class="col-md-6 user-info" style="width:1500px;">
