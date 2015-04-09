@@ -9,7 +9,7 @@ class Testform extends MY_Controller {
 	public function index() 
 	{
 		
-		$this->_page4();		
+		$this->_creditcard();		
 
 	}
 	
@@ -28,6 +28,25 @@ class Testform extends MY_Controller {
 		$this->load->view('template', $this->data);
 				
 	}
+	
+	private function _creditcard(){
+		$this->load->library("Mageapi");
+			$config = array(
+				"auth" => "dart:Vela123!",
+				"url" => "http://leecooper.localhost/api/soap/?wsdl"
+			);
+			
+			if( $this->mageapi->initSoap($config) ) {
+				echo "test";
+				$return = $this->mageapi->getCreditCardOrder('2015-01-01', '2015-12-31');
+				if(is_array($return)){
+					print_r($return);
+				}else{
+					echo $return;
+				}
+			}
+	}
+	
 	
 }
 ?>

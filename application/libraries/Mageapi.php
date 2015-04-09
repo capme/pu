@@ -35,6 +35,7 @@ class Mageapi {
 	const METHOD_VELA_COD_RECEIVED = "vela_cod.payment";
 	const METHOD_VELA_COD_NEW = "vela_cod.new";
 	const METHOD_VELA_COD_EXPORTED = "vela_cod.exported";
+	const METHOD_VELA_BAYMAX_CREDIT_CARD = "vela_baymax_creditcard.fetch";
 	
 	public function __construct( $config = array() ) {
 		if(!empty($config)) {
@@ -405,4 +406,18 @@ class Mageapi {
             return false;
         }
     }
+    
+    public function getCreditCardOrder($fromDate, $toDate){
+
+        try {
+            $rangeDate = array($fromDate, $toDate);
+            $data = $this->soapClient->call($this->soapSession, self::METHOD_VELA_BAYMAX_CREDIT_CARD, $rangeDate);
+
+            return $data;
+        } catch( Exception $e ) {
+            log_message('error', "MAGEAPI creditcard ==> ". $e->getMessage());
+            return false;
+        }
+    }
+    
 }
