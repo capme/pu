@@ -24,8 +24,8 @@ class Codconfirmation extends MY_Controller {
 				
 		$this->load->library("va_list");
 		$this->va_list->disableAddPlugin()->setListName("COD Order Confirmation")
-		->setHeadingTitle(array("#", "Created Date", "Client Name","Status","Order Number","Cust. Name", "Phone / Email"))
-		->setHeadingWidth(array(2,2,2,2,2,2,2));
+		->setHeadingTitle(array("#", "Created Date", "Client Name","Status","Order Number","Cust. Name", "Amount","Phone / Email"))
+		->setHeadingWidth(array(2,2,2,2,2,2,2,2));
 		
 		$this->va_list->setInputFilter(4, array("name" => $this->codconfirmation_m->filters['order_number']))
 			->setDropdownFilter(2, array("name" => $this->codconfirmation_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
@@ -44,7 +44,7 @@ class Codconfirmation extends MY_Controller {
 				$this->codconfirmation_m->removePayment($id, $action);
 			}
 		}	
-		$data = $this->codconfirmation_m->getCodConfirmationList();	
+		$data = $this->codconfirmation_m->getCodConfirmationList();
 		echo json_encode($data);
 	}
 	

@@ -13,7 +13,7 @@ class Codconfirmation_m extends MY_Model {
 		parent::__construct();
 		$this->db = $this->load->database('mysql', TRUE);		
 		$this->relation = array(array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} and {$this->table}.status = 0 "));
-		$this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->table}.customer_name", "{$this->table}.created_at", "{$this->table}.updated_at", "{$this->table}.status", "{$this->table}.updated_by", "{$this->tableClient}.client_code", "{$this->table}.phone_number", "{$this->table}.email");
+		$this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->table}.customer_name", "{$this->table}.created_at", "{$this->table}.updated_at", "{$this->table}.status", "{$this->table}.updated_by", "{$this->tableClient}.client_code", "{$this->table}.phone_number", "{$this->table}.email","{$this->table}.amount");
 		$this->filters = array("order_number"=>"order_number","client_id"=>"client_id");
 	}
 	
@@ -56,7 +56,7 @@ class Codconfirmation_m extends MY_Model {
 			}else{
 				$action='<a href="'.site_url("codconfirmation/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>';
 			}
-			
+
 			$date = explode(" ", $_result->created_at);
 			$records["aaData"][] = array(
 					'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
@@ -66,6 +66,7 @@ class Codconfirmation_m extends MY_Model {
 					'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
 					$_result->order_number,
 					$_result->customer_name,
+                    "Rp. ".number_format($_result->amount,2),
 					$_result->phone_number . " / " . $_result->email,	
 					$action				
 			);
