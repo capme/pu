@@ -10,29 +10,11 @@ class Testform extends MY_Controller {
 	{
 		
 		//create items in magento
-		//$this->_mageCreateItem();
-		//echo "<br><br>";
+		$this->_mageCreateItem();
+		echo "<br><br>";
 		//create items in 3PL
-		//$this->_3PLCreateItem();			
-		$this->_creditcard();
-	}
-	
-	private function _creditcard(){
-		$this->load->library("Mageapi");
-			$config = array(
-				"auth" => "dart:Vela123!",
-				"url" => "http://leecooper.localhost/api/soap/?wsdl"
-			);
-			
-			if( $this->mageapi->initSoap($config) ) {
-				echo "test";
-				$return = $this->mageapi->getCreditCardOrder('2015-01-01', '2015-12-31');
-				if(is_array($return)){
-					print_r($return);
-				}else{
-					echo $return;
-				}
-			}
+		$this->_3PLCreateItem();			
+
 	}
 	
 	private function _mageCreateItem(){
