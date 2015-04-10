@@ -1,8 +1,8 @@
 <?php
 $statList= array(
-    0 =>array("New Request", "info"),
+    0 =>array("New Request", "warning"),
     1 =>array("Approve", "success"),
-    2 =>array("Cancel","default"),
+    2 =>array("Processing","info"),
     3 =>array("Received","primary"),
     4 =>array("Canceled","danger")
 );
@@ -15,9 +15,9 @@ foreach($value as $result){
     $status=$statList[$result['status']];
 echo '<div class="tab-pane" id="tab_1_3" >
         <div class="row">
-            <div class="col-md-6 user-info" style="width:1500px;">
+            <div class="col-md-6 user-info" style="width:100%;">
                 <img alt="" src="'.site_url().'assets/img/avatar.png" class="img-responsive"/>
-                <div class="details" style="width:1000px; padding-left:inherit;">
+                <div class="details" style="width:80%; padding-left:inherit;">
                     <div style="margin-bottom: 10px;">
                         <b>'.$date.' </b>'.$time.'| <span class="label label-sm label-'.($status[1]).' label-mini">'.($status[0]).' </span>
                     </div>
