@@ -87,7 +87,7 @@ class Codpaymentconfirmation_m extends MY_Model {
 		$this->db->join('order_history', 'order_history.order_id=cod_confirmation.id and type=1','left');
         $this->db->join('auth_users', 'auth_users.pkUserId=order_history.created_by', 'left');
 		$this->db->where('cod_confirmation.id', $id);
-        $this->db->order_by('order_history.id','asc');
+        $this->db->order_by('order_history.id','desc');
 
         return $this->db->get();
 	}
