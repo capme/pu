@@ -63,11 +63,11 @@ class Codconfirmation_m extends MY_Model {
 					$no=$no+1,
 					$date[0],
 					$_result->client_code,
+					'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
 					$_result->order_number,
 					$_result->customer_name,
                     "Rp. ".number_format($_result->amount,2),
-					$_result->phone_number . " / " . $_result->email,
-                    '<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
+					$_result->phone_number . " / " . $_result->email,	
 					$action				
 			);
 		}
@@ -81,7 +81,7 @@ class Codconfirmation_m extends MY_Model {
 	public function getCodConfirmationById($id)
 	{
 		$this->db = $this->load->database('mysql', TRUE);
-		$this->db->select('*, cod_confirmation.created_at,cod_confirmation.email, cod_confirmation.id, auth_users.username, order_history.type');
+		$this->db->select('*, cod_confirmation.created_at,cod_confirmation.email, cod_confirmation.id, cod_confirmation.status, auth_users.username, order_history.type');
 		$this->db->from($this->table);
 		$this->db->join('client','client.id=cod_confirmation.client_id');
 		$this->db->join('order_history', 'order_history.order_id=cod_confirmation.id and type=1', 'left');

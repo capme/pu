@@ -19,7 +19,7 @@ class Codpaymentconfirmation extends MY_Controller {
 				
 		$this->load->library("va_list");
 		$this->va_list->disableAddPlugin()->setListName("COD Payment Confirmation")
-		->setHeadingTitle(array("#","Created Date", "Client Name","Order Number","Cust. Name","Amount","Phone / Email","Status"))
+		->setHeadingTitle(array("#","Created Date", "Client Name","Status","Order Number","Cust. Name","Amount","Phone / Email"))
 		->setHeadingWidth(array(2,2,2,2,2,2,2,2));
 		
 		$this->va_list->setInputFilter(4, array("name" => $this->codpaymentconfirmation_m->filters['order_number']))
