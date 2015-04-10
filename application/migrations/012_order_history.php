@@ -8,11 +8,18 @@ class Migration_Order_history extends Base_migration {
         $query=$this->db->get('bank_confirmation');
         $hasil = $query->result_array();
         foreach($hasil as $result){
+
+            $history['type'] = 2;
+            $history['order_id'] = $result['id'];
+            $history['note'] = '== Order coming to oms';
+            $history['status'] = 0;
+            $history['created_by'] = 2;
+
+            $this->db->insert('order_history', $history);
+
             $history['note']= $result['reason'];
             $history['status']=$result['status'];
-            $history['type']=2;
             $history['created_by']=$result['updated_by'];
-            $history['order_id']=$result['id'];
 
             $this->db->insert('order_history', $history);
         }
@@ -26,6 +33,7 @@ class Migration_Order_history extends Base_migration {
         $this->db->query("rename table order_history to cod_history");
         $this->db->query("ALTER TABLE cod_history CHANGE order_id cod_id INT");
         $this->db->query("ALTER TABLE bank_confirmation ADD reason text");
+        $this->db->query('DELETE FROM cod_history where type = 2');
         $this->db->trans_complete();
     }
 }
