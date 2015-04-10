@@ -63,11 +63,11 @@ class Codpaymentconfirmation_m extends MY_Model {
 					$no=$no+1,
 					$date[0],
 					$_result->client_code,
-					'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
 					$_result->order_number,
 					$_result->customer_name,
                     "Rp. ".number_format($_result->amount),
 					$_result->phone_number . ' / ' . $_result->email,
+                    '<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
 					$action				
 			);
 		}
