@@ -7,6 +7,8 @@ class Va_input {
 	private $_groupedForm = FALSE;
 	private $_groupList = array();
 	private $_justView = false;
+	private $_customLayout = false;
+	private $_customLayoutFile = "";
 	
 	function __construct($data) {
 		$this->_CI =& get_instance();
@@ -173,7 +175,7 @@ class Va_input {
 		
 		return $this;
 	}
-	
+
 	private function _prepareBasicField($conf) {
 		$input = array();
 	
@@ -224,14 +226,19 @@ class Va_input {
 	
 	public function renderField() {
 		$html = "";
-		if($this->_groupedForm) {
-			foreach($this->groupFields as $id => $field) {
-				$html .= '<div class="tab-pane '.($id == 0 ? 'active' : '').'" id="tab_'.$id.'"><div class="form-body">';
-				$html .= $this->_doRenderField($field);
-				$html .= '</div></div>';
+		if($this->_customLayout){
+			$result = $this->_CI->load->view($this->_customLayoutFile, $this->fields, true);
+			$html .= $result;
+		}else{
+			if($this->_groupedForm) {
+				foreach($this->groupFields as $id => $field) {
+					$html .= '<div class="tab-pane '.($id == 0 ? 'active' : '').'" id="tab_'.$id.'"><div class="form-body">';
+					$html .= $this->_doRenderField($field);
+					$html .= '</div></div>';
+				}
+			} else {
+				$html = $this->_doRenderField($this->fields);
 			}
-		} else {
-			$html = $this->_doRenderField($this->fields);
 		}
 		
 		return $html;
@@ -338,6 +345,57 @@ class Va_input {
 	public function setJustView($flag = true) {
 		$this->_justView = $flag;
 		return $this;
+	}
+	
+	public function setCustomLayout($flag) {
+		$this->_customLayout = $flag;
+		
+		return $this;
+	}
+	
+	public function setCustomLayoutFile($file) {
+		$this->_customLayoutFile = $file;
+		
+		return $this;
+	}
+	
+	public function getFieldInput($field){
+		$html = "";
+			switch($field['type']) {
+				case "text":
+					$field['group'] = $this->_group;
+					$result = $this->_CI->load->view("form/input", $field, true);
+					$html .= $result;
+					break;
+				case "textarea":
+					$field['group'] = $this->_group;
+					$result = $this->_CI->load->view("form/textarea", $field, true);
+					$html .= $result;
+					break;
+				case "hidden":
+					$field['group'] = $this->_group;
+					$result = $this->_CI->load->view("form/hidden", $field, true);
+					$html .= $result;
+					break;
+				case "password":
+					$field['group'] = $this->_group;
+					$html .= $this->_CI->load->view("form/password", $field, true);
+					break;
+				case "select":
+					$field['group'] = $this->_group;
+					$result = $this->_CI->load->view("form/select", $field, true);
+					$html .= $result;
+					break;
+				case "custom":
+					$field['group'] = $this->_group;
+					$html .= $this->_CI->load->view("form/custom", $field, true);
+					break;
+				case "checkbox":
+					$field['group'] = $this->_group;
+					$html .= $this->_CI->load->view("form/checkbox", $field, true);
+					break;
+			}
+		return $html;
 	}
 }
 ?>

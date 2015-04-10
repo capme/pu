@@ -13,7 +13,7 @@ class Codpaymentconfirmation_m extends MY_Model {
 		parent::__construct();
 		$this->db = $this->load->database('mysql', TRUE);		
 		$this->relation = array(array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} and {$this->table}.status !=0 and {$this->table}.status !=2 "));
-		$this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->table}.customer_name", "{$this->table}.created_at", "{$this->table}.updated_at", "{$this->table}.status", "{$this->table}.updated_by", "{$this->tableClient}.client_code", "{$this->table}.phone_number", "{$this->table}.email");
+		$this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->table}.customer_name", "{$this->table}.created_at", "{$this->table}.updated_at", "{$this->table}.status", "{$this->table}.updated_by", "{$this->tableClient}.client_code", "{$this->table}.phone_number", "{$this->table}.email","{$this->table}.amount");
 		$this->filters = array("order_number"=>"order_number","client_id"=>"client_id","status"=>"status");
 	}
 	
@@ -63,10 +63,11 @@ class Codpaymentconfirmation_m extends MY_Model {
 					$no=$no+1,
 					$date[0],
 					$_result->client_code,
-					'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
 					$_result->order_number,
 					$_result->customer_name,
+                    "Rp. ".number_format($_result->amount),
 					$_result->phone_number . ' / ' . $_result->email,
+                    '<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
 					$action				
 			);
 		}
@@ -80,25 +81,29 @@ class Codpaymentconfirmation_m extends MY_Model {
 	public function getCodPaymentConfirmationById($id)
 	{
 		$this->db = $this->load->database('mysql', TRUE);
-		$this->db->select('*, cod_confirmation.id', 'cod_confirmation.status');
+		$this->db->select('*, cod_confirmation.id, cod_confirmation.email, cod_confirmation.created_at, auth_users.username');
 		$this->db->from($this->table);
 		$this->db->join($this->tableClient,'client.id = cod_confirmation.client_id');
-		$this->db->join('cod_history', 'cod_history.cod_id=cod_confirmation.id');
+		$this->db->join('order_history', 'order_history.order_id=cod_confirmation.id and type=1','left');
+        $this->db->join('auth_users', 'auth_users.pkUserId=order_history.created_by', 'left');
 		$this->db->where('cod_confirmation.id', $id);
-		return $this->db->get();  
+        $this->db->order_by('order_history.id','desc');
+
+        return $this->db->get();
 	}
 	
 	public function Receive($post) 
-	{		
-		$user=$this->session->userdata('pkUserId');		
+	{
+        $this->db = $this->load->database('mysql', TRUE);
+        $user=$this->session->userdata('pkUserId');
 		$time=date('Y-m-d H:i:s', now());
-		
-			$note['cod_id']=$post['id'];
+
 			$note['note'] = $post['receive'];
 			$note['status'] = $this->status['receive'];
 			$note['type']=1;
 			$note['created_by']=$user;
 			$note['created_at']=$time;
+            $note['order_id']=$post['id'];
 			
 			$data['status'] = $this->status['receive'];
 			$data['updated_by']=$user;
@@ -106,69 +111,39 @@ class Codpaymentconfirmation_m extends MY_Model {
 			
 			$this->db->where($this->pkField, $post['id']);			
 			$this->db->update($this->table, $data);
-			
-			$this->db->where('cod_id', $post['id']);
-			$this->db->insert('cod_history', $note);
+
+			$this->db->insert('order_history', $note);
 			return $post['id'];		
 	}
 	
 	public function Cancel($post) 
-	{	
-		$msg = array();	
+	{
+        $this->db = $this->load->database('mysql', TRUE);
+        $msg = array();
 		$user=$this->session->userdata('pkUserId');		
 		$time=date('Y-m-d H:i:s', now());
 		if (!empty($post['cancel'])){
-				$note['cod_id']=$post['id'];
+
 				$note['note'] = $post['cancel'];
 				$note['status'] = $this->status['cancel'];
 				$note['type']=1;
 				$note['created_by']=$user;
 				$note['created_at']=$time;
-				
+                $note['order_id']=$post['id'];
+
 				$data['status'] = $this->status['cancel'];
 				$data['updated_by']=$user;
 				$data['updated_at']=$time;	
 				
 				$this->db->where($this->pkField, $post['id']);			
 				$this->db->update($this->table, $data);
-				
-				$this->db->where('cod_id', $post['id']);
-				$this->db->insert('cod_history', $note);
+
+				$this->db->insert('order_history', $note);
 				return $post['id'];	
 			}
 		else {
 		return $msg;
 		}
 	}
-	
-	public function Comment($post)
-	{
-		$msg = array();	
-		$user=$this->session->userdata('pkUserId');		
-		$time=date('Y-m-d H:i:s', now());
-		if (!empty($post['comment'])){
-				$note['cod_id']=$post['id'];
-				$note['note'] = $post['comment'];
-				$note['status'] = $post['status'];
-				$note['type']=1;
-				$note['created_by']=$user;
-				$note['created_at']=$time;
-				
-				$data['status'] = $post['status'];
-				$data['updated_by']=$user;
-				$data['updated_at']=$time;	
-				
-				$this->db->where($this->pkField, $post['id']);			
-				$this->db->update($this->table, $data);
-				
-				$this->db->insert("cod_history", array("cod_id" => $post['id'], "note" => $post['comment'], 'status' => $post['status'], 'type' => 1, 'created_by' => $this->session->userdata('pkUserId')));
-				
-				return $post['id'];	
-			}
-		else {
-		return $msg;
-		}	
-	}
-	
 }
 ?>

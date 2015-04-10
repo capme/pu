@@ -86,13 +86,16 @@ class Paymentconfirmation_m extends MY_Model {
 	public function getConfirmationById($id)
 	{
 		$this->db = $this->load->database('mysql', TRUE);
-		$this->db->select('*, bank_confirmation.id, bank_confirmation.updated_at');
+		$this->db->select('*, bank_confirmation.created_at,bank_confirmation.id, bank_confirmation.updated_at, auth_users.username, order_history.type');
 		$this->db->from($this->table);
 		$this->db->join('client','client.id=bank_confirmation.client_id');
-		$this->db->where('bank_confirmation.id', $id);		
-		return $this->db->get();  
+        $this->db->join('order_history', 'order_history.order_id=bank_confirmation.id and type=2','left');
+        $this->db->join('auth_users', 'auth_users.pkUserId=order_history.created_by','left');
+        $this->db->where('bank_confirmation.id', $id);
+        $this->db->order_by('order_history.id','desc');
+        return $this->db->get();
 	}
-	
+
 	public function Approve ($id)
 	{
 		$this->db = $this->load->database('mysql', TRUE);
@@ -101,10 +104,18 @@ class Paymentconfirmation_m extends MY_Model {
 		
 		$data['status'] = $this->status['approve'];
 		$data['updated_by']=$user;
-		$data['updated_at']= $time;	
-		
+		$data['updated_at']= $time;
+
+        $history['created_by']=$user;
+        $history['status']=$this->status['apparove'];
+		$history['order_id']=$id;
+        $history['created_at']= $time;
+        $history['type']=2;
+
 		$this->db->where($this->pkField, $id);
 		$this->db->update($this->table, $data);
+
+        $this->db->insert('order_history', $history);
 		return $id;		
 	}
 	
@@ -118,13 +129,22 @@ class Paymentconfirmation_m extends MY_Model {
 		$time=date('Y-m-d H:i:s', now());
 		
 		if(!empty($post['reason'])) {
-			$data['reason'] = $post['reason'];
-			$data['status'] = $this->status['cancel'];
+
+			$history['note'] = $post['reason'];
+			$history['type']=2;
+            $history['order_id']=$post['id'];
+            $history['created_by']=$user;
+            $history['created_at']=$time;
+            $history['status']=$this->status['cancel'];
+
+            $data['status'] = $this->status['cancel'];
 			$data['updated_by']=$user;
 			$data['updated_at']=$time;	
 			
 			$this->db->where($this->pkField, $post['id']);			
 			$this->db->update($this->table, $data);
+
+            $this->db->insert('order_history', $history);
 
             $client = $this->client_m->getClientById($post['client_id'])->row_array();
             $config = array(

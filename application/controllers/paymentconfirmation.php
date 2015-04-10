@@ -50,14 +50,16 @@ class Paymentconfirmation extends MY_Controller {
 		if($data->num_rows() < 1) {
 			redirect("paymentconfirmation");
 		}
-		
-		$this->data['content'] = "form_v.php";
+
+        $this->data['content'] = "group_form_v.php";
 		$this->data['pageTitle'] = "Payment Confirmation";
 		$this->data['breadcrumb'] = array("Payment Confirmation"=> "", "View Payment Confirmation" => "");
 		$this->data['formTitle'] = "View Payment Confirmation";
-	
+
 		$this->load->library("va_input", array("group" => "returnorder"));
-		$this->va_input->setJustView();
+        $this->va_input->setJustView();
+        $this->va_input->setGroupedForm(TRUE)->setGroupName( array(0 => "Order Info", 1 => "Comment History") )->setActiveGroup(0);
+
 		$flashData = $this->session->flashdata("clientError");
 		if($flashData !== false) {
 			$flashData = json_decode($flashData, true);
@@ -65,26 +67,24 @@ class Paymentconfirmation extends MY_Controller {
 			$msg = $flashData['msg'];
 		} else {
 			$msg = array();
-			$value = $data->row_array();
+			$value = $data->result_array();
 		}
-		
-		$this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value" => @$value['client_code'], "msg" => @$msg['client_code']) );
-		
-		$this->va_input->addInput( array("name" => "sku", "placeholder" => "Order Number", "help" => "Order Number", "label" => "Order Number", "value" => @$value['order_number'], "msg" => @$msg['order_number']) );
-		$this->va_input->addInput( array("name" => "status", "value" => $this->getStatus()[@$value['status']], "msg" => @$msg['status'], "label" => "Status", "help" => "Order Status") );		
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['name'], "msg" => @$msg['name'], "label" => "Name", "help" => "Name") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['transaction_date'], "msg" => @$msg['transaction_date'], "label" => "Transfer Date", "help" => "Transaction Date") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => number_format(@$value['amount'], 2), "msg" => @$msg['amount'], "label" => "Amount", "help" => "Amount") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['origin_bank'], "msg" => @$msg['origin_bank'], "label" => "Original Bank", "help" => "Original Bank") );
-		//$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['dest_bank'], "msg" => @$msg['dest_bank'], "label" => "Destination Bank", "help" => "Destination Bank") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['transaction_method'], "msg" => @$msg['transaction_method'], "label" => "Transaction Method", "help" => "Transaction Method") );
-		$this->va_input->addCustomField( array("name" =>"receipt_url", "placeholder" => "xx", "label" => "Receipt URL", "value" => @$value['receipt_url'], "msg" => @$msg['receipt_url'], "view"=>"form/customFoto"));
-		
-		$this->va_input->addTextarea( array("name" => "cancel_reason", "value" => @$value['reason'], "msg" => @$msg['reason'], "label" => "Reason", "help" => "Reason") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['updated_at'], "msg" => @$msg['updated_at'], "label" => "Updated At", "help" => "Updated At") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value['created_at'], "msg" => @$msg['created_at'], "label" => "Created At", "help" => "Created At") );
-		
-				
+
+		$this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value" => @$value[0]['client_code'], "msg" => @$msg['client_code'], "disabled"=>"disabled") );
+		$this->va_input->addInput( array("name" => "sku", "placeholder" => "Order Number", "help" => "Order Number", "label" => "Order Number", "value" => @$value[0]['order_number'], "msg" => @$msg['order_number'], "disabled"=>"disabled") );
+		$this->va_input->addInput( array("name" => "status", "value" => $this->getStatus()[@$value[0]['status']], "msg" => @$msg['status'], "label" => "Status", "help" => "Order Status", "disabled"=>"disabled") );
+		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['name'], "msg" => @$msg['name'], "label" => "Name", "help" => "Name", "disabled"=>"disabled") );
+		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['transaction_date'], "msg" => @$msg['transaction_date'], "label" => "Transfer Date", "help" => "Transaction Date", "disabled"=>"disabled") );
+		$this->va_input->addInput( array("name" => "updated_at", "value" => number_format(@$value[0]['amount'], 2), "msg" => @$msg['amount'], "label" => "Amount", "help" => "Amount", "disabled"=>"disabled") );
+		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['origin_bank'], "msg" => @$msg['origin_bank'], "label" => "Original Bank", "help" => "Original Bank", "disabled"=>"disabled") );
+		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['transaction_method'], "msg" => @$msg['transaction_method'], "label" => "Transaction Method", "help" => "Transaction Method", "disabled"=>"disabled") );
+		$this->va_input->addCustomField( array("name" =>"receipt_url", "placeholder" => "xx", "label" => "Receipt URL", "value" => @$value[0]['receipt_url'], "msg" => @$msg['receipt_url'], "view"=>"form/customFoto"));
+		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['updated_at'], "msg" => @$msg['updated_at'], "label" => "Updated At", "help" => "Updated At", "disabled"=>"disabled") );
+		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['created_at'], "msg" => @$msg['created_at'], "label" => "Created At", "help" => "Created At", "disabled"=>"disabled") );
+        $this->va_input->commitForm(0);
+
+        $this->va_input->addCustomField( array("name" =>"","value" =>$value, "view"=>"form/customCommentHistory"));
+        $this->va_input->commitForm(1);
 		
 		$this->data['script'] = $this->load->view("script/client_add", array(), true);
 		$this->load->view('template', $this->data);
