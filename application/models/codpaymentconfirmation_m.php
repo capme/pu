@@ -81,7 +81,7 @@ class Codpaymentconfirmation_m extends MY_Model {
 	public function getCodPaymentConfirmationById($id)
 	{
 		$this->db = $this->load->database('mysql', TRUE);
-		$this->db->select('*, cod_confirmation.id, cod_confirmation.email, cod_confirmation.created_at, auth_users.username');
+		$this->db->select('*, cod_confirmation.id, cod_confirmation.email, cod_confirmation.created_at, auth_users.username, order_history.created_at as history_date');
 		$this->db->from($this->table);
 		$this->db->join($this->tableClient,'client.id = cod_confirmation.client_id');
 		$this->db->join('order_history', 'order_history.order_id=cod_confirmation.id and type=1','left');

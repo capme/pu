@@ -8,8 +8,8 @@ $statList= array(
 );
 
 foreach($value as $result){
-    $date= date("d F Y", strtotime($result['created_at']));
-    $time= date("h:i:s", strtotime($result['created_at']));
+    $date= date("d F Y", strtotime($result['history_date']));
+    $time= date("h:i:s", strtotime($result['history_date']));
     if(!isset($result['status'])) {continue;}
 
     $status=$statList[$result['status']];
