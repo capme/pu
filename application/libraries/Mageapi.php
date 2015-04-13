@@ -408,7 +408,6 @@ class Mageapi {
     }
     
     public function getCreditCardOrder($fromDate, $toDate){
-
         try {
             $rangeDate = array($fromDate, $toDate);
             $data = $this->soapClient->call($this->soapSession, self::METHOD_VELA_BAYMAX_CREDIT_CARD, $rangeDate);

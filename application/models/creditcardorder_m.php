@@ -7,7 +7,8 @@ class creditcardorder_m extends MY_Model {
     var $pkField = "id";
     var $status=array("cancel"=>2,"approve"=>1);
     var $tableClient ='client';
-
+    var $tableOrderHistory = "order_history";
+    
     function __construct()
     {
         parent::__construct();
@@ -86,6 +87,59 @@ class creditcardorder_m extends MY_Model {
         $this->db->where('creditcard_order.id', $id);
         $this->db->order_by('order_history.id','asc');
         return $this->db->get();
+    }
+    
+    public function saveCreditCardOrder($clientid, $datas){
+    	$this->db->trans_start();
+		
+    	foreach($datas as $key => $data){
+    		$order_id = $key;
+    			if(!is_null($data['comment'])){
+    				$note = $data['comment'];
+    			}else{
+    				$note = "";
+    			}
+    			$status = $data['status'];
+    			$type = $data['type'];
+    			$customerName = $data['customer_name'];
+    			$shippingAddress = $data['address'];
+    			$items = $data['items'];
+    			$customerEmail = $data['customer_email'];
+    			$amount = $data['amount'];
+    			$status = $data['status'];
+
+    			//check if data order ccc is exist
+				$this->db->select('*');
+				$this->db->where('order_id', $order_id);
+				$query = $this->db->get('order_history');
+				$num = $query->num_rows();
+				
+				if($num > 0){
+					//update table order_history
+					$data = array("note" => $note, "status" => $status, "created_by" => "2", "created_at" => date("Y-m-d H:i:s"));
+					$this->db->where('order_id', $order_id);
+					$this->db->update($this->tableOrderHistory, $data); 
+					//update table creditcard_order
+					$data = array("name" => $customerName, "shipping_address" => $shippingAddress, "items" => $items, "email" => $customerEmail, "amount" => $amount, "status" => $status, "updated_by" => "2", "updated_at" => date("Y-m-d H:i:s"));
+					$dataWhere = array('client_id' => $clientid, 'order_number' => $order_id);
+					$this->db->where($dataWhere);
+					$this->db->update($this->table, $data); 
+				}else{
+	    			//insert into table order_history
+			    	$this->db->insert(
+							$this->tableOrderHistory,
+							array("order_id" => $order_id, "note" => $note, "status" => $status, "type" => $type, "created_by" => "2", "created_at" => date("Y-m-d H:i:s"))
+					);
+					$idOrderHistory = $this->db->insert_id();
+					//insert into table creditcard_order
+			    	$this->db->insert(
+							$this->table,
+							array("client_id" => $clientid, "order_number" => $order_id, "name" => $customerName, "shipping_address" => $shippingAddress, "items" => $items, "email" => $customerEmail, "amount" => $amount, "status" => $status, "updated_by" => "2", "created_at" => date("Y-m-d H:i:s"))
+					);
+					$idCreditCardOrder = $this->db->insert_id();
+				}	
+    	}
+    	$this->db->trans_complete();
     }
 
 }
