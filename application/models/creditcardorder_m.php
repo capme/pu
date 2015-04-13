@@ -8,6 +8,9 @@ class creditcardorder_m extends MY_Model {
     var $status=array("cancel"=>2,"approve"=>1);
     var $tableClient ='client';
     var $tableOrderHistory = "order_history";
+    var $orderStatusMap = array(0 => "pending", 1 => "processing", 2 => "complete", 
+    							3 => "fraud", 4 => "payment_review", 5 => "canceled",
+    							6 => "closed", 7 => "waiting_payment");
     
     function __construct()
     {
@@ -106,7 +109,7 @@ class creditcardorder_m extends MY_Model {
     			$items = $data['items'];
     			$customerEmail = $data['customer_email'];
     			$amount = $data['amount'];
-    			$status = $data['status'];
+    			$status = array_search($status, $this->orderStatusMap);
 
     			//check if data order ccc is exist
 				$this->db->select('*');
@@ -117,7 +120,8 @@ class creditcardorder_m extends MY_Model {
 				if($num > 0){
 					//update table order_history
 					$data = array("note" => $note, "status" => $status, "created_by" => "2", "created_at" => date("Y-m-d H:i:s"));
-					$this->db->where('order_id', $order_id);
+					$dataWhere = array('order_id' => $order_id, 'type' => 3);
+					$this->db->where($dataWhere);
 					$this->db->update($this->tableOrderHistory, $data); 
 					//update table creditcard_order
 					$data = array("name" => $customerName, "shipping_address" => $shippingAddress, "items" => $items, "email" => $customerEmail, "amount" => $amount, "status" => $status, "updated_by" => "2", "updated_at" => date("Y-m-d H:i:s"));
