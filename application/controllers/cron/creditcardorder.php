@@ -23,15 +23,9 @@ class Creditcardorder extends CI_Controller {
 					"url" => $client['mage_wsdl']
 			);
 
-			//debug
-			$config = array(
-				"auth" => "dart:Vela123!",
-				"url" => "http://leecooper.localhost/api/soap/?wsdl"
-			);
 			if( $this->mageapi->initSoap($config) ) {
 				$clientId = $client['id'];
-				//debug
-				$dateFrom = '2015-01-01';
+				$dateFrom = date("Y-m-d");
 				$dateTo = date("Y-m-d");
 				$return = $this->mageapi->getCreditCardOrder($dateFrom, $dateTo);
 				if(is_array($return)){
@@ -50,7 +44,7 @@ class Creditcardorder extends CI_Controller {
 							$dataCreditCard[$itemReturn['entity_id']]['amount'] = $itemReturn['amount_ordered'];
 						}
 						$return = $this->creditcardorder_m->saveCreditCardOrder($clientId, $dataCreditCard);
-						echo "No credit card order for client ".$client['client_code']." between ".$dateFrom." and ".$dateTo."<br>";
+						echo "Credit card order for client ".$client['client_code']." between ".$dateFrom." and ".$dateTo." fetched<br>";
 					}else{
 						echo "No credit card order for client ".$client['client_code']." between ".$dateFrom." and ".$dateTo."<br>";
 					}
@@ -59,8 +53,6 @@ class Creditcardorder extends CI_Controller {
 				}
 			}
 						
-			//debug
-			break;
 		}
 	}
 }
