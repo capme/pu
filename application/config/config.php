@@ -266,7 +266,7 @@ $config['sess_time_to_update']	= 300;
 |
 */
 $config['cookie_prefix']	= "";
-$config['cookie_domain']	= "www.oms.com";
+$config['cookie_domain']	= "oms.localhost";
 $config['cookie_path']		= "/";
 $config['cookie_secure']	= FALSE;
 
@@ -357,6 +357,7 @@ $config['rewrite_short_tags'] = FALSE;
 */
 $config['proxy_ips'] = '';
 
-
+$config['dart']['dart_key'] = DART_KEY;
+$config['dart']['dart_url'] = DART_URL;
 /* End of file config.php */
 /* Location: ./application/config/config.php */

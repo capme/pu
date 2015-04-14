@@ -68,12 +68,9 @@ class Awb extends CI_Controller {
 		if(!empty($clientOrder)) {
 			foreach($clientOrder as $cId => $orders) {
 				// get amount order
-				$cmd = PHP_BINDIR."/php " . FCPATH . "index.php cron/awb getAmountOrder/".$cId;
-				if (substr(php_uname(), 0, 7) == "Windows"){
-					pclose(popen("start /B ". $cmd, "r"));
-				} else {
-					exec($cmd . " > /dev/null &");
-				}
+                $command = "cron/awb getAmountOrder/".$cId;
+                execProcess($command);
+
 				//echo $cId;
 				$this->_getOrderItems($cId, $orders);
 			}

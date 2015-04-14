@@ -13,7 +13,7 @@ $bar = ucwords(strtolower($im));
 ?>
 	<tr>  
     <td style="width:30%"><?php echo $bar ?></td>
-	<td><input class="form-control" type="text" value="<?php echo $value[$i]['option_value']?>" name="clientoptions[option_value][<?php echo $value[$i]['id']?>]" style="width:80%"></td>
+	<td><input class="form-control" type="text" value="<?php echo htmlspecialchars($value[$i]['option_value'])?>" name="clientoptions[option_value][<?php echo $value[$i]['id']?>]" style="width:80%"></td>
 	<td><input type="checkbox" name="clientoptions[cek][<?php echo $i?>]" value="<?php echo $value[$i]['id']?>" ></td>
 	</tr>
 <?php }?>
