@@ -107,7 +107,7 @@ class Paymentconfirmation_m extends MY_Model {
 		$data['updated_at']= $time;
 
         $history['created_by']=$user;
-        $history['status']=$this->status['apparove'];
+        $history['status']=$this->status['approve'];
 		$history['order_id']=$id;
         $history['created_at']= $time;
         $history['type']=2;
