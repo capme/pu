@@ -24,7 +24,7 @@ class Codconfirmation extends MY_Controller {
 				
 		$this->load->library("va_list");
 		$this->va_list->disableAddPlugin()->setListName("COD Order Confirmation")
-		->setHeadingTitle(array("#", "Created Date", "Client Name","Status","Order Number","Cust. Name", "Amount","Phone / Email"))
+		->setHeadingTitle(array("#", "Created Date", "Client Name","Order Number","Cust. Name", "Amount","Phone / Email","Status"))
 		->setHeadingWidth(array(2,2,2,2,2,2,2,2));
 		
 		$this->va_list->setInputFilter(4, array("name" => $this->codconfirmation_m->filters['order_number']))

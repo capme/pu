@@ -21,16 +21,16 @@ $statList= array(
 );
 
 foreach($value as $result){
-    $date= date("d F Y", strtotime($result['created_at']));
-    $time= date("h:i:s", strtotime($result['created_at']));
-    if(!isset($result['status']) || !isset($result['type'])) {continue;}
+    $date= date("d F Y", strtotime($result['history_date']));
+    $time= date("h:i:s", strtotime($result['history_date']));
+    if(!isset($result['status'])) {continue;}
 
     $status=$statList[$result['type']][$result['status']];
 echo '<div class="tab-pane" id="tab_1_3" >
         <div class="row">
-            <div class="col-md-6 user-info" style="width:1500px;">
+            <div class="col-md-6 user-info" style="width:100%;">
                 <img alt="" src="'.site_url().'assets/img/avatar.png" class="img-responsive"/>
-                <div class="details" style="width:1000px; padding-left:inherit;">
+                <div class="details" style="width:80%; padding-left:inherit;">
                     <div style="margin-bottom: 10px;">
                         <b>'.$date.' </b>'.$time.'| <span class="label label-sm label-'.($status[1]).' label-mini">'.($status[0]).' </span>
                     </div>
