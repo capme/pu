@@ -33,4 +33,75 @@ function buildMenu($list = array(), $parents = array(), $currentModule, $allowed
 
 }
 
+/**
+ * @param array $list : array of notification list
+ * @param string $type : type of notification ['notification','inbox','tasks']
+ * @return string
+ */
+function buildNotification($list = array(), $type = ''){
+    $icon = ['notification' => 'fa-warning', 'inbox' => 'fa-envelope', 'task' => 'fa-tasks'];
+
+    if(empty($type)) return '';
+
+    $result = '<!-- BEGIN '.strtoupper($type).' DROPDOWN -->'.
+        '<li class="dropdown" id="header_'.$type.'_bar">'.
+        '<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">'.
+        '<i class="fa '.(isset($icon[$type]) ? $icon[$type] : 'fa-warning').'"></i>';
+    if(count($list) > 0) $result .= '<span class="badge">'.count($list).'</span>';
+    $result .= '</a><ul class="dropdown-menu extended '.$type.'">'.
+        '<li><p>You have '.count($list).' '.$type.'</p></li>';
+    if(count($list) > 0){
+        $result .= '<li>'.
+            '<ul class="dropdown-menu-list scroller" style="height: 250px;">';
+
+        foreach( $list as $id=>$val ){
+            $now = new DateTime('now');
+            $created = new DateTime($val['created_at']);
+            $diff = $now->diff($created);
+            $statDiff = $diff->format('%i mins');
+            if($diff->format('%h') > 0) $statDiff = $diff->format('%h hrs');
+            if($diff->format('%d') > 0) $statDiff = $diff->format('%d days');
+            
+            $result .= '<li>'.
+                '<a href="'.site_url('notification/read?id='.$val['id'].'&url='.urlencode($val['url'])).'">'.
+                '<span class="label label-sm label-icon label-warning"><i class="fa fa-bell-o"></i></span>'.
+                strip_tags($val['message']).'. <span class="time">'.$statDiff.'</span>'.
+                '</a></li>';
+        }
+
+        $result .= '</ul></li>';
+    }
+
+    $result .= '<li class="external"><a href="'.site_url("notification").'">See all '.$type.'s <i class="m-icon-swapright"></i></a></li></ul></li>'.
+        '<!-- END '.strtoupper($type).' DROPDOWN -->';
+
+    return $result;
+}
+
+function execProcess($command = null) {
+    if(is_null($command) || empty($command)) {
+        return false;
+    }
+
+    $cmd = PHP_BINDIR."/php " . FCPATH . "index.php ".$command;
+    if (substr(php_uname(), 0, 7) == "Windows"){
+        pclose(popen("start /B ". $cmd, "r"));
+    } else {
+        exec($cmd . " > /dev/null &");
+    }
+}
+
+function checkIfInArrayString($searchingFor, $array) {
+    if(empty($searchingFor)) {
+        return true;
+    }
+    log_message('debug', print_r($array, true).'::'.print_r($searchingFor, true));
+    foreach ($array as $element) {
+        if (strpos($searchingFor, $element) !== false) {
+            return true;
+        }
+    }
+    return false;
+}
+
 ?>

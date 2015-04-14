@@ -223,5 +223,10 @@ class Users_m extends MY_Model {
 		$grouplist=$this->db->get_where($this->table, array("active" => 1));
 		return $grouplist->result_array();
 	}
+
+    public function userListByGroup($groupId){
+        $grouplist=$this->db->get_where($this->table, array("active" => 1, "group" => $groupId));
+		return $grouplist->result_array();
+    }
 }
 ?>

@@ -20,9 +20,9 @@ class Clients extends MY_Controller {
 		$this->va_list->setListName("Client Listing")->setAddLabel("New Client")->setMassAction(
 				array("2" => "Remove")
 		)->setHeadingTitle(
-				array("Record #", "Client Name", "Mage API","Mage WSDL")
+				array("Record #", "Client Name", "Mage API","Mage WSDL", "3PL Account")
 		)->setHeadingWidth(
-				array(5, 10, 10,10)
+				array(5, 10, 10,10, 10)
 		);
 		
 		$this->va_list->setInputFilter(1, array("name" => $this->client_m->filters['client_code']));			
@@ -55,6 +55,8 @@ class Clients extends MY_Controller {
 		$this->va_input->addHidden( array("name" => "method", "value" => "new") );
 		$this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Name of new client", "label" => "Client Name *", "value" => @$value['client_code'], "msg" => @$msg['client_code']) );
 		$this->va_input->addInput( array("name" => "mage_wsdl", "placeholder" => "Magento Wsdl", "help" => "Name of magento wsdl", "label" => "Magento Wsdl *", "value" => @$value['mage_wsdl'], "msg" => @$msg['mage_wsdl']) );
+        $this->va_input->addInput( array("name" => "threepl_user", "placeholder" => "3PL User Credential", "help" => "3PL User Credential", "label" => "3PL User *", "value" => @$value['threepl_user'], "msg" => @$msg['threepl_user']) );
+        $this->va_input->addInput( array("name" => "threepl_pass", "placeholder" => "3PL Password Credential", "help" => "3PL Password Credential", "label" => "3PL Password *", "value" => @$value['threepl_pass'], "msg" => @$msg['threepl_pass']) );
 		$this->va_input->addInput( array("name" => "mage_auth", "placeholder" => "mageuser:magepass", "label" => "Magento API Auth", "value" => @$value['mage_auth'], "msg" => @$msg['mage_auth'], "help" => "Magento API auth (user:pass)") );
 		
 		$this->data['script'] = $this->load->view("script/client_add", array(), true);
@@ -123,6 +125,8 @@ class Clients extends MY_Controller {
 		$this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Name of new client", "label" => "Client Name *", "value" => @$value['client_code'], "msg" => @$msg['client_code']) );
 		$this->va_input->addInput( array("name" => "mage_auth", "placeholder" => "mageuser:magepass", "label" => "Magento API Auth", "value" => @$value['mage_auth'], "msg" => @$msg['mage_auth'], "help" => "Magento API auth (user:pass)") );
 		$this->va_input->addInput( array("name" => "mage_wsdl", "placeholder" => "Magento Wsdl", "help" => "Name of magento wsdl", "label" => "Magento Wsdl *", "value" => @$value['mage_wsdl'], "msg" => @$msg['mage_wsdl']) );
+        $this->va_input->addInput( array("name" => "threepl_user", "placeholder" => "3PL User Credential", "help" => "3PL User Credential", "label" => "3PL User *", "value" => @$value['threepl_user'], "msg" => @$msg['threepl_user']) );
+        $this->va_input->addInput( array("name" => "threepl_pass", "placeholder" => "3PL Password Credential", "help" => "3PL Password Credential", "label" => "3PL Password *", "value" => @$value['threepl_pass'], "msg" => @$msg['threepl_pass']) );
 		$this->data['script'] = $this->load->view("script/client_add", array(), true);
 
 		$this->load->view('template', $this->data);

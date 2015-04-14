@@ -20,6 +20,7 @@ class MY_Controller extends CI_Controller {
         parent::__construct();
 		$this->load->model('auth_m');
 		$this->load->model("modulemanagement_m");
+        $this->load->model('notification_m');
 
 		// check loggedin
 		if(!$this->auth_m->is_logged_in()) {
@@ -66,7 +67,8 @@ class MY_Controller extends CI_Controller {
 		if($error) {
 			$this->data['error'] = $error;
 		}
-		
+
+        $this->data['notification'] = $this->notification_m->getUnReadNotification(@$this->data['session']['group']);
     }
 
 	function allow($permission, $group=null) {

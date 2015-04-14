@@ -22,6 +22,7 @@ class Threepl_lib {
 	const METHOD_SET_PROCESS = "set_process";
 	const METHOD_UPDATE_TRACKING = "update_tracking";
 	const METHOD_GET_ORDER_BY_DATE = "get_order_by_date";
+    const METHOD_GET_ACTIVE_INVENTORY = "get_active_inventory";
 	
 	
 	function __construct() {
@@ -262,6 +263,18 @@ class Threepl_lib {
 		}
 		
 	}
+
+    public function getActiveInventory($clientName) {
+        $url = trim($this->_dartUrl, "/") . "/" . self::METHOD_GET_ACTIVE_INVENTORY;
+        $postData = array('filters' => json_encode(array('filter' => array('source' => $clientName), 'option' => array('unique' => 1))));
+        $response = json_decode($this->postData($url, $postData));
+
+        if($response->status == 1 && !empty($response->data)) {
+            return $response->data;
+        } else {
+            return array();
+        }
+    }
 	
 	private function postData($url, $data) {
 		$data[self::PARAM_DART_KEY] = $this->_dartkey;
@@ -275,7 +288,7 @@ class Threepl_lib {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		
 		$result = curl_exec($ch);
-		
+
 		curl_close($ch);
 
 		return $result;
