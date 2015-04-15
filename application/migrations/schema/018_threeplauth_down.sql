@@ -1,0 +1,1 @@
+ALTER TABLE `client` DROP COLUMN `threepl_user`, DROP COLUMN `threepl_pass`;

@@ -1,0 +1,1 @@
+ALTER TABLE `client` ADD `threepl_user` VARCHAR(100) NOT NULL AFTER `mage_wsdl`, ADD `threepl_pass` VARCHAR(100) NOT NULL AFTER `threepl_user`;
