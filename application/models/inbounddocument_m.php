@@ -712,8 +712,18 @@ class Inbounddocument_m extends MY_Model {
 				$inSize = $size;
 				//get color
 				$inColor = $colorname;
-			$sku_description = $iBrand.",".$inGender.",".$inCategory.",".$inSubCategory.",".$inProductName.",S:".$inSize.",".$inColor;
-			
+            $isMultiBrand = $this->clientoptions_m->get($client, 'multi_brand');
+            if(!empty($isMultiBrand) && $isMultiBrand['option_value'] == 1) { // paraplou use brand code
+                $brandList = $this->clientoptions_m->get($client, 'brand_code');
+                $_iBrand = strtolower(str_replace(' ', '', $brandName));
+                $brandList = json_decode($brandList['option_value'], true);
+
+                $iBrand = array_search($_iBrand, $brandList);
+
+            }
+
+            $sku_description = $iBrand.",".$inGender.",".$inCategory.",".$inSubCategory.",".$inProductName.",S:".$inSize.",".$inColor;
+
 			//min
 			$min = "";
 			
@@ -958,8 +968,11 @@ class Inbounddocument_m extends MY_Model {
     }
 	
 	public function updateAttrSetInboundInventory($client, $doc_number, $data, $id){
+        $this->load->model( 'clientoptions_m' );
         $upc = json_decode($data['upc'], true);
-        $upc[0] = $data['attribute_set'];
+        $attrSet = $this->clientoptions_m->get($client, 'attribute_set');
+        $attrSet = json_decode($attrSet['option_value'], true);
+        $upc[0] = $attrSet[$data['attribute_set']];
 		$sql = "UPDATE ".$this->tableInv."_".$client." set attribute_set='".$data['attribute_set']."', upc='".implode('|', $upc)."' WHERE doc_number=".$doc_number." and id=".$id;
 		$this->db->query($sql);
 	}
