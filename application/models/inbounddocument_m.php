@@ -538,6 +538,7 @@ class Inbounddocument_m extends MY_Model {
 		$tmp_G = "";
 		$tmp_H = "";
 		$msgRet = array();
+		$tmpArrValSKUConfig = array();
 		for($x=19;$x<=$sizeRowX;$x++){
 			//------------------get the field items--------------------------
 			//no
@@ -887,7 +888,16 @@ class Inbounddocument_m extends MY_Model {
 			log_message('debug', "skuconfig::".$sku_config."::retailprice::".$retailprice);
 
             if($retailprice <> ""){
-				
+				//validation for SKU Config
+				if(empty($tmpArrValSKUConfig[$productname."-".$colorname])){
+					$tmpArrValSKUConfig[$productname."-".$colorname][] = $sku;
+				}else{
+					if(!in_array($sku, $tmpArrValSKUConfig[$productname."-".$colorname])){	
+						$tmpArrValSKUConfig[$productname."-".$colorname][] = $sku;
+                    	$msgRet['problemskuconfig'][$productname."-".$colorname] = $tmpArrValSKUConfig[$productname."-".$colorname];
+					}
+				}
+            	
 				//check sku simple from 3pl sync table
 				$checkReturn = $this->invsync_m->findBySku(strtoupper($sku_simple), $client);
 
