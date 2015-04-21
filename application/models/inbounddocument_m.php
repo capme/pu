@@ -1117,7 +1117,7 @@ class Inbounddocument_m extends MY_Model {
 								
 					$sql = "INSERT INTO ".$this->tableInvStock."_".$client." (item_id, doc_number, reference_num, quantity";
 					$sql .= ", bin_location, created_at, created_by) VALUES";
-					$sql .= " (".$item_id.", ".$doc_number.", '".$reference_num."', ".$qty.", '".$locBin."', '".$created_at."', ".$created_by.")";
+					$sql .= " (".$item_id.", ".$doc_number.", '".$reference_num."', ".$qtyInbound.", '".$locBin."', '".$created_at."', ".$created_by.")";
 					$this->db->query($sql);
 				}					
 			}
