@@ -235,12 +235,9 @@ class Inbounddocument_m extends MY_Model {
 						
 			//upc
 			if(isset($arr_data[$x]['K'])){
-				$upc = $arr_data[$x]['K']; 		
-				$arrUpc = explode("|", $upc);
-				$attrSet = $arrUpc[0]; 
+				$upc = $arr_data[$x]['K'];
 			}else{
 				$upc = "";
-				$attrSet = "";
 			}
 						
 			//track lot
@@ -488,6 +485,20 @@ class Inbounddocument_m extends MY_Model {
 				$unitType = "";
 			}
 			
+			//POType
+			if(isset($arr_data[$x]['AU'])){
+				$poType = $arr_data[$x]['AU']; 				
+			}else{
+				$poType = "";
+			}
+
+            //AttrSet
+            if(isset($arr_data[$x]['AV'])){
+                $attrSet = $arr_data[$x]['AV'];
+            }else{
+                $attrSet = "";
+            }
+			
 			//updated
 			$updatedBy = $user=$this->session->userdata('pkUserId');
 						
@@ -500,14 +511,14 @@ class Inbounddocument_m extends MY_Model {
 			$sql .= " nmfc, lot_number_required, serial_number_required, serial_number_must_be_unique, exp_date_req, enable_cost, ";
 			$sql .= " cost_required, is_haz_mat, haz_mat_id, haz_mat_shipping_name, haz_mat_hazard_class, haz_mat_packing_group,";
 			$sql .= " haz_mat_flash_point, haz_mat_label_code, haz_mat_flat, image_url, storage_count_stript_template_id, storage_rates,";
-			$sql .= " outbound_mobile_serialization_behavior, price, total_qty, unit_type, updated_by, attribute_set) VALUES";
+			$sql .= " outbound_mobile_serialization_behavior, price, total_qty, unit_type, updated_by, attribute_set, po_type) VALUES";
 			$sql .= " (".$doc_number.", '".strtoupper($skuConfig)."', '".strtoupper($skuSimple)."', '".$skuDescription."', '".$min."', ".$max.", ".$cycleCount.",";
 			$sql .= " ".$reorderQty.", '".$inventoryMethod."', '".$temperature."', '".$cost."', '".$upc."', '".$trackLot."', '".$trackSerial."', '".$trackExpdate."', '".$primaryUnitOfMeasure."',";
 			$sql .= " '".$packagingUnit."', '".$packingUomQty."', '".$length."', '".$width."', '".$height."', '".$weight."', '".$qualifiers."', '".$storageSetup."', '".$variableSetup."', ";
 			$sql .= " '".$nmfc."', '".$lotNumberReq."', '".$serialNumberReq."', '".$serialNumberMustBeUnique."', '".$expDateReq."', '".$enableCost."', ";
 			$sql .= " '".$costRequired."', '".$isHazMat."', '".$hazMatId."', '".$hazMatShippingName."', '".$hazMatHazardClass."', '".$hazMatPackingGroup."',";
 			$sql .= " '".$hazMatFlashPoint."', '".$hazMatLabelCode."', '".$hazMatFlag."', '".$imageUrl."', '".$storageCountScriptTemplateId."', '".$storageRates."',";
-			$sql .= " '".$outboundMobileSerializationBehavior."', '".$price."', '".$totalQty."', '".$unitType."',".$updatedBy.",'".$attrSet."')";
+			$sql .= " '".$outboundMobileSerializationBehavior."', '".$price."', '".$totalQty."', '".$unitType."',".$updatedBy.",'".$attrSet."','".$poType."')";
 			
 			$this->db->query($sql);
 			
@@ -538,6 +549,7 @@ class Inbounddocument_m extends MY_Model {
 		$tmp_G = "";
 		$tmp_H = "";
 		$msgRet = array();
+		$tmpArrValSKUConfig = array();
 		for($x=19;$x<=$sizeRowX;$x++){
 			//------------------get the field items--------------------------
 			//no
@@ -701,7 +713,7 @@ class Inbounddocument_m extends MY_Model {
 				//get 2 digit inisial brand
                 $iBrand = strtoupper($iBrand);
 				//get 1 digit inisial gender
-				$inGender = substr($gender, 0, 1);
+				$inGender = strtoupper(substr($gender, 0, 1));
 				//get category
 				$inCategory = $category;
 				//get sub category
@@ -761,7 +773,10 @@ class Inbounddocument_m extends MY_Model {
 				$itemSize = $size;
 				$itemColor = $colorname;
 
-				$upc = $itemAttrSet."|".$itemSize."|".$itemColor."|".$itemBrand;  
+				$upc = $itemAttrSet."|".$itemSize."|".$itemColor."|".$itemBrand;
+                $sku_description = explode(',', $sku_description);
+                $sku_description[0] = $itemBrand;
+                $sku_description = implode(',', $sku_description);
 			}else{
 				//e2e client
 				$itemAttrSet = "";
@@ -887,7 +902,16 @@ class Inbounddocument_m extends MY_Model {
 			log_message('debug', "skuconfig::".$sku_config."::retailprice::".$retailprice);
 
             if($retailprice <> ""){
-				
+				//validation for SKU Config
+				if(empty($tmpArrValSKUConfig[$productname."-".$colorname])){
+					$tmpArrValSKUConfig[$productname."-".$colorname][] = $sku;
+				}else{
+					if(!in_array($sku, $tmpArrValSKUConfig[$productname."-".$colorname])){	
+						$tmpArrValSKUConfig[$productname."-".$colorname][] = $sku;
+                    	$msgRet['problemskuconfig'][$productname."-".$colorname] = $tmpArrValSKUConfig[$productname."-".$colorname];
+					}
+				}
+            	
 				//check sku simple from 3pl sync table
 				$checkReturn = $this->invsync_m->findBySku(strtoupper($sku_simple), $client);
 
@@ -1035,7 +1059,7 @@ class Inbounddocument_m extends MY_Model {
 				if(isset($arr_data[$x]['E'])){
 					$qtyInbound = $arr_data[$x]['E'];
 				}else{
-					$qtyInbound = "";
+					$qtyInbound = 0;
 				}	
 	
 				//note
@@ -1100,7 +1124,7 @@ class Inbounddocument_m extends MY_Model {
 								
 					$sql = "INSERT INTO ".$this->tableInvStock."_".$client." (item_id, doc_number, reference_num, quantity";
 					$sql .= ", bin_location, created_at, created_by) VALUES";
-					$sql .= " (".$item_id.", ".$doc_number.", '".$reference_num."', ".$qty.", '".$locBin."', '".$created_at."', ".$created_by.")";
+					$sql .= " (".$item_id.", ".$doc_number.", '".$reference_num."', ".$qtyInbound.", '".$locBin."', '".$created_at."', ".$created_by.")";
 					$this->db->query($sql);
 				}					
 			}
