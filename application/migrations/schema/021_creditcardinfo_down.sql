@@ -1,0 +1,1 @@
+ALTER TABLE `creditcard_order` DROP COLUMN `cc_info`;

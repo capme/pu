@@ -6,7 +6,7 @@
  */
 class Creditcardorder extends CI_Controller {
 	
-	public function fetch() {
+	public function fetch($code = '') {
 		$this->load->model("client_m");
 		$this->load->model("creditcardorder_m");
 		$this->load->library("mageapi");
@@ -14,6 +14,9 @@ class Creditcardorder extends CI_Controller {
 		$clients = $this->client_m->getClients();
 		
 		foreach($clients as $client) {
+            if($code && $code != $client['client_code']) {
+                continue;
+            }
 			if(!$client['mage_auth'] && !$client['mage_wsdl']) {
 				continue;
 			}
@@ -25,25 +28,28 @@ class Creditcardorder extends CI_Controller {
 
 			if( $this->mageapi->initSoap($config) ) {
 				$clientId = $client['id'];
-				$dateFrom = date("Y-m-d");
+				$dateFrom = date("Y-m-d", strtotime("-2 days"));
 				$dateTo = date("Y-m-d");
-				$return = $this->mageapi->getCreditCardOrder($dateFrom, $dateTo);
-				if(is_array($return)){
+				$orders = $this->mageapi->getCreditCardOrder($dateFrom, $dateTo);
+				if(is_array($orders)){
 					$dataCreditCard = array();
-					if(!empty($return)){
-						foreach($return as $itemReturn){
-							$dataCreditCard[$itemReturn['entity_id']]['comment'] = $itemReturn['comment'];
-							$dataCreditCard[$itemReturn['entity_id']]['status'] = $itemReturn['status'];
-							$dataCreditCard[$itemReturn['entity_id']]['type'] = 3;
-							$dataCreditCard[$itemReturn['entity_id']]['created_by'] = 2;
-							$dataCreditCard[$itemReturn['entity_id']]['amount'] = $itemReturn['amount_ordered'];
-							$dataCreditCard[$itemReturn['entity_id']]['customer_email'] = $itemReturn['customer_email'];
-							$dataCreditCard[$itemReturn['entity_id']]['customer_name'] = $itemReturn['customer_firstname']." ".$itemReturn['customer_middlename']." ".$itemReturn['customer_lastname'];
-							$dataCreditCard[$itemReturn['entity_id']]['address'] = $itemReturn['street']." ".$itemReturn['city']." ".$itemReturn['region']." ".$itemReturn['postcode'];
-							$dataCreditCard[$itemReturn['entity_id']]['items'] = $itemReturn['name']." ".$itemReturn['sku'];
-							$dataCreditCard[$itemReturn['entity_id']]['amount'] = $itemReturn['amount_ordered'];
+                    $histories = array();
+					if(!empty($orders)){
+						foreach($orders as $order){
+                            $_status = array_search($order['status'], $this->creditcardorder_m->getOrderStatusmap());
+                            $_order = array(
+                                'client_id' => $clientId, 'order_number' => $order['increment_id'], 'name' => $order['customer_name'], 'shipping_address' => $order['shipping_address'],
+                                'items' => json_encode($order['items']), 'email' => $order['email'], 'amount' => $order['amount'], 'status' => $_status,
+                                'cc_info' => json_encode($order['cc_info']), 'created_at' => $order['created_at'], 'updated_at' => $order['updated_at']
+                            );
+                            $dataCreditCard[$order['increment_id']] = $_order;
+                            $histories[$order['increment_id']] = $order['histories'];
 						}
-						$return = $this->creditcardorder_m->saveCreditCardOrder($clientId, $dataCreditCard);
+
+                        /*print_r($histories);
+                        print_r($dataCreditCard);
+                        die;*/
+						$return = $this->creditcardorder_m->saveCreditCardOrder($clientId, $dataCreditCard, $histories);
 						echo "Credit card order for client ".$client['client_code']." between ".$dateFrom." and ".$dateTo." fetched<br>";
 					}else{
 						echo "No credit card order for client ".$client['client_code']." between ".$dateFrom." and ".$dateTo."<br>";

@@ -20,6 +20,20 @@ class Inbounddocument_m extends MY_Model {
 	var $path = "";
 	var $pathInboundForm = "";
     var $attrList = array();
+    var $mapColor = array(
+    					"BLACK" => "BK",
+    					"WHITE" => "WH",
+    					"RED" => "RE",
+						"BLUE" => "BL",
+        				"YELLOW" => "YL",
+    					"PURPLE" => "PU",
+    					"GREEN" => "GR",
+    					"BROWN" => "BR",
+    					"GREY" => "GY",
+    					"GRAY" => "GY",
+    					"ORANGE" => "OR",
+    					"PINK" => "PK"
+    				);
 	
 	function __construct()
     {
@@ -550,6 +564,10 @@ class Inbounddocument_m extends MY_Model {
 		$tmp_H = "";
 		$msgRet = array();
 		$tmpArrValSKUConfig = array();
+		$tmpArrValSKUConfigDiff = array();
+		$sqlBeforeLoop = "";
+		$sqlBeforeLoop_2 = "";
+		$sqlBeforeLoop_3 = "";
 		for($x=19;$x<=$sizeRowX;$x++){
 			//------------------get the field items--------------------------
 			//no
@@ -902,7 +920,38 @@ class Inbounddocument_m extends MY_Model {
 			log_message('debug', "skuconfig::".$sku_config."::retailprice::".$retailprice);
 
             if($retailprice <> ""){
-				//validation for SKU Config
+            	//validation for SKU Config (same SKU different variant)
+            	
+            	if(empty($tmpArrValSKUConfigDiff)){
+            		//first time
+            		$tmpArrValSKUConfigDiff[$sku] = $productname."-".$colorname;
+            		$sqlBeforeLoop = "";
+            		$sqlBeforeLoop_2 = "";
+            		$sqlBeforeLoop_3 = "";
+            	}else{
+            		if(isset($tmpArrValSKUConfigDiff[$sku])){
+            			//check if same SKU different variant
+            			if($tmpArrValSKUConfigDiff[$sku] != $productname."-".$colorname){
+            				//fix data before loop
+            					//get data colorname
+            					$tmpGetColor = explode("-", $tmpArrValSKUConfigDiff[$sku]);
+					
+            				$sqlBeforeLoop = "UPDATE ".$this->tableInv."_".$client." SET sku_config='".strtoupper($sku_config).$this->mapColor[strtoupper($tmpGetColor[1])]."' WHERE sku_config='".strtoupper($sku_config)."'";
+            				$sqlBeforeLoop_2 = "UPDATE ".$this->tableInv."_".$client." SET sku_simple=REPLACE(sku_simple,'".strtoupper($sku_config)."','".strtoupper($sku_config).$this->mapColor[strtoupper($tmpGetColor[1])]."') where sku_simple like '".strtoupper($sku_config)."_'";
+            				$sqlBeforeLoop_3 = "UPDATE ".$this->tableInv."_".$client." SET sku_simple=REPLACE(sku_simple,'".strtoupper($sku_config)."','".strtoupper($sku_config).$this->mapColor[strtoupper($tmpGetColor[1])]."') where sku_simple like '".strtoupper($sku_config)."__'";
+            				
+            				//fix data variable sku_config recent loop
+            				$sku_config = $sku_config.$this->mapColor[strtoupper($colorname)];
+            			}
+            		}else{
+            			$tmpArrValSKUConfigDiff[$sku] = $productname."-".$colorname;
+            			$sqlBeforeLoop = "";
+            			$sqlBeforeLoop_2 = "";
+            			$sqlBeforeLoop_3 = "";
+            		}
+            	}
+            	
+				//validation for SKU Config (different SKU same variant)
 				if(empty($tmpArrValSKUConfig[$productname."-".$colorname])){
 					$tmpArrValSKUConfig[$productname."-".$colorname][] = $sku;
 				}else{
@@ -911,7 +960,18 @@ class Inbounddocument_m extends MY_Model {
                     	$msgRet['problemskuconfig'][$productname."-".$colorname] = $tmpArrValSKUConfig[$productname."-".$colorname];
 					}
 				}
-            	
+
+				//re-update sku simple
+				if($size == ""){
+					$sku_simple = $sku_config."OS";
+	                $size = 'One Size';
+				}elseif(strtoupper(trim($size)) == "F"){
+					$sku_simple = $sku_config."OS";
+	                $size = 'One Size';
+				}else{
+					$sku_simple = $sku_config.$size;
+				}
+					
 				//check sku simple from 3pl sync table
 				$checkReturn = $this->invsync_m->findBySku(strtoupper($sku_simple), $client);
 
@@ -940,6 +1000,13 @@ class Inbounddocument_m extends MY_Model {
 				$sql .= " '".$outbound_mobile_serialization_behavior."', '".$price."', '".$total_qty."', '".$unit_type."', ".$updated_by.", ".(int)$itemAttrSet.", '".strtoupper($poType)."')";
 				$this->db->query($sql);
 			
+				if($sqlBeforeLoop != ""){
+					$this->db->query($sqlBeforeLoop);
+					//updating sku_simple based on sku_config (S/M/L)
+					$this->db->query($sqlBeforeLoop_2);
+					//updating sku_simple based on sku_config (XL)
+					$this->db->query($sqlBeforeLoop_3);
+				}
 			}
 		}
         //end parse the array from excel
