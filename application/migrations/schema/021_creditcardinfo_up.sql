@@ -1,0 +1,1 @@
+ALTER TABLE `creditcard_order` ADD `cc_info` text NOT NULL AFTER `status`;

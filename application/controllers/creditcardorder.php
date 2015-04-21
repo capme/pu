@@ -61,6 +61,7 @@ class Creditcardorder extends MY_Controller {
         $this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['name'],"label" => "Name", "help" => "Name", "disabled"=>"disabled") );
         $this->va_input->addInput( array("name" => "updated_at", "value" => number_format(@$value[0]['amount'], 2),  "label" => "Amount", "help" => "Amount", "disabled"=>"disabled") );
         $this->va_input->addCustomField( array("name" =>"items", "placeholder" => "Items", "label" => "Items", "value" => @$value[0]['items'], "view"=>"form/customItemsCod"));
+        $this->va_input->addCustomField( array("name" =>"ccinfo", "placeholder" => "Items", "label" => "Items", "value" => @$value[0]['cc_info'], "view"=>"form/custom_cc_info"));
         $this->va_input->addInput( array("name" => "email", "placeholder" => "Email", "help" => "Email", "label" => "Email", "value" => @$value[0]['email'],"disabled"=>"disabled") );
         $this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['creditcardupdate_at'],"label" => "Updated At", "help" => "Updated At", "disabled"=>"disabled") );
         $this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['creditcardcreated_at'],"label" => "Created At", "help" => "Created At", "disabled"=>"disabled") );
