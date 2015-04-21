@@ -54,16 +54,16 @@ class Creditcardorder extends MY_Controller {
         $this->va_input->setGroupedForm(TRUE)->setGroupName( array(0 => "Order Info", 1 => "Comment History") )->setActiveGroup(0);
 
         $value = $data->result_array();
-
+		
         $this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value" => @$value[0]['client_code'],"disabled"=>"disabled") );
         $this->va_input->addInput( array("name" => "sku", "placeholder" => "Order Number", "help" => "Order Number", "label" => "Order Number", "value" => @$value[0]['order_number'],"disabled"=>"disabled") );
-        $this->va_input->addInput( array("name" => "status", "value" => $this->getStatus()[@$value[0]['status']], "label" => "Status", "help" => "Order Status", "disabled"=>"disabled") );
+        $this->va_input->addInput( array("name" => "status", "value" => $this->getStatus()[@$value[0]['creditcard_status']], "label" => "Status", "help" => "Order Status", "disabled"=>"disabled") );
         $this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['name'],"label" => "Name", "help" => "Name", "disabled"=>"disabled") );
         $this->va_input->addInput( array("name" => "updated_at", "value" => number_format(@$value[0]['amount'], 2),  "label" => "Amount", "help" => "Amount", "disabled"=>"disabled") );
         $this->va_input->addCustomField( array("name" =>"items", "placeholder" => "Items", "label" => "Items", "value" => @$value[0]['items'], "view"=>"form/customItemsCod"));
         $this->va_input->addInput( array("name" => "email", "placeholder" => "Email", "help" => "Email", "label" => "Email", "value" => @$value[0]['email'],"disabled"=>"disabled") );
-        $this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['updated_at'],"label" => "Updated At", "help" => "Updated At", "disabled"=>"disabled") );
-        $this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['created_at'],"label" => "Created At", "help" => "Created At", "disabled"=>"disabled") );
+        $this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['creditcardupdate_at'],"label" => "Updated At", "help" => "Updated At", "disabled"=>"disabled") );
+        $this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['creditcardcreated_at'],"label" => "Created At", "help" => "Created At", "disabled"=>"disabled") );
         $this->va_input->commitForm(0);
 
         $this->va_input->addCustomField( array("name" =>"","value" =>$value, "view"=>"form/customCommentHistory"));
@@ -74,7 +74,7 @@ class Creditcardorder extends MY_Controller {
     }
 
     private function getStatus() {
-        return array(-1=>"",0=>"Pending Payment",1 => "Processing",2 => "Complete",3 =>"Fraud" );
+		return array(-1=>"",0 => "pending", 1 => "processing", 2 => "complete", 3 => "fraud", 4 => "payment_review", 5 => "canceled",6 => "closed", 7 => "waiting_payment");
     }
 
 }

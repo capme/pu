@@ -249,12 +249,9 @@ class Inbounddocument_m extends MY_Model {
 						
 			//upc
 			if(isset($arr_data[$x]['K'])){
-				$upc = $arr_data[$x]['K']; 		
-				$arrUpc = explode("|", $upc);
-				$attrSet = $arrUpc[0]; 
+				$upc = $arr_data[$x]['K'];
 			}else{
 				$upc = "";
-				$attrSet = "";
 			}
 						
 			//track lot
@@ -508,6 +505,13 @@ class Inbounddocument_m extends MY_Model {
 			}else{
 				$poType = "";
 			}
+
+            //AttrSet
+            if(isset($arr_data[$x]['AV'])){
+                $attrSet = $arr_data[$x]['AV'];
+            }else{
+                $attrSet = "";
+            }
 			
 			//updated
 			$updatedBy = $user=$this->session->userdata('pkUserId');
@@ -787,7 +791,10 @@ class Inbounddocument_m extends MY_Model {
 				$itemSize = $size;
 				$itemColor = $colorname;
 
-				$upc = $itemAttrSet."|".$itemSize."|".$itemColor."|".$itemBrand;  
+				$upc = $itemAttrSet."|".$itemSize."|".$itemColor."|".$itemBrand;
+                $sku_description = explode(',', $sku_description);
+                $sku_description[0] = $itemBrand;
+                $sku_description = implode(',', $sku_description);
 			}else{
 				//e2e client
 				$itemAttrSet = "";

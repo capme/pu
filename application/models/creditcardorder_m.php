@@ -44,12 +44,16 @@ class creditcardorder_m extends MY_Model {
         }
 
         $statList= array(
-            0 =>array("Pending Payment", "warning"),
+            0 =>array("Pending", "info"),
             1 => array("Processing","success"),
             2 => array("Complete","primary"),
-            3 => array("Fraud","danger")
+			3 => array("Fraud","default"),
+			4 => array("Payment_Review","warning"),
+            5 => array("Canceled","danger"),
+			6 => array("Closed","danger"),
+			7 => array("Waiting_payment","info")
         );
-
+		
         $end = $iDisplayStart + $iDisplayLength;
         $end = $end > $iTotalRecords ? $iTotalRecords : $end;
 
@@ -57,7 +61,6 @@ class creditcardorder_m extends MY_Model {
         $no=0;
         foreach($_row->result() as $_result) {
             $status=$statList[$_result->status];
-
                  $date = explode(' ', $_result->created_at);
             $records["aaData"][] = array(
                 '<input type="checkbox" name="id[]" value="'.$_result->id.'">',
@@ -82,10 +85,19 @@ class creditcardorder_m extends MY_Model {
     public function getCreditCardOrderById($id)
     {
         $this->db = $this->load->database('mysql', TRUE);
-        $this->db->select('*, creditcard_order.email, creditcard_order.created_at, creditcard_order.id, creditcard_order.updated_at, auth_users.username, order_history.type');
-        $this->db->from($this->table);
+        $this->db->select('*,
+		creditcard_order.items as items,
+		creditcard_order.status as creditcard_status, 		
+		creditcard_order.email as email, 
+		creditcard_order.created_at as creditcardcreated_at, 
+		creditcard_order.updated_at as creditcardupdate_at, 
+		auth_users.username, 
+		order_history.type, 
+		order_history.created_at as history_date');
+        
+		$this->db->from($this->table);
         $this->db->join('client','client.id=creditcard_order.client_id');
-        $this->db->join('order_history', 'order_history.order_id=creditcard_order.id and type=3','left');
+        $this->db->join('order_history', 'order_history.order_id=creditcard_order.order_number and order_history.type=3','left');
         $this->db->join('auth_users', 'auth_users.pkUserId=order_history.created_by','left');
         $this->db->where('creditcard_order.id', $id);
         $this->db->order_by('order_history.id','asc');
