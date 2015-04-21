@@ -709,7 +709,7 @@ class Inbounddocument_m extends MY_Model {
 				//get 2 digit inisial brand
                 $iBrand = strtoupper($iBrand);
 				//get 1 digit inisial gender
-				$inGender = substr($gender, 0, 1);
+				$inGender = strtoupper(substr($gender, 0, 1));
 				//get category
 				$inCategory = $category;
 				//get sub category
