@@ -44,12 +44,16 @@ class creditcardorder_m extends MY_Model {
         }
 
         $statList= array(
-            0 =>array("Pending Payment", "warning"),
+            0 =>array("Pending", "info"),
             1 => array("Processing","success"),
             2 => array("Complete","primary"),
-            3 => array("Fraud","danger")
+			3 => array("Fraud","default"),
+			4 => array("Payment_Review","warning"),
+            5 => array("Canceled","danger"),
+			6 => array("Closed","danger"),
+			7 => array("Waiting_payment","info"),
         );
-
+		
         $end = $iDisplayStart + $iDisplayLength;
         $end = $end > $iTotalRecords ? $iTotalRecords : $end;
 
@@ -57,7 +61,6 @@ class creditcardorder_m extends MY_Model {
         $no=0;
         foreach($_row->result() as $_result) {
             $status=$statList[$_result->status];
-
                  $date = explode(' ', $_result->created_at);
             $records["aaData"][] = array(
                 '<input type="checkbox" name="id[]" value="'.$_result->id.'">',
