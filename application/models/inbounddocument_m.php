@@ -769,7 +769,10 @@ class Inbounddocument_m extends MY_Model {
 				$itemSize = $size;
 				$itemColor = $colorname;
 
-				$upc = $itemAttrSet."|".$itemSize."|".$itemColor."|".$itemBrand;  
+				$upc = $itemAttrSet."|".$itemSize."|".$itemColor."|".$itemBrand;
+                $sku_description = explode(',', $sku_description);
+                $sku_description[0] = $itemBrand;
+                $sku_description = implode(',', $sku_description);
 			}else{
 				//e2e client
 				$itemAttrSet = "";
