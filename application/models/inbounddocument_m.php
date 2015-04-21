@@ -235,12 +235,9 @@ class Inbounddocument_m extends MY_Model {
 						
 			//upc
 			if(isset($arr_data[$x]['K'])){
-				$upc = $arr_data[$x]['K']; 		
-				$arrUpc = explode("|", $upc);
-				$attrSet = $arrUpc[0]; 
+				$upc = $arr_data[$x]['K'];
 			}else{
 				$upc = "";
-				$attrSet = "";
 			}
 						
 			//track lot
@@ -494,6 +491,13 @@ class Inbounddocument_m extends MY_Model {
 			}else{
 				$poType = "";
 			}
+
+            //AttrSet
+            if(isset($arr_data[$x]['AV'])){
+                $attrSet = $arr_data[$x]['AV'];
+            }else{
+                $attrSet = "";
+            }
 			
 			//updated
 			$updatedBy = $user=$this->session->userdata('pkUserId');
