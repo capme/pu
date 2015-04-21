@@ -66,43 +66,88 @@ class Extractcatalogproduct extends CI_Controller {
 								$return = $this->inbounddocument_m->saveToInboundInventory($client_id, $doc_number, $created_by, $arr_data);
 
 								//compose HTML report
-								if(isset($return['problem'])){
-									//list problems
-									$client = $this->client_m->getClientById($client_id)->row_array();
-									$clientCode = $client['client_code']; 
-									$strProblem = "<table border='1' cellpadding='2' cellspacing='2'>";
-									$strProblem .= "<tr><td colspan='3'>".$clientCode." (".$realDocNumber.")</td></tr>";
-									$strProblem .= "<tr>";
-                                    $strProblem .= "<td>SKU Simple</td>";
-									$strProblem .= "<td>Type in File</td>";
-                                    $strProblem .= "<td>Type in System</td>";
-									$strProblem .= "</tr>";
-
-									foreach($return['problem'] as $itemProblem){
-										//$problem_id = $itemProblem['id'];
-										//$problem_sku_simple = $itemProblem['sku_simple'];
-										//$problem_sku_description = $itemProblem['sku_description'];
-										//$problem_updated_at = $itemProblem['updated_at'];
-										//$problem_po_type = $itemProblem['poType'];
-										
+								if(isset($return['problem']) or isset($return['problemskuconfig'])){
+									if(isset($return['problem'])){
+										//list problems
+										$client = $this->client_m->getClientById($client_id)->row_array();
+										$clientCode = $client['client_code']; 
+										$strProblem = "<table border='1' cellpadding='2' cellspacing='2'>";
+										$strProblem .= "<tr><td colspan='3'>".$clientCode." (".$realDocNumber.")</td></tr>";
 										$strProblem .= "<tr>";
-                                        $strProblem .= "<td>";
-                                        $strProblem .= $itemProblem['sku_simple'];
-                                        $strProblem .= "</td>";
-										$strProblem .= "<td>";
-                                        $strProblem .= $itemProblem['poTypeInFile'];
-										$strProblem .= "</td>";
-                                        $strProblem .= "<td>";
-                                        $strProblem .= $itemProblem['poTypeInSys'];
-                                        $strProblem .= "</td>";
+	                                    $strProblem .= "<td>SKU Simple</td>";
+										$strProblem .= "<td>Type in File</td>";
+	                                    $strProblem .= "<td>Type in System</td>";
 										$strProblem .= "</tr>";
+	
+										foreach($return['problem'] as $itemProblem){
+											$strProblem .= "<tr>";
+	                                        $strProblem .= "<td>";
+	                                        $strProblem .= $itemProblem['sku_simple'];
+	                                        $strProblem .= "</td>";
+											$strProblem .= "<td>";
+	                                        $strProblem .= $itemProblem['poTypeInFile'];
+											$strProblem .= "</td>";
+	                                        $strProblem .= "<td>";
+	                                        $strProblem .= $itemProblem['poTypeInSys'];
+	                                        $strProblem .= "</td>";
+											$strProblem .= "</tr>";
+										}
+										$strProblem .= "</table>";
+									
+		                                $from = USER_CRON;
+				                        $to = GROUP_OPERATION;
+		                                $url="inbounds";
+				                        $message=$strProblem;
+				                        $this->notification_m->add($from, $to, $url, $message);
+				                        
+				                        echo "PO type exception for client ".$client_id." doc number ".$doc_number."<br>";
 									}
-									$strProblem .= "</table>";
-	                                $from = USER_CRON;
-			                        $to = GROUP_OPERATION;
-	                                $url="inbounds";
-			                        $message=$strProblem;
-			                        $this->notification_m->add($from, $to, $url, $message);
+									
+									if(isset($return['problemskuconfig'])){
+										//list problems SKU Config
+										$client = $this->client_m->getClientById($client_id)->row_array();
+										$clientCode = $client['client_code']; 
+										$strProblem = "<table border='1' cellpadding='2' cellspacing='2'>";
+										$strProblem .= "<tr><td colspan='3'>".$clientCode." (".$realDocNumber.")</td></tr>";
+										$strProblem .= "<tr>";
+	                                    $strProblem .= "<td>Product Name</td>";
+										$strProblem .= "<td>Color Name</td>";
+	                                    $strProblem .= "<td>List Different SKU</td>";
+										$strProblem .= "</tr>";
+										
+										foreach($return['problemskuconfig'] as $keyProblemSkuConfig => $itemProblemSkuConfig){
+											$tmpKeyProblemSkuConfig = explode("-", $keyProblemSkuConfig);
+												$itemProductName = $tmpKeyProblemSkuConfig[0];
+												$itemColorName = $tmpKeyProblemSkuConfig[1];
+											
+											$strListSku = "<table cellpadding='2' cellspacing='2'>";
+											foreach($itemProblemSkuConfig as $partItemProblemSkuConfig){
+												$strListSku .= "<tr><td>".$partItemProblemSkuConfig."</td></tr>";
+											}
+											$strListSku .= "</table>";
+											
+											$strProblem .= "<tr>";
+	                                        $strProblem .= "<td>";
+	                                        $strProblem .= $itemProductName;
+	                                        $strProblem .= "</td>";
+											$strProblem .= "<td>";
+	                                        $strProblem .= $itemColorName;
+											$strProblem .= "</td>";
+	                                        $strProblem .= "<td>";
+	                                        $strProblem .= $strListSku;
+	                                        $strProblem .= "</td>";
+											$strProblem .= "</tr>";
+										}
+										$strProblem .= "</table>";
+									
+		                                $from = USER_CRON;
+				                        $to = GROUP_OPERATION;
+		                                $url="inbounds";
+				                        $message=$strProblem;
+				                        $this->notification_m->add($from, $to, $url, $message);
+				                        
+				                        echo "SKU Config exception for client ".$client_id." doc number ".$doc_number."<br>";
+									}
 									
 								} else {
                                     echo "import inbound document for client ".$client_id." doc number ".$doc_number."<br>";

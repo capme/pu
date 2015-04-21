@@ -32,11 +32,11 @@ $clientArr = $this->clientoptions_m->get($client, "attribute_set");
 		$productName = $arr[4];
 		$category = $arr[2];
 		$gender = $arr[1];
-		if($gender == "F"){
+		if(strtoupper($gender) == "F"){
 			$gender = "women";
-		}elseif($gender == "M"){
+		}elseif(strtoupper($gender) == "M"){
 			$gender = "men";
-		}elseif($gender == "U"){
+		}elseif(strtoupper($gender) == "U"){
 			$gender = "unisex";
 		}
 		if(empty($itemRows['attribute_set'])){
