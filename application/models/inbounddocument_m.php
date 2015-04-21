@@ -1055,7 +1055,7 @@ class Inbounddocument_m extends MY_Model {
 				if(isset($arr_data[$x]['E'])){
 					$qtyInbound = $arr_data[$x]['E'];
 				}else{
-					$qtyInbound = "";
+					$qtyInbound = 0;
 				}	
 	
 				//note
