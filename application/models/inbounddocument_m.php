@@ -488,6 +488,13 @@ class Inbounddocument_m extends MY_Model {
 				$unitType = "";
 			}
 			
+			//POType
+			if(isset($arr_data[$x]['AU'])){
+				$poType = $arr_data[$x]['AU']; 				
+			}else{
+				$poType = "";
+			}
+			
 			//updated
 			$updatedBy = $user=$this->session->userdata('pkUserId');
 						
@@ -500,14 +507,14 @@ class Inbounddocument_m extends MY_Model {
 			$sql .= " nmfc, lot_number_required, serial_number_required, serial_number_must_be_unique, exp_date_req, enable_cost, ";
 			$sql .= " cost_required, is_haz_mat, haz_mat_id, haz_mat_shipping_name, haz_mat_hazard_class, haz_mat_packing_group,";
 			$sql .= " haz_mat_flash_point, haz_mat_label_code, haz_mat_flat, image_url, storage_count_stript_template_id, storage_rates,";
-			$sql .= " outbound_mobile_serialization_behavior, price, total_qty, unit_type, updated_by, attribute_set) VALUES";
+			$sql .= " outbound_mobile_serialization_behavior, price, total_qty, unit_type, updated_by, attribute_set, po_type) VALUES";
 			$sql .= " (".$doc_number.", '".strtoupper($skuConfig)."', '".strtoupper($skuSimple)."', '".$skuDescription."', '".$min."', ".$max.", ".$cycleCount.",";
 			$sql .= " ".$reorderQty.", '".$inventoryMethod."', '".$temperature."', '".$cost."', '".$upc."', '".$trackLot."', '".$trackSerial."', '".$trackExpdate."', '".$primaryUnitOfMeasure."',";
 			$sql .= " '".$packagingUnit."', '".$packingUomQty."', '".$length."', '".$width."', '".$height."', '".$weight."', '".$qualifiers."', '".$storageSetup."', '".$variableSetup."', ";
 			$sql .= " '".$nmfc."', '".$lotNumberReq."', '".$serialNumberReq."', '".$serialNumberMustBeUnique."', '".$expDateReq."', '".$enableCost."', ";
 			$sql .= " '".$costRequired."', '".$isHazMat."', '".$hazMatId."', '".$hazMatShippingName."', '".$hazMatHazardClass."', '".$hazMatPackingGroup."',";
 			$sql .= " '".$hazMatFlashPoint."', '".$hazMatLabelCode."', '".$hazMatFlag."', '".$imageUrl."', '".$storageCountScriptTemplateId."', '".$storageRates."',";
-			$sql .= " '".$outboundMobileSerializationBehavior."', '".$price."', '".$totalQty."', '".$unitType."',".$updatedBy.",'".$attrSet."')";
+			$sql .= " '".$outboundMobileSerializationBehavior."', '".$price."', '".$totalQty."', '".$unitType."',".$updatedBy.",'".$attrSet."','".$poType."')";
 			
 			$this->db->query($sql);
 			
