@@ -96,7 +96,7 @@ class Extractcatalogproduct extends CI_Controller {
 										$strProblem .= "</table>";
 									
 		                                $from = USER_CRON;
-				                        $to = GROUP_OPERATION;
+				                        $to = GROUP_MERCH;
 		                                $url="inbounds";
 				                        $message=$strProblem;
 				                        $this->notification_m->add($from, $to, $url, $message);
@@ -142,7 +142,7 @@ class Extractcatalogproduct extends CI_Controller {
 										$strProblem .= "</table>";
 									
 		                                $from = USER_CRON;
-				                        $to = GROUP_OPERATION;
+				                        $to = GROUP_MERCH;
 		                                $url="inbounds";
 				                        $message=$strProblem;
 				                        $this->notification_m->add($from, $to, $url, $message);

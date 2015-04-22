@@ -24,6 +24,10 @@ class creditcardorder_m extends MY_Model {
         $this->filters = array("status"=>"status","order_number"=>"order_number","client_id"=>"client_id");
     }
 
+    public function getOrderStatusmap() {
+        return $this->orderStatusMap;
+    }
+
     public function getCreditCardOrderList()
     {
         $this->db = $this->load->database('mysql', TRUE);
@@ -97,63 +101,38 @@ class creditcardorder_m extends MY_Model {
         
 		$this->db->from($this->table);
         $this->db->join('client','client.id=creditcard_order.client_id');
-        $this->db->join('order_history', 'order_history.order_id=creditcard_order.order_number and order_history.type=3','left');
-        $this->db->join('auth_users', 'auth_users.pkUserId=order_history.created_by','left');
+        $this->db->join('order_history', 'order_history.order_id=creditcard_order.id and order_history.type=3','left');
+        $this->db->join('auth_users', 'auth_users.pkUserId=order_history.created_by');
         $this->db->where('creditcard_order.id', $id);
         $this->db->order_by('order_history.id','asc');
         return $this->db->get();
     }
     
-    public function saveCreditCardOrder($clientid, $datas){
+    public function saveCreditCardOrder($clientid, $datas, $histories){
     	$this->db->trans_start();
 		
     	foreach($datas as $key => $data){
-    		$order_id = $key;
-    			if(!is_null($data['comment'])){
-    				$note = $data['comment'];
-    			}else{
-    				$note = "";
-    			}
-    			$status = $data['status'];
-    			$type = $data['type'];
-    			$customerName = $data['customer_name'];
-    			$shippingAddress = $data['address'];
-    			$items = $data['items'];
-    			$customerEmail = $data['customer_email'];
-    			$amount = $data['amount'];
-    			$status = array_search($status, $this->orderStatusMap);
+            $check = $this->db->get_where($this->table, array('order_number' => $key));
+            if(!$check->num_rows()) {
+                $this->db->insert($this->table, $data);
+                $id = $this->db->insert_id();
+            } else {
+                $row = $check->row_array();
+                $this->db->update($this->table, $data);
+                $id = $row['id'];
+                $this->db->delete($this->tableOrderHistory, array('order_id' => $id));
+            }
 
-    			//check if data order ccc is exist
-				$this->db->select('*');
-				$this->db->where('order_id', $order_id);
-				$query = $this->db->get('order_history');
-				$num = $query->num_rows();
-				
-				if($num > 0){
-					//update table order_history
-					$data = array("note" => $note, "status" => $status, "created_by" => "2", "created_at" => date("Y-m-d H:i:s"));
-					$dataWhere = array('order_id' => $order_id, 'type' => 3);
-					$this->db->where($dataWhere);
-					$this->db->update($this->tableOrderHistory, $data); 
-					//update table creditcard_order
-					$data = array("name" => $customerName, "shipping_address" => $shippingAddress, "items" => $items, "email" => $customerEmail, "amount" => $amount, "status" => $status, "updated_by" => "2", "updated_at" => date("Y-m-d H:i:s"));
-					$dataWhere = array('client_id' => $clientid, 'order_number' => $order_id);
-					$this->db->where($dataWhere);
-					$this->db->update($this->table, $data); 
-				}else{
-	    			//insert into table order_history
-			    	$this->db->insert(
-							$this->tableOrderHistory,
-							array("order_id" => $order_id, "note" => $note, "status" => $status, "type" => $type, "created_by" => "2", "created_at" => date("Y-m-d H:i:s"))
-					);
-					$idOrderHistory = $this->db->insert_id();
-					//insert into table creditcard_order
-			    	$this->db->insert(
-							$this->table,
-							array("client_id" => $clientid, "order_number" => $order_id, "name" => $customerName, "shipping_address" => $shippingAddress, "items" => $items, "email" => $customerEmail, "amount" => $amount, "status" => $status, "updated_by" => "2", "created_at" => date("Y-m-d H:i:s"))
-					);
-					$idCreditCardOrder = $this->db->insert_id();
-				}	
+            $_history = $histories[$key];
+            $history = array();
+            foreach($_history as $h) {
+                $history[] = array(
+                    'order_id' => $id, 'type' => 3, 'note' => $h['comment'],
+                    'status' => array_search($h['status'], $this->creditcardorder_m->getOrderStatusmap()), 'created_at' => $h['created_at'], 'created_by' => 2);
+            }
+
+            $this->db->insert_batch($this->tableOrderHistory, $history);
+
     	}
     	$this->db->trans_complete();
     }
