@@ -550,7 +550,7 @@ class Inbounddocument_m extends MY_Model {
 		//start parse the array from excel
 		$sizeRowX = count($arr_data); 
 		$sizeRowY = count($arr_data[1]);
-		$brandName = trim($arr_data[8]['C']);
+		$brandName = trim(str_replace(":", "", $arr_data[8]['C']));
         $brandInitial = $this->clientoptions_m->get( $client, 'brand_initial' );
         $iBrand = strtoupper($brandInitial['option_value']);
         $this->db->trans_begin();
