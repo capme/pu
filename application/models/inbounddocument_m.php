@@ -1352,5 +1352,17 @@ class Inbounddocument_m extends MY_Model {
 		}
 		$this->db->trans_complete();
 	}
+	public function changeStatusExtract(){
+		$this->db = $this->load->database('mysql', TRUE);						
+		$this->db->update('inb_document',array('status'=>9));
+	}
+	public function changeStatusPending(){
+		$this->db = $this->load->database('mysql', TRUE);						
+		$this->db->update('inb_document',array('status'=>0));
+	}
+	public function changeStatusFormInbounding(){
+		$this->db = $this->load->database('mysql', TRUE);						
+		$this->db->update('inb_document',array('status'=>2));
+	}
 	
 }

@@ -37,9 +37,18 @@ class Inbound_m extends MY_Model {
 		$end = $end > $iTotalRecords ? $iTotalRecords : $end;
 		
 		$_row = $this->_doGetRows($iDisplayStart, $iDisplayLength);
-		$no=0;
 		
-		foreach($_row->result() as $_result) {		  
+		$statList= array(
+            0 =>array("Pending", "info"),
+            1 => array("Configure Attribute-Set","success"),
+            2 => array("Form Inbounding","primary"),
+			3 => array("Ready to Import","default"),			
+			9 => array("Extracting","danger")
+        );
+		
+		$no=0;
+		foreach($_row->result() as $_result) {
+			$status=$statList[$_result->status];		
 			if($_result->type == 1){
 			 if($_result->status < 3){
 		          $btnAction='<a href="'.site_url("inbounds/edit/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-edit" ></i> Edit</a>
@@ -56,6 +65,7 @@ class Inbound_m extends MY_Model {
 					$_result->client_code,
 					$_result->doc_number,
                     $_result->note,
+					'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
 					$_result->created_at,
 					$btnAction
 			);
