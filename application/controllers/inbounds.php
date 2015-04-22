@@ -25,8 +25,8 @@ class Inbounds extends MY_Controller {
 				
 		$this->load->library("va_list");
 		$this->va_list->setListName("Inbound")->setAddLabel("Upload")		
-			->setHeadingTitle(array("Record #", "Client Name","DO Number","Note","Created At"))
-			->setHeadingWidth(array(2, 2,2,3,2,3,4));
+			->setHeadingTitle(array("Record #", "Client Name","DO Number","Note","Status","Created At"))
+			->setHeadingWidth(array(2, 2,2,3,2,3,2,4));
 		
 		$this->va_list->setInputFilter(2, array("name" => $this->inbound_m->filters['doc_number']))
 			->setDropdownFilter(1, array("name" => $this->inbound_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;

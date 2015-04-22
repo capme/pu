@@ -920,6 +920,7 @@ class Inbounddocument_m extends MY_Model {
 			log_message('debug', "skuconfig::".$sku_config."::retailprice::".$retailprice);
 
             if($retailprice <> ""){
+
             	//validation for SKU Config (same SKU different variant)
             	
             	if(empty($tmpArrValSKUConfigDiff)){
@@ -927,7 +928,6 @@ class Inbounddocument_m extends MY_Model {
             		$tmpArrValSKUConfigDiff[$sku] = $productname."-".$colorname;
             		$sqlBeforeLoop = "";
             		$sqlBeforeLoop_2 = "";
-            		$sqlBeforeLoop_3 = "";
             	}else{
             		if(isset($tmpArrValSKUConfigDiff[$sku])){
             			//check if same SKU different variant
@@ -937,9 +937,8 @@ class Inbounddocument_m extends MY_Model {
             					$tmpGetColor = explode("-", $tmpArrValSKUConfigDiff[$sku]);
 					
             				$sqlBeforeLoop = "UPDATE ".$this->tableInv."_".$client." SET sku_config='".strtoupper($sku_config).$this->mapColor[strtoupper($tmpGetColor[1])]."' WHERE sku_config='".strtoupper($sku_config)."'";
-            				$sqlBeforeLoop_2 = "UPDATE ".$this->tableInv."_".$client." SET sku_simple=REPLACE(sku_simple,'".strtoupper($sku_config)."','".strtoupper($sku_config).$this->mapColor[strtoupper($tmpGetColor[1])]."') where sku_simple like '".strtoupper($sku_config)."_'";
-            				$sqlBeforeLoop_3 = "UPDATE ".$this->tableInv."_".$client." SET sku_simple=REPLACE(sku_simple,'".strtoupper($sku_config)."','".strtoupper($sku_config).$this->mapColor[strtoupper($tmpGetColor[1])]."') where sku_simple like '".strtoupper($sku_config)."__'";
-            				
+            				$sqlBeforeLoop_2 = "UPDATE ".$this->tableInv."_".$client." SET sku_simple=REPLACE(sku_simple,'".strtoupper($sku_config)."','".strtoupper($sku_config).$this->mapColor[strtoupper($tmpGetColor[1])]."') where sku_config='".strtoupper($sku_config)."'";
+
             				//fix data variable sku_config recent loop
             				$sku_config = $sku_config.$this->mapColor[strtoupper($colorname)];
             			}
@@ -947,7 +946,6 @@ class Inbounddocument_m extends MY_Model {
             			$tmpArrValSKUConfigDiff[$sku] = $productname."-".$colorname;
             			$sqlBeforeLoop = "";
             			$sqlBeforeLoop_2 = "";
-            			$sqlBeforeLoop_3 = "";
             		}
             	}
             	
@@ -1001,11 +999,9 @@ class Inbounddocument_m extends MY_Model {
 				$this->db->query($sql);
 			
 				if($sqlBeforeLoop != ""){
-					$this->db->query($sqlBeforeLoop);
 					//updating sku_simple based on sku_config (S/M/L)
 					$this->db->query($sqlBeforeLoop_2);
-					//updating sku_simple based on sku_config (XL)
-					$this->db->query($sqlBeforeLoop_3);
+                    $this->db->query($sqlBeforeLoop);
 				}
 			}
 		}
@@ -1418,6 +1414,18 @@ class Inbounddocument_m extends MY_Model {
 			$lup++;
 		}
 		$this->db->trans_complete();
+	}
+	public function changeStatusExtract(){
+		$this->db = $this->load->database('mysql', TRUE);						
+		$this->db->update('inb_document',array('status'=>9));
+	}
+	public function changeStatusPending(){
+		$this->db = $this->load->database('mysql', TRUE);						
+		$this->db->update('inb_document',array('status'=>0));
+	}
+	public function changeStatusFormInbounding(){
+		$this->db = $this->load->database('mysql', TRUE);						
+		$this->db->update('inb_document',array('status'=>2));
 	}
 	
 }

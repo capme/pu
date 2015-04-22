@@ -23,9 +23,8 @@ class Extractcatalogproduct extends CI_Controller {
 		
 		foreach($clients as $client) {
 			$inbound = $this->inbounddocument_m->getInboundDocumentInfo($client["id"],1);
-
-			if($inbound->num_rows>0){
-				foreach($inbound->result_array() as $rows ){
+			if($inbound->num_rows>0){	
+				foreach($inbound->result_array() as $rows ){				 
 					if(!empty($rows)){
 						$id = $rows['id'];
 						$doc_number = $rows['doc_number'];
@@ -38,7 +37,8 @@ class Extractcatalogproduct extends CI_Controller {
 						$created_by = $rows['created_by'];
 						$filename = $rows['filename'];
 						
-						if($status == "0"){
+						if($status == "0"){					
+							
                             $ext = explode('.', $filename);
                             if( end($ext) == 'xlsx' ){
                                 // Use PCLZip rather than ZipArchive to read the Excel2007 OfficeOpenXML file
@@ -61,12 +61,13 @@ class Extractcatalogproduct extends CI_Controller {
 							}
 							
 							try {
+								$this->inbounddocument_m->changeStatusExtract();									
 								$realDocNumber = $doc_number; 
 								$doc_number = $id;
-								$return = $this->inbounddocument_m->saveToInboundInventory($client_id, $doc_number, $created_by, $arr_data);
-
+								$return = $this->inbounddocument_m->saveToInboundInventory($client_id, $doc_number, $created_by, $arr_data);								
 								//compose HTML report
 								if(isset($return['problem']) or isset($return['problemskuconfig'])){
+									$this->inbounddocument_m->changeStatusPending();
 									if(isset($return['problem'])){
 										//list problems
 										$client = $this->client_m->getClientById($client_id)->row_array();
@@ -150,7 +151,7 @@ class Extractcatalogproduct extends CI_Controller {
 									}
 									
 								} else {
-                                    echo "import inbound document for client ".$client_id." doc number ".$doc_number."<br>";
+									echo "import inbound document for client ".$client_id." doc number ".$doc_number."<br>";
                                     $return = $this->inbounddocument_m->updateStatusInboundDocumentList($id,1);
 
                                     $from = USER_CRON;
@@ -162,15 +163,16 @@ class Extractcatalogproduct extends CI_Controller {
                                         $this->notification_m->add($from, $to, $url, $message);
                                     }
                                 }
+								
 
-							} catch( Exception $e ) {
+							} catch( Exception $e ) {								
 								echo $e->getMessage();	
 							}
 							
-						}					
-					}
+						}
+					}				
 				}
-			}else{
+			}else{				
 				echo "no available inbound document need to imported for client ".$client["id"]."<br>";
 			}
 
