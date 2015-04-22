@@ -277,7 +277,8 @@ class Inbounds extends MY_Controller {
             'E' => strstr($arr_data[15]['E'], 'GENDER') === FALSE,
             'F' => strstr($arr_data[15]['F'], 'CATEGORY') === FALSE,
             'G' => $arr_data[15]['G'] != 'SUB CATEGORY',
-            'H' => $arr_data[15]['H'] != 'SUPPLIER STYLE CODE / SKU'
+            'H' => $arr_data[15]['H'] != 'SUPPLIER STYLE CODE / SKU',
+            'N' => $arr_data[16]['N'] != 'SIZE'
         );
 
 
@@ -296,13 +297,13 @@ class Inbounds extends MY_Controller {
             if( !isset($arr_data[$k]['J']) ) {continue;}
             if(trim($arr_data[$k]['J']) <> "" and $k >= 19){
                 //check gender support
-                $arrCheckGender = array('MAN', 'MEN', 'LADIES', 'WOMAN', 'WOMEN', 'M', 'F', 'U', '');
+                $arrCheckGender = array('MAN', 'MEN', 'LADIES', 'WOMAN', 'WOMEN', 'M', 'F', 'U', '', 'FEMALE');
                 if(!checkIfInArrayString(strtoupper(trim($arr_data[$k]['E'])), $arrCheckGender)){
                     if($msg['info'][0] == "OK") unset($msg);
                     $msg['info'][] = "Gender on row ".$k."(".$arr_data[$k]['E'].") is not supported";
                 }
                 //check category support
-                $arrCheckCategory = array('TOP', 'BOTTOM', 'FOOTWARE', 'ACCESSORIES', '');
+                $arrCheckCategory = array('TOP', 'BOTTOM', 'FOOTWEAR', 'ACCESSORIES', '');
                 if(!in_array(strtoupper(trim($arr_data[$k]['F'])), $arrCheckCategory)){
                     if($msg['info'][0] == "OK") unset($msg);
                     $msg['info'][] = "Category on row ".$k."(".$arr_data[$k]['F'].") is not supported";
