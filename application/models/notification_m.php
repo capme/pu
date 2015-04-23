@@ -137,11 +137,12 @@ class Notification_m extends MY_Model{
 
             $this->email->from($from['email'], $from['fullname']);
             $this->email->to($to['email']);
-            $this->email->subject('[Automatic] Mail Notification :'.$subject);
+            $this->email->subject('[BAYMAX] '.$subject);
             $this->email->message($message);
 
             $send = $this->email->send();
-//            log_message('debug','[cron/notification.sendEmail] : '.$from['email'].'#'.$to['email'].'#'.$subject.'#'.$send);
+//            log_message('debug','[cron/notification.sendEmail] : '.$from['email'].'#'.$to['email'].'#'.$subject.'#'.(bool)$send);
+//            log_message('debug', 'debug send email' . print_r($this->email->print_debugger(), true));
             return $send;
         } return FALSE;
     }
