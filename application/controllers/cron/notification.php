@@ -18,12 +18,12 @@ class Notification extends CI_Controller {
         foreach( $notifications as $notification ){
             $sender = $this->users_m->getUser($notification['sender_id'])->row_array();
 
-            $subject = '[BAYMAX] Something new just happened';
-            $message = '<a href="'.base_url('notification/read?id='.$notification['id'].'&url='.$notification['url']).'">'.$notification['message'].'</>';
+            $subject = 'Something new just happened';
+            $message = '<a href="'.base_url('notification/read?id='.$notification['id'].'&url='.urlencode($notification['url'])).'">'.$notification['message'].'</>';
 
             $users = $this->users_m->userListByGroup($notification['group_ids']);
             foreach( $users as $user ){
-                if( $user['pkUserId'] < 3) { continue; }
+                //if( $user['pkUserId'] < 3) { continue; }
                 $_send = $this->notification_m->sendEmail($sender, $user, $subject, $message);
                 log_message('debug','[cron/notification.digestEmail]: from('.$sender['fullname'].', '.$sender['email'].') to('.$user['email'].') subject('.$subject.') send['.$_send.']');
             }
