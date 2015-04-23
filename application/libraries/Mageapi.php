@@ -37,6 +37,7 @@ class Mageapi {
 	const METHOD_VELA_COD_NEW = "vela_cod.new";
 	const METHOD_VELA_COD_EXPORTED = "vela_cod.exported";
 	const METHOD_VELA_BAYMAX_CREDIT_CARD = "vela_baymax_creditcard.fetch";
+	const METHOD_VELA_BAYMAX_PAYPAL = "vela_baymax_paypal.fetch";
     const METHOD_ATTRIBUTE_SET_LIST = "product_attribute_set.list";
 	
 	public function __construct( $config = array() ) {
@@ -57,7 +58,7 @@ class Mageapi {
 		try{
 			$this->soapClient = new SoapClient($this->mageUrl);
 			$this->soapSession = $this->soapClient->login($this->mageUser, $this->magePass);
-			
+
 			return $this;
 		} catch (Exception $e) {
 			log_message('error', "MAGEAPI ==> ". $e->getMessage());
@@ -420,8 +421,19 @@ class Mageapi {
             return false;
         }
     }
-
 	
+	public function getPaypalOrder($fromDate, $toDate){
+        try {
+            $rangeDate = array($fromDate, $toDate);
+            $data = $this->soapClient->call($this->soapSession, self::METHOD_VELA_BAYMAX_PAYPAL, $rangeDate);
+
+            return $data;
+        } catch( Exception $e ) {
+            log_message('error', "MAGEAPI paypal ==> ". $e->getMessage());
+            return false;
+        }
+    }
+		
 	/**
 	 * create mage's items for each client
 	 * @param array $ItemsToCreate

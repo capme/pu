@@ -21,7 +21,17 @@ $statList= array(
         5 => array("Canceled","danger"),
 		6 => array("Closed","danger"),
 		7 => array("Waiting_payment","info")
-   )
+   ),
+   4 =>array(
+		0 =>array("Pending Payment", "info"),
+        1 => array("Processing","success"),
+        2 => array("Complete","primary"),
+		3 => array("Fraud","default"),
+		4 => array("Payment_Review","warning"),
+        5 => array("Canceled","danger"),
+		6 => array("Closed","danger"),
+		7 => array("Waiting_payment","info")
+   )   
 );
 
 foreach($value as $result){
