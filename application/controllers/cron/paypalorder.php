@@ -7,17 +7,27 @@
 class Paypalorder extends CI_Controller {
 	
 	public function fetch($code = '') {		
+		$this->load->model("client_m");
 		$this->load->model("paypalorder_m");
 		$this->load->library("mageapi");
-						
+		
+		$clients = $this->client_m->getClients();
+		foreach($clients as $client) {
+            if($code && $code != $client['client_code']) {
+                continue;
+            }
+			if(!$client['mage_auth'] && !$client['mage_wsdl']) {
+				continue;
+			}
+				
 			$config = array(
-					"auth" => 'dart:Vela123!',
-					"url" => 'http://ekretek.dev/api/soap/?wsdl'
+					"auth" => $client['mage_auth'],
+					"url" => $client['mage_wsdl']
 			);
-
+			
 			if( $this->mageapi->initSoap($config) ) {
-				$clientId = 10;
-				$dateFrom = date("Y-m-d", strtotime("-10 days"));
+				$clientId = $client['id'];
+				$dateFrom = date("Y-m-d", strtotime("-2 days"));
 				$dateTo = date("Y-m-d");
 				$orders = $this->mageapi->getPaypalOrder($dateFrom, $dateTo);
 				
@@ -36,14 +46,15 @@ class Paypalorder extends CI_Controller {
 						}
 
 						$return = $this->paypalorder_m->savePaypalOrder($clientId, $dataCreditCard, $histories);
-						echo "Payapal order for client Ekretek between ".$dateFrom." and ".$dateTo." fetched<br>";
+						echo "Payapal order for client ".$client['client_code']." between ".$dateFrom." and ".$dateTo." fetched<br>";
 					}else{
-						echo "No Payapal order for client Ekretek between ".$dateFrom." and ".$dateTo."<br>";
+						echo "No Payapal order for client ".$client['client_code']." between ".$dateFrom." and ".$dateTo."<br>";
 					}
 				}else{
 					echo "Something wrong with get Paypal order. See the log file";
 				}
 			}
+		}
 	}
 }
 ?>
