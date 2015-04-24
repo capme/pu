@@ -67,8 +67,8 @@ class Paypalorder_m extends MY_Model {
             $status=$statList[$_result->status];
 			if ($_result->status == 0){
 			$action ='<a href="'.site_url("paypalorder/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>
-				<a href="'.site_url("paypalorder/cancel/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-times" ></i> Cancel</a>'
-				;
+				<a href="'.site_url("paypalorder/cancel/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-times" ></i> Cancel</a>
+				<a href="'.site_url("paypalorder/approve/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-check" ></i> Approve</a>';
 			}
 			/*else if($_result->status == 1) {
 			$action ='<a href="'.site_url("paypalorder/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>
@@ -123,18 +123,22 @@ class Paypalorder_m extends MY_Model {
     public function savePaypalOrder($clientid, $datas, $histories){
     	$this->db->trans_start();
 		
-    	foreach($datas as $key => $data){
+    	foreach($datas as $key => $data){		
             $check = $this->db->get_where($this->table, array('order_number' => $key));
-            if(!$check->num_rows()) {
+			
+			if(!$check->num_rows()) {
                 $this->db->insert($this->table, $data);
-                $id = $this->db->insert_id();
-            } else {
-                $row = $check->row_array();
-                $this->db->update($this->table, $data);
-                $id = $row['id'];
-                $this->db->delete($this->tableOrderHistory, array('order_id' => $id));
+				$id = $this->db->insert_id();
+				
+            } 
+			else {
+				$row = $check->row_array();			
+				$id = $row['id'];	
+				$this->db->update($this->table, $data);
+                $this->db->where($this->pkField,$id);				
+                //$this->db->delete($this->tableOrderHistory, array('order_id' => $id));
             }
-
+			
             $_history = $histories[$key];
             $history = array();
             foreach($_history as $h) {
@@ -144,19 +148,19 @@ class Paypalorder_m extends MY_Model {
             }
 
             $this->db->insert_batch($this->tableOrderHistory, $history);
-
+			
     	}
     	$this->db->trans_complete();
     }
 	
-	/*public function setStatusConfirm($id, $order_id, $type){
+	public function setStatusApprove($id, $order_id, $type){
 		$user=$this->session->userdata('pkUserId');	
 		$this->db = $this->load->database('mysql', TRUE);
 		$this->db->where('id', $id);
 		$this->db->update($this->table,array('status'=>1));
 		
-		$this->db->insert('order_history',array('order_id'=>$order_id,'note'=>'confirmed','status'=>1,'type'=>$type,'created_by'=>$user));	
-	}*/
+		$this->db->insert('order_history',array('order_id'=>$order_id,'note'=>'Approved','status'=>1,'type'=>$type,'created_by'=>$user));	
+	}
 	
 	public function setStatusCancel($id, $order_id, $type){
 		$user=$this->session->userdata('pkUserId');	

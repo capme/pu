@@ -24,7 +24,6 @@ class Paypalorder extends CI_Controller {
 					"auth" => $client['mage_auth'],
 					"url" => $client['mage_wsdl']
 			);
-			
 			if( $this->mageapi->initSoap($config) ) {
 				$clientId = $client['id'];
 				$dateFrom = date("Y-m-d", strtotime("-2 days"));
@@ -44,7 +43,7 @@ class Paypalorder extends CI_Controller {
                             $dataCreditCard[$order['increment_id']] = $_order;
                             $histories[$order['increment_id']] = $order['histories'];
 						}
-
+						
 						$return = $this->paypalorder_m->savePaypalOrder($clientId, $dataCreditCard, $histories);
 						echo "Payapal order for client ".$client['client_code']." between ".$dateFrom." and ".$dateTo." fetched<br>";
 					}else{

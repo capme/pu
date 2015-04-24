@@ -73,7 +73,7 @@ class Paypalorder extends MY_Controller {
         $this->load->view('template', $this->data);
     }
 	
-	/*public function confirm ($id){
+	public function approve ($id){
 			$this->load->library("mageapi");
 			$data = $this->paypalorder_m->getPaypalOrderById($id)->row_array();				
 			$client = $this->client_m->getClientById($data['client_id'])->row_array();
@@ -82,12 +82,12 @@ class Paypalorder extends MY_Controller {
 				"url" => $client['mage_wsdl']
 			);
 			if( $this->mageapi->initSoap($config) ) {
-				$this->mageapi->processOrder($data['order_number']);
+				$this->mageapi->paypalApprove($data['order_number']);
 			}
-			$this->paypalorder_m->setStatusConfirm($id, $data['order_id'],$data['type']);
+			$this->paypalorder_m->setStatusApprove($id, $data['order_id'],$data['type']);
 			redirect('paypalorder');
 	}
-	*/
+	
 	public function cancel ($id){
 		$this->load->library("mageapi");
 		$data = $this->paypalorder_m->getPaypalOrderById($id)->row_array();				

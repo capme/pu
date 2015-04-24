@@ -34,7 +34,9 @@ class Migration_paypalorder extends Base_migration {
             array("name" => "Paypal Order List", "slug" => "paypalorder/paypalOrderList", "hidden" => 1, "status" => 1, "parent" => $parentTags['paypalorder']),
             array("name" => "Paypal Order View", "slug" => "paypalorder/view", "hidden" => 1, "status" => 1, "parent" => $parentTags['paypalorder']),
 			array("name" => "Paypal Order Cancel", "slug" => "paypalorder/cancel", "hidden" => 1, "status" => 1, "parent" => $parentTags['paypalorder']),
-            );
+            array("name" => "Paypal Order Approve", "slug" => "paypalorder/approve", "hidden" => 1, "status" => 1, "parent" => $parentTags['paypalorder']),
+           
+			);
 
         foreach($newModule as $module) {
             $this->db->insert("module", $module);
