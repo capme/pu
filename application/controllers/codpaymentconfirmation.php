@@ -169,7 +169,7 @@ class Codpaymentconfirmation extends MY_Controller {
 			);
 			
 			if( $this->mageapi->initSoap($config) ) {
-				$this->mageapi->setOrderToreceived($data['order_number']);
+				$this->mageapi->setOrderToReceived($data['order_number']);
 			}
 			
 			$result = $this->codpaymentconfirmation_m->Receive($post);
