@@ -61,13 +61,13 @@ class Extractcatalogproduct extends CI_Controller {
 							}
 							
 							try {
-								$this->inbounddocument_m->changeStatusExtract();									
+								//$this->inbounddocument_m->changeStatusExtract();							
 								$realDocNumber = $doc_number; 
 								$doc_number = $id;
 								$return = $this->inbounddocument_m->saveToInboundInventory($client_id, $doc_number, $created_by, $arr_data);								
 								//compose HTML report
 								if(isset($return['problem']) or isset($return['problemskuconfig'])){
-									$this->inbounddocument_m->changeStatusPending();
+									//$this->inbounddocument_m->changeStatusPending();
 									if(isset($return['problem'])){
 										//list problems
 										$client = $this->client_m->getClientById($client_id)->row_array();
@@ -117,7 +117,7 @@ class Extractcatalogproduct extends CI_Controller {
 										$strProblem .= "</tr>";
 										
 										foreach($return['problemskuconfig'] as $keyProblemSkuConfig => $itemProblemSkuConfig){
-											$tmpKeyProblemSkuConfig = explode("-", $keyProblemSkuConfig);
+											$tmpKeyProblemSkuConfig = explode("##", $keyProblemSkuConfig);
 												$itemProductName = $tmpKeyProblemSkuConfig[0];
 												$itemColorName = $tmpKeyProblemSkuConfig[1];
 											

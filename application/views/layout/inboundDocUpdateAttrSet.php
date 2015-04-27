@@ -27,35 +27,49 @@ $clientArr = $this->clientoptions_m->get($client, "attribute_set");
 	<tbody>
 	<?php
 	$num = 4;
-	foreach($rows as $itemRows){
-		$arr = explode(",", $itemRows['sku_description']);
-		$productName = $arr[4];
-		$category = $arr[2];
-		$gender = $arr[1];
-		if(strtoupper($gender) == "F"){
-			$gender = "women";
-		}elseif(strtoupper($gender) == "M"){
-			$gender = "men";
-		}elseif(strtoupper($gender) == "U"){
-			$gender = "unisex";
+	if(!empty($rows)){
+		foreach($rows as $itemRows){
+			$arr = explode(",", $itemRows['sku_description']);
+			$productName = $arr[4];
+			$category = $arr[2];
+			$gender = $arr[1];
+			if(strtoupper($gender) == "F"){
+				$gender = "women";
+			}elseif(strtoupper($gender) == "M"){
+				$gender = "men";
+			}elseif(strtoupper($gender) == "U"){
+				$gender = "unisex";
+			}
+			if(empty($itemRows['attribute_set'])){
+				$bgColor = " bgcolor=\"#FBEFFB\"";
+			}else{
+				$bgColor = "";
+			}
+		?>
+		<tr<?php echo $bgColor;?>>
+			<td><?php echo $itemRows['sku_simple'];?></td>
+			<td><?php echo $productName;?></td>
+			<td><?php echo $gender;?></td>
+			<td><?php echo $category;?></td>
+			<td>
+				<?php echo $this->va_input->getFieldInput($this->va_input->fields[$num]); $num++;?>
+				<?php echo $this->va_input->getFieldInput($this->va_input->fields[$num]); $num++;?>
+			</td>
+		</tr>
+	<?php 
 		}
-		if(empty($itemRows['attribute_set'])){
-			$bgColor = " bgcolor=\"#FBEFFB\"";
-		}else{
-			$bgColor = "";
-		}
+	}else{
 	?>
-	<tr<?php echo $bgColor;?>>
-		<td><?php echo $itemRows['sku_simple'];?></td>
-		<td><?php echo $productName;?></td>
-		<td><?php echo $gender;?></td>
-		<td><?php echo $category;?></td>
-		<td>
-            <?php echo $this->va_input->getFieldInput($this->va_input->fields[$num]); $num++;?>
-            <?php echo $this->va_input->getFieldInput($this->va_input->fields[$num]); $num++;?>
-        </td>
-	</tr>
-	<?php } ?>
+		<tr>
+			<td colspan="5">
+			<?php
+				echo "No necessary set the atribute. Po Type is REPEAT ORDER. Please push button Submit to continue inbounding process.";
+			?>
+			</td>
+		</tr>
+	<?php
+	}
+	?>
 	</tbody>
 	</table>
 </div>
