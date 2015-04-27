@@ -855,7 +855,7 @@ class Listinbounddoc extends MY_Controller {
 			$this->va_excel->getActiveSheet()->mergeCells('I9:I12');
 		$this->va_excel->getActiveSheet()->setCellValue('I9', 'Loc. Bin')->setSharedStyle($styleReport4, "I9")->getColumnDimension('I')->setWidth(25);
 		
-		$result = $this->inbounddocument_m->getInboundInvItem($client, $doc);
+		$result = $this->inbounddocument_m->getInboundInvItem($client, $doc, 'ALL');
 		$lup = 13;
 		
 		foreach($result as $item){
