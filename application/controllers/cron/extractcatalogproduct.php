@@ -117,7 +117,7 @@ class Extractcatalogproduct extends CI_Controller {
 										$strProblem .= "</tr>";
 										
 										foreach($return['problemskuconfig'] as $keyProblemSkuConfig => $itemProblemSkuConfig){
-											$tmpKeyProblemSkuConfig = explode("-", $keyProblemSkuConfig);
+											$tmpKeyProblemSkuConfig = explode("##", $keyProblemSkuConfig);
 												$itemProductName = $tmpKeyProblemSkuConfig[0];
 												$itemColorName = $tmpKeyProblemSkuConfig[1];
 											

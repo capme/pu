@@ -924,16 +924,16 @@ class Inbounddocument_m extends MY_Model {
             	
             	if(empty($tmpArrValSKUConfigDiff)){
             		//first time
-            		$tmpArrValSKUConfigDiff[$sku] = $productname."-".$colorname;
+            		$tmpArrValSKUConfigDiff[$sku] = $productname."##".$colorname;
             		$sqlBeforeLoop = "";
             		$sqlBeforeLoop_2 = "";
             	}else{
             		if(isset($tmpArrValSKUConfigDiff[$sku])){
             			//check if same SKU different variant
-            			if($tmpArrValSKUConfigDiff[$sku] != $productname."-".$colorname){
+            			if($tmpArrValSKUConfigDiff[$sku] != $productname."##".$colorname){
             				//fix data before loop
             					//get data colorname
-            					$tmpGetColor = explode("-", $tmpArrValSKUConfigDiff[$sku]);
+            					$tmpGetColor = explode("##", $tmpArrValSKUConfigDiff[$sku]);
 					
             				$sqlBeforeLoop = "UPDATE ".$this->tableInv."_".$client." SET sku_config='".strtoupper($sku_config).$this->mapColor[strtoupper($tmpGetColor[1])]."' WHERE sku_config='".strtoupper($sku_config)."'";
             				$sqlBeforeLoop_2 = "UPDATE ".$this->tableInv."_".$client." SET sku_simple=REPLACE(sku_simple,'".strtoupper($sku_config)."','".strtoupper($sku_config).$this->mapColor[strtoupper($tmpGetColor[1])]."') where sku_config='".strtoupper($sku_config)."'";
@@ -942,19 +942,19 @@ class Inbounddocument_m extends MY_Model {
             				$sku_config = $sku_config.$this->mapColor[strtoupper($colorname)];
             			}
             		}else{
-            			$tmpArrValSKUConfigDiff[$sku] = $productname."-".$colorname;
+            			$tmpArrValSKUConfigDiff[$sku] = $productname."##".$colorname;
             			$sqlBeforeLoop = "";
             			$sqlBeforeLoop_2 = "";
             		}
             	}
             	
 				//validation for SKU Config (different SKU same variant)
-				if(empty($tmpArrValSKUConfig[$productname."-".$colorname])){
-					$tmpArrValSKUConfig[$productname."-".$colorname][] = $sku;
+				if(empty($tmpArrValSKUConfig[$productname."##".$colorname])){
+					$tmpArrValSKUConfig[$productname."##".$colorname][] = $sku;
 				}else{
-					if(!in_array($sku, $tmpArrValSKUConfig[$productname."-".$colorname])){	
-						$tmpArrValSKUConfig[$productname."-".$colorname][] = $sku;
-                    	$msgRet['problemskuconfig'][$productname."-".$colorname] = $tmpArrValSKUConfig[$productname."-".$colorname];
+					if(!in_array($sku, $tmpArrValSKUConfig[$productname."##".$colorname])){
+						$tmpArrValSKUConfig[$productname."##".$colorname][] = $sku;
+                    	$msgRet['problemskuconfig'][$productname."##".$colorname] = $tmpArrValSKUConfig[$productname."##".$colorname];
 					}
 				}
 
