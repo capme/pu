@@ -1335,7 +1335,7 @@ class Inbounddocument_m extends MY_Model {
 	            <!--Optional:-->
 	            <vias:SKU>".$sku_simple."</vias:SKU>
 	            <!--Optional:-->
-	            <vias:Description>".$item['sku_description']."</vias:Description>
+	            <vias:Description>".htmlspecialchars($item['sku_description'])."</vias:Description>
 	            <!--Optional:-->
 	            <vias:Description2>".$item['sku_config']."</vias:Description2>
 	            <!--vias:CustomerID>XXX</vias:CustomerID-->
