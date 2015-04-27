@@ -48,7 +48,7 @@ class Extractinboundform extends CI_Controller {
 							}
 							
 							try {
-								$this->inbounddocument_m->changeStatusExtract();
+								//$this->inbounddocument_m->changeStatusExtract();
 								$doc_number = $id;
 								$return = $this->inbounddocument_m->saveToInboundInventoryStock($client_id, $doc_number, $created_by, $arr_data, $reference_id);
 								echo "import inbound form for client ".$client_id." doc number ".$doc_number."<br>";
