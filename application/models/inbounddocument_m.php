@@ -779,22 +779,12 @@ class Inbounddocument_m extends MY_Model {
 			if($client == "6"){
 				//internal client
 				//get 2 digit inisial brand
-				$tmp = str_replace(":","",$brandName);
-				$tmp = explode(" ",trim($tmp));
-                if(count($tmp)>1){
-                    $itemBrand = substr($tmp[0], 0, 1).substr($tmp[1], 0, 1);
-                }else{
-                    $itemBrand = substr($tmp[0], 0, 2);
-                }
-                $itemBrand = strtoupper($itemBrand);
 				$itemAttrSet = "";
 				$itemSize = $size;
 				$itemColor = $colorname;
 
-				$upc = $itemAttrSet."|".$itemSize."|".$itemColor."|".$itemBrand;
-                $sku_description = explode(',', $sku_description);
-                $sku_description[0] = $itemBrand;
-                $sku_description = implode(',', $sku_description);
+                $_skuDesc = explode(',', $sku_description);
+				$upc = $itemAttrSet."|".$itemSize."|".$itemColor."|".$_skuDesc[0];
 			}else{
 				//e2e client
 				$itemAttrSet = "";
