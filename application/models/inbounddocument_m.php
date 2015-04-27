@@ -551,6 +551,15 @@ class Inbounddocument_m extends MY_Model {
 		$sizeRowX = count($arr_data); 
 		$sizeRowY = count($arr_data[1]);
 		$brandName = trim(str_replace(":", "", $arr_data[8]['C']));
+        //check if the string contain '=' which refer to another cell value
+        if (substr($brandName, 0, 1) == "=") {
+            //remove except alphabet
+            $brandName_string = preg_replace("/[^A-Z]+/", "", $brandName);
+            //remove except numeric
+            $brandName_int = preg_replace('/[^0-9.]+/', '', $brandName);
+            //get the value from another cell
+            $brandName = $arr_data[$brandName_int][$brandName_string];
+        }
         $brandInitial = $this->clientoptions_m->get( $client, 'brand_initial' );
         $iBrand = strtoupper($brandInitial['option_value']);
         $this->db->trans_begin();
