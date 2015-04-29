@@ -24,6 +24,7 @@ class Invsync_m extends MY_Model {
         if(!empty($insert)) {
             $this->db->insert_batch($tableName, $insert);
         }
+	$this->db->trans_complete();
     }
 
     public function findBySku($sku, $clientId) {
