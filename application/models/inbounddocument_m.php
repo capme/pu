@@ -557,6 +557,15 @@ class Inbounddocument_m extends MY_Model {
 		$sizeRowX = count($arr_data); 
 		$sizeRowY = count($arr_data[1]);
 		$brandName = trim(str_replace(":", "", $arr_data[8]['C']));
+        //check if the string contain '=' which refer to another cell value
+        if (substr($brandName, 0, 1) == "=") {
+            //remove except alphabet
+            $brandName_string = preg_replace("/[^A-Z]+/", "", $brandName);
+            //remove except numeric
+            $brandName_int = preg_replace('/[^0-9.]+/', '', $brandName);
+            //get the value from another cell
+            $brandName = $arr_data[$brandName_int][$brandName_string];
+        }
         $brandInitial = $this->clientoptions_m->get( $client, 'brand_initial' );
         $iBrand = strtoupper($brandInitial['option_value']);
         $this->db->trans_begin();
@@ -785,22 +794,12 @@ class Inbounddocument_m extends MY_Model {
 			if($client == "6"){
 				//internal client
 				//get 2 digit inisial brand
-				$tmp = str_replace(":","",$brandName);
-				$tmp = explode(" ",trim($tmp));
-                if(count($tmp)>1){
-                    $itemBrand = substr($tmp[0], 0, 1).substr($tmp[1], 0, 1);
-                }else{
-                    $itemBrand = substr($tmp[0], 0, 2);
-                }
-                $itemBrand = strtoupper($itemBrand);
 				$itemAttrSet = "";
 				$itemSize = $size;
 				$itemColor = $colorname;
 
-				$upc = $itemAttrSet."|".$itemSize."|".$itemColor."|".$itemBrand;
-                $sku_description = explode(',', $sku_description);
-                $sku_description[0] = $itemBrand;
-                $sku_description = implode(',', $sku_description);
+                $_skuDesc = explode(',', $sku_description);
+				$upc = $itemAttrSet."|".$itemSize."|".$itemColor."|".$_skuDesc[0];
 			}else{
 				//e2e client
 				$itemAttrSet = "";
@@ -931,16 +930,16 @@ class Inbounddocument_m extends MY_Model {
             	
             	if(empty($tmpArrValSKUConfigDiff)){
             		//first time
-            		$tmpArrValSKUConfigDiff[$sku] = $productname."-".$colorname;
+            		$tmpArrValSKUConfigDiff[$sku] = $productname."##".$colorname;
             		$sqlBeforeLoop = "";
             		$sqlBeforeLoop_2 = "";
             	}else{
             		if(isset($tmpArrValSKUConfigDiff[$sku])){
             			//check if same SKU different variant
-            			if($tmpArrValSKUConfigDiff[$sku] != $productname."-".$colorname){
+            			if($tmpArrValSKUConfigDiff[$sku] != $productname."##".$colorname){
             				//fix data before loop
             					//get data colorname
-            					$tmpGetColor = explode("-", $tmpArrValSKUConfigDiff[$sku]);
+            					$tmpGetColor = explode("##", $tmpArrValSKUConfigDiff[$sku]);
 					
             				$sqlBeforeLoop = "UPDATE ".$this->tableInv."_".$client." SET sku_config='".strtoupper($sku_config).$this->mapColor[strtoupper($tmpGetColor[1])]."' WHERE sku_config='".strtoupper($sku_config)."'";
             				$sqlBeforeLoop_2 = "UPDATE ".$this->tableInv."_".$client." SET sku_simple=REPLACE(sku_simple,'".strtoupper($sku_config)."','".strtoupper($sku_config).$this->mapColor[strtoupper($tmpGetColor[1])]."') where sku_config='".strtoupper($sku_config)."'";
@@ -949,19 +948,19 @@ class Inbounddocument_m extends MY_Model {
             				$sku_config = $sku_config.$this->mapColor[strtoupper($colorname)];
             			}
             		}else{
-            			$tmpArrValSKUConfigDiff[$sku] = $productname."-".$colorname;
+            			$tmpArrValSKUConfigDiff[$sku] = $productname."##".$colorname;
             			$sqlBeforeLoop = "";
             			$sqlBeforeLoop_2 = "";
             		}
             	}
             	
 				//validation for SKU Config (different SKU same variant)
-				if(empty($tmpArrValSKUConfig[$productname."-".$colorname])){
-					$tmpArrValSKUConfig[$productname."-".$colorname][] = $sku;
+				if(empty($tmpArrValSKUConfig[$productname."##".$colorname])){
+					$tmpArrValSKUConfig[$productname."##".$colorname][] = $sku;
 				}else{
-					if(!in_array($sku, $tmpArrValSKUConfig[$productname."-".$colorname])){	
-						$tmpArrValSKUConfig[$productname."-".$colorname][] = $sku;
-                    	$msgRet['problemskuconfig'][$productname."-".$colorname] = $tmpArrValSKUConfig[$productname."-".$colorname];
+					if(!in_array($sku, $tmpArrValSKUConfig[$productname."##".$colorname])){
+						$tmpArrValSKUConfig[$productname."##".$colorname][] = $sku;
+                    	$msgRet['problemskuconfig'][$productname."##".$colorname] = $tmpArrValSKUConfig[$productname."##".$colorname];
 					}
 				}
 
@@ -1351,7 +1350,7 @@ class Inbounddocument_m extends MY_Model {
 	            <!--Optional:-->
 	            <vias:SKU>".$sku_simple."</vias:SKU>
 	            <!--Optional:-->
-	            <vias:Description>".$item['sku_description']."</vias:Description>
+	            <vias:Description>".htmlspecialchars($item['sku_description'])."</vias:Description>
 	            <!--Optional:-->
 	            <vias:Description2>".$item['sku_config']."</vias:Description2>
 	            <!--vias:CustomerID>XXX</vias:CustomerID-->
@@ -1421,16 +1420,22 @@ class Inbounddocument_m extends MY_Model {
 		}
 		$this->db->trans_complete();
 	}
-	public function changeStatusExtract(){
-		$this->db = $this->load->database('mysql', TRUE);						
+	public function changeStatusExtract($doc_number, $type){
+		$this->db = $this->load->database('mysql', TRUE);
+		$this->db->where('id',$doc_number);
+		$this->db->where('type', $type);
 		$this->db->update('inb_document',array('status'=>9));
 	}
-	public function changeStatusPending(){
-		$this->db = $this->load->database('mysql', TRUE);						
+	public function changeStatusPending($doc_number, $type){
+		$this->db = $this->load->database('mysql', TRUE);
+		$this->db->where('id',$doc_number);
+		$this->db->where('type', $type);
 		$this->db->update('inb_document',array('status'=>0));
 	}
-	public function changeStatusFormInbounding(){
-		$this->db = $this->load->database('mysql', TRUE);						
+	public function changeStatusFormInbounding($doc_number, $type){
+		$this->db = $this->load->database('mysql', TRUE);
+		$this->db->where('id',$doc_number);
+		$this->db->where('type',$type);
 		$this->db->update('inb_document',array('status'=>2));
 	}
 	
