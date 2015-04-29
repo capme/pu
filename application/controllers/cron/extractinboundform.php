@@ -35,7 +35,15 @@ class Extractinboundform extends CI_Controller {
 						$reference_id = $rows['reference_id'];
 						
 						if($status == "0"){
-							$objPHPExcel = PHPExcel_IOFactory::load($path_file."/".$filename);
+                            try {
+                                $objPHPExcel = PHPExcel_IOFactory::load($path_file."/".$filename);
+                            } catch (Exception $e) {
+                                // Use PCLZip rather than ZipArchive to read the Excel2007 OfficeOpenXML file
+                                PHPExcel_Settings::setZipClass(PHPExcel_Settings::PCLZIP);
+                                $objReader = PHPExcel_IOFactory::createReader('Excel2007');
+                                $objReader->setReadDataOnly(true);
+                                $objPHPExcel = $objReader->load($path_file."/".$filename);
+                            }
 							
 							$cell_collection = $objPHPExcel->getActiveSheet()->getCellCollection();
 							

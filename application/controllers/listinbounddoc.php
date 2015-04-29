@@ -402,7 +402,8 @@ class Listinbounddoc extends MY_Controller {
 				if ( ! $this->upload->do_upload()) {			
 					return null;
 				}else{
-					$listFileName[$arrItemId[$i]] = $config['file_name'].".xls"; 
+                    $ext = explode(".", $files['userfile']['name'][$i]);
+					$listFileName[$arrItemId[$i]] = $config['file_name'].'.'.end($ext);
 				}	
 			}
 			return $listFileName;
