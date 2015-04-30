@@ -6,16 +6,17 @@ counter=0;
 	le = ((length -1)/2)-1;	
 	count = le+1;
 	counterNext = counter + 1;
-    document.getElementById("key"+counter).innerHTML = "<p><input id='key'  placeholder='Input Brand Name' style='width:80%' class='form-control' type='text' name='brandcode[key]["+count+"]'><div id=\"key"+counterNext+"\"></div></p>";
-	document.getElementById("brands"+counter).innerHTML = "<p><input  id ='brands' placeholder='Input Brand Name' style='width:80%' class='form-control' type='text' name='brandcode[brands]["+count+"]'><div id=\"brands"+counterNext+"\"></div></p>";
+    document.getElementById("key"+counter).innerHTML = "<p><input id='key'  placeholder='Input Brand Name' style='width:80%' class='form-control' type='text' name='brandcode[key]["+count+"]' required><div id=\"key"+counterNext+"\"></div></p>";
+	document.getElementById("brands"+counter).innerHTML = "<p><input  id ='brands' placeholder='Input Brand Name' style='width:80%' class='form-control' type='text' name='brandcode[brands]["+count+"]' required><div id=\"brands"+counterNext+"\"></div></p>";
 	counter++;
-}	
+	}
+i=0;	
 function removekey(){	
 	$('#key').remove();
 	$('#brands').remove();
     i--;
 	}
-		
+	
 var FormValidation = function () {
 
     var apiFormValidate = function() {
@@ -37,8 +38,7 @@ var FormValidation = function () {
                     "client[client_code]": {
                         minlength: 5,
                         required: true
-                    },
-               
+                    }
                 },
 
                 invalidHandler: function (event, validator) { //display error alert on form submit              

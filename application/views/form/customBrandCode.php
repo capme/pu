@@ -15,8 +15,8 @@ for($a=0; $a < count($brand);$a++){
 $brands=array_values($brand);
 $key=array_keys($brand);
 ?>	<tr> 	
-	<td><input class="form-control" type="text" value="<?php echo $key[$a];?>" name="brandcode[key][<?php echo $a?>]" style="width:80%"></td>
-    <td><input class="form-control" type="text" value="<?php echo $brands[$a]?>" name="brandcode[brands][<?php echo $a ?>]" style="width:80%"></td>	
+	<td><input class="form-control" type="text" value="<?php echo $key[$a];?>" name="brandcode[key][<?php echo $a?>]" style="width:80%" required></td>
+    <td><input class="form-control" type="text" value="<?php echo $brands[$a]?>" name="brandcode[brands][<?php echo $a ?>]" style="width:80%" required></td>	
 	<td><input type="checkbox" name="brandcode[cek][<?php echo $a?>]" value="<?php echo $brands[$a]?>"></td>
 	</tr>	
 <?php
