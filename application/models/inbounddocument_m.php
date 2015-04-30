@@ -49,10 +49,16 @@ class Inbounddocument_m extends MY_Model {
 		$this->filters = array("client_id"=>"client_id");
 	}
 	
-	function getInboundInvItem($client, $doc){
+	function getInboundInvItem($client, $doc, $po_type=null){
 		if(!$client) return array();
+		if(is_null($po_type)) $po_type = 'NEW';
+		if($po_type == 'ALL') $po_type = '';
 		$mysql = $this->load->database('mysql', TRUE);
-		$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc, 'po_type'=>'NEW'));
+		if($po_type != ''){
+			$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc, 'po_type'=>$po_type));
+		}else{
+			$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc));
+		}
 		$rows = $query->result_array();
 		return $rows;
 	}
@@ -551,6 +557,15 @@ class Inbounddocument_m extends MY_Model {
 		$sizeRowX = count($arr_data); 
 		$sizeRowY = count($arr_data[1]);
 		$brandName = trim(str_replace(":", "", $arr_data[8]['C']));
+        //check if the string contain '=' which refer to another cell value
+        if (substr($brandName, 0, 1) == "=") {
+            //remove except alphabet
+            $brandName_string = preg_replace("/[^A-Z]+/", "", $brandName);
+            //remove except numeric
+            $brandName_int = preg_replace('/[^0-9.]+/', '', $brandName);
+            //get the value from another cell
+            $brandName = $arr_data[$brandName_int][$brandName_string];
+        }
         $brandInitial = $this->clientoptions_m->get( $client, 'brand_initial' );
         $iBrand = strtoupper($brandInitial['option_value']);
         $this->db->trans_begin();
@@ -692,25 +707,12 @@ class Inbounddocument_m extends MY_Model {
 				//sku not exist
 				//get 2 digit inisial brand
 				//get 3 digit inisial product name
-				$tmp = explode(" ",$productname);
-				if(isset($tmp[1])){
-					//more than 1 word
-					$inProdName = substr($tmp[0],0,2).susbtr($tmp[1],0,1);	
-				}else{
-					//only 1 word
-					$inProdName = substr($productname,0,3);
-				}
+				$tmp = str_replace(' ', '', $productname);
+				$inProdName = substr($tmp,0,3);
 				//get 2 digit inisial color
-				$tmp = explode(" ",$colorname);
-				if(isset($tmp[1])){
-					//more than 1 word
-					$inWarna = substr($tmp[0],0,1).susbtr($tmp[1],0,1);	
-				}else{
-					//only 1 word
-					$inWarna = substr($colorname,0,2);
-				}
+				$inWarna = $this->mapColor[strtoupper($colorname)];
 				//compose the sku config
-				$sku_config = $iBrand."-".$inProdName." ".$inWarna;
+				$sku_config = strtoupper($iBrand."-".$inProdName."-".$inWarna);
 			}else{
 				//sku exist
 				//compose the sku config
@@ -779,22 +781,12 @@ class Inbounddocument_m extends MY_Model {
 			if($client == "6"){
 				//internal client
 				//get 2 digit inisial brand
-				$tmp = str_replace(":","",$brandName);
-				$tmp = explode(" ",trim($tmp));
-                if(count($tmp)>1){
-                    $itemBrand = substr($tmp[0], 0, 1).substr($tmp[1], 0, 1);
-                }else{
-                    $itemBrand = substr($tmp[0], 0, 2);
-                }
-                $itemBrand = strtoupper($itemBrand);
 				$itemAttrSet = "";
 				$itemSize = $size;
 				$itemColor = $colorname;
 
-				$upc = $itemAttrSet."|".$itemSize."|".$itemColor."|".$itemBrand;
-                $sku_description = explode(',', $sku_description);
-                $sku_description[0] = $itemBrand;
-                $sku_description = implode(',', $sku_description);
+                $_skuDesc = explode(',', $sku_description);
+				$upc = $itemAttrSet."|".$itemSize."|".$itemColor."|".$_skuDesc[0];
 			}else{
 				//e2e client
 				$itemAttrSet = "";
@@ -925,16 +917,16 @@ class Inbounddocument_m extends MY_Model {
             	
             	if(empty($tmpArrValSKUConfigDiff)){
             		//first time
-            		$tmpArrValSKUConfigDiff[$sku] = $productname."-".$colorname;
+            		$tmpArrValSKUConfigDiff[$sku_config] = $productname."##".$colorname;
             		$sqlBeforeLoop = "";
             		$sqlBeforeLoop_2 = "";
             	}else{
-            		if(isset($tmpArrValSKUConfigDiff[$sku])){
+            		if(isset($tmpArrValSKUConfigDiff[$sku_config])){
             			//check if same SKU different variant
-            			if($tmpArrValSKUConfigDiff[$sku] != $productname."-".$colorname){
+            			if($tmpArrValSKUConfigDiff[$sku_config] != $productname."##".$colorname){
             				//fix data before loop
             					//get data colorname
-            					$tmpGetColor = explode("-", $tmpArrValSKUConfigDiff[$sku]);
+            					$tmpGetColor = explode("##", $tmpArrValSKUConfigDiff[$sku_config]);
 					
             				$sqlBeforeLoop = "UPDATE ".$this->tableInv."_".$client." SET sku_config='".strtoupper($sku_config).$this->mapColor[strtoupper($tmpGetColor[1])]."' WHERE sku_config='".strtoupper($sku_config)."'";
             				$sqlBeforeLoop_2 = "UPDATE ".$this->tableInv."_".$client." SET sku_simple=REPLACE(sku_simple,'".strtoupper($sku_config)."','".strtoupper($sku_config).$this->mapColor[strtoupper($tmpGetColor[1])]."') where sku_config='".strtoupper($sku_config)."'";
@@ -943,19 +935,19 @@ class Inbounddocument_m extends MY_Model {
             				$sku_config = $sku_config.$this->mapColor[strtoupper($colorname)];
             			}
             		}else{
-            			$tmpArrValSKUConfigDiff[$sku] = $productname."-".$colorname;
+            			$tmpArrValSKUConfigDiff[$sku_config] = $productname."##".$colorname;
             			$sqlBeforeLoop = "";
             			$sqlBeforeLoop_2 = "";
             		}
             	}
             	
 				//validation for SKU Config (different SKU same variant)
-				if(empty($tmpArrValSKUConfig[$productname."-".$colorname])){
-					$tmpArrValSKUConfig[$productname."-".$colorname][] = $sku;
+				if(empty($tmpArrValSKUConfig[$productname."##".$colorname])){
+					$tmpArrValSKUConfig[$productname."##".$colorname][] = $sku_config;
 				}else{
-					if(!in_array($sku, $tmpArrValSKUConfig[$productname."-".$colorname])){	
-						$tmpArrValSKUConfig[$productname."-".$colorname][] = $sku;
-                    	$msgRet['problemskuconfig'][$productname."-".$colorname] = $tmpArrValSKUConfig[$productname."-".$colorname];
+					if(!in_array($sku_config, $tmpArrValSKUConfig[$productname."##".$colorname])){
+						$tmpArrValSKUConfig[$productname."##".$colorname][] = $sku_config;
+                    	$msgRet['problemskuconfig'][$productname."##".$colorname] = $tmpArrValSKUConfig[$productname."##".$colorname];
 					}
 				}
 
@@ -1345,7 +1337,7 @@ class Inbounddocument_m extends MY_Model {
 	            <!--Optional:-->
 	            <vias:SKU>".$sku_simple."</vias:SKU>
 	            <!--Optional:-->
-	            <vias:Description>".$item['sku_description']."</vias:Description>
+	            <vias:Description>".htmlspecialchars($item['sku_description'])."</vias:Description>
 	            <!--Optional:-->
 	            <vias:Description2>".$item['sku_config']."</vias:Description2>
 	            <!--vias:CustomerID>XXX</vias:CustomerID-->
