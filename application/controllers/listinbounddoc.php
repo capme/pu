@@ -276,7 +276,16 @@ class Listinbounddoc extends MY_Controller {
 	private function _parseFile($itemFilename, $doc_number, $client_id){
 		$path_file = $this->inbounddocument_m->path;
 
-		$objPHPExcel = PHPExcel_IOFactory::load($path_file."/tmp_".$itemFilename."_".$doc_number.".xls");
+        try {
+            $objPHPExcel = PHPExcel_IOFactory::load($path_file."/tmp_".$itemFilename."_".$doc_number.".xls");
+        } catch (Exception $e) {
+            // Use PCLZip rather than ZipArchive to read the Excel2007 OfficeOpenXML file
+            PHPExcel_Settings::setZipClass(PHPExcel_Settings::PCLZIP);
+            $objReader = PHPExcel_IOFactory::createReader('Excel2007');
+            $objReader->setReadDataOnly(true);
+            $objPHPExcel = $objReader->load($path_file."/tmp_".$itemFilename."_".$doc_number.".xlsx");
+        }
+
 					
 		$cell_collection = $objPHPExcel->getActiveSheet()->getCellCollection();
 					
@@ -395,7 +404,8 @@ class Listinbounddoc extends MY_Controller {
 				if ( ! $this->upload->do_upload()) {			
 					return null;
 				}else{
-					$listFileName[$arrItemId[$i]] = $config['file_name'].".xls"; 
+                    $ext = explode(".", $files['userfile']['name'][$i]);
+					$listFileName[$arrItemId[$i]] = $config['file_name'].'.'.end($ext);
 				}	
 			}
 			return $listFileName;

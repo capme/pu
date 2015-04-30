@@ -1,4 +1,21 @@
 <script>
+counter=0;
+  function action()
+  {
+	length =$('.form-control').length;
+	le = ((length -1)/2)-1;	
+	count = le+1;
+	counterNext = counter + 1;
+    document.getElementById("key"+counter).innerHTML = "<p><input id='key'  placeholder='Input Brand Name' style='width:80%' class='form-control' type='text' name='brandcode[key]["+count+"]'><div id=\"key"+counterNext+"\"></div></p>";
+	document.getElementById("brands"+counter).innerHTML = "<p><input  id ='brands' placeholder='Input Brand Name' style='width:80%' class='form-control' type='text' name='brandcode[brands]["+count+"]'><div id=\"brands"+counterNext+"\"></div></p>";
+	counter++;
+}	
+function removekey(){	
+	$('#key').remove();
+	$('#brands').remove();
+    i--;
+	}
+		
 var FormValidation = function () {
 
     var apiFormValidate = function() {
