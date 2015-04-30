@@ -57,7 +57,7 @@ class Inbounddocument_m extends MY_Model {
 		if($po_type != ''){
 			$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc, 'po_type'=>$po_type));
 		}else{
-			$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc));
+			$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc)); 
 		}
 		$rows = $query->result_array();
 		return $rows;
@@ -146,9 +146,21 @@ class Inbounddocument_m extends MY_Model {
 						$btnAction .= '<hr /><a href="'.base_url().'listinbounddoc/importItem3PL?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-export" ></i> Import Item to 3PL</a>';
 					}
 					$btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/downloadReceivingForm?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Receiving Form</a>';
-                    //$btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/importItemMage?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-export" ></i> Import Item to MAGE</a>';
-									}
-				if($_result->status == 1 or $_result->status == 2 or $_result->status == 3){
+                }elseif($_result->status == 4){
+                    $btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->id.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
+                    $btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/exportFormItemImport?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Form Import</a>';
+                    $btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/downloadInboundForm?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Inbound Form</a>';
+                    //check if any visible PO_TYPE = NEW
+                    $sql = "SELECT po_type FROM `inb_inventory_item_".$_result->client_id."` WHERE UPPER(po_type) = 'NEW'";
+                    $query = $this->db->query($sql);
+                    $num = $query->num_rows();
+                    if($num > 0){
+                        $btnAction .= '<hr /><a href="'.base_url().'listinbounddoc/importItem3PL?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-export" ></i> Import Item to 3PL</a>';
+                    }
+                    $btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/downloadReceivingForm?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Receiving Form</a>';
+                    $btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/importItemMage?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-export" ></i> Import Item to MAGE</a>';
+                }
+				if($_result->status == 1 or $_result->status == 2 or $_result->status == 3 or $_result->status == 4){
 					$records["aaData"][] = array(
 							'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
 							$no=$no+1,
@@ -1191,79 +1203,42 @@ class Inbounddocument_m extends MY_Model {
 		return TRUE;
 	}
 
-	public function getParamInboundMage($client, $doc){
-		$param = array();
-		
-		//get data from table inb_inventory_item_<client_id>
-		$result = $this->getInboundInvItem($client, $doc);
-		foreach($result as $item){
-			$sku = $item['sku_simple'];
-			$set = $item['attribute_set'];
-			$type = "simple";
-			/*
-			 * 'simple' : Simple Product 
-			 * 'grouped' : Grouped Product
-			 * 'configurable' : Configurable Product
-			 * 'virtual' : Virtual Product
-			 * 'bundle' : Bundle Product
-			 */
-			
-			$categories = array();
-			$websites = array();
-				$sku_description =  explode(",",$item['sku_description']);
-			$name = $sku_description[4];
-			$description = $name." description";
-			$short_description = $name." short description";
-			$weight = $item['weiight'];
-			$status = "1";
-			/*
-			 1 : enabled
-			 2 : disabled
-			 */
-			$url_key = "";
-			$url_path = "";
-			$visibility = "1"; 
-				/*
-				1 : Not Visible Individualy
-				2 : Catalog
-				3 : Search
-				4 : Catalog, Search
-				*/
-			$category_ids = array();
-			$website_ids = array(1);
-			$gift_message_available = "";
-			$price = $item['price'];
-			$tax_class_id = "";
-			$meta_title = "";
-			$meta_keyword = "";
-			$meta_description = "";
-			$qty = $item['total_qty'];
-			
-			$param[] = array($type, $set, $sku, array(
-			    'categories' => $categories,
-			    'websites' => $websites,
-			    'name' => $name,
-			    'description' => $description,
-			    'short_description' => $short_description,
-			    'weight' => $weight,
-			    'status' => $status,
-			    'url_key' => $url_key,
-			    'url_path' => $url_path,
-			    'visibility' => $visibility,
-			    'price' => $price,
-			    'tax_class_id' => $tax_class_id,
-			    'meta_title' => $meta_title,
-			    'meta_keyword' => $meta_keyword,
-			    'meta_description' => $meta_description,
-			    'stock_data' => array(
-			    					'qty' => $qty
-								)
-			));			
-			
-		}
+    public function getParamInboundMage($client, $doc){
+        $param = array();
 
-		return $param;
-	}
+        //get data from table inb_inventory_item_<client_id>
+        $result = $this->getInboundInvItem($client, $doc);
+        foreach($result as $item) {
+            $sku_config = $item['sku_config'];
+            $sku_simple = $item['sku_simple'];
+            $sku_description = $item['sku_description'];
+            $weight = $item['weiight'];
+            $cost = $item['cost'];
+            $upc = explode("|",$item['upc']);
+                $attribute_set = $upc[0];
+                $size = $upc[1];
+                $color = $upc[2];
+            $price = $item['price'];
+            $qty = $item['total_qty'];
+            $attribute_set_id = $item['attribute_set'];
+
+            $param[] = array(
+                            "sku_config" => $sku_config,
+                            "sku_simple" => $sku_simple,
+                            "sku_description" => $sku_description,
+                            "weight" => $weight,
+                            "cost" => $cost,
+                            "attribute_set" => $attribute_set,
+                            "size" => $size,
+                            "color" => $color,
+                            "price" => $price,
+                            "qty" => $qty,
+                            "attribute_set_id" => $attribute_set_id
+                        );
+
+        }
+        return $param;
+    }
 
 	public function getParamInbound3PL($client, $doc){
 		$param = array();

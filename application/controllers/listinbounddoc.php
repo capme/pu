@@ -4,6 +4,8 @@
  * Class Listinbounddoc
  * @property Inbounddocument_m $inbounddocument_m
  * @property Clientoptions_m $clientoptions_m
+ * @property Inbound_threepl $inbound_threepl
+ * @property Mageapi $mageapi
  */
 class Listinbounddoc extends MY_Controller {
 	const TAG = "[Inbound import]";
@@ -865,7 +867,7 @@ class Listinbounddoc extends MY_Controller {
 			$this->va_excel->getActiveSheet()->mergeCells('I9:I12');
 		$this->va_excel->getActiveSheet()->setCellValue('I9', 'Loc. Bin')->setSharedStyle($styleReport4, "I9")->getColumnDimension('I')->setWidth(25);
 		
-		$result = $this->inbounddocument_m->getInboundInvItem($client, $doc, 'ALL');
+		$result = $this->inbounddocument_m->getInboundInvItem($client, $doc, 'ALL'); 
 		$lup = 13;
 		
 		foreach($result as $item){
@@ -1035,7 +1037,9 @@ class Listinbounddoc extends MY_Controller {
 		$returnMsgItem = $this->inbounddocument_m->getParamInbound3PL($_GET['client'], $doc);
 		$return = $this->inbound_threepl->createItems($returnMsgItem);
 				if(is_array($return)){
-					redirect("listinbounddoc");
+                    //update status inbound ready for import to mage
+                    $this->inbounddocument_m->updateStatusInboundDocumentList($doc,4);
+                    redirect("listinbounddoc");
 				}else{
 					echo "Something wrong when calling 3PL. See the log file.<input type='button' value='Back' onclick='window.history.back()'>";
 				}
@@ -1067,15 +1071,19 @@ class Listinbounddoc extends MY_Controller {
 				$return = $this->mageapi->inboundCreateItem($param);
 				if(is_array($return)){
 					$flagError = false;
+                    $strError = "";
 					foreach($return as $itemReturn){
-						if(isset($itemReturn['isFault'])){
-							$flagError = true;
+						if(isset($itemReturn['status']) and $itemReturn['status']=="failed"){
+                            $flagError = true;
+                            foreach($itemReturn['msg'] as $itemMsg){
+                                $strError .= $itemMsg."<br>";
+                            }
 						}
 					}
 					if(!$flagError){
 						redirect("listinbounddoc");
 					}else{
-						echo "Something wrong when calling Mage. See the log file.<input type='button' value='Back' onclick='window.history.back()'>";
+						echo "Something wrong when calling Mage.<br> ".$strError."<input type='button' value='Back' onclick='window.history.back()'>";
 					}
 				}else{
 					echo "Something wrong when calling Mage. See the log file.<input type='button' value='Back' onclick='window.history.back()'>";

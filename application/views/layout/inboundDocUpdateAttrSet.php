@@ -46,7 +46,7 @@ $clientArr = $this->clientoptions_m->get($client, "attribute_set");
 				$bgColor = "";
 			}
 		?>
-		<tr<?php echo $bgColor;?>>
+		<tr<?php echo $bgColor;?>> 
 			<td><?php echo $itemRows['sku_simple'];?></td>
 			<td><?php echo $productName;?></td>
 			<td><?php echo $gender;?></td>
