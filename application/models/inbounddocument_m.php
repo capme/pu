@@ -47,8 +47,12 @@ class Inbounddocument_m extends MY_Model {
 		);
 		
 		$this->select = array("{$this->table}.doc_number", "{$this->table}.client_id", "{$this->table}.note", "{$this->table}.type", "{$this->table}.status", "{$this->table}.created_at", "{$this->table}.updated_at", "{$this->table}.created_by", "{$this->table}.filename", "{$this->table}.id", "{$this->tableClient}.client_code");
-		$this->filters = array("client_id"=>"client_id");
+		$this->filters = array("client_id"=>"client_id","status"=>"status");
 	}
+
+    public function getMapColor() {
+        return $this->mapColor;
+    }
 	
 	function getInboundInvItem($client, $doc, $po_type=null){
 		if(!$client) return array();
@@ -56,9 +60,11 @@ class Inbounddocument_m extends MY_Model {
 		if($po_type == 'ALL') $po_type = '';
 		$mysql = $this->load->database('mysql', TRUE);
 		if($po_type != ''){
-			$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc, 'po_type'=>$po_type));
-		}else{
-			$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc)); 
+            //$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc, 'po_type'=>$po_type));
+            //for temporary, remove filter po type = NEW
+            $query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc));
+        }else{
+			$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc));
 		}
 		$rows = $query->result_array();
 		return $rows;
@@ -113,10 +119,14 @@ class Inbounddocument_m extends MY_Model {
 		$records["aaData"] = array();
 	
 		$statList= array(
-				0 =>array("New Uploaded Document", "warning"),
-				1 =>array("Imported", "success"),
-				
-		);
+            0 =>array("Pending", "info"),
+            1 => array("Configure Attribute-Set","success"),
+            2 => array("Form Inbounding","primary"),
+			3 => array("Ready to Import 3PL","default"),
+            4 => array("Ready to Import Mage","warning"),
+			9 => array("Extracting","danger"),
+			99=> array("Invalid", "danger")
+        );
 		
 		$end = $iDisplayStart + $iDisplayLength;
 		$end = $end > $iTotalRecords ? $iTotalRecords : $end;
@@ -125,6 +135,7 @@ class Inbounddocument_m extends MY_Model {
 		$no=0;
 		
 		foreach($_row->result() as $_result) {
+		$status=$statList[$_result->status];
 			$btnAction = "";
 			if($_result->type == 1){
 				if($_result->status == 1){
@@ -167,6 +178,7 @@ class Inbounddocument_m extends MY_Model {
 							$no=$no+1,
 							$_result->client_code,
 							$_result->doc_number,
+							'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
 							$_result->note,
 							$btnAction
 							
@@ -1411,11 +1423,11 @@ class Inbounddocument_m extends MY_Model {
 		$this->db->where('type', $type);
 		$this->db->update('inb_document',array('status'=>9));
 	}
-	public function changeStatusPending($doc_number, $type){
+	public function changeStatusInvalid($doc_number, $type){
 		$this->db = $this->load->database('mysql', TRUE);
 		$this->db->where('id',$doc_number);
 		$this->db->where('type', $type);
-		$this->db->update('inb_document',array('status'=>0));
+		$this->db->update('inb_document',array('status'=>99));
 	}
 	public function changeStatusFormInbounding($doc_number, $type){
 		$this->db = $this->load->database('mysql', TRUE);

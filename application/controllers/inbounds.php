@@ -30,7 +30,7 @@ class Inbounds extends MY_Controller {
 		
 		$this->va_list->setInputFilter(2, array("name" => $this->inbound_m->filters['doc_number']))
 			->setDropdownFilter(1, array("name" => $this->inbound_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
-	
+		$this->va_list->setDropdownFilter(4, array("name" => $this->inbound_m->filters['status'], "option" => $this->getStatus()));	
 		
 		$this->data['script'] = $this->load->view("script/Inbound_list", array("ajaxSource" => site_url("inbounds/InboundList")), true);	
 		$this->load->view("template", $this->data);
@@ -314,5 +314,8 @@ class Inbounds extends MY_Controller {
         return $msg;
 	}
 	
+	private function getStatus() {
+		return array(-1=>"Select Status",0=>"Pending",1 => "Configure Attribute-Set",2 => "Form Inbounding", 3=>"Ready to Import 3PL",4 =>"Ready to Import Mage",9=>"Extracting",99 =>"Invalid" );
+	}
 }
 ?>

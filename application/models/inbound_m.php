@@ -18,7 +18,7 @@ class Inbound_m extends MY_Model {
 		);
 		
 		$this->select = array("{$this->table}.*", "{$this->tableClient}.client_code");
-		$this->filters = array("doc_number"=>"doc_number","client_id"=>"client_id");
+		$this->filters = array("doc_number"=>"doc_number","client_id"=>"client_id","status"=>"status");
 	}
 	
 	public function getInboundList()
@@ -44,7 +44,8 @@ class Inbound_m extends MY_Model {
             2 => array("Form Inbounding","primary"),
 			3 => array("Ready to Import 3PL","default"),
             4 => array("Ready to Import Mage","warning"),
-			9 => array("Extracting","danger")
+			9 => array("Extracting","danger"),
+			99=> array("Invalid", "danger")
         );
 		
 		$no=0;

@@ -29,14 +29,16 @@ class Listinbounddoc extends MY_Controller {
 		$this->load->library("va_list");
 		$this->va_list->setListName("Inbound Document Listing")->disableAddPlugin()
 			->setMassAction(array("0" => "Revise", "1" => "Upload Inbound Form"))
-			->setHeadingTitle(array("No #", "Client Name","DO Number","Note"))
-			->setHeadingWidth(array(2, 2,2,3,2));
+			->setHeadingTitle(array("No #", "Client Name","DO Number","Status","Note"))
+			->setHeadingWidth(array(2, 2,2,3,2,2));
 		$this->va_list->setDropdownFilter(1, array("name" => $this->inbounddocument_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));
-		
+		$this->va_list->setDropdownFilter(3, array("name" => $this->inbounddocument_m->filters['status'], "option" => $this->getStatus()));	
 		$this->data['script'] = $this->load->view("script/inbounddocument_list", array("ajaxSource" => site_url("listinbounddoc/inboundDocList")), true);	
 		$this->load->view("template", $this->data);
 	}
-	
+	private function getStatus() {
+		return array(-1=>"Select Status",0=>"Pending",1 => "Configure Attribute-Set",2 => "Form Inbounding", 3=>"Ready to Import 3PL",4 =>"Ready to Import Mage",9=>"Extracting",99 =>"Invalid" );
+	}
 	public function save(){
 		if($_SERVER['REQUEST_METHOD'] != "POST") {
 			redirect("listinbounddoc");
