@@ -48,6 +48,10 @@ class Inbounddocument_m extends MY_Model {
 		$this->select = array("{$this->table}.doc_number", "{$this->table}.client_id", "{$this->table}.note", "{$this->table}.type", "{$this->table}.status", "{$this->table}.created_at", "{$this->table}.updated_at", "{$this->table}.created_by", "{$this->table}.filename", "{$this->table}.id", "{$this->tableClient}.client_code");
 		$this->filters = array("client_id"=>"client_id");
 	}
+
+    public function getMapColor() {
+        return $this->mapColor;
+    }
 	
 	function getInboundInvItem($client, $doc, $po_type=null){
 		if(!$client) return array();
