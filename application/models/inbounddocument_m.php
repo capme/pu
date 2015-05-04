@@ -56,7 +56,9 @@ class Inbounddocument_m extends MY_Model {
 		if($po_type == 'ALL') $po_type = '';
 		$mysql = $this->load->database('mysql', TRUE);
 		if($po_type != ''){
-			$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc, 'po_type'=>$po_type));
+			//$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc, 'po_type'=>$po_type));
+            //temporary, gett all po type
+            $query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc));
 		}else{
 			$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc)); 
 		}
