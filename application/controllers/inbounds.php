@@ -195,7 +195,7 @@ class Inbounds extends MY_Controller {
             $this->session->set_flashdata( array("inboundError" => json_encode(array("msg" => $result, "data" => $post))) );
             redirect("inbounds/add");
         }
-
+        $realPost = $post;
         $post['userfile']= $fileData['file_name'] ;
         $post['full_path']=$fileData['full_path'];
 
@@ -203,9 +203,23 @@ class Inbounds extends MY_Controller {
 
         if(is_numeric($result)){
             //next process, straight extract catalog product
-            //the id is $result
-            $returnExtract = $this->inbound_m->extractCatalogProduct($result);
-            redirect("inbounds");
+            //the id is $result 
+            $returnExtract = $this->inbound_m->extractCatalogProduct($result, $realPost);
+            if(isset($returnExtract['OK'])){
+                redirect("inbounds");
+            }else{
+                $msgError = "";
+                if(isset($returnExtract['problemskuconfig'])){
+                    $msgError .= "SKU Config exception<br>";
+                }
+                if(isset($returnExtract['problem'])){
+                    $msgError .= "PO type exception<br>";
+                }
+                $resultException['userfile'][0] = $msgError;
+                $this->session->set_flashdata( array("inboundError" => json_encode(array("msg"=>$resultException, "data" => $realPost))) );
+                $this->inbound_m->deleteInbound($result);
+                redirect("inbounds/add");
+            }
         } else {
             $result['userfile'][0]= $this->upload->display_errors();
             $this->session->set_flashdata( array("inboundError" => json_encode(array("msg"=>$result, "data" => $post))) );

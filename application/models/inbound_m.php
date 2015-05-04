@@ -203,7 +203,7 @@ class Inbound_m extends MY_Model {
         }
     }
 
-    public function extractCatalogProduct($idInbound){
+    public function extractCatalogProduct($idInbound, $post){
         $path_file = $this->inbounddocument_m->path;
         $dataInbound = $this->inbounddocument_m->getInboundDocumentRow($idInbound);
         $id = $dataInbound['id'];
@@ -238,6 +238,7 @@ class Inbound_m extends MY_Model {
             }
 
             try {
+                $strProblem = "";
                 $realDocNumber = $doc_number;
                 $doc_number = $id;
                 $this->inbounddocument_m->changeStatusExtract($doc_number, 1);
