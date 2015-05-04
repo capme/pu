@@ -42,7 +42,8 @@ class Inbound_m extends MY_Model {
             0 =>array("Pending", "info"),
             1 => array("Configure Attribute-Set","success"),
             2 => array("Form Inbounding","primary"),
-			3 => array("Ready to Import","default"),			
+			3 => array("Ready to Import 3PL","default"),
+            4 => array("Ready to Import Mage","warning"),
 			9 => array("Extracting","danger")
         );
 		

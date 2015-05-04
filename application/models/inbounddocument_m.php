@@ -34,6 +34,7 @@ class Inbounddocument_m extends MY_Model {
     					"ORANGE" => "OR",
     					"PINK" => "PK"
     				);
+    var $paraplouClientId = 6;//please change according to each environment
 	
 	function __construct()
     {
@@ -1218,23 +1219,45 @@ class Inbounddocument_m extends MY_Model {
                 $attribute_set = $upc[0];
                 $size = $upc[1];
                 $color = $upc[2];
+                if($this->paraplouClientId == $client){
+                    $clientId = $upc[3];
+                }
             $price = $item['price'];
             $qty = $item['total_qty'];
             $attribute_set_id = $item['attribute_set'];
 
-            $param[] = array(
-                            "sku_config" => $sku_config,
-                            "sku_simple" => $sku_simple,
-                            "sku_description" => $sku_description,
-                            "weight" => $weight,
-                            "cost" => $cost,
-                            "attribute_set" => $attribute_set,
-                            "size" => $size,
-                            "color" => $color,
-                            "price" => $price,
-                            "qty" => $qty,
-                            "attribute_set_id" => $attribute_set_id
-                        );
+            if($this->paraplouClientId == $client){
+                //for paraplou
+                $param[] = array(
+                    "sku_config" => $sku_config,
+                    "sku_simple" => $sku_simple,
+                    "sku_description" => $sku_description,
+                    "weight" => $weight,
+                    "cost" => $cost,
+                    "attribute_set" => $attribute_set,
+                    "size" => $size,
+                    "color" => $color,
+                    "price" => $price,
+                    "qty" => $qty,
+                    "attribute_set_id" => $attribute_set_id,
+                    "client_id" => $clientId
+                );
+            }else{
+                //for non paraplou
+                $param[] = array(
+                    "sku_config" => $sku_config,
+                    "sku_simple" => $sku_simple,
+                    "sku_description" => $sku_description,
+                    "weight" => $weight,
+                    "cost" => $cost,
+                    "attribute_set" => $attribute_set,
+                    "size" => $size,
+                    "color" => $color,
+                    "price" => $price,
+                    "qty" => $qty,
+                    "attribute_set_id" => $attribute_set_id
+                );
+            }
 
         }
         return $param;
