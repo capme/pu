@@ -1,4 +1,7 @@
 <?php
+/*
+* @property Inbounddocument_m $inbounddocument_m
+ */
 class Inbound_m extends MY_Model {
 	var $filterSession = "DB_AWB_FILTER";
 	var $db = null;
@@ -7,11 +10,12 @@ class Inbound_m extends MY_Model {
 	var $sorts = array(1 => "id");
 	var $pkField = "id";
 	var $status=array("cancel"=>2,"approve"=>1);
-	
-	function __construct()
+    var $path = "";
+
+    function __construct()
 	{
 		parent::__construct();
-        
+        $this->load->model( array("inbounddocument_m", "notification_m") );
 		$this->db = $this->load->database('mysql', TRUE);
         $this->relation = array(
 			array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} ")
@@ -19,6 +23,8 @@ class Inbound_m extends MY_Model {
 		
 		$this->select = array("{$this->table}.*", "{$this->tableClient}.client_code");
 		$this->filters = array("doc_number"=>"doc_number","client_id"=>"client_id");
+        $this->load->helper('path');
+        $this->load->library('va_excel');
 	}
 	
 	public function getInboundList()
@@ -195,6 +201,150 @@ class Inbound_m extends MY_Model {
         else {
             return $msg;
         }
+    }
+
+    public function extractCatalogProduct($idInbound){
+        $path_file = $this->inbounddocument_m->path;
+        $dataInbound = $this->inbounddocument_m->getInboundDocumentRow($idInbound);
+        $id = $dataInbound['id'];
+        $doc_number = $dataInbound['doc_number'];
+        $client_id = $dataInbound['client_id'];
+        $note = $dataInbound['note'];
+        $type = $dataInbound['type'];
+        $status = $dataInbound['status'];
+        $filename = $dataInbound['filename'];
+        $created_by = $dataInbound['created_by'];
+
+
+            $ext = explode('.', $filename);
+            if( end($ext) == 'xlsx' ){
+                // Use PCLZip rather than ZipArchive to read the Excel2007 OfficeOpenXML file
+                PHPExcel_Settings::setZipClass(PHPExcel_Settings::PCLZIP);
+                $objReader = PHPExcel_IOFactory::createReader('Excel2007');
+                $objReader->setReadDataOnly(true);
+                $objPHPExcel = $objReader->load($path_file."/".$filename);
+            } else {
+                $objPHPExcel = PHPExcel_IOFactory::load($path_file."/".$filename);
+            }
+
+            $cell_collection = $objPHPExcel->getActiveSheet()->getCellCollection();
+
+            foreach ($cell_collection as $cell) {
+                $column = $objPHPExcel->getActiveSheet()->getCell($cell)->getColumn();
+                $row = $objPHPExcel->getActiveSheet()->getCell($cell)->getRow();
+                $data_value = $objPHPExcel->getActiveSheet()->getCell($cell)->getValue();
+
+                $arr_data[$row][$column] = $data_value;
+            }
+
+            try {
+                $realDocNumber = $doc_number;
+                $doc_number = $id;
+                $this->inbounddocument_m->changeStatusExtract($doc_number, 1);
+                $return = $this->inbounddocument_m->saveToInboundInventory($client_id, $doc_number, $created_by, $arr_data);
+                //compose HTML report
+                if(isset($return['problem']) or isset($return['problemskuconfig'])){
+                    $this->inbounddocument_m->changeStatusPending($doc_number, 1);
+                    if(isset($return['problem'])){
+                        //list problems
+                        $client = $this->client_m->getClientById($client_id)->row_array();
+                        $clientCode = $client['client_code'];
+                        $strProblem = "<table border='1' cellpadding='2' cellspacing='2'>";
+                        $strProblem .= "<tr><td colspan='3'>".$clientCode." (".$realDocNumber.")</td></tr>";
+                        $strProblem .= "<tr>";
+                        $strProblem .= "<td>SKU Simple</td>";
+                        $strProblem .= "<td>Type in File</td>";
+                        $strProblem .= "<td>Type in System</td>";
+                        $strProblem .= "</tr>";
+
+                        foreach($return['problem'] as $itemProblem){
+                            $strProblem .= "<tr>";
+                            $strProblem .= "<td>";
+                            $strProblem .= $itemProblem['sku_simple'];
+                            $strProblem .= "</td>";
+                            $strProblem .= "<td>";
+                            $strProblem .= $itemProblem['poTypeInFile'];
+                            $strProblem .= "</td>";
+                            $strProblem .= "<td>";
+                            $strProblem .= $itemProblem['poTypeInSys'];
+                            $strProblem .= "</td>";
+                            $strProblem .= "</tr>";
+                        }
+                        $strProblem .= "</table>";
+
+                        $from = USER_CRON;
+                        $to = GROUP_MERCH;
+                        $url="inbounds";
+                        $message=$strProblem;
+                        $this->notification_m->add($from, $to, $url, $message);
+
+                    }
+
+                    if(isset($return['problemskuconfig'])){
+                        //list problems SKU Config
+                        $client = $this->client_m->getClientById($client_id)->row_array();
+                        $clientCode = $client['client_code'];
+                        $strProblem = "<table border='1' cellpadding='2' cellspacing='2'>";
+                        $strProblem .= "<tr><td colspan='3'>".$clientCode." (".$realDocNumber.")</td></tr>";
+                        $strProblem .= "<tr>";
+                        $strProblem .= "<td>Product Name</td>";
+                        $strProblem .= "<td>Color Name</td>";
+                        $strProblem .= "<td>List Different SKU</td>";
+                        $strProblem .= "</tr>";
+
+                        foreach($return['problemskuconfig'] as $keyProblemSkuConfig => $itemProblemSkuConfig){
+                            $tmpKeyProblemSkuConfig = explode("##", $keyProblemSkuConfig);
+                            $itemProductName = $tmpKeyProblemSkuConfig[0];
+                            $itemColorName = $tmpKeyProblemSkuConfig[1];
+
+                            $strListSku = "<table cellpadding='2' cellspacing='2'>";
+                            foreach($itemProblemSkuConfig as $partItemProblemSkuConfig){
+                                $strListSku .= "<tr><td>".$partItemProblemSkuConfig."</td></tr>";
+                            }
+                            $strListSku .= "</table>";
+
+                            $strProblem .= "<tr>";
+                            $strProblem .= "<td>";
+                            $strProblem .= $itemProductName;
+                            $strProblem .= "</td>";
+                            $strProblem .= "<td>";
+                            $strProblem .= $itemColorName;
+                            $strProblem .= "</td>";
+                            $strProblem .= "<td>";
+                            $strProblem .= $strListSku;
+                            $strProblem .= "</td>";
+                            $strProblem .= "</tr>";
+                        }
+                        $strProblem .= "</table>";
+
+                        $from = USER_CRON;
+                        $to = GROUP_MERCH;
+                        $url="inbounds";
+                        $message=$strProblem;
+                        $this->notification_m->add($from, $to, $url, $message);
+
+                    }
+                    return $return;
+
+                } else {
+                    $return = $this->inbounddocument_m->updateStatusInboundDocumentList($id,1);
+
+                    $from = USER_CRON;
+                    $to = GROUP_OPERATION;
+                    $url="listinbounddoc/updateAttr?client=".$client_id."&doc=".$id."&id=".$id."";
+                    $message="Catalog product (".$doc_number.") was imported";
+                    $this->notification_m->add($from, $to, $url, $message);
+
+                    $return = [];
+                    $return['OK'] = "Extract complete";
+                    return $return;
+                }
+
+
+            } catch( Exception $e ) {
+                return $e->getMessage();
+            }
+
     }
 }
 ?>
