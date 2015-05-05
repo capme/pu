@@ -61,11 +61,9 @@ class Inbounddocument_m extends MY_Model {
 		if($po_type == 'ALL') $po_type = '';
 		$mysql = $this->load->database('mysql', TRUE);
 		if($po_type != ''){
-            //$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc, 'po_type'=>$po_type));
-            //for temporary, remove filter po type = NEW
-            $query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc));
-        }else{
-			$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc));
+			$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc, 'po_type'=>$po_type));
+		}else{
+			$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc)); 
 		}
 		$rows = $query->result_array();
 		return $rows;
@@ -989,8 +987,7 @@ class Inbounddocument_m extends MY_Model {
 				}
 					
 				//check sku simple from 3pl sync table
-				//$checkReturn = $this->invsync_m->findBySku(strtoupper($sku_simple), $client);
-                $checkReturn = $this->invsync_m->findByProdColorSize($productname, $colorname, $size, $client);
+				$checkReturn = $this->invsync_m->findBySku(strtoupper($sku_simple), $client);
 
                 // check wheter problem detected
 				if( !empty($checkReturn) and strtoupper($poType)=='NEW') {
