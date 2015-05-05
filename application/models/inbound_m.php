@@ -22,7 +22,7 @@ class Inbound_m extends MY_Model {
 		);
 		
 		$this->select = array("{$this->table}.*", "{$this->tableClient}.client_code");
-		$this->filters = array("doc_number"=>"doc_number","client_id"=>"client_id");
+		$this->filters = array("doc_number"=>"doc_number","client_id"=>"client_id","status"=>"status");
         $this->load->helper('path');
         $this->load->library('va_excel');
 	}
