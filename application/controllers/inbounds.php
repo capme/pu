@@ -5,6 +5,7 @@
  * @property Va_list $va_list
  * @property client_m
  * @property Inbound_m $inbound_m
+ * @property Inbounddocument_m $inbounddocument_m
  *
  */
 class Inbounds extends MY_Controller {
@@ -12,7 +13,7 @@ class Inbounds extends MY_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model( array("client_m", "inbound_m","clientoptions_m") );
+		$this->load->model( array("client_m", "inbound_m", "inbounddocument_m","clientoptions_m") );
         $this->load->library('va_excel');
 	}
 	
@@ -195,14 +196,31 @@ class Inbounds extends MY_Controller {
             $this->session->set_flashdata( array("inboundError" => json_encode(array("msg" => $result, "data" => $post))) );
             redirect("inbounds/add");
         }
-
+        $realPost = $post;
         $post['userfile']= $fileData['file_name'] ;
         $post['full_path']=$fileData['full_path'];
 
         $result=$this->inbound_m->saveFile($post);
 
         if(is_numeric($result)){
-            redirect("inbounds");
+            //next process, straight extract catalog product
+            //the id is $result 
+            $returnExtract = $this->inbound_m->extractCatalogProduct($result, $realPost);
+            if(isset($returnExtract['OK'])){
+                redirect("inbounds");
+            }else{
+                $msgError = "";
+                if(isset($returnExtract['problemskuconfig'])){
+                    $msgError .= "SKU Config exception<br>";
+                }
+                if(isset($returnExtract['problem'])){
+                    $msgError .= "PO type exception<br>";
+                }
+                $resultException['userfile'][0] = $msgError;
+                $this->session->set_flashdata( array("inboundError" => json_encode(array("msg"=>$resultException, "data" => $realPost))) );
+                $this->inbound_m->deleteInbound($result);
+                redirect("inbounds/add");
+            }
         } else {
             $result['userfile'][0]= $this->upload->display_errors();
             $this->session->set_flashdata( array("inboundError" => json_encode(array("msg"=>$result, "data" => $post))) );
@@ -271,6 +289,16 @@ class Inbounds extends MY_Controller {
         }
 
         $msg['info'][] = "OK";
+
+        $brandName = trim(str_replace(":", "", $arr_data[8]['C']));
+        if(empty($brandName)) {
+            if($msg['info'][0] == "OK") {
+                unset($msg);
+                $msg['info'][] = "Uploaded file is using non supported format";
+            }
+            $msg['info'][] = "&nbsp;&nbsp;Row in: 8C should contain brand name";
+        }
+
         $cols = array(
             'A' => $arr_data[15]['A'] !='NO',
             'B' => strstr($arr_data[15]['B'], 'PO TYPE') === FALSE,
@@ -281,11 +309,11 @@ class Inbounds extends MY_Controller {
             'N' => $arr_data[16]['N'] != 'SIZE'
         );
 
-
-
         if (in_array(TRUE, $cols)) {
-            unset($msg);
-            $msg['info'][] = "Uploaded file is using non supported format";
+            if($msg['info'][0] == "OK") {
+                unset($msg);
+                $msg['info'][] = "Uploaded file is using non supported format";
+            }
             foreach($cols as $col => $val) {
                 if($val) {
                     $msg['info'][] = "&nbsp;&nbsp;Row in: 15".$col." doesn't contains with mandatory format";
@@ -307,6 +335,12 @@ class Inbounds extends MY_Controller {
                 if(!in_array(strtoupper(trim($arr_data[$k]['F'])), $arrCheckCategory)){
                     if($msg['info'][0] == "OK") unset($msg);
                     $msg['info'][] = "Category on row ".$k."(".$arr_data[$k]['F'].") is not supported";
+                }
+                // check color support
+                $arrCheckColor = $this->inbounddocument_m->getMapColor();
+                if(!array_key_exists(strtoupper(trim($arr_data[$k]['J'])), $arrCheckColor)){
+                    if($msg['info'][0] == "OK") unset($msg);
+                    $msg['info'][] = "Color on row ".$k."(".$arr_data[$k]['J'].") is not supported";
                 }
             }
         }
