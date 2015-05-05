@@ -30,4 +30,9 @@ class Invsync_m extends MY_Model {
     public function findBySku($sku, $clientId) {
         return $this->db->get_where($this->table.$clientId, array('sku_simple' => $sku))->result_array();
     }
+
+    public function findByProdColorSize($prod, $color, $size, $clientId) {
+        return $this->db->query("SELECT * FROM ".$this->table.$clientId." WHERE sku_description like '%".$prod."%:".$size."%".$color."%'")->result_array();
+    }
+
 }

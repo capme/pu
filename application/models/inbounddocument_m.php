@@ -6,6 +6,7 @@
 
 /**
  * @property Clientoptions_m $clientoptions_m
+ * @property Invsync_m $invsync_m
  */
 class Inbounddocument_m extends MY_Model {
 	
@@ -988,7 +989,8 @@ class Inbounddocument_m extends MY_Model {
 				}
 					
 				//check sku simple from 3pl sync table
-				$checkReturn = $this->invsync_m->findBySku(strtoupper($sku_simple), $client);
+				//$checkReturn = $this->invsync_m->findBySku(strtoupper($sku_simple), $client);
+                $checkReturn = $this->invsync_m->findByProdColorSize($productname, $colorname, $size, $client);
 
                 // check wheter problem detected
 				if( !empty($checkReturn) and strtoupper($poType)=='NEW') {
