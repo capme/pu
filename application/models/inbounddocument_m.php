@@ -1375,6 +1375,7 @@ class Inbounddocument_m extends MY_Model {
 	            <vias:NMFC>".$nmfc."</vias:NMFC>
 	            <!--Optional:-->
 	            <vias:InventoryUnitOfMeasure>".$primary_unit_of_measure."</vias:InventoryUnitOfMeasure>
+	            <vias:LabelingUnitOfMeasure>EACH</vias:LabelingUnitOfMeasure>
 	            <!--Optional:-->
 	            <vias:LabelingUnitLength>".$length."</vias:LabelingUnitLength>
 	            <vias:LabelingUnitWidth>".$width."</vias:LabelingUnitWidth>
