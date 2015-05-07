@@ -183,6 +183,30 @@ class Client_m extends MY_Model {
 		
 		return $cList;
 	}
-	
+
+    function getBrandDescriptionList($withNull = FALSE, $defaultText = "-- Client --") {
+        $list = $this->getClientBrandesc();
+        $cList = array();
+        if($withNull) {
+            $cList["-1"] = $defaultText;
+        }
+        foreach($list as $d) {
+            $cList[$d['id']] = $d['client_code'];
+        }
+        return $cList;
+    }
+
+    function getClientBrandesc()
+    {
+        $this->db = $this->load->database('mysql', TRUE);
+        $this->db->select('client.id, client.client_code');
+        $this->db->from($this->table);
+        $this->db->join('client_options','client.id = client_options.client_id');
+        $this->db->where(array('client_options.option_name'=>'multi_brand','option_value'=>1));
+        return $this->db->get()->result_array();
+    }
+
+
+
 
 }
