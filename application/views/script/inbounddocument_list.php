@@ -21,6 +21,15 @@ var TableAjax = function () {
                 src: $("#datatable_ajax"),
                 onSuccess: function(grid) {
                     // execute some code after table records loaded
+                    setTimeout(function(){
+                        $('#datatable_ajax a.import3pl').click(function(e) {
+                            if(confirm('Are you sure to import All NEW item into 3PL')) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        })
+                    }, 200);
                 },
                 onError: function(grid) {
                     // execute some code on network or other general error  

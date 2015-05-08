@@ -61,9 +61,7 @@ class Inbounddocument_m extends MY_Model {
 		if($po_type == 'ALL') $po_type = '';
 		$mysql = $this->load->database('mysql', TRUE);
 		if($po_type != ''){
-            //$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc, 'po_type'=>$po_type));
-            //for temporary, remove filter po type = NEW
-            $query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc));
+            $query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc, 'po_type'=>$po_type));
         }else{
 			$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc));
 		}
@@ -168,7 +166,7 @@ class Inbounddocument_m extends MY_Model {
                     $query = $this->db->query($sql);
                     $num = $query->num_rows();
                     if($num > 0){
-                        $btnAction .= '<hr /><a href="'.base_url().'listinbounddoc/importItem3PL?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-export" ></i> Import Item to 3PL</a>';
+                        $btnAction .= '<hr /><a href="'.base_url().'listinbounddoc/importItem3PL?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default import3pl"><i class="glyphicon glyphicon-export" ></i> Import Item to 3PL</a>';
                     }
                     $btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/downloadReceivingForm?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Receiving Form</a>';
                     $btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/importItemMage?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-export" ></i> Import Item to MAGE</a>';
@@ -205,8 +203,9 @@ class Inbounddocument_m extends MY_Model {
 		
 		
 		$this->db->trans_start();
-		//delete record that related to the doc number
+		//delete record that related to the doc number only for po_type NEW
 		$this->db->where('doc_number', $doc_number);
+        $this->db->where('po_type', 'NEW');
 		$this->db->delete($this->tableInv."_".$client);
 		for($x=3;$x<=$sizeRowX;$x++){
 			//------------------get the field items--------------------------
@@ -682,32 +681,32 @@ class Inbounddocument_m extends MY_Model {
 			}
 
 			//sku
-			if($arr_data[$x]['H'] <> ""){
+			if(@$arr_data[$x]['H'] <> ""){
 				$sku = $arr_data[$x]['H'];
 			}
 			//product name
-			if($arr_data[$x]['I'] <> ""){
+			if(@$arr_data[$x]['I'] <> ""){
 				$productname = $arr_data[$x]['I'];
 			}
 			//color name
-			if($arr_data[$x]['J'] <> ""){
+			if(@$arr_data[$x]['J'] <> ""){
 				$colorname = $arr_data[$x]['J'];
 			}
-			
+
 			//material
-			if($arr_data[$x]['R'] <> ""){
+			if(@$arr_data[$x]['R'] <> ""){
 				$material = $arr_data[$x]['R'];
 			}
 			//description
-			$description = $arr_data[$x]['T'];
+			$description = @$arr_data[$x]['T'];
 
 			//product instruction
-			if($arr_data[$x]['U'] <> ""){
+			if(@$arr_data[$x]['U'] <> ""){
 				$productinstruction = $arr_data[$x]['U'];
 			}
 
 			//retail price -> ?
-			$retailprice = $arr_data[$x]['K'];
+			$retailprice = @$arr_data[$x]['K'];
 			//check if the string contain '=' which refer to another cell value
 			if (substr($retailprice, 0, 1) == "=") {
 				//remove except alphabet
@@ -716,13 +715,13 @@ class Inbounddocument_m extends MY_Model {
 				$retailprice_int = preg_replace('/[^0-9.]+/', '', $retailprice);
 				//get the value from another cell
 				$retailprice = $arr_data[$retailprice_int][$retailprice_string];
-			}			
-			
+			}
+
 			//size
-			$size = $arr_data[$x]['N'];
-			
+			$size = @$arr_data[$x]['N'];
+
 			//qty
-			$qty = $arr_data[$x]['O'];
+			$qty = @$arr_data[$x]['O'];
 			
 			//total value
 			$totalvalue = $retailprice*$qty;
@@ -1007,7 +1006,7 @@ class Inbounddocument_m extends MY_Model {
 				$sql .= " cost_required, is_haz_mat, haz_mat_id, haz_mat_shipping_name, haz_mat_hazard_class, haz_mat_packing_group,";
 				$sql .= " haz_mat_flash_point, haz_mat_label_code, haz_mat_flat, image_url, storage_count_stript_template_id, storage_rates,";
 				$sql .= " outbound_mobile_serialization_behavior, price, total_qty, unit_type, updated_by, attribute_set, po_type) VALUES";
-				$sql .= " (".$doc_number.", '".strtoupper($sku_config)."', '".strtoupper($sku_simple)."', '".$sku_description."', '".$min."', ".$max.", ".$cycle_count.",";
+				$sql .= " (".$doc_number.", '".strtoupper($sku_config)."', '".strtoupper($sku_simple)."', ".$this->db->escape($sku_description).", '".$min."', ".$max.", ".$cycle_count.",";
 				$sql .= " ".$reorder_qty.", '".$inventor_method."', '".$temperature."', '".$cost."', '".$upc."', '".$track_lot."', '".$track_serial."', '".$track_expdate."', '".$primary_unit_of_measure."',";
 				$sql .= " '".$packaging_unit."', '".$packaging_uom_qty."', '".$length."', '".$width."', '".$height."', '".$weiight."', '".$qualifiers."', '".$storage_setup."', '".$variable_setup."', ";
 				$sql .= " '".$nmfc."', '".$lot_number_required."', '".$serial_number_required."', '".$serial_number_must_be_unique."', '".$exp_date_req."', '".$enable_cost."', ";

@@ -1038,13 +1038,13 @@ class Listinbounddoc extends MY_Controller {
 		$this->inbound_threepl->setConfig( array("username" => $c['threepluser'], "password" => $c['threeplpass']) );
 		$returnMsgItem = $this->inbounddocument_m->getParamInbound3PL($_GET['client'], $doc);
 		$return = $this->inbound_threepl->createItems($returnMsgItem);
-				if(is_array($return)){
-                    //update status inbound ready for import to mage
-                    $this->inbounddocument_m->updateStatusInboundDocumentList($doc,4);
-                    redirect("listinbounddoc");
-				}else{
-					echo "Something wrong when calling 3PL. See the log file.<input type='button' value='Back' onclick='window.history.back()'>";
-				}
+        if(is_array($return)){
+            //update status inbound ready for import to mage
+            $this->inbounddocument_m->updateStatusInboundDocumentList($doc,4);
+            redirect("listinbounddoc");
+        }else{
+            echo "<hr />Something wrong when importing to 3PL. Please read message above.<br /><input type='button' value='Back' onclick='window.history.back()'>";
+        }
 	}
 
 	public function importItemMage(){

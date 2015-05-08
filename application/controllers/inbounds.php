@@ -211,10 +211,10 @@ class Inbounds extends MY_Controller {
             }else{
                 $msgError = "";
                 if(isset($returnExtract['problemskuconfig'])){
-                    $msgError .= "SKU Config exception<br>";
+                    $msgError .= "SKU Config exception<br><br />".$returnExtract['problemskuconfig']['message']."<br /><br />";
                 }
                 if(isset($returnExtract['problem'])){
-                    $msgError .= "PO type exception<br>";
+                    $msgError .= "PO type exception<br><br />".$returnExtract['problem']['message']."<br /><br />";
                 }
                 $resultException['userfile'][0] = $msgError;
                 $this->session->set_flashdata( array("inboundError" => json_encode(array("msg"=>$resultException, "data" => $realPost))) );
@@ -316,7 +316,7 @@ class Inbounds extends MY_Controller {
             }
             foreach($cols as $col => $val) {
                 if($val) {
-                    $msg['info'][] = "&nbsp;&nbsp;Row in: 15".$col." doesn't contains with mandatory format";
+                    $msg['info'][] = "&nbsp;&nbsp;Row in: 15 ".$col." doesn't contains with mandatory format";
                 }
             }
         }
@@ -328,19 +328,19 @@ class Inbounds extends MY_Controller {
                 $arrCheckGender = array('MAN', 'MEN', 'LADIES', 'WOMAN', 'WOMEN', 'M', 'F', 'U', '', 'FEMALE');
                 if(!checkIfInArrayString(strtoupper(trim($arr_data[$k]['E'])), $arrCheckGender)){
                     if($msg['info'][0] == "OK") unset($msg);
-                    $msg['info'][] = "Gender on row ".$k."(".$arr_data[$k]['E'].") is not supported";
+                    $msg['info'][] = "Gender on row ".$k." (".$arr_data[$k]['E'].") is not supported";
                 }
                 //check category support
                 $arrCheckCategory = array('TOP', 'BOTTOM', 'FOOTWEAR', 'ACCESSORIES', '');
                 if(!in_array(strtoupper(trim($arr_data[$k]['F'])), $arrCheckCategory)){
                     if($msg['info'][0] == "OK") unset($msg);
-                    $msg['info'][] = "Category on row ".$k."(".$arr_data[$k]['F'].") is not supported";
+                    $msg['info'][] = "Category on row ".$k." (".$arr_data[$k]['F'].") is not supported";
                 }
                 // check color support
                 $arrCheckColor = $this->inbounddocument_m->getMapColor();
                 if(!array_key_exists(strtoupper(trim($arr_data[$k]['J'])), $arrCheckColor)){
                     if($msg['info'][0] == "OK") unset($msg);
-                    $msg['info'][] = "Color on row ".$k."(".$arr_data[$k]['J'].") is not supported";
+                    $msg['info'][] = "Color on row ".$k." (".$arr_data[$k]['J'].") is not supported";
                 }
             }
         }

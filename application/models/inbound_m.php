@@ -246,7 +246,7 @@ class Inbound_m extends MY_Model {
                 $return = $this->inbounddocument_m->saveToInboundInventory($client_id, $doc_number, $created_by, $arr_data);
                 //compose HTML report
                 if(isset($return['problem']) or isset($return['problemskuconfig'])){
-                    $this->inbounddocument_m->changeStatusPending($doc_number, 1);
+                    $this->inbounddocument_m->changeStatusInvalid($doc_number, 1);
                     if(isset($return['problem'])){
                         //list problems
                         $client = $this->client_m->getClientById($client_id)->row_array();
@@ -274,12 +274,7 @@ class Inbound_m extends MY_Model {
                         }
                         $strProblem .= "</table>";
 
-                        $from = USER_CRON;
-                        $to = GROUP_MERCH;
-                        $url="inbounds";
-                        $message=$strProblem;
-                        $this->notification_m->add($from, $to, $url, $message);
-
+                        $return['problem'] = array('message' => $strProblem);
                     }
 
                     if(isset($return['problemskuconfig'])){
@@ -319,12 +314,7 @@ class Inbound_m extends MY_Model {
                         }
                         $strProblem .= "</table>";
 
-                        $from = USER_CRON;
-                        $to = GROUP_MERCH;
-                        $url="inbounds";
-                        $message=$strProblem;
-                        $this->notification_m->add($from, $to, $url, $message);
-
+                        $return['problemskuconfig'] = array('message' => $strProblem);
                     }
                     return $return;
 
