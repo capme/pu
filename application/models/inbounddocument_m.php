@@ -6,6 +6,7 @@
 
 /**
  * @property Clientoptions_m $clientoptions_m
+ * @property Invsync_m $invsync_m
  */
 class Inbounddocument_m extends MY_Model {
 	
@@ -34,6 +35,7 @@ class Inbounddocument_m extends MY_Model {
     					"ORANGE" => "OR",
     					"PINK" => "PK"
     				);
+    var $paraplouClientId = 6;//please change according to each environment
 	
 	function __construct()
     {
@@ -46,7 +48,7 @@ class Inbounddocument_m extends MY_Model {
 		);
 		
 		$this->select = array("{$this->table}.doc_number", "{$this->table}.client_id", "{$this->table}.note", "{$this->table}.type", "{$this->table}.status", "{$this->table}.created_at", "{$this->table}.updated_at", "{$this->table}.created_by", "{$this->table}.filename", "{$this->table}.id", "{$this->tableClient}.client_code");
-		$this->filters = array("client_id"=>"client_id");
+		$this->filters = array("client_id"=>"client_id","status"=>"status");
 	}
 
     public function getMapColor() {
@@ -59,9 +61,7 @@ class Inbounddocument_m extends MY_Model {
 		if($po_type == 'ALL') $po_type = '';
 		$mysql = $this->load->database('mysql', TRUE);
 		if($po_type != ''){
-            //$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc, 'po_type'=>$po_type));
-            //for temporary, remove filter po type = NEW
-            $query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc));
+            $query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc, 'po_type'=>$po_type));
         }else{
 			$query = $mysql->get_where('inb_inventory_item_'.$client, array('doc_number'=>$doc));
 		}
@@ -118,10 +118,14 @@ class Inbounddocument_m extends MY_Model {
 		$records["aaData"] = array();
 	
 		$statList= array(
-				0 =>array("New Uploaded Document", "warning"),
-				1 =>array("Imported", "success"),
-				
-		);
+            0 =>array("Pending", "info"),
+            1 => array("Configure Attribute-Set","success"),
+            2 => array("Form Inbounding","primary"),
+			3 => array("Ready to Import 3PL","default"),
+            4 => array("Ready to Import Mage","warning"),
+			9 => array("Extracting","danger"),
+			99=> array("Invalid", "danger")
+        );
 		
 		$end = $iDisplayStart + $iDisplayLength;
 		$end = $end > $iTotalRecords ? $iTotalRecords : $end;
@@ -130,6 +134,7 @@ class Inbounddocument_m extends MY_Model {
 		$no=0;
 		
 		foreach($_row->result() as $_result) {
+		$status=$statList[$_result->status];
 			$btnAction = "";
 			if($_result->type == 1){
 				if($_result->status == 1){
@@ -152,14 +157,27 @@ class Inbounddocument_m extends MY_Model {
 						$btnAction .= '<hr /><a href="'.base_url().'listinbounddoc/importItem3PL?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-export" ></i> Import Item to 3PL</a>';
 					}
 					$btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/downloadReceivingForm?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Receiving Form</a>';
-                    //$btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/importItemMage?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-export" ></i> Import Item to MAGE</a>';
-									}
-				if($_result->status == 1 or $_result->status == 2 or $_result->status == 3){
+                }elseif($_result->status == 4){
+                    $btnAction = '<a href="'.base_url().'listinbounddoc/updateAttr?client='.$_result->client_id.'&doc='.$_result->id.'&id='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon" ></i> Update Attribute Set</a>';
+                    $btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/exportFormItemImport?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Form Import</a>';
+                    $btnAction .= '&nbsp;<a href="'.base_url().'listinbounddoc/downloadInboundForm?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Inbound Form</a>';
+                    //check if any visible PO_TYPE = NEW
+                    $sql = "SELECT po_type FROM `inb_inventory_item_".$_result->client_id."` WHERE UPPER(po_type) = 'NEW'";
+                    $query = $this->db->query($sql);
+                    $num = $query->num_rows();
+                    if($num > 0){
+                        $btnAction .= '<hr /><a href="'.base_url().'listinbounddoc/importItem3PL?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default import3pl"><i class="glyphicon glyphicon-export" ></i> Import Item to 3PL</a>';
+                    }
+                    $btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/downloadReceivingForm?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Receiving Form</a>';
+                    $btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/importItemMage?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-export" ></i> Import Item to MAGE</a>';
+                }
+				if($_result->status == 1 or $_result->status == 2 or $_result->status == 3 or $_result->status == 4){
 					$records["aaData"][] = array(
 							'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
 							$no=$no+1,
 							$_result->client_code,
 							$_result->doc_number,
+							'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
 							$_result->note,
 							$btnAction
 							
@@ -185,8 +203,9 @@ class Inbounddocument_m extends MY_Model {
 		
 		
 		$this->db->trans_start();
-		//delete record that related to the doc number
+		//delete record that related to the doc number only for po_type NEW
 		$this->db->where('doc_number', $doc_number);
+        $this->db->where('po_type', 'NEW');
 		$this->db->delete($this->tableInv."_".$client);
 		for($x=3;$x<=$sizeRowX;$x++){
 			//------------------get the field items--------------------------
@@ -662,32 +681,32 @@ class Inbounddocument_m extends MY_Model {
 			}
 
 			//sku
-			if($arr_data[$x]['H'] <> ""){
+			if(@$arr_data[$x]['H'] <> ""){
 				$sku = $arr_data[$x]['H'];
 			}
 			//product name
-			if($arr_data[$x]['I'] <> ""){
+			if(@$arr_data[$x]['I'] <> ""){
 				$productname = $arr_data[$x]['I'];
 			}
 			//color name
-			if($arr_data[$x]['J'] <> ""){
+			if(@$arr_data[$x]['J'] <> ""){
 				$colorname = $arr_data[$x]['J'];
 			}
-			
+
 			//material
-			if($arr_data[$x]['R'] <> ""){
+			if(@$arr_data[$x]['R'] <> ""){
 				$material = $arr_data[$x]['R'];
 			}
 			//description
-			$description = $arr_data[$x]['T'];
+			$description = @$arr_data[$x]['T'];
 
 			//product instruction
-			if($arr_data[$x]['U'] <> ""){
+			if(@$arr_data[$x]['U'] <> ""){
 				$productinstruction = $arr_data[$x]['U'];
 			}
 
 			//retail price -> ?
-			$retailprice = $arr_data[$x]['K'];
+			$retailprice = @$arr_data[$x]['K'];
 			//check if the string contain '=' which refer to another cell value
 			if (substr($retailprice, 0, 1) == "=") {
 				//remove except alphabet
@@ -696,13 +715,13 @@ class Inbounddocument_m extends MY_Model {
 				$retailprice_int = preg_replace('/[^0-9.]+/', '', $retailprice);
 				//get the value from another cell
 				$retailprice = $arr_data[$retailprice_int][$retailprice_string];
-			}			
-			
+			}
+
 			//size
-			$size = $arr_data[$x]['N'];
-			
+			$size = @$arr_data[$x]['N'];
+
 			//qty
-			$qty = $arr_data[$x]['O'];
+			$qty = @$arr_data[$x]['O'];
 			
 			//total value
 			$totalvalue = $retailprice*$qty;
@@ -987,7 +1006,7 @@ class Inbounddocument_m extends MY_Model {
 				$sql .= " cost_required, is_haz_mat, haz_mat_id, haz_mat_shipping_name, haz_mat_hazard_class, haz_mat_packing_group,";
 				$sql .= " haz_mat_flash_point, haz_mat_label_code, haz_mat_flat, image_url, storage_count_stript_template_id, storage_rates,";
 				$sql .= " outbound_mobile_serialization_behavior, price, total_qty, unit_type, updated_by, attribute_set, po_type) VALUES";
-				$sql .= " (".$doc_number.", '".strtoupper($sku_config)."', '".strtoupper($sku_simple)."', '".$sku_description."', '".$min."', ".$max.", ".$cycle_count.",";
+				$sql .= " (".$doc_number.", '".strtoupper($sku_config)."', '".strtoupper($sku_simple)."', ".$this->db->escape($sku_description).", '".$min."', ".$max.", ".$cycle_count.",";
 				$sql .= " ".$reorder_qty.", '".$inventor_method."', '".$temperature."', '".$cost."', '".$upc."', '".$track_lot."', '".$track_serial."', '".$track_expdate."', '".$primary_unit_of_measure."',";
 				$sql .= " '".$packaging_unit."', '".$packaging_uom_qty."', '".$length."', '".$width."', '".$height."', '".$weiight."', '".$qualifiers."', '".$storage_setup."', '".$variable_setup."', ";
 				$sql .= " '".$nmfc."', '".$lot_number_required."', '".$serial_number_required."', '".$serial_number_must_be_unique."', '".$exp_date_req."', '".$enable_cost."', ";
@@ -1197,79 +1216,64 @@ class Inbounddocument_m extends MY_Model {
 		return TRUE;
 	}
 
-	public function getParamInboundMage($client, $doc){
-		$param = array();
-		
-		//get data from table inb_inventory_item_<client_id>
-		$result = $this->getInboundInvItem($client, $doc);
-		foreach($result as $item){
-			$sku = $item['sku_simple'];
-			$set = $item['attribute_set'];
-			$type = "simple";
-			/*
-			 * 'simple' : Simple Product 
-			 * 'grouped' : Grouped Product
-			 * 'configurable' : Configurable Product
-			 * 'virtual' : Virtual Product
-			 * 'bundle' : Bundle Product
-			 */
-			
-			$categories = array();
-			$websites = array();
-				$sku_description =  explode(",",$item['sku_description']);
-			$name = $sku_description[4];
-			$description = $name." description";
-			$short_description = $name." short description";
-			$weight = $item['weiight'];
-			$status = "1";
-			/*
-			 1 : enabled
-			 2 : disabled
-			 */
-			$url_key = "";
-			$url_path = "";
-			$visibility = "1"; 
-				/*
-				1 : Not Visible Individualy
-				2 : Catalog
-				3 : Search
-				4 : Catalog, Search
-				*/
-			$category_ids = array();
-			$website_ids = array(1);
-			$gift_message_available = "";
-			$price = $item['price'];
-			$tax_class_id = "";
-			$meta_title = "";
-			$meta_keyword = "";
-			$meta_description = "";
-			$qty = $item['total_qty'];
-			
-			$param[] = array($type, $set, $sku, array(
-			    'categories' => $categories,
-			    'websites' => $websites,
-			    'name' => $name,
-			    'description' => $description,
-			    'short_description' => $short_description,
-			    'weight' => $weight,
-			    'status' => $status,
-			    'url_key' => $url_key,
-			    'url_path' => $url_path,
-			    'visibility' => $visibility,
-			    'price' => $price,
-			    'tax_class_id' => $tax_class_id,
-			    'meta_title' => $meta_title,
-			    'meta_keyword' => $meta_keyword,
-			    'meta_description' => $meta_description,
-			    'stock_data' => array(
-			    					'qty' => $qty
-								)
-			));			
-			
-		}
+    public function getParamInboundMage($client, $doc){
+        $param = array();
 
-		return $param;
-	}
+        //get data from table inb_inventory_item_<client_id>
+        $result = $this->getInboundInvItem($client, $doc);
+        foreach($result as $item) {
+            $sku_config = $item['sku_config'];
+            $sku_simple = $item['sku_simple'];
+            $sku_description = $item['sku_description'];
+            $weight = $item['weiight'];
+            $cost = $item['cost'];
+            $upc = explode("|",$item['upc']);
+                $attribute_set = $upc[0];
+                $size = $upc[1];
+                $color = $upc[2];
+                if($this->paraplouClientId == $client){
+                    $clientId = $upc[3];
+                }
+            $price = $item['price'];
+            $qty = $item['total_qty'];
+            $attribute_set_id = $item['attribute_set'];
+
+            if($this->paraplouClientId == $client){
+                //for paraplou
+                $param[] = array(
+                    "sku_config" => $sku_config,
+                    "sku_simple" => $sku_simple,
+                    "sku_description" => $sku_description,
+                    "weight" => $weight,
+                    "cost" => $cost,
+                    "attribute_set" => $attribute_set,
+                    "size" => $size,
+                    "color" => $color,
+                    "price" => $price,
+                    "qty" => $qty,
+                    "attribute_set_id" => $attribute_set_id,
+                    "client_id" => $clientId
+                );
+            }else{
+                //for non paraplou
+                $param[] = array(
+                    "sku_config" => $sku_config,
+                    "sku_simple" => $sku_simple,
+                    "sku_description" => $sku_description,
+                    "weight" => $weight,
+                    "cost" => $cost,
+                    "attribute_set" => $attribute_set,
+                    "size" => $size,
+                    "color" => $color,
+                    "price" => $price,
+                    "qty" => $qty,
+                    "attribute_set_id" => $attribute_set_id
+                );
+            }
+
+        }
+        return $param;
+    }
 
 	public function getParamInbound3PL($client, $doc){
 		$param = array();
@@ -1414,16 +1418,22 @@ class Inbounddocument_m extends MY_Model {
 		}
 		$this->db->trans_complete();
 	}
-	public function changeStatusExtract(){
-		$this->db = $this->load->database('mysql', TRUE);						
+	public function changeStatusExtract($doc_number, $type){
+		$this->db = $this->load->database('mysql', TRUE);
+		$this->db->where('id',$doc_number);
+		$this->db->where('type', $type);
 		$this->db->update('inb_document',array('status'=>9));
 	}
-	public function changeStatusPending(){
-		$this->db = $this->load->database('mysql', TRUE);						
-		$this->db->update('inb_document',array('status'=>0));
+	public function changeStatusInvalid($doc_number, $type){
+		$this->db = $this->load->database('mysql', TRUE);
+		$this->db->where('id',$doc_number);
+		$this->db->where('type', $type);
+		$this->db->update('inb_document',array('status'=>99));
 	}
-	public function changeStatusFormInbounding(){
-		$this->db = $this->load->database('mysql', TRUE);						
+	public function changeStatusFormInbounding($doc_number, $type){
+		$this->db = $this->load->database('mysql', TRUE);
+		$this->db->where('id',$doc_number);
+		$this->db->where('type',$type);
 		$this->db->update('inb_document',array('status'=>2));
 	}
 	

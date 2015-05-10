@@ -23,7 +23,7 @@ class Mageapi {
 	const METHOD_CATLOGINVENTORY = "cataloginventory_stock_item.list";
 	const METHOD_ATTRIBUTE_LIST = "product_attribute.list";
 	const METHOD_ATTRIBUTE_INFO = "product_attribute.info";
-	const METHOD_PRODUCT_CREATE = "product.create";
+	const METHOD_PRODUCT_CREATE = "vela_baymax_catalog.importItem";
 	const METHOD_VELA_SHIPMENT = "vela_shipment.create";
 	const METHOD_VELA_RETURN_NEW = "vela_return.new";
 	const METHOD_VELA_RETURN_EXPORTED = "vela_return.exported";
@@ -443,8 +443,10 @@ class Mageapi {
 	public function inboundCreateItem($params){
 		try {
 			$calls = array();
-			foreach($params as $param) {
-				$calls[] = array(self::METHOD_PRODUCT_CREATE, $param);
+
+            foreach($params as $param) {
+                log_message('debug', print_r($param, true));
+				$calls[] = array(self::METHOD_PRODUCT_CREATE, array($param));
 			}
 			$returns = $this->soapClient->multiCall($this->soapSession, $calls);
 

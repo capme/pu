@@ -60,14 +60,14 @@ class Extractcatalogproduct extends CI_Controller {
 						        $arr_data[$row][$column] = $data_value;
 							}
 							
-							try {
-								//$this->inbounddocument_m->changeStatusExtract();							
+							try {															
 								$realDocNumber = $doc_number; 
 								$doc_number = $id;
+								$this->inbounddocument_m->changeStatusExtract($doc_number, 1);								
 								$return = $this->inbounddocument_m->saveToInboundInventory($client_id, $doc_number, $created_by, $arr_data);								
 								//compose HTML report
 								if(isset($return['problem']) or isset($return['problemskuconfig'])){
-									//$this->inbounddocument_m->changeStatusPending();
+									$this->inbounddocument_m->changeStatusInvalid($doc_number, 1);
 									if(isset($return['problem'])){
 										//list problems
 										$client = $this->client_m->getClientById($client_id)->row_array();
@@ -96,7 +96,7 @@ class Extractcatalogproduct extends CI_Controller {
 										$strProblem .= "</table>";
 									
 		                                $from = USER_CRON;
-				                        $to = GROUP_MERCH;
+				                        $to = 'GROUP_MERCH';
 		                                $url="inbounds";
 				                        $message=$strProblem;
 				                        $this->notification_m->add($from, $to, $url, $message);
@@ -142,7 +142,7 @@ class Extractcatalogproduct extends CI_Controller {
 										$strProblem .= "</table>";
 									
 		                                $from = USER_CRON;
-				                        $to = GROUP_MERCH;
+				                        $to =GROUP_MERCH;
 		                                $url="inbounds";
 				                        $message=$strProblem;
 				                        $this->notification_m->add($from, $to, $url, $message);
