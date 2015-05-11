@@ -15,7 +15,7 @@ class Paymentconfirmation_m extends MY_Model {
         $user=$this->session->userdata('group');
 		if ($user == 4) {
             $this->relation = array(
-                array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} where status=0")
+                array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} where receipt_url=''")
             );
 
         }
