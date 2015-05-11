@@ -6,6 +6,7 @@
  * @property client_m
  * @property Inbound_m $inbound_m
  * @property Inbounddocument_m $inbounddocument_m
+ * @property Colormap_m $colormap_m
  *
  */
 class Inbounds extends MY_Controller {
@@ -13,7 +14,7 @@ class Inbounds extends MY_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model( array("client_m", "inbound_m", "inbounddocument_m","clientoptions_m") );
+		$this->load->model( array("client_m", "inbound_m", "inbounddocument_m","clientoptions_m", "colormap_m") );
         $this->load->library('va_excel');
 	}
 	
@@ -330,17 +331,19 @@ class Inbounds extends MY_Controller {
                     if($msg['info'][0] == "OK") unset($msg);
                     $msg['info'][] = "Gender on row ".$k." (".$arr_data[$k]['E'].") is not supported";
                 }
+
                 //check category support
                 $arrCheckCategory = array('TOP', 'BOTTOM', 'FOOTWEAR', 'ACCESSORIES', '');
                 if(!in_array(strtoupper(trim($arr_data[$k]['F'])), $arrCheckCategory)){
                     if($msg['info'][0] == "OK") unset($msg);
                     $msg['info'][] = "Category on row ".$k." (".$arr_data[$k]['F'].") is not supported";
                 }
+
                 // check color support
-                $arrCheckColor = $this->inbounddocument_m->getMapColor();
-                if(!array_key_exists(strtoupper(trim($arr_data[$k]['J'])), $arrCheckColor)){
+                $arrCheckColor = $this->colormap_m->getByOrigColor( strtoupper(trim($arr_data[$k]['J'])) );
+                if( !$arrCheckColor ) {
                     if($msg['info'][0] == "OK") unset($msg);
-                    $msg['info'][] = "Color on row ".$k." (".$arr_data[$k]['J'].") is not supported";
+                    $msg['info'][] = "Color on row ".$k." (".$arr_data[$k]['J'].") is not supported. Please update color map data";
                 }
             }
         }
