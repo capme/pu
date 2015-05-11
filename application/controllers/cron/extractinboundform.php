@@ -55,9 +55,9 @@ class Extractinboundform extends CI_Controller {
 						        $arr_data[$row][$column] = $data_value;
 							}
 							
-							try {
-								//$this->inbounddocument_m->changeStatusExtract();
+							try {								
 								$doc_number = $id;
+								$this->inbounddocument_m->changeStatusExtract($doc_number, 2);
 								$return = $this->inbounddocument_m->saveToInboundInventoryStock($client_id, $doc_number, $created_by, $arr_data, $reference_id);
 								echo "import inbound form for client ".$client_id." doc number ".$doc_number."<br>";
 								//updating inbound form record into 1
@@ -72,7 +72,8 @@ class Extractinboundform extends CI_Controller {
 		                        $this->notification_m->add($from, $to, $url, $message);
 		                        
 							} catch( Exception $e ) {
-								$this->inbounddocument_m->changeStatusFormInbounding();
+								$doc_number = $id;
+								$this->inbounddocument_m->changeStatusFormInbounding($doc_number, 2);
 								echo $e->getMessage();	
 							}
 							

@@ -1,9 +1,4 @@
-<script> 
-function viewClick()
-	{
-	document.getElementById('view').disabled = true
- }
- 
+<script>
 var TableAjax = function () {
 
     var initPickers = function () {
@@ -21,28 +16,16 @@ var TableAjax = function () {
                 src: $("#datatable_ajax"),
                 onSuccess: function(grid) {
                     // execute some code after table records loaded
-                    setTimeout(function(){
-                        $('#datatable_ajax a.import3pl').click(function(e) {
-                            if(confirm('Are you sure to import All NEW item into 3PL')) {
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        })
-                    }, 200);
                 },
                 onError: function(grid) {
                     // execute some code on network or other general error  
                 },
                 dataTable: {  // here you can define a typical datatable settings from http://datatables.net/usage/options 
                 	"aoColumns": [
-                          { "bSortable": true },
-						  { "bSortable": true },
+                          { "bSortable": false },
+						  null, //{ "bSortable": false },
 						  { "bSortable": false },
 						  { "bSortable": false },
-						  { "bSortable": false },
-						  { "bSortable": false },
-						   { "bSortable": false }						    
                     ],
                     /* 
                         By default the ajax datatable's layout is horizontally scrollable and this can cause an issue of dropdown menu is used in the table rows which.
@@ -57,7 +40,7 @@ var TableAjax = function () {
                     "iDisplayLength": 20, // default record count per page
                     "bServerSide": true, // server side processing
                     "sAjaxSource": "<?php echo $ajaxSource?>", // ajax source /metronic_v2.0/v2.0/admin/template/demo/table_ajax.php
-                    "aaSorting": [[ 1, "desc" ]] // set first column as a default sort by asc
+                    "aaSorting": [[ 1, "asc" ]] // set first column as a default sort by asc
                 }
             });
 
@@ -65,28 +48,21 @@ var TableAjax = function () {
             grid.getTableWrapper().on('click', '.table-group-action-submit', function(e){
                 e.preventDefault();
                 var action = $(".table-group-action-input", grid.getTableWrapper());
-                if (action.val() != "" && grid.getSelectedRowsCount() > -1) 
+                if (action.val() != "" && grid.getSelectedRowsCount() > 0) 
 				{
-                    if ( action.val()==0||1)
-					{	
-						var records = grid.getSelectedRows();
-						var ids = [];
-						for (var i in records) {
-							ids.push(records[i]["value"]);    
-						}								
-						var command = action.val();	
-						grid.clearAjaxParams();
-						if(action.val() == 0){
-							document.location = "listinbounddoc/revise?ids="+ids.join(",") +"&command="+command;
-						}else if(action.val() == 1){
-							document.location = "listinbounddoc/uploadInboundForm?ids="+ids.join(",") +"&command="+command;
-						}
-					}					
+                    if( action.val() == 2 ) { // delete row
+                        if( !confirm("Are you sure to remove client?") ){
+                            return false;
+                        }
+                    }
                     grid.addAjaxParam("sAction", "group_action");
-					grid.addAjaxParam("sGroupActionName", action.val());
-					
-                   grid.getDataTable().fnDraw();
-                   grid.clearAjaxParams();
+                    grid.addAjaxParam("sGroupActionName", action.val());
+                    var records = grid.getSelectedRows();
+                    for (var i in records) {
+                        grid.addAjaxParam(records[i]["name"], records[i]["value"]);    
+                    }
+                    grid.getDataTable().fnDraw();
+                    grid.clearAjaxParams();
                 } else if (action.val() == "") {
                     App.alert({type: 'danger', icon: 'warning', message: 'Please select an action', container: grid.getTableWrapper(), place: 'prepend'});
                 } else if (grid.getSelectedRowsCount() === 0) {

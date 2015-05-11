@@ -155,6 +155,9 @@ class Inbound_threepl {
 						$return[] = (string)$item;
 					}
 				}else{
+                    echo "<pre>";
+                    echo $xml->soapBody->soapFault->faultstring[0];
+                    echo "</pre>";
 					return false;
 				}
 				return $return;

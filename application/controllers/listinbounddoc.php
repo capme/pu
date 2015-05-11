@@ -4,6 +4,8 @@
  * Class Listinbounddoc
  * @property Inbounddocument_m $inbounddocument_m
  * @property Clientoptions_m $clientoptions_m
+ * @property Inbound_threepl $inbound_threepl
+ * @property Mageapi $mageapi
  */
 class Listinbounddoc extends MY_Controller {
 	const TAG = "[Inbound import]";
@@ -27,14 +29,16 @@ class Listinbounddoc extends MY_Controller {
 		$this->load->library("va_list");
 		$this->va_list->setListName("Inbound Document Listing")->disableAddPlugin()
 			->setMassAction(array("0" => "Revise", "1" => "Upload Inbound Form"))
-			->setHeadingTitle(array("No #", "Client Name","DO Number","Note"))
-			->setHeadingWidth(array(2, 2,2,3,2));
+			->setHeadingTitle(array("No #", "Client Name","DO Number","Status","Note"))
+			->setHeadingWidth(array(2, 2,2,3,2,2));
 		$this->va_list->setDropdownFilter(1, array("name" => $this->inbounddocument_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));
-		
+		$this->va_list->setDropdownFilter(3, array("name" => $this->inbounddocument_m->filters['status'], "option" => $this->getStatus()));	
 		$this->data['script'] = $this->load->view("script/inbounddocument_list", array("ajaxSource" => site_url("listinbounddoc/inboundDocList")), true);	
 		$this->load->view("template", $this->data);
 	}
-	
+	private function getStatus() {
+		return array(-1=>"Select Status",0=>"Pending",1 => "Configure Attribute-Set",2 => "Form Inbounding", 3=>"Ready to Import 3PL",4 =>"Ready to Import Mage",9=>"Extracting",99 =>"Invalid" );
+	}
 	public function save(){
 		if($_SERVER['REQUEST_METHOD'] != "POST") {
 			redirect("listinbounddoc");
@@ -865,7 +869,7 @@ class Listinbounddoc extends MY_Controller {
 			$this->va_excel->getActiveSheet()->mergeCells('I9:I12');
 		$this->va_excel->getActiveSheet()->setCellValue('I9', 'Loc. Bin')->setSharedStyle($styleReport4, "I9")->getColumnDimension('I')->setWidth(25);
 		
-		$result = $this->inbounddocument_m->getInboundInvItem($client, $doc, 'ALL');
+		$result = $this->inbounddocument_m->getInboundInvItem($client, $doc, 'ALL'); 
 		$lup = 13;
 		
 		foreach($result as $item){
@@ -1034,11 +1038,13 @@ class Listinbounddoc extends MY_Controller {
 		$this->inbound_threepl->setConfig( array("username" => $c['threepluser'], "password" => $c['threeplpass']) );
 		$returnMsgItem = $this->inbounddocument_m->getParamInbound3PL($_GET['client'], $doc);
 		$return = $this->inbound_threepl->createItems($returnMsgItem);
-				if(is_array($return)){
-					redirect("listinbounddoc");
-				}else{
-					echo "Something wrong when calling 3PL. See the log file.<input type='button' value='Back' onclick='window.history.back()'>";
-				}
+        if(is_array($return)){
+            //update status inbound ready for import to mage
+            $this->inbounddocument_m->updateStatusInboundDocumentList($doc,4);
+            redirect("listinbounddoc");
+        }else{
+            echo "<hr />Something wrong when importing to 3PL. Please read message above.<br /><input type='button' value='Back' onclick='window.history.back()'>";
+        }
 	}
 
 	public function importItemMage(){
@@ -1067,15 +1073,19 @@ class Listinbounddoc extends MY_Controller {
 				$return = $this->mageapi->inboundCreateItem($param);
 				if(is_array($return)){
 					$flagError = false;
+                    $strError = "";
 					foreach($return as $itemReturn){
-						if(isset($itemReturn['isFault'])){
-							$flagError = true;
+						if(isset($itemReturn['status']) and $itemReturn['status']=="failed"){
+                            $flagError = true;
+                            foreach($itemReturn['msg'] as $itemMsg){
+                                $strError .= $itemMsg."<br>";
+                            }
 						}
 					}
 					if(!$flagError){
 						redirect("listinbounddoc");
 					}else{
-						echo "Something wrong when calling Mage. See the log file.<input type='button' value='Back' onclick='window.history.back()'>";
+						echo "Something wrong when calling Mage.<br> ".$strError."<input type='button' value='Back' onclick='window.history.back()'>";
 					}
 				}else{
 					echo "Something wrong when calling Mage. See the log file.<input type='button' value='Back' onclick='window.history.back()'>";

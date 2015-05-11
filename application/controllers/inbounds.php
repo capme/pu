@@ -6,6 +6,7 @@
  * @property client_m
  * @property Inbound_m $inbound_m
  * @property Inbounddocument_m $inbounddocument_m
+ * @property Colormap_m $colormap_m
  *
  */
 class Inbounds extends MY_Controller {
@@ -13,7 +14,7 @@ class Inbounds extends MY_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model( array("client_m", "inbound_m", "inbounddocument_m","clientoptions_m") );
+		$this->load->model( array("client_m", "inbound_m", "inbounddocument_m","clientoptions_m", "colormap_m") );
         $this->load->library('va_excel');
 	}
 	
@@ -31,7 +32,7 @@ class Inbounds extends MY_Controller {
 		
 		$this->va_list->setInputFilter(2, array("name" => $this->inbound_m->filters['doc_number']))
 			->setDropdownFilter(1, array("name" => $this->inbound_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
-	
+		$this->va_list->setDropdownFilter(4, array("name" => $this->inbound_m->filters['status'], "option" => $this->getStatus()));	
 		
 		$this->data['script'] = $this->load->view("script/Inbound_list", array("ajaxSource" => site_url("inbounds/InboundList")), true);	
 		$this->load->view("template", $this->data);
@@ -196,14 +197,31 @@ class Inbounds extends MY_Controller {
             $this->session->set_flashdata( array("inboundError" => json_encode(array("msg" => $result, "data" => $post))) );
             redirect("inbounds/add");
         }
-
+        $realPost = $post;
         $post['userfile']= $fileData['file_name'] ;
         $post['full_path']=$fileData['full_path'];
 
         $result=$this->inbound_m->saveFile($post);
 
         if(is_numeric($result)){
-            redirect("inbounds");
+            //next process, straight extract catalog product
+            //the id is $result 
+            $returnExtract = $this->inbound_m->extractCatalogProduct($result, $realPost);
+            if(isset($returnExtract['OK'])){
+                redirect("inbounds");
+            }else{
+                $msgError = "";
+                if(isset($returnExtract['problemskuconfig'])){
+                    $msgError .= "SKU Config exception<br><br />".$returnExtract['problemskuconfig']['message']."<br /><br />";
+                }
+                if(isset($returnExtract['problem'])){
+                    $msgError .= "PO type exception<br><br />".$returnExtract['problem']['message']."<br /><br />";
+                }
+                $resultException['userfile'][0] = $msgError;
+                $this->session->set_flashdata( array("inboundError" => json_encode(array("msg"=>$resultException, "data" => $realPost))) );
+                $this->inbound_m->deleteInbound($result);
+                redirect("inbounds/add");
+            }
         } else {
             $result['userfile'][0]= $this->upload->display_errors();
             $this->session->set_flashdata( array("inboundError" => json_encode(array("msg"=>$result, "data" => $post))) );
@@ -299,7 +317,7 @@ class Inbounds extends MY_Controller {
             }
             foreach($cols as $col => $val) {
                 if($val) {
-                    $msg['info'][] = "&nbsp;&nbsp;Row in: 15".$col." doesn't contains with mandatory format";
+                    $msg['info'][] = "&nbsp;&nbsp;Row in: 15 ".$col." doesn't contains with mandatory format";
                 }
             }
         }
@@ -311,24 +329,30 @@ class Inbounds extends MY_Controller {
                 $arrCheckGender = array('MAN', 'MEN', 'LADIES', 'WOMAN', 'WOMEN', 'M', 'F', 'U', '', 'FEMALE');
                 if(!checkIfInArrayString(strtoupper(trim($arr_data[$k]['E'])), $arrCheckGender)){
                     if($msg['info'][0] == "OK") unset($msg);
-                    $msg['info'][] = "Gender on row ".$k."(".$arr_data[$k]['E'].") is not supported";
+                    $msg['info'][] = "Gender on row ".$k." (".$arr_data[$k]['E'].") is not supported";
                 }
+
                 //check category support
                 $arrCheckCategory = array('TOP', 'BOTTOM', 'FOOTWEAR', 'ACCESSORIES', '');
                 if(!in_array(strtoupper(trim($arr_data[$k]['F'])), $arrCheckCategory)){
                     if($msg['info'][0] == "OK") unset($msg);
-                    $msg['info'][] = "Category on row ".$k."(".$arr_data[$k]['F'].") is not supported";
+                    $msg['info'][] = "Category on row ".$k." (".$arr_data[$k]['F'].") is not supported";
                 }
+
                 // check color support
-                $arrCheckColor = $this->inbounddocument_m->getMapColor();
-                if(!array_key_exists(strtoupper(trim($arr_data[$k]['J'])), $arrCheckColor)){
+                $arrCheckColor = $this->colormap_m->getByOrigColor( strtoupper(trim($arr_data[$k]['J'])) );
+                if( !$arrCheckColor ) {
                     if($msg['info'][0] == "OK") unset($msg);
-                    $msg['info'][] = "Color on row ".$k."(".$arr_data[$k]['J'].") is not supported";
+                    $msg['info'][] = "Color on row ".$k." (".$arr_data[$k]['J'].") is not supported. Please update color map data";
                 }
             }
         }
 
         return $msg;
+	}
+	
+	private function getStatus() {
+		return array(-1=>"Select Status",0=>"Pending",1 => "Configure Attribute-Set",2 => "Form Inbounding", 3=>"Ready to Import 3PL",4 =>"Ready to Import Mage",9=>"Extracting",99 =>"Invalid" );
 	}
 }
 ?>
