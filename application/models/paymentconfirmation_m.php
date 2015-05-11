@@ -12,14 +12,20 @@ class Paymentconfirmation_m extends MY_Model {
 	{
 		parent::__construct();
 		$this->db = $this->load->database('mysql', TRUE);
-		
-		$this->relation = array(
-			array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}")
-		);
-		
-		$this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->table}.created_at", "{$this->table}.origin_bank", "{$this->table}.dest_bank", "{$this->table}.transaction_method", "{$this->table}.amount", "{$this->table}.name", "{$this->table}.transaction_date", "{$this->table}.updated_at", "{$this->table}.status", "{$this->table}.receipt_url","{$this->table}.updated_by", "{$this->tableClient}.client_code");
-		
-		$this->filters = array("status"=>"status","order_number"=>"order_number","client_id"=>"client_id");
+        $user=$this->session->userdata('group');
+		if ($user == 4) {
+            $this->relation = array(
+                array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} where status=0")
+            );
+
+        }
+        else {
+            $this->relation = array(
+                array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}")
+            );
+        }
+        $this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->table}.created_at", "{$this->table}.origin_bank", "{$this->table}.dest_bank", "{$this->table}.transaction_method", "{$this->table}.amount", "{$this->table}.name", "{$this->table}.transaction_date", "{$this->table}.updated_at", "{$this->table}.status", "{$this->table}.receipt_url", "{$this->table}.updated_by", "{$this->tableClient}.client_code");
+        $this->filters = array("status" => "status", "order_number" => "order_number", "client_id" => "client_id");
 	}
 	
 	public function getPaymentConfirmationList() 
@@ -61,8 +67,9 @@ class Paymentconfirmation_m extends MY_Model {
 			}else{
 				$action='<a href="'.site_url("paymentconfirmation/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>';
 			}
-			
-			$date = explode(' ', $_result->created_at);
+            $user=$this->session->userdata('pkUserId');
+
+            $date = explode(' ', $_result->created_at);
 			$records["aaData"][] = array(
 					'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
 					$no=$no+1,
@@ -71,9 +78,9 @@ class Paymentconfirmation_m extends MY_Model {
 					$_result->order_number,
 					$_result->name,
 					$_result->origin_bank . ($_result->origin_bank ? '<br /> (<a '.anchor($_result->receipt_url, 'Receipt', 'style="font-size:12px;" target="_blank" enabled="enabled" class="fa fa-search btn btn-xs default"').'</a>)' : ''),
-					"Rp. ".number_format($_result->amount),					
+					"Rp. ".number_format($_result->amount),
 					'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
-					$action				
+					$action
 			);
 		}
 	
