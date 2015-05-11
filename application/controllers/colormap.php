@@ -21,12 +21,16 @@ class Colormap extends MY_Controller {
         $this->data['breadcrumb'] = array("Merchandising"=>"","Color Map"=>"colormap");
 
         $this->colormap_m->clearCurrentFilter();
-
         $this->load->library("va_list");
+
         $this->va_list->disableAddPlugin()->setListName("Color Map")
             ->setMassAction(array("1" => "Import", "2" => "Export"))
             ->setHeadingTitle(array("Original Color","Map Color","Color Code"))
             ->setHeadingWidth(array(2,2,2,2,2));
+
+        $this->va_list->setInputFilter(0, array("name" => $this->colormap_m->filters['original_color']))
+            ->setInputFilter(1, array("name" => $this->colormap_m->filters['color_map']))
+            ->setInputFilter(2, array("name" => $this->colormap_m->filters['color_code']));
 
         $this->data['script'] = $this->load->view("script/colormap_list", array("ajaxSource" => site_url("colormap/colorMapList")), true);
         $this->load->view("template", $this->data);
