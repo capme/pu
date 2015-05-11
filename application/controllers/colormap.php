@@ -11,7 +11,7 @@ class Colormap extends MY_Controller {
     var $data = array();
     public function __construct(){
         parent::__construct();
-        $this->load->model('colormap_m');
+        $this->load->model( array('colormap_m', 'inbounddocument_m'));
         $this->load->library('va_excel');
     }
 
@@ -133,27 +133,25 @@ class Colormap extends MY_Controller {
 
         $truncate=$this->colormap_m->truncate();
         $colormap = $this->_validate($fileData);
+        $basicColor = $this->inbounddocument_m->getMapColor();
+        $errorMsg = array();
 
         foreach($colormap as $colorex){
-           $original_color[]=trim($colorex['B']);
-           $mapping_color[]=trim($colorex['C']);
-           $color_code[]=strtoupper(trim($colorex['D']));
-        }
-
-        $failed = array_unique( array_diff_assoc( $color_code, array_unique( $color_code ) ) );
-        if(count($failed) > 0){
-            for ($fail = 1; $fail <= count($failed); $fail++) {
-
-                $errorMsg[] = 'duplicate color code ' . $failed[$fail];
+            if(!isset($basicColor[$colorex['C']])) {
+                $errorMsg[] = "Color map " . $colorex['C'] .' is unsupported';
             }
-            $this->session->set_flashdata(array("colormapError" => json_encode(array("msg" => $errorMsg, "data" => $post))));
-            unlink($fileData['full_path']);
-            redirect("colormap/add");
+           $original_color[]=strtoupper(trim($colorex['B']));
+           $mapping_color[]=strtoupper(trim($colorex['C']));
+           $color_code[]=strtoupper(trim($colorex['D']));
+
         }
-        else{
+
+        if(empty($errorMsg)) {
             for($i=0; $i < count($original_color); $i++){
                 $result =$this->colormap_m->savefile($original_color[$i], $mapping_color[$i], $color_code[$i]);
             }
+        } else {
+            $result = false;
         }
 
         if(is_numeric($result)){
@@ -161,7 +159,7 @@ class Colormap extends MY_Controller {
         }
         else {
             $result['userfile'][0]= $this->upload->display_errors();
-            $this->session->set_flashdata( array("colormapError" => json_encode(array("msg"=>$errorMsg, "data" => $post))));
+            $this->session->set_flashdata( array("colormapError" => json_encode(array("msg"=>@$errorMsg, "data" => $post))));
             redirect("colormap/add");
         }
     }
