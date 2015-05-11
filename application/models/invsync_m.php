@@ -17,7 +17,7 @@ class Invsync_m extends MY_Model {
 
         foreach($data as $row) {
             if(!empty($row)) {
-                $insert[] = array('sku_simple' => $row->sku, 'sku_description' => $row->i_description, 'updated_at' => date('Y-m-d H:i:s'));
+                $insert[] = array('sku_simple' => $row->sku, 'sku_config' => $row->description2, 'sku_description' => $row->i_description, 'updated_at' => date('Y-m-d H:i:s'));
             }
         }
 
@@ -29,6 +29,29 @@ class Invsync_m extends MY_Model {
 
     public function findBySku($sku, $clientId) {
         return $this->db->get_where($this->table.$clientId, array('sku_simple' => $sku))->result_array();
+    }
+
+    public function findConfigs($configs, $clientId) {
+        $this->db->distinct();
+        $this->db->select('sku_config');
+        $this->db->where_in('sku_config', $configs);
+        $rows = $this->db->get($this->table.$clientId)->result_array();
+        if(empty($rows)) {
+            return end($configs);
+        }
+
+        $availConfigs = array();
+        foreach($rows as $config) {
+            $availConfigs = $config;
+        }
+
+        foreach($configs as $candidate) {
+            if(in_array($candidate, $availConfigs)) {
+                return $candidate;
+            }
+        }
+
+        return end($configs);
     }
 
     public function findByProdColorSize($prod, $color, $size, $clientId) {
