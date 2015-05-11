@@ -137,6 +137,7 @@ class Colormap extends MY_Controller {
         $errorMsg = array();
 
         foreach($colormap as $colorex){
+            $colorex['C'] = trim(strtoupper($colorex['C']));
             if(!isset($basicColor[$colorex['C']])) {
                 $errorMsg[] = "Color map " . $colorex['C'] .' is unsupported';
             }
