@@ -75,22 +75,26 @@ class Colormap extends MY_Controller {
 
     public function export(){
        $getdata = $this->colormap_m->getDataColor();
-
        $header=array(array("original color","color map","color code"));
-        $data = array_merge($header,$getdata);
+       $add=array(array("1","2","3"));
+       $data = array_merge($add,$header,$getdata);
 
     // Create new PHPExcel object
         $objPHPExcel = new PHPExcel();
-        $sheet=$objPHPExcel->getActiveSheet(1);
-
-        for($i=1; $i < count($data); $i++){
-            $sheet->setCellValue('A'.$i, $i)
+        $a=1;
+        $sheet=$objPHPExcel->getActiveSheet(0);
+        for($i=2; $i < count($data); $i++){
+            $sheet->setCellValue('B1', $data[1][0])
+                ->setCellValue('C1', $data[1][1])
+                ->setCellValue('D1', $data[1][2])
+                ->setCellValue('A1', 'No')
+                ->setCellValue('A'.$i, $a++)
                 ->setCellValue('B'.$i, $data[$i]['original_color'])
                 ->setCellValue('C'.$i, $data[$i]['color_map'])
                 ->setCellValue('D'.$i, $data[$i]['color_code']);
         }
 
-// Redirect output to a client’s web browser (Excel5)
+        // Redirect output to a client’s web browser (Excel5)
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="color map.xls"');
         header('Cache-Control: max-age=0');
@@ -129,14 +133,17 @@ class Colormap extends MY_Controller {
 
         $truncate=$this->colormap_m->truncate();
         $colormap = $this->_validate($fileData);
+
         foreach($colormap as $colorex){
            $original_color[]=trim($colorex['B']);
            $mapping_color[]=trim($colorex['C']);
            $color_code[]=strtoupper(trim($colorex['D']));
         }
-        $failed = array_diff($color_code, $color_code);
+
+        $failed = array_unique( array_diff_assoc( $color_code, array_unique( $color_code ) ) );
         if(count($failed) > 0){
-            for ($fail = 0; $fail < count($failed); $fail++) {
+            for ($fail = 1; $fail <= count($failed); $fail++) {
+
                 $errorMsg[] = 'duplicate color code ' . $failed[$fail];
             }
             $this->session->set_flashdata(array("colormapError" => json_encode(array("msg" => $errorMsg, "data" => $post))));
