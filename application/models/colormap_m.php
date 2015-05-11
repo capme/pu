@@ -3,19 +3,18 @@
 * @property colormap_m $colormap_m
  */
 class Colormap_m extends MY_Model {
-
     var $filterSession = "DB_AWB_FILTER";
     var $db = null;
     var $table = 'color_map';
     var $sorts = array(1 => "id");
     var $pkField = "id";
     var $path = "";
+    var $filters = array("original_color" => "original_color","color_map"=>"color_map","color_code"=>"color_code");
     var $cache = array();
 
     function __construct(){
         parent::__construct();
         $this->db = $this->load->database('mysql', TRUE);
-
         $this->load->helper('path');
         $this->load->library('va_excel');
     }

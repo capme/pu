@@ -736,6 +736,7 @@ class Inbounddocument_m extends MY_Model {
 				$tmp = str_replace(' ', '', $productname);
 				$inProdName = substr($tmp,0,3);
 				$sku_config = strtoupper($iBrand."-".$inProdName."-".$inWarna['color_code']);
+                $skuConfigNoColor = $sku_config;
 			}else{
 				$sku_config = trim($sku) . $inWarna['color_code'];
                 $skuConfigNoColor = strtoupper(trim($sku));
@@ -1011,13 +1012,31 @@ class Inbounddocument_m extends MY_Model {
                     }
                 }
 
+                $poTypeException = false;
                 // check wheter problem detected
 				if( !empty($checkReturn) and strtoupper($poType)=='NEW') {
                     $msgRet['problem'][] = array('sku_simple' => $sku_simple . ' (ROW: '.$x.')', 'poTypeInFile' => $poType, 'poTypeInSys' => 'REPEAT');
                     $poType = "REPEAT";
+                    $poTypeException = true;
 				} else if( empty($checkReturn) && strtoupper($poType) != 'NEW' ) {
                     $msgRet['problem'][] = array('sku_simple' => $sku_simple . ' (ROW: '.$x.')', 'poTypeInFile' => $poType, 'poTypeInSys' => 'NEW');
                     $poType = "NEW";
+                    $poTypeException = true;
+                }
+
+                // check existing config
+                if(!$poTypeException) {
+                    $configCandidate = array();
+                    $configCandidate[] = $skuConfigNoColor;
+
+                    $basicColor = strtoupper( $inWarna['color_map'] );
+                    $skuConfigBasicColor = $skuConfigNoColor . $this->mapColor[$basicColor];
+                    $configCandidate[] = $skuConfigBasicColor;
+
+                    $skuConfigOrigColor = $sku_config;
+                    $configCandidate[] = $skuConfigOrigColor;
+
+                    $sku_config = $this->invsync_m->findConfigs($configCandidate, $client);
                 }
 													
 				$sql = "INSERT INTO ".$this->tableInv."_".$client." (doc_number, sku_config, sku_simple, sku_description, min, max, cycle_count,";
