@@ -558,7 +558,7 @@ class Inbounddocument_m extends MY_Model {
 			$sql .= " cost_required, is_haz_mat, haz_mat_id, haz_mat_shipping_name, haz_mat_hazard_class, haz_mat_packing_group,";
 			$sql .= " haz_mat_flash_point, haz_mat_label_code, haz_mat_flat, image_url, storage_count_stript_template_id, storage_rates,";
 			$sql .= " outbound_mobile_serialization_behavior, price, total_qty, unit_type, updated_by, attribute_set, po_type) VALUES";
-			$sql .= " (".$doc_number.", '".strtoupper($skuConfig)."', '".strtoupper($skuSimple)."', '".$skuDescription."', '".$min."', ".$max.", ".$cycleCount.",";
+			$sql .= " (".$doc_number.", '".strtoupper($skuConfig)."', '".strtoupper($skuSimple)."', ".$this->db->escape($skuDescription).", '".$min."', ".$max.", ".$cycleCount.",";
 			$sql .= " ".$reorderQty.", '".$inventoryMethod."', '".$temperature."', '".$cost."', '".$upc."', '".$trackLot."', '".$trackSerial."', '".$trackExpdate."', '".$primaryUnitOfMeasure."',";
 			$sql .= " '".$packagingUnit."', '".$packingUomQty."', '".$length."', '".$width."', '".$height."', '".$weight."', '".$qualifiers."', '".$storageSetup."', '".$variableSetup."', ";
 			$sql .= " '".$nmfc."', '".$lotNumberReq."', '".$serialNumberReq."', '".$serialNumberMustBeUnique."', '".$expDateReq."', '".$enableCost."', ";
