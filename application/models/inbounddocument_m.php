@@ -7,6 +7,7 @@
 /**
  * @property Clientoptions_m $clientoptions_m
  * @property Invsync_m $invsync_m
+ * @property Colormap_m $colormap_m
  */
 class Inbounddocument_m extends MY_Model {
 	
@@ -690,7 +691,7 @@ class Inbounddocument_m extends MY_Model {
 			}
 			//color name
 			if(@$arr_data[$x]['J'] <> ""){
-				$colorname = $arr_data[$x]['J'];
+				$colorname = trim(strtoupper($arr_data[$x]['J']));
 			}
 
 			//material
@@ -727,21 +728,17 @@ class Inbounddocument_m extends MY_Model {
 			$totalvalue = $retailprice*$qty;
 			
 			//------------------ready for processing the query----------------------------
+
 			//sku_config
-			if($sku == ""){
-				//sku not exist
-				//get 2 digit inisial brand
-				//get 3 digit inisial product name
+            $inWarna = $this->colormap_m->getByOrigColor( $colorname );
+
+            if($sku == ""){
 				$tmp = str_replace(' ', '', $productname);
 				$inProdName = substr($tmp,0,3);
-				//get 2 digit inisial color
-				$inWarna = $this->mapColor[strtoupper($colorname)];
-				//compose the sku config
-				$sku_config = strtoupper($iBrand."-".$inProdName."-".$inWarna);
+				$sku_config = strtoupper($iBrand."-".$inProdName."-".$inWarna['color_code']);
 			}else{
-				//sku exist
-				//compose the sku config
-				$sku_config = trim($sku);
+				$sku_config = trim($sku) . $inWarna['color_code'];
+                $skuConfigNoColor = strtoupper(trim($sku));
 			}
 			
 			//sku simple
@@ -755,20 +752,19 @@ class Inbounddocument_m extends MY_Model {
 				$sku_simple = $sku_config.$size;
 			}
 						
-				//get 2 digit inisial brand
-                $iBrand = strtoupper($iBrand);
-				//get 1 digit inisial gender
-				$inGender = strtoupper(substr($gender, 0, 1));
-				//get category
-				$inCategory = $category;
-				//get sub category
-				$inSubCategory = $subcategory;
-				//get productname
-				$inProductName = $productname;
-				//get size
-				$inSize = $size;
-				//get color
-				$inColor = $colorname;
+            //get 2 digit inisial brand
+            $iBrand = strtoupper($iBrand);
+            //get 1 digit inisial gender
+            $inGender = strtoupper(substr($gender, 0, 1));
+            //get category
+            $inCategory = $category;
+            //get sub category
+            $inSubCategory = $subcategory;
+            //get productname
+            $inProductName = $productname;
+            //get size
+            $inSize = $size;
+
             $isMultiBrand = $this->clientoptions_m->get($client, 'multi_brand');
             if(!empty($isMultiBrand) && $isMultiBrand['option_value'] == 1) { // paraplou use brand code
                 $brandList = $this->clientoptions_m->get($client, 'brand_code');
@@ -779,7 +775,7 @@ class Inbounddocument_m extends MY_Model {
 
             }
 
-            $sku_description = $iBrand.",".$inGender.",".$inCategory.",".$inSubCategory.",".$inProductName.",S:".$inSize.",".$inColor;
+            $sku_description = $iBrand.",".$inGender.",".$inCategory.",".$inSubCategory.",".$inProductName.",S:".$inSize.",".$colorname;
 
 			//min
 			$min = "";
@@ -938,7 +934,7 @@ class Inbounddocument_m extends MY_Model {
 
             if($retailprice <> ""){
 
-            	//validation for SKU Config (same SKU different variant)
+            	/*//validation for SKU Config (same SKU different variant)
             	
             	if(empty($tmpArrValSKUConfigDiff)){
             		//first time
@@ -974,7 +970,7 @@ class Inbounddocument_m extends MY_Model {
 						$tmpArrValSKUConfig[$productname."##".$colorname][] = $sku_config;
                     	$msgRet['problemskuconfig'][$productname."##".$colorname] = $tmpArrValSKUConfig[$productname."##".$colorname];
 					}
-				}
+				}*/
 
 				//re-update sku simple
 				if($size == ""){
@@ -989,13 +985,38 @@ class Inbounddocument_m extends MY_Model {
 					
 				//check sku simple from 3pl sync table
 				$checkReturn = $this->invsync_m->findBySku(strtoupper($sku_simple), $client);
+                if(empty($checkReturn) && isset($skuConfigNoColor)) {
+                    // recheck w/o color
+                    $tmp = array();
+                    $tmp['config'] = $skuConfigNoColor;
+                    $tmp['simple'] = str_replace($sku_config, $tmp['config'], $sku_simple);
+                    $checkReturn = $this->invsync_m->findBySku(strtoupper($tmp['simple']), $client);
+                    if(!empty($checkReturn)) {
+                        // existing sku found with no color
+                        $sku_simple = $tmp['simple'];
+                        $sku_config = $tmp['config'];
+                    } else {
+                        // recheck w/ standard color
+                        $tmp = array();
+                        $basicColor = strtoupper( $inWarna['color_map'] );
+                        $tmp['config'] = $skuConfigNoColor . $this->mapColor[$basicColor];
+                        $tmp['simple'] = str_replace($sku_config, $tmp['config'], $sku_simple);
+                        $checkReturn = $this->invsync_m->findBySku(strtoupper($tmp['simple']), $client);
+
+                        if(!empty($checkReturn)) {
+                            // existing sku found with standard color
+                            $sku_simple = $tmp['simple'];
+                            $sku_config = $tmp['config'];
+                        }
+                    }
+                }
 
                 // check wheter problem detected
 				if( !empty($checkReturn) and strtoupper($poType)=='NEW') {
-                    $msgRet['problem'][] = array('sku_simple' => $sku_simple, 'poTypeInFile' => $poType, 'poTypeInSys' => 'REPEAT');
+                    $msgRet['problem'][] = array('sku_simple' => $sku_simple . ' (ROW: '.$x.')', 'poTypeInFile' => $poType, 'poTypeInSys' => 'REPEAT');
                     $poType = "REPEAT";
 				} else if( empty($checkReturn) && strtoupper($poType) != 'NEW' ) {
-                    $msgRet['problem'][] = array('sku_simple' => $sku_simple, 'poTypeInFile' => $poType, 'poTypeInSys' => 'NEW');
+                    $msgRet['problem'][] = array('sku_simple' => $sku_simple . ' (ROW: '.$x.')', 'poTypeInFile' => $poType, 'poTypeInSys' => 'NEW');
                     $poType = "NEW";
                 }
 													
@@ -1015,11 +1036,11 @@ class Inbounddocument_m extends MY_Model {
 				$sql .= " '".$outbound_mobile_serialization_behavior."', '".$price."', '".$total_qty."', '".$unit_type."', ".$updated_by.", ".(int)$itemAttrSet.", '".strtoupper($poType)."')";
 				$this->db->query($sql);
 			
-				if($sqlBeforeLoop != ""){
+				/*if($sqlBeforeLoop != ""){
 					//updating sku_simple based on sku_config (S/M/L)
 					$this->db->query($sqlBeforeLoop_2);
                     $this->db->query($sqlBeforeLoop);
-				}
+				}*/
 			}
 		}
         //end parse the array from excel
