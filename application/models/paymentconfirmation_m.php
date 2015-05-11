@@ -17,16 +17,15 @@ class Paymentconfirmation_m extends MY_Model {
             $this->relation = array(
                 array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} where status=0")
             );
-            $this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->table}.created_at", "{$this->table}.origin_bank", "{$this->table}.dest_bank", "{$this->table}.transaction_method", "{$this->table}.amount", "{$this->table}.name", "{$this->table}.transaction_date", "{$this->table}.updated_at", "{$this->table}.status", "{$this->table}.receipt_url", "{$this->table}.updated_by", "{$this->tableClient}.client_code");
-            $this->filters = array("status" => "status", "order_number" => "order_number", "client_id" => "client_id");
+
         }
         else {
             $this->relation = array(
                 array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}")
             );
-            $this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->table}.created_at", "{$this->table}.origin_bank", "{$this->table}.dest_bank", "{$this->table}.transaction_method", "{$this->table}.amount", "{$this->table}.name", "{$this->table}.transaction_date", "{$this->table}.updated_at", "{$this->table}.status", "{$this->table}.receipt_url", "{$this->table}.updated_by", "{$this->tableClient}.client_code");
-            $this->filters = array("status" => "status", "order_number" => "order_number", "client_id" => "client_id");
         }
+        $this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->table}.created_at", "{$this->table}.origin_bank", "{$this->table}.dest_bank", "{$this->table}.transaction_method", "{$this->table}.amount", "{$this->table}.name", "{$this->table}.transaction_date", "{$this->table}.updated_at", "{$this->table}.status", "{$this->table}.receipt_url", "{$this->table}.updated_by", "{$this->tableClient}.client_code");
+        $this->filters = array("status" => "status", "order_number" => "order_number", "client_id" => "client_id");
 	}
 	
 	public function getPaymentConfirmationList() 
