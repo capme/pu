@@ -6,20 +6,50 @@ class Paymentconfirmation_m extends MY_Model {
 	var $sorts = array(1 => "id");
 	var $pkField = "id";
 	var $status=array("cancel"=>2,"approve"=>1);
+    var $statusAWB=array("printed"=>1,"new request"=>0);
 	var $tableClient ='client';
+    var $tableAwb = 'awb_queue_printing';
 	
 	function __construct()
 	{
 		parent::__construct();
+        $this->load->library("va_list");
 		$this->db = $this->load->database('mysql', TRUE);
 		
 		$this->relation = array(
-			array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}")
+			array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}"),
+			array("type" => "inner", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
 		);
+
+		$this->select = array(
+                            "{$this->table}.{$this->pkField}",
+                            "{$this->table}.order_number",
+                            "{$this->table}.created_at",
+                            "{$this->table}.origin_bank",
+                            "{$this->table}.dest_bank",
+                            "{$this->table}.transaction_method",
+                            "{$this->table}.amount `".$this->table.".amount`",
+                            "{$this->table}.name",
+                            "{$this->table}.transaction_date",
+                            "{$this->table}.updated_at",
+                            "{$this->table}.status `".$this->table.".status`",
+                            "{$this->table}.receipt_url",
+                            "{$this->table}.updated_by",
+                            "{$this->tableClient}.client_code",
+                            "{$this->tableAwb}.status `".$this->tableAwb.".status`"
+                        );
 		
-		$this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->table}.created_at", "{$this->table}.origin_bank", "{$this->table}.dest_bank", "{$this->table}.transaction_method", "{$this->table}.amount", "{$this->table}.name", "{$this->table}.transaction_date", "{$this->table}.updated_at", "{$this->table}.status", "{$this->table}.receipt_url","{$this->table}.updated_by", "{$this->tableClient}.client_code");
-		
-		$this->filters = array("status"=>"status","order_number"=>"order_number","client_id"=>"client_id");
+		$this->filters = array(
+                            $this->table.".status"=>$this->table."_status",
+                            "order_number"=>"order_number",
+                            "client_id"=>"client_id",
+                            $this->table.".amount"=>$this->table."_amount",
+                            $this->tableAwb.".status"=>$this->tableAwb."_status",
+                            "name"=>"name"
+                        );
+
+        $this->listWhere['equal'] = array();
+        $this->listWhere['like'] = array("order_number", "name");
 	}
 	
 	public function getPaymentConfirmationList() 
@@ -46,15 +76,26 @@ class Paymentconfirmation_m extends MY_Model {
 				1 =>array("Approve", "success"),
 				2 =>array("Cancel","danger")
 		);
-		
-		$end = $iDisplayStart + $iDisplayLength;
+
+        $statListAWB= array(
+            0 =>array("New Request", "warning"),
+            1 =>array("Printed", "success"),
+            3 =>array("Cron Process", "danger")
+        );
+
+        $end = $iDisplayStart + $iDisplayLength;
 		$end = $end > $iTotalRecords ? $iTotalRecords : $end;
 	
 		$_row = $this->_doGetRows($iDisplayStart, $iDisplayLength);
 		$no=0;
 		foreach($_row->result() as $_result) {
-			$status=$statList[$_result->status];
-			if ($_result->status==0)
+            $_resultArr = (array)$_result;
+			//$status=$statList[$_result->status];
+            $status=$statList[$_resultArr['bank_confirmation.status']];
+            //$statusAWB=$statListAWB[$_result->statusAwb];
+            $statusAWB=$statListAWB[$_resultArr['awb_queue_printing.status']];
+			//if ($_result->status==0)
+            if ($_resultArr['bank_confirmation.status']==0)
 			{
 				$action='<a href="'.site_url("paymentconfirmation/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>|<a href="'.site_url("paymentconfirmation/approve/".$_result->id).'" class="btn btn-xs default"><i class="fa fa-check" ></i> Approve</a>|
 				<a href="'.site_url("paymentconfirmation/cancel/".$_result->id).'" class="btn btn-xs default"><i class="fa fa-times" ></i> Cancel</a>';
@@ -71,9 +112,10 @@ class Paymentconfirmation_m extends MY_Model {
 					$_result->order_number,
 					$_result->name,
 					$_result->origin_bank . ($_result->origin_bank ? '<br /> (<a '.anchor($_result->receipt_url, 'Receipt', 'style="font-size:12px;" target="_blank" enabled="enabled" class="fa fa-search btn btn-xs default"').'</a>)' : ''),
-					"Rp. ".number_format($_result->amount),					
+					"Rp. ".number_format($_resultArr['bank_confirmation.amount']),
 					'<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
-					$action				
+                    '<span class="label label-sm label-'.($statusAWB[1]).'">'.($statusAWB[0]).'</span>',
+					$action
 			);
 		}
 	

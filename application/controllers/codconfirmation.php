@@ -2,7 +2,7 @@
 /**
  * 
  * @property Mageapi $mageapi
- *
+ * @property Codconfirmation_m $codconfirmation_m
  */
 class Codconfirmation extends MY_Controller {
 	var $data = array();
@@ -24,12 +24,16 @@ class Codconfirmation extends MY_Controller {
 				
 		$this->load->library("va_list");
 		$this->va_list->disableAddPlugin()->setListName("COD Order Confirmation")
-		->setHeadingTitle(array("#", "Created Date", "Client Name","Order Number","Cust. Name", "Amount","Phone / Email","Status"))
-		->setHeadingWidth(array(2,2,2,2,2,2,2,2));
+		->setHeadingTitle(array("#", "Created Date", "Client Name","Order Number","Cust. Name", "Amount","Phone / Email","Status","Status AWB"))
+		->setHeadingWidth(array(2,2,2,2,2,2,2,2,2));
 		
-		$this->va_list->setInputFilter(4, array("name" => $this->codconfirmation_m->filters['order_number']))
+		$this->va_list->setInputFilter(3, array("name" => $this->codconfirmation_m->filters['order_number']))
 			->setDropdownFilter(2, array("name" => $this->codconfirmation_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
-				
+        $this->va_list->setInputFilter(4, array("name" => $this->codconfirmation_m->filters['customer_name']));
+        $this->va_list->setInputFilter(5, array("name" => $this->codconfirmation_m->filters[$this->codconfirmation_m->table.'.amount']));
+        $this->va_list->setDropdownFilter(7, array("name" => $this->codconfirmation_m->filters[$this->codconfirmation_m->table.'.status'], "option" => $this->getStatus()));
+        $this->va_list->setDropdownFilter(8, array("name" => $this->codconfirmation_m->filters[$this->codconfirmation_m->tableAwb.'.status'], "option" => $this->getStatusAwb()));
+
 		$this->data['script'] = $this->load->view("script/codconfirmation_list", array("ajaxSource" => site_url("codconfirmation/CodConfirmationList")), true);	
 		$this->load->view("template", $this->data);
 	}
@@ -220,5 +224,9 @@ class Codconfirmation extends MY_Controller {
 		
 	private function getStatus() {
 		return array(-1=>"",0=>"New Request",1 => "Approve",2 => "Cancel");
-	}	
+	}
+
+    private function getStatusAwb() {
+        return array(-1=>"",0=>"New Request",1 => "Printed");
+    }
 }

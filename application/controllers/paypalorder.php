@@ -19,12 +19,15 @@ class Paypalorder extends MY_Controller {
 
         $this->load->library("va_list");
         $this->va_list->disableAddPlugin()->setListName("Paypal Order")
-            ->setHeadingTitle(array("#", "Created Date", "Client Name","Order Number","Name","Amount","Status"))
-            ->setHeadingWidth(array(2,2,2,2,3,3,4));
+            ->setHeadingTitle(array("#", "Created Date", "Client Name","Order Number","Name","Amount","Status","Status AWB"))
+            ->setHeadingWidth(array(2,2,2,2,3,3,3,4));
 
         $this->va_list->setInputFilter(3, array("name" => $this->paypalorder_m->filters['order_number']))
             ->setDropdownFilter(2, array("name" => $this->paypalorder_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
-        $this->va_list->setDropdownFilter(7, array("name" => $this->paypalorder_m->filters['status'], "option" => $this->getStatus()));
+        $this->va_list->setInputFilter(4, array("name" => $this->paypalorder_m->filters['name']));
+        $this->va_list->setInputFilter(5, array("name" => $this->paypalorder_m->filters[$this->paypalorder_m->table.'.amount']));
+        $this->va_list->setDropdownFilter(6, array("name" => $this->paypalorder_m->filters[$this->paypalorder_m->table.'.status'], "option" => $this->getStatus()));
+        $this->va_list->setDropdownFilter(7, array("name" => $this->paypalorder_m->filters[$this->paypalorder_m->tableAwb.'.status'], "option" => $this->getStatusAwb()));
 
         $this->data['script'] = $this->load->view("script/paypalorder_list", array("ajaxSource" => site_url("paypalorder/paypalOrderList")), true);
         $this->load->view("template", $this->data);
@@ -105,6 +108,9 @@ class Paypalorder extends MY_Controller {
 
     private function getStatus() {
 		return array(-1=>"",0 => "pending", 1 => "processing", 2 => "complete", 3 => "fraud", 4 => "payment_review", 5 => "canceled",6 => "closed", 7 => "waiting_payment");
+    }
+    private function getStatusAwb() {
+        return array(-1=>"",0=>"New Request",1 => "Printed");
     }
 
 }

@@ -1,4 +1,9 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ *
+ * @property Mageapi $mageapi
+ * @property Codpaymentconfirmation_m $codpaymentconfirmation_m
+ */
 class Codpaymentconfirmation extends MY_Controller {
 	var $data = array();
 	public function __construct()
@@ -19,12 +24,15 @@ class Codpaymentconfirmation extends MY_Controller {
 				
 		$this->load->library("va_list");
 		$this->va_list->disableAddPlugin()->setListName("COD Payment Confirmation")
-		->setHeadingTitle(array("#","Created Date", "Client Name","Order Number","Cust. Name","Amount","Phone / Email","Status"))
-		->setHeadingWidth(array(2,2,2,2,2,2,2,2));
+		->setHeadingTitle(array("#","Created Date", "Client Name","Order Number","Cust. Name","Amount","Phone / Email","Status","Status AWB"))
+		->setHeadingWidth(array(2,2,2,2,2,2,2,2,2));
 		
-		$this->va_list->setInputFilter(4, array("name" => $this->codpaymentconfirmation_m->filters['order_number']))
+		$this->va_list->setInputFilter(4, array("name" => $this->codpaymentconfirmation_m->filters['customer_name']))
 			->setDropdownFilter(2, array("name" => $this->codpaymentconfirmation_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
-		$this->va_list->setDropdownFilter(3, array("name" => $this->codpaymentconfirmation_m->filters['status'], "option" => $this->getStatus()));
+		$this->va_list->setDropdownFilter(7, array("name" => $this->codpaymentconfirmation_m->filters[$this->codpaymentconfirmation_m->table.'.status'], "option" => $this->getStatus()));
+        $this->va_list->setInputFilter(3, array("name" => $this->codpaymentconfirmation_m->filters['order_number']));
+        $this->va_list->setInputFilter(5, array("name" => $this->codpaymentconfirmation_m->filters[$this->codpaymentconfirmation_m->table.'.amount']));
+        $this->va_list->setDropdownFilter(8, array("name" => $this->codpaymentconfirmation_m->filters[$this->codpaymentconfirmation_m->tableAwb.'.status'], "option" => $this->getStatusAwb()));
 		
 		$this->data['script'] = $this->load->view("script/codconfirmation_list", array("ajaxSource" => site_url("codpaymentconfirmation/CodPaymentConfirmationList")), true);	
 		$this->load->view("template", $this->data);
@@ -201,5 +209,9 @@ class Codpaymentconfirmation extends MY_Controller {
 	
 	private function getStatus() {
 		return array(-1=>"",1 => "Processing",3 => "Received", 4 => "Cancel");
-	}	
+	}
+
+    private function getStatusAwb() {
+        return array(-1=>"",0=>"New Request",1 => "Printed");
+    }
 }
