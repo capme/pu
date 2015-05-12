@@ -6,6 +6,7 @@
  * @property Clientoptions_m $clientoptions_m
  * @property Inbound_threepl $inbound_threepl
  * @property Mageapi $mageapi
+ * @property Va_list $va_list
  */
 class Listinbounddoc extends MY_Controller {
 	const TAG = "[Inbound import]";

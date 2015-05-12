@@ -23,7 +23,7 @@ class Paypalorder extends MY_Controller {
             ->setHeadingWidth(array(2,2,2,2,3,3,3,4));
 
         $this->va_list->setInputFilter(3, array("name" => $this->paypalorder_m->filters['order_number']))
-            ->setDropdownFilter(2, array("name" => $this->paypalorder_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
+            ->setDropdownFilter(2, array("name" => $this->paypalorder_m->filters[$this->paypalorder_m->table.'.client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
         $this->va_list->setInputFilter(4, array("name" => $this->paypalorder_m->filters['name']));
         $this->va_list->setInputFilter(5, array("name" => $this->paypalorder_m->filters[$this->paypalorder_m->table.'.amount']));
         $this->va_list->setDropdownFilter(6, array("name" => $this->paypalorder_m->filters[$this->paypalorder_m->table.'.status'], "option" => $this->getStatus()));

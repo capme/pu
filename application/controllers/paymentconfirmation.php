@@ -26,7 +26,7 @@ class Paymentconfirmation extends MY_Controller {
 		->setHeadingWidth(array(2,2,2,2,2,3,2,3,4));
 
 		$this->va_list->setInputFilter(3, array("name" => $this->paymentconfirmation_m->filters['order_number']))
-			->setDropdownFilter(2, array("name" => $this->paymentconfirmation_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
+			->setDropdownFilter(2, array("name" => $this->paymentconfirmation_m->filters[$this->paymentconfirmation_m->table.'.client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
 		$this->va_list->setDropdownFilter(7, array("name" => $this->paymentconfirmation_m->filters[$this->paymentconfirmation_m->table.'.status'], "option" => $this->getStatus()));
         $this->va_list->setDropdownFilter(8, array("name" => $this->paymentconfirmation_m->filters[$this->paymentconfirmation_m->tableAwb.'.status'], "option" => $this->getStatusAwb()));
         $this->va_list->setInputFilter(6, array("name" => $this->paymentconfirmation_m->filters[$this->paymentconfirmation_m->table.'.amount']));

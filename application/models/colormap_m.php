@@ -3,18 +3,18 @@
 * @property colormap_m $colormap_m
  */
 class Colormap_m extends MY_Model {
-
     var $filterSession = "DB_AWB_FILTER";
     var $db = null;
     var $table = 'color_map';
     var $sorts = array(1 => "id");
     var $pkField = "id";
     var $path = "";
+    var $filters = array("original_color" => "original_color","color_map"=>"color_map","color_code"=>"color_code");
+    var $cache = array();
 
     function __construct(){
         parent::__construct();
         $this->db = $this->load->database('mysql', TRUE);
-
         $this->load->helper('path');
         $this->load->library('va_excel');
     }
@@ -58,9 +58,9 @@ class Colormap_m extends MY_Model {
 
     public function saveFile($original_color, $mapping_color, $color_code){
         $msg = array();
-            $data['original_color'] = $original_color;
-            $data['color_map'] = $mapping_color;
-            $data['color_code'] = $color_code;
+            $data['original_color'] = trim(strtoupper($original_color));
+            $data['color_map'] = trim(strtoupper($mapping_color));
+            $data['color_code'] = trim(strtoupper($color_code));
         if(empty($msg)) {
             $this->db->insert($this->table, $data);
             return $this->db->insert_id();
@@ -72,6 +72,19 @@ class Colormap_m extends MY_Model {
     public function getDataColor(){
         $query = $this->db->get($this->table);
         return $query->result_array();
+    }
+
+    public function getByOrigColor($origColor) {
+        if(!isset($this->cache[$origColor])) {
+            $row = $this->db->get_where($this->table, array('original_color' => $origColor))->row_array();
+            if(empty($row)) {
+                $row = false;
+            }
+
+            $this->cache[$origColor] = $row;
+        }
+
+        return $this->cache[$origColor];
     }
 }
 ?>

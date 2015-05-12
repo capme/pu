@@ -15,12 +15,20 @@ class Paymentconfirmation_m extends MY_Model {
 		parent::__construct();
         $this->load->library("va_list");
 		$this->db = $this->load->database('mysql', TRUE);
-		
-		$this->relation = array(
-			array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}"),
-			array("type" => "inner", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
-		);
 
+        $user=$this->session->userdata('group');
+		if ($user == 4) {
+            $this->relation = array(
+                array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} where receipt_url=''"),
+                array("type" => "inner", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
+            );
+        }
+        else {
+            $this->relation = array(
+                array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}"),
+                array("type" => "inner", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
+            );
+        }
 		$this->select = array(
                             "{$this->table}.{$this->pkField}",
                             "{$this->table}.order_number",
@@ -42,7 +50,7 @@ class Paymentconfirmation_m extends MY_Model {
 		$this->filters = array(
                             $this->table.".status"=>$this->table."_status",
                             "order_number"=>"order_number",
-                            "client_id"=>"client_id",
+                            $this->table.".client_id"=>$this->table."_client_id",
                             $this->table.".amount"=>$this->table."_amount",
                             $this->tableAwb.".status"=>$this->tableAwb."_status",
                             "name"=>"name"
@@ -50,6 +58,7 @@ class Paymentconfirmation_m extends MY_Model {
 
         $this->listWhere['equal'] = array();
         $this->listWhere['like'] = array("order_number", "name");
+
 	}
 	
 	public function getPaymentConfirmationList() 
@@ -102,8 +111,9 @@ class Paymentconfirmation_m extends MY_Model {
 			}else{
 				$action='<a href="'.site_url("paymentconfirmation/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>';
 			}
-			
-			$date = explode(' ', $_result->created_at);
+            $user=$this->session->userdata('pkUserId');
+
+            $date = explode(' ', $_result->created_at);
 			$records["aaData"][] = array(
 					'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
 					$no=$no+1,

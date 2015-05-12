@@ -38,7 +38,7 @@ class Paypalorder_m extends MY_Model {
         $this->filters = array(
                             $this->table.".status"=>$this->table."_status",
                             "order_number"=>"order_number",
-                            "client_id"=>"client_id",
+                            $this->table.".client_id"=>$this->table."_client_id",
                             $this->table.".amount"=>$this->table."_amount",
                             $this->tableAwb.".status"=>$this->tableAwb."_status",
                             "name"=>"name"
@@ -159,19 +159,19 @@ class Paypalorder_m extends MY_Model {
     	$this->db->trans_start();
 		
     	foreach($datas as $key => $data){		
-            $check = $this->db->get_where($this->table, array('order_number' => $key));
+            $check = $this->db->get_where($this->table, array('order_number' => (string) $key));
 			
 			if(!$check->num_rows()) {
                 $this->db->insert($this->table, $data);
 				$id = $this->db->insert_id();
 				
-            } 
-			else {
+            } else {
 				$row = $check->row_array();			
-				$id = $row['id'];	
+				$id = $row['id'];
+                $this->db->where($this->pkField,$id);
 				$this->db->update($this->table, $data);
-                $this->db->where($this->pkField,$id);				
-                //$this->db->delete($this->tableOrderHistory, array('order_id' => $id));
+
+                $this->db->delete($this->tableOrderHistory, array('order_id' => $id));
             }
 			
             $_history = $histories[$key];

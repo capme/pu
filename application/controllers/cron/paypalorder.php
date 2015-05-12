@@ -38,7 +38,7 @@ class Paypalorder extends CI_Controller {
                             $_status = array_search($order['status'], $this->paypalorder_m->getOrderStatusmap());
                             $_order = array(
                                 'client_id' => $clientId, 'order_number' => $order['increment_id'], 'name' => $order['customer_name'], 'shipping_address' => $order['shipping_address'],
-                                'items' => json_encode($order['items']), 'email' => $order['email'], 'amount' => $order['amount'], 'status' => $_status,
+                                'items' => json_encode($order['items']), 'email' => $order['email'], 'amount' => $order['amount'], 'status' => $_status, 'created_at' => $order['created_at']
                                 );
                             $dataCreditCard[$order['increment_id']] = $_order;
                             $histories[$order['increment_id']] = $order['histories'];

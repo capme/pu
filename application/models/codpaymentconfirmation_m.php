@@ -34,7 +34,7 @@ class Codpaymentconfirmation_m extends MY_Model {
 		$this->filters = array(
                             $this->table.".status"=>$this->table."_status",
                             "order_number"=>"order_number",
-                            "client_id"=>"client_id",
+                            $this->table.".client_id"=>$this->table."_client_id",
                             $this->table.".amount"=>$this->table."_amount",
                             $this->tableAwb.".status"=>$this->tableAwb."_status",
                             "customer_name"=>"customer_name"

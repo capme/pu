@@ -28,7 +28,7 @@ class Codconfirmation extends MY_Controller {
 		->setHeadingWidth(array(2,2,2,2,2,2,2,2,2));
 		
 		$this->va_list->setInputFilter(3, array("name" => $this->codconfirmation_m->filters['order_number']))
-			->setDropdownFilter(2, array("name" => $this->codconfirmation_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
+			->setDropdownFilter(2, array("name" => $this->codconfirmation_m->filters[$this->codconfirmation_m->table.'.client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
         $this->va_list->setInputFilter(4, array("name" => $this->codconfirmation_m->filters['customer_name']));
         $this->va_list->setInputFilter(5, array("name" => $this->codconfirmation_m->filters[$this->codconfirmation_m->table.'.amount']));
         $this->va_list->setDropdownFilter(7, array("name" => $this->codconfirmation_m->filters[$this->codconfirmation_m->table.'.status'], "option" => $this->getStatus()));
