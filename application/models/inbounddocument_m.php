@@ -49,7 +49,9 @@ class Inbounddocument_m extends MY_Model {
 		);
 		
 		$this->select = array("{$this->table}.doc_number", "{$this->table}.client_id", "{$this->table}.note", "{$this->table}.type", "{$this->table}.status", "{$this->table}.created_at", "{$this->table}.updated_at", "{$this->table}.created_by", "{$this->table}.filename", "{$this->table}.id", "{$this->tableClient}.client_code");
-		$this->filters = array("client_id"=>"client_id","status"=>"status");
+		$this->filters = array("client_id"=>"client_id","status"=>"status","doc_number"=>"doc_number");
+        $this->listWhere['equal'] = array();
+        $this->listWhere['like'] = array("doc_number","name");
 	}
 
     public function getMapColor() {
