@@ -11,7 +11,7 @@ class Colormap extends MY_Controller {
     var $data = array();
     public function __construct(){
         parent::__construct();
-        $this->load->model('colormap_m');
+        $this->load->model( array('colormap_m', 'inbounddocument_m'));
         $this->load->library('va_excel');
     }
 
@@ -21,12 +21,16 @@ class Colormap extends MY_Controller {
         $this->data['breadcrumb'] = array("Merchandising"=>"","Color Map"=>"colormap");
 
         $this->colormap_m->clearCurrentFilter();
-
         $this->load->library("va_list");
+
         $this->va_list->disableAddPlugin()->setListName("Color Map")
             ->setMassAction(array("1" => "Import", "2" => "Export"))
             ->setHeadingTitle(array("Original Color","Map Color","Color Code"))
             ->setHeadingWidth(array(2,2,2,2,2));
+
+        $this->va_list->setInputFilter(0, array("name" => $this->colormap_m->filters['original_color']))
+            ->setInputFilter(1, array("name" => $this->colormap_m->filters['color_map']))
+            ->setInputFilter(2, array("name" => $this->colormap_m->filters['color_code']));
 
         $this->data['script'] = $this->load->view("script/colormap_list", array("ajaxSource" => site_url("colormap/colorMapList")), true);
         $this->load->view("template", $this->data);
@@ -75,22 +79,26 @@ class Colormap extends MY_Controller {
 
     public function export(){
        $getdata = $this->colormap_m->getDataColor();
-
        $header=array(array("original color","color map","color code"));
-        $data = array_merge($header,$getdata);
+       $add=array(array("1","2","3"));
+       $data = array_merge($add,$header,$getdata);
 
     // Create new PHPExcel object
         $objPHPExcel = new PHPExcel();
-        $sheet=$objPHPExcel->getActiveSheet(1);
-
-        for($i=1; $i < count($data); $i++){
-            $sheet->setCellValue('A'.$i, $i)
+        $a=1;
+        $sheet=$objPHPExcel->getActiveSheet(0);
+        for($i=2; $i < count($data); $i++){
+            $sheet->setCellValue('B1', $data[1][0])
+                ->setCellValue('C1', $data[1][1])
+                ->setCellValue('D1', $data[1][2])
+                ->setCellValue('A1', 'No')
+                ->setCellValue('A'.$i, $a++)
                 ->setCellValue('B'.$i, $data[$i]['original_color'])
                 ->setCellValue('C'.$i, $data[$i]['color_map'])
                 ->setCellValue('D'.$i, $data[$i]['color_code']);
         }
 
-// Redirect output to a client’s web browser (Excel5)
+        // Redirect output to a client’s web browser (Excel5)
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="color map.xls"');
         header('Cache-Control: max-age=0');
@@ -129,24 +137,26 @@ class Colormap extends MY_Controller {
 
         $truncate=$this->colormap_m->truncate();
         $colormap = $this->_validate($fileData);
+        $basicColor = $this->inbounddocument_m->getMapColor();
+        $errorMsg = array();
+
         foreach($colormap as $colorex){
-           $original_color[]=trim($colorex['B']);
-           $mapping_color[]=trim($colorex['C']);
-           $color_code[]=strtoupper(trim($colorex['D']));
-        }
-        $failed = array_diff($color_code, $color_code);
-        if(count($failed) > 0){
-            for ($fail = 0; $fail < count($failed); $fail++) {
-                $errorMsg[] = 'duplicate color code ' . $failed[$fail];
+            $colorex['C'] = trim(strtoupper($colorex['C']));
+            if(!isset($basicColor[$colorex['C']])) {
+                $errorMsg[] = "Color map " . $colorex['C'] .' is unsupported';
             }
-            $this->session->set_flashdata(array("colormapError" => json_encode(array("msg" => $errorMsg, "data" => $post))));
-            unlink($fileData['full_path']);
-            redirect("colormap/add");
+           $original_color[]=strtoupper(trim($colorex['B']));
+           $mapping_color[]=strtoupper(trim($colorex['C']));
+           $color_code[]=strtoupper(trim($colorex['D']));
+
         }
-        else{
+
+        if(empty($errorMsg)) {
             for($i=0; $i < count($original_color); $i++){
                 $result =$this->colormap_m->savefile($original_color[$i], $mapping_color[$i], $color_code[$i]);
             }
+        } else {
+            $result = false;
         }
 
         if(is_numeric($result)){
@@ -154,7 +164,7 @@ class Colormap extends MY_Controller {
         }
         else {
             $result['userfile'][0]= $this->upload->display_errors();
-            $this->session->set_flashdata( array("colormapError" => json_encode(array("msg"=>$errorMsg, "data" => $post))));
+            $this->session->set_flashdata( array("colormapError" => json_encode(array("msg"=>@$errorMsg, "data" => $post))));
             redirect("colormap/add");
         }
     }

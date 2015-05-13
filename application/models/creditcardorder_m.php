@@ -11,6 +11,8 @@ class creditcardorder_m extends MY_Model {
     var $orderStatusMap = array(0 => "pending", 1 => "processing", 2 => "complete", 
     							3 => "fraud", 4 => "payment_review", 5 => "canceled",
     							6 => "closed", 7 => "waiting_payment");
+    var $tableAwb = 'awb_queue_printing';
+
     
     function __construct()
     {
@@ -18,10 +20,34 @@ class creditcardorder_m extends MY_Model {
         $this->db = $this->load->database('mysql', TRUE);
 
         $this->relation = array(
-            array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}")
+            array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}"),
+            array("type" => "inner", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
         );
-        $this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->table}.created_at",  "{$this->table}.amount", "{$this->table}.name","{$this->table}.updated_at", "{$this->table}.status", "{$this->table}.updated_by", "{$this->tableClient}.client_code");
-        $this->filters = array("status"=>"status","order_number"=>"order_number","client_id"=>"client_id");
+        $this->select = array(
+                            "{$this->table}.{$this->pkField}",
+                            "{$this->table}.order_number",
+                            "{$this->table}.created_at",
+                            "{$this->table}.amount",
+                            "{$this->table}.name",
+                            "{$this->table}.updated_at",
+                            "{$this->table}.status `".$this->table.".status`",
+                            "{$this->table}.updated_by",
+                            "{$this->tableClient}.client_code",
+                            "{$this->table}.amount `".$this->table.".amount`",
+                            "{$this->tableAwb}.status `".$this->tableAwb.".status`"
+                        );
+        $this->filters = array(
+                            $this->table.".status"=>$this->table."_status",
+                            "order_number"=>"order_number",
+                            $this->table.".client_id"=>$this->table."_client_id",
+                            $this->table.".amount"=>$this->table."_amount",
+                            $this->tableAwb.".status"=>$this->tableAwb."_status",
+                            "name"=>"name"
+                        );
+
+        $this->listWhere['equal'] = array();
+        $this->listWhere['like'] = array("order_number", "name");
+
     }
 
     public function getOrderStatusmap() {
@@ -57,15 +83,24 @@ class creditcardorder_m extends MY_Model {
 			6 => array("Closed","danger"),
 			7 => array("Waiting_payment","info")
         );
-		
+
+        $statListAWB= array(
+            0 =>array("New Request", "warning"),
+            1 =>array("Printed", "success"),
+            3 =>array("Cron Process", "danger")
+        );
+
         $end = $iDisplayStart + $iDisplayLength;
         $end = $end > $iTotalRecords ? $iTotalRecords : $end;
 
         $_row = $this->_doGetRows($iDisplayStart, $iDisplayLength);
         $no=0;
         foreach($_row->result() as $_result) {
-            $status=$statList[$_result->status];
-                 $date = explode(' ', $_result->created_at);
+            $_resultArr = (array)$_result;
+            //$status=$statList[$_result->status];
+            $status=$statList[$_resultArr['creditcard_order.status']];
+            $statusAWB=$statListAWB[$_resultArr['awb_queue_printing.status']];
+            $date = explode(' ', $_result->created_at);
             $records["aaData"][] = array(
                 '<input type="checkbox" name="id[]" value="'.$_result->id.'">',
                 $no=$no+1,
@@ -73,8 +108,9 @@ class creditcardorder_m extends MY_Model {
                 $_result->client_code,
                 $_result->order_number,
                 $_result->name,
-                "Rp. ".number_format($_result->amount),
+                "Rp. ".number_format($_resultArr['creditcard_order.amount']),
                 '<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
+                '<span class="label label-sm label-'.($statusAWB[1]).'">'.($statusAWB[0]).'</span>',
                 '<a href="'.site_url("creditcardorder/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>'
 
         );
