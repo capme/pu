@@ -158,12 +158,30 @@ class Inbounds extends MY_Controller {
             redirect("inbounds/edit/".$post['id']);
         }
 
+        $realPost = $post;
         $post['userfile']= $fileData['file_name'] ;
         $post['full_path']=$fileData['full_path'];
         $result=$this->inbound_m->editProductCatalogue($post);
 
         if(is_numeric($result)){
-            redirect("inbounds");
+            //next process, straight extract catalog product
+            //the id is $result
+            $returnExtract = $this->inbound_m->extractCatalogProduct($result, $realPost);
+            if(isset($returnExtract['OK'])){
+                redirect("inbounds");
+            }else{
+                $msgError = "";
+                if(isset($returnExtract['problemskuconfig'])){
+                    $msgError .= "SKU Config exception<br><br />".$returnExtract['problemskuconfig']['message']."<br /><br />";
+                }
+                if(isset($returnExtract['problem'])){
+                    $msgError .= "PO type exception<br><br />".$returnExtract['problem']['message']."<br /><br />";
+                }
+                $resultException['userfile'][0] = $msgError;
+                $this->session->set_flashdata( array("inboundError" => json_encode(array("msg"=>$resultException, "data" => $realPost))) );
+                $this->inbound_m->deleteInbound($result);
+                redirect("inbounds/edit/".$post['id']);
+            }
         } else{
             $result['userfile'][0]= $this->upload->display_errors();
             $this->session->set_flashdata( array("inboundError" => json_encode(array("msg"=>$result, "data" => $post))));
