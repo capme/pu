@@ -57,7 +57,7 @@ class Returnorder_m extends MY_Model {
 			$status=$statList[$_result->status];
 			if ($_result->status==0)
 			{
-			$action='<a href="'.site_url("returnorder/view/".$_result->item_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>|
+			$action='<a href="'.site_url("returnorder/view/".$_result->item_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>
 				|<a href="'.site_url("returnorder/approve/".$_result->item_id).'" class="btn btn-xs default" id="approve"><i class="fa fa-check" ></i> Approve</a>|<a href="'.site_url("returnorder/cancel/".$_result->item_id).'" class="btn btn-xs default" id="cancel"><i class="fa fa-times" ></i> Cancel</a>';			
 			}
 			else{
@@ -85,7 +85,7 @@ class Returnorder_m extends MY_Model {
 	
 	
 	public function Reason($post) 
-	{
+	{	
 		$this->db = $this->load->database('mysql', TRUE);		
 		$msg = array();			
 		$user=$this->session->userdata('pkUserId');		
@@ -96,16 +96,13 @@ class Returnorder_m extends MY_Model {
 			$data['status'] = $this->status['cancel'];
 			$data['updated_by']=$user;
 			$data['updated_at']= $time;
-
-		} 
-		else {
+		} else {
 		}
 						
 		if(empty($msg)) 
 		{			
-			$this->db->where($this->tableReturnItem.'.id', $post['id']);			
+			$this->db->where($this->tableReturnItem.'.return_id', $post['id']);			
 			$this->db->update($this->tableReturnItem, $data);
-			
 			return $post['id'];
 		} 
 		else {
