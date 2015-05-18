@@ -15,7 +15,7 @@ class Codconfirmation_m extends MY_Model {
 		$this->db = $this->load->database('mysql', TRUE);		
 		$this->relation = array(
             array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} and {$this->table}.status = 0 "),
-			array("type" => "inner", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
+			array("type" => "left", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
         );
 		$this->select = array(
                             "{$this->table}.{$this->pkField}",
@@ -67,7 +67,7 @@ class Codconfirmation_m extends MY_Model {
 		$statList= array(
 				0 =>array("New Request", "warning"),
 				1 =>array("Approve", "success"),
-				2 =>array("Cancel","danger")
+				2 =>array("Order Cancel","danger")
 		);
 
         $statListAWB= array(
@@ -85,7 +85,11 @@ class Codconfirmation_m extends MY_Model {
             $_resultArr = (array)$_result;
 			//$status=$statList[$_result->status];
             $status=$statList[$_resultArr['cod_confirmation.status']];
-            $statusAWB=$statListAWB[$_resultArr['awb_queue_printing.status']];
+            if(!isset($statListAWB[$_resultArr['awb_queue_printing.status']])){
+                $statusAWB = "New Request";
+            }else {
+                $statusAWB = $statListAWB[$_resultArr['awb_queue_printing.status']];
+            }
 			//if ($_result->status==0)
             if ($_resultArr['cod_confirmation.status']==0)
 			{

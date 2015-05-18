@@ -20,13 +20,13 @@ class Paymentconfirmation_m extends MY_Model {
 		if ($user == 4) {
             $this->relation = array(
                 array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} where receipt_url=''"),
-                array("type" => "inner", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
+                array("type" => "left", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
             );
         }
         else {
             $this->relation = array(
                 array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}"),
-                array("type" => "inner", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
+                array("type" => "left", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
             );
         }
 		$this->select = array(
@@ -102,7 +102,11 @@ class Paymentconfirmation_m extends MY_Model {
 			//$status=$statList[$_result->status];
             $status=$statList[$_resultArr['bank_confirmation.status']];
             //$statusAWB=$statListAWB[$_result->statusAwb];
-            $statusAWB=$statListAWB[$_resultArr['awb_queue_printing.status']];
+            if(!isset($statListAWB[$_resultArr['awb_queue_printing.status']])){
+                $statusAWB = "New Request";
+            }else {
+                $statusAWB = $statListAWB[$_resultArr['awb_queue_printing.status']];
+            }
 			//if ($_result->status==0)
             if ($_resultArr['bank_confirmation.status']==0)
 			{

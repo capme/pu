@@ -15,7 +15,7 @@ class Codpaymentconfirmation_m extends MY_Model {
 		$this->db = $this->load->database('mysql', TRUE);		
 		$this->relation = array(
             array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} and {$this->table}.status !=0 and {$this->table}.status !=2 "),
-            array("type" => "inner", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
+            array("type" => "left", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
         );
 		$this->select = array(
                             "{$this->table}.{$this->pkField}",
@@ -61,13 +61,15 @@ class Codpaymentconfirmation_m extends MY_Model {
 		foreach($grup as $pkUserId=>$row)
 		{
 		$opsiarray[$row['pkUserId']]=$row['username'];
-		}		
-		
-		$statList= array(				
-				1 =>array("Processing","info"),
-				3 =>array("Received","success"),
-				4 =>array("Canceled","danger")
-		);
+		}
+
+        $statList= array(
+            0 =>array("New Request", "warning"),
+            1 =>array("Approve", "success"),
+            2 =>array("Order Cancel","danger"),
+            3 =>array("Received", "success"),
+            4 =>array("Cancel","danger")
+        );
 
         $statListAWB= array(
             0 =>array("New Request", "warning"),
@@ -84,7 +86,11 @@ class Codpaymentconfirmation_m extends MY_Model {
             $_resultArr = (array)$_result;
 			//$status=$statList[$_result->status];
             $status=$statList[$_resultArr['cod_confirmation.status']];
-            $statusAWB=$statListAWB[$_resultArr['awb_queue_printing.status']];
+            if(!isset($statListAWB[$_resultArr['awb_queue_printing.status']])){
+                $statusAWB = "New Request";
+            }else {
+                $statusAWB = $statListAWB[$_resultArr['awb_queue_printing.status']];
+            }
 
 		    //if ($_result->status ==1 )
             if ($_resultArr['cod_confirmation.status']==1)
