@@ -1219,7 +1219,7 @@ class Inbounddocument_m extends MY_Model {
 					$strRec = "".($query->num_rows());
 				}		
 				//------------------ready for processing the query----------------------------
-				$query = $this->db->query("SELECT * FROM inb_inventory_item_".$client." WHERE sku_description='".$skuDescription."' AND doc_number=".$reference_id);
+				$query = $this->db->query("SELECT * FROM inb_inventory_item_".$client." WHERE sku_description=".$this->db->escape($skuDescription)." AND doc_number=".$reference_id);
 				$row = $query->result_array();
 				if(isset($row[0]['id'])){
 					// item_id
