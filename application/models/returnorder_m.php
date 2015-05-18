@@ -96,9 +96,7 @@ class Returnorder_m extends MY_Model {
 			$data['status'] = $this->status['cancel'];
 			$data['updated_by']=$user;
 			$data['updated_at']= $time;
-
-		} 
-		else {
+		} else {
 		}
 						
 		if(empty($msg)) 
@@ -131,7 +129,7 @@ class Returnorder_m extends MY_Model {
 	public function getOrderById($id)
 	{
 		$this->db = $this->load->database('mysql', TRUE);
-		$this->db->select('*');
+		$this->db->select('*, return_item.id');
 		$this->db->from('return');
 		$this->db->join('return_item', 'return.id=return_item.return_id');
 		$this->db->join('client','client.id=return.client_id');

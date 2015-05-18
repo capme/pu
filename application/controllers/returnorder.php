@@ -71,7 +71,7 @@ class Returnorder extends MY_Controller {
 			$value = $data->row_array();
 		}
 		$this->va_input->addHidden( array("name" => "method", "value" => "update") );
-		$this->va_input->addHidden( array("name" => "id", "value" => $value['return_id']) );
+		$this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
 		$this->va_input->addTextarea( array("name" => "cancel_reason", "placeholder" => "Cancel reason", "help" => "Cancel reason", "label" => "Cancel Reason *", "value" => @$value['cancel_reason'], "msg" => @$msg['cancel_reason']) );
 		
 		$this->data['script'] = $this->load->view("script/returnorder_add", array(), true);

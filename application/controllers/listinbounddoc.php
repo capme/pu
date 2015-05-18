@@ -6,6 +6,7 @@
  * @property Clientoptions_m $clientoptions_m
  * @property Inbound_threepl $inbound_threepl
  * @property Mageapi $mageapi
+ * @property Va_list $va_list
  */
 class Listinbounddoc extends MY_Controller {
 	const TAG = "[Inbound import]";
@@ -31,8 +32,11 @@ class Listinbounddoc extends MY_Controller {
 			->setMassAction(array("0" => "Revise", "1" => "Upload Inbound Form"))
 			->setHeadingTitle(array("No #", "Client Name","DO Number","Status","Note"))
 			->setHeadingWidth(array(2, 2,2,3,2,2));
+
 		$this->va_list->setDropdownFilter(1, array("name" => $this->inbounddocument_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));
-		$this->va_list->setDropdownFilter(3, array("name" => $this->inbounddocument_m->filters['status'], "option" => $this->getStatus()));	
+        $this->va_list->setInputFilter(2, array("name" => $this->inbounddocument_m->filters["doc_number"]));
+        $this->va_list->setDropdownFilter(3, array("name" => $this->inbounddocument_m->filters['status'], "option" => $this->getStatus()));
+
 		$this->data['script'] = $this->load->view("script/inbounddocument_list", array("ajaxSource" => site_url("listinbounddoc/inboundDocList")), true);	
 		$this->load->view("template", $this->data);
 	}

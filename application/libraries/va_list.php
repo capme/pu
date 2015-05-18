@@ -14,7 +14,7 @@ class Va_list {
 	
 	private $listName = "";
 	private $_CI = null;
-	
+
 	function __construct() {
 		$this->_CI =& get_instance();
 		$this->_buildAddUrl();

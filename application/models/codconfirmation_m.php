@@ -7,14 +7,42 @@ class Codconfirmation_m extends MY_Model {
 	var $pkField = "id";
 	var $status=array("cancel"=>2,"approve"=>1);
 	var $tableClient ='client';
+    var $tableAwb = 'awb_queue_printing';
 	
 	function __construct()
 	{
 		parent::__construct();
 		$this->db = $this->load->database('mysql', TRUE);		
-		$this->relation = array(array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} and {$this->table}.status = 0 "));
-		$this->select = array("{$this->table}.{$this->pkField}", "{$this->table}.order_number", "{$this->table}.customer_name", "{$this->table}.created_at", "{$this->table}.updated_at", "{$this->table}.status", "{$this->table}.updated_by", "{$this->tableClient}.client_code", "{$this->table}.phone_number", "{$this->table}.email","{$this->table}.amount");
-		$this->filters = array("order_number"=>"order_number","client_id"=>"client_id");
+		$this->relation = array(
+            array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} and {$this->table}.status = 0 "),
+			array("type" => "inner", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
+        );
+		$this->select = array(
+                            "{$this->table}.{$this->pkField}",
+                            "{$this->table}.order_number",
+                            "{$this->table}.customer_name",
+                            "{$this->table}.created_at",
+                            "{$this->table}.updated_at",
+                            "{$this->table}.status `".$this->table.".status`",
+                            "{$this->table}.updated_by",
+                            "{$this->tableClient}.client_code",
+                            "{$this->table}.phone_number",
+                            "{$this->table}.email",
+                            "{$this->table}.amount `".$this->table.".amount`",
+                            "{$this->tableAwb}.status `".$this->tableAwb.".status`"
+                        );
+		$this->filters = array(
+                            $this->table.".status"=>$this->table."_status",
+                            "order_number"=>"order_number",
+                            $this->table.".client_id"=>$this->table."_client_id",
+                            $this->table.".amount"=>$this->table."_amount",
+                            $this->tableAwb.".status"=>$this->tableAwb."_status",
+                            "customer_name"=>"customer_name"
+                        );
+
+        $this->listWhere['equal'] = array();
+        $this->listWhere['like'] = array("order_number", "customer_name");
+
 	}
 	
 	public function getCodConfirmationList() 
@@ -41,6 +69,12 @@ class Codconfirmation_m extends MY_Model {
 				1 =>array("Approve", "success"),
 				2 =>array("Cancel","danger")
 		);
+
+        $statListAWB= array(
+            0 =>array("New Request", "warning"),
+            1 =>array("Printed", "success"),
+            3 =>array("Cron Process", "danger")
+        );
 		
 		$end = $iDisplayStart + $iDisplayLength;
 		$end = $end > $iTotalRecords ? $iTotalRecords : $end;
@@ -48,8 +82,12 @@ class Codconfirmation_m extends MY_Model {
 		$_row = $this->_doGetRows($iDisplayStart, $iDisplayLength);
 		$no=0;
 		foreach($_row->result() as $_result) {
-			$status=$statList[$_result->status];
-			if ($_result->status==0)
+            $_resultArr = (array)$_result;
+			//$status=$statList[$_result->status];
+            $status=$statList[$_resultArr['cod_confirmation.status']];
+            $statusAWB=$statListAWB[$_resultArr['awb_queue_printing.status']];
+			//if ($_result->status==0)
+            if ($_resultArr['cod_confirmation.status']==0)
 			{
 				$action='<a href="'.site_url("codconfirmation/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a><br /><br /><a href="'.site_url("codconfirmation/approve/".$_result->id).'" class="btn btn-xs default"><i class="fa fa-check" ></i> Approve</a>|
 				<a href="'.site_url("codconfirmation/cancel/".$_result->id).'" class="btn btn-xs default"><i class="fa fa-times" ></i> Cancel</a>';
@@ -65,9 +103,10 @@ class Codconfirmation_m extends MY_Model {
 					$_result->client_code,
 					$_result->order_number,
 					$_result->customer_name,
-                    "Rp. ".number_format($_result->amount,2),
-					$_result->phone_number . " / " . $_result->email,
+                    "Rp. ".number_format($_resultArr['cod_confirmation.amount'],2),
+					trim($_result->phone_number . " <br> " . $_result->email),
                     '<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
+                    '<span class="label label-sm label-'.($statusAWB[1]).'">'.($statusAWB[0]).'</span>',
 					$action				
 			);
 		}
