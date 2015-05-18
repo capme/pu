@@ -19,8 +19,8 @@ class Paypalorder_m extends MY_Model {
         $this->db = $this->load->database('mysql', TRUE);
 
         $this->relation = array(
-            array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}"),
-            array("type" => "inner", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
+            array("type" => "left", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}"),
+            array("type" => "left", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
         );
         $this->select = array(
                             "{$this->table}.{$this->pkField}",
@@ -96,8 +96,11 @@ class Paypalorder_m extends MY_Model {
             $_resultArr = (array)$_result;
             //$status=$statList[$_result->status];
             $status=$statList[$_resultArr['paypal_order.status']];
-            $statusAWB=$statListAWB[$_resultArr['awb_queue_printing.status']];
-
+            if(!isset($statListAWB[$_resultArr['awb_queue_printing.status']])){
+                $statusAWB = "New Request";
+            }else {
+                $statusAWB = $statListAWB[$_resultArr['awb_queue_printing.status']];
+            }
 			//if ($_result->status == 0){
             if ($_resultArr['paypal_order.status']==0){
 			$action ='<a href="'.site_url("paypalorder/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>
