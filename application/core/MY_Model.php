@@ -5,7 +5,7 @@
  * @author Technology <technology@velaasia.com>
  * @property Auth_m $auth_m
  * @property Client_m $client_m
- *
+ * @property Va_list $va_list
  */
 class MY_Model extends CI_Model{
 	
@@ -19,7 +19,8 @@ class MY_Model extends CI_Model{
 	var $relation = array();
 	var $select = array();
 	var $group = array();
-	
+    var $listWhere = array();
+
 	function __construct() {
 		parent::__construct();
 	}
@@ -49,7 +50,17 @@ class MY_Model extends CI_Model{
 		}
 		
 		foreach($this->aFilters as $tField => $val) {
+            if (isset($this->listWhere['equal']) && isset($this->listWhere['like'])){
+			if (in_array($tField, $this->listWhere['equal'])) {
+                $this->db->where($tField, $val);
+            } elseif (in_array($tField, $this->listWhere['like'])) {
+                $this->db->like($tField, $val);
+            } else {
+                $this->db->where($tField, $val);
+            }}
+			else{
 			$this->db->where($tField, $val);
+			}
 		}
 
 		if(!empty($client)){
@@ -132,7 +143,18 @@ class MY_Model extends CI_Model{
 		}
 		
 		foreach($this->aFilters as $tField => $val) {
+		if (isset($this->listWhere['equal']) && isset($this->listWhere['like'])){
+            if (in_array($tField, $this->listWhere['equal'])) {
+                $res->where($tField, $val);
+            } elseif (in_array($tField, $this->listWhere['like'])) {
+                $res->like($tField, $val);
+            } else {
+                $res->where($tField, $val);
+            }
+			}
+			else{
 			$res->where($tField, $val);
+			}
 		}
 	
 		$iSortingCols = $this->input->post("iSortingCols");

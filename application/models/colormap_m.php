@@ -10,6 +10,7 @@ class Colormap_m extends MY_Model {
     var $pkField = "id";
     var $path = "";
     var $filters = array("original_color" => "original_color","color_map"=>"color_map","color_code"=>"color_code");
+
     var $cache = array();
 
     function __construct(){
@@ -17,6 +18,8 @@ class Colormap_m extends MY_Model {
         $this->db = $this->load->database('mysql', TRUE);
         $this->load->helper('path');
         $this->load->library('va_excel');
+        $this->listWhere['equal'] = array();
+        $this->listWhere['like'] = array("color_map","original_color","color_code");
     }
 
     public function getColorMapList()

@@ -1,4 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ *   @property Va_list $va_list
+**/
 class Paymentconfirmation extends MY_Controller {
 	var $data = array();
 	public function __construct()
@@ -19,13 +22,16 @@ class Paymentconfirmation extends MY_Controller {
 				
 		$this->load->library("va_list");
 		$this->va_list->disableAddPlugin()->setListName("Payment Confirmation")
-		->setHeadingTitle(array("#", "Created Date", "Client Name","Order Number","Name","Origin Bank","Amount","Status"))
-		->setHeadingWidth(array(2,2,2,2,3,2,3,4));
-		
+		->setHeadingTitle(array("#", "Created Date", "Client Name","Order Number","Name","Origin Bank","Amount","Status","Status AWB"))
+		->setHeadingWidth(array(2,2,2,2,2,3,2,3,4));
+
 		$this->va_list->setInputFilter(3, array("name" => $this->paymentconfirmation_m->filters['order_number']))
-			->setDropdownFilter(2, array("name" => $this->paymentconfirmation_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
-		$this->va_list->setDropdownFilter(7, array("name" => $this->paymentconfirmation_m->filters['status'], "option" => $this->getStatus()));
-		
+			->setDropdownFilter(2, array("name" => $this->paymentconfirmation_m->filters[$this->paymentconfirmation_m->table.'.client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
+		$this->va_list->setDropdownFilter(7, array("name" => $this->paymentconfirmation_m->filters[$this->paymentconfirmation_m->table.'.status'], "option" => $this->getStatus()));
+        $this->va_list->setDropdownFilter(8, array("name" => $this->paymentconfirmation_m->filters[$this->paymentconfirmation_m->tableAwb.'.status'], "option" => $this->getStatusAwb()));
+        $this->va_list->setInputFilter(6, array("name" => $this->paymentconfirmation_m->filters[$this->paymentconfirmation_m->table.'.amount']));
+        $this->va_list->setInputFilter(4, array("name" => $this->paymentconfirmation_m->filters['name']));
+
 		$this->data['script'] = $this->load->view("script/paymentconfirmation_list", array("ajaxSource" => site_url("paymentconfirmation/paymentConfirmationList")), true);	
 		$this->load->view("template", $this->data);
 	}
@@ -39,8 +45,8 @@ class Paymentconfirmation extends MY_Controller {
 				$action = $this->input->post("sGroupActionName");
 				$this->paymentconfirmation_m->removePayment($id, $action);
 			}
-		}	
-		$data = $this->paymentconfirmation_m->getPaymentConfirmationList();	
+        }
+		$data = $this->paymentconfirmation_m->getPaymentConfirmationList();
 		echo json_encode($data);
 	}
 	
@@ -93,7 +99,11 @@ class Paymentconfirmation extends MY_Controller {
 	private function getStatus() {
 		return array(-1=>"",0=>"New Request",1 => "Approve",2 => "Cancel");
 	}
-	
+
+    private function getStatusAwb() {
+        return array(-1=>"",0=>"New Request",1 => "Printed");
+    }
+
 	public function approve ($id)
 	{
 		$this->paymentconfirmation_m->Approve($id);
