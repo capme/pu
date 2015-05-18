@@ -100,8 +100,8 @@ class Returnorder_m extends MY_Model {
 		}
 						
 		if(empty($msg)) 
-		{			
-			$this->db->where($this->tableReturnItem.'.return_id', $post['id']);			
+		{
+            $this->db->where($this->tableReturnItem.'.id', $post['id']);
 			$this->db->update($this->tableReturnItem, $data);
 			return $post['id'];
 		} 
@@ -128,7 +128,7 @@ class Returnorder_m extends MY_Model {
 	public function getOrderById($id)
 	{
 		$this->db = $this->load->database('mysql', TRUE);
-		$this->db->select('*');
+		$this->db->select('*, return_item.id');
 		$this->db->from('return');
 		$this->db->join('return_item', 'return.id=return_item.return_id');
 		$this->db->join('client','client.id=return.client_id');
