@@ -207,9 +207,9 @@ class Codpaymentconfirmation extends MY_Controller {
 		}
 	}
 
-    private function getStatus() {
-        return array(-1=>"",0=>"New Request",1 => "Approve",2 => "Cancel",3 => "Payment Receive",4 => "Payment Cancel");
-    }
+	private function getStatus() {
+		return array(-1=>"",1 => "Processing",3 => "Received", 4 => "Cancel");
+	}
 
     private function getStatusAwb() {
         return array(-1=>"",0=>"New Request",1 => "Printed");

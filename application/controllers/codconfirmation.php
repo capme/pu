@@ -223,7 +223,7 @@ class Codconfirmation extends MY_Controller {
 	}
 		
 	private function getStatus() {
-		return array(-1=>"",0=>"New Request",1 => "Approve",2 => "Cancel",3 => "Payment Receive",4 => "Payment Cancel");
+		return array(-1=>"",0=>"New Request",1 => "Approve",2 => "Cancel");
 	}
 
     private function getStatusAwb() {

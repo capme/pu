@@ -14,7 +14,7 @@ class Codpaymentconfirmation_m extends MY_Model {
 		parent::__construct();
 		$this->db = $this->load->database('mysql', TRUE);		
 		$this->relation = array(
-            array("type" => "left", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} and {$this->table}.status !=0 and {$this->table}.status !=2 "),
+            array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} and {$this->table}.status !=0 and {$this->table}.status !=2 "),
             array("type" => "left", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
         );
 		$this->select = array(
@@ -67,8 +67,8 @@ class Codpaymentconfirmation_m extends MY_Model {
             0 =>array("New Request", "warning"),
             1 =>array("Approve", "success"),
             2 =>array("Order Cancel","danger"),
-            3 =>array("Payment Receive", "success"),
-            4 =>array("Payment Cancel","danger")
+            3 =>array("Received", "success"),
+            4 =>array("Cancel","danger")
         );
 
         $statListAWB= array(
