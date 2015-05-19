@@ -7,7 +7,8 @@ class Migration_Content extends Base_migration {
             (`id` int(5) AUTO_INCREMENT,
             `client_id` int(2),
 			`brand_code` varchar(30),
-            `description` TEXT,
+            `description_id` TEXT,
+            `description_en` TEXT,
             `filename` VARCHAR(20),
             `updated_at` DATETIME,
 			primary key (`id`))ENGINE=InnoDB DEFAULT CHARSET=utf8");
