@@ -71,7 +71,7 @@ class Branddescription_m extends MY_Model {
 
     public function getBrandDescriptionById($id){
         $this->db = $this->load->database('mysql', TRUE);
-        $this->db->select('client_code, brand_code, description');
+        $this->db->select('client_code, brand_code, description_id, description_en');
         $this->db->from($this->table);
         $this->db->join($this->tableClient,'client.id = '.$this->table.'.client_id');
         $this->db->where('client_id', $id);
@@ -79,6 +79,7 @@ class Branddescription_m extends MY_Model {
     }
 
     public function saveFile($post){
+
         $msg = array();
         if(!empty($post['userfile'])) {
             $data['filename'] = $post['userfile'];
@@ -93,7 +94,11 @@ class Branddescription_m extends MY_Model {
         } else{}
 
         if(!empty ($post['description'])){
-            $data['description'] = $post['description'];
+            $data['description_id'] = $post['description'];
+        } else{}
+
+        if(!empty ($post['description_en'])){
+            $data['description_en'] = $post['description_en'];
         } else{}
 
         if(empty($msg)) {

@@ -121,6 +121,7 @@ class Branddescription extends MY_Controller {
            foreach($branddesc as $brand => $brandcode){
                $code[]=ucfirst(strtolower(trim($brandcode['B'])));
                $description[]=$brandcode['C'];
+               $description_en[]=$brandcode['D'];
            }
 
         if($post['type'] == 0) {
@@ -140,6 +141,7 @@ class Branddescription extends MY_Controller {
                     $post['brand_code']=$intersec[$i];
                     $post['userfile'] = $fileData['file_name'] ;
                     $post['description']=$description[$i];
+                    $post['description_en']=$description_en[$i];
                     $result=$this->branddescription_m->saveFile($post);
                 }
             }
@@ -161,6 +163,7 @@ class Branddescription extends MY_Controller {
                     $post['brand_code'] = $intersec[$i];
                     $post['userfile'] = $fileData['file_name'];
                     $post['description'] = $description[$i];
+                    $post['description_en']=$description_en[$i];
                     $result = $this->branddescription_m->saveFile($post);
                 }
             }
