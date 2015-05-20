@@ -75,6 +75,7 @@ class Productcatalogcontent extends MY_Controller {
         $param = $this->productcatalogcontent_m->getParamInboundMage($_GET['client'], $doc);
 
        if( $this->mageapi->initSoap($config) ) {
+
             $return = $this->mageapi->inboundCreateItem($param);
             if(is_array($return)){
                 $flagError = false;
@@ -86,13 +87,19 @@ class Productcatalogcontent extends MY_Controller {
                             $strError .= $itemMsg."<br>";
                         }
                     }
+                    else if (isset($itemReturn['faultMessage'])){
+                        $flagError = true;
+                        $strError .= $itemReturn['faultMessage']."<br>";
+                    }
                 }
+
                 if(!$flagError){
                     redirect("productcatalogcontent");
                 }else{
                     echo "Something wrong when calling Mage.<br> ".$strError."<input type='button' value='Back' onclick='window.history.back()'>";
                 }
-            }else{
+            }
+            else{
                 echo "Something wrong when calling Mage. See the log file.<input type='button' value='Back' onclick='window.history.back()'>";
             }
         }

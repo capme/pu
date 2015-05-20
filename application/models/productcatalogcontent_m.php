@@ -97,9 +97,9 @@ class Productcatalogcontent_m extends MY_Model {
 
     public function getParamInboundMage($client, $doc){
         $param = array();
-
         //get data from table inb_inventory_item_<client_id>
         $result = $this->getInboundInvItem($client, $doc);
+
         foreach($result as $item) {
             $sku_config = $item['sku_config'];
             $sku_simple = $item['sku_simple'];
@@ -113,6 +113,7 @@ class Productcatalogcontent_m extends MY_Model {
             if($this->paraplouClientId == $client){
                 $clientId = $upc[3];
             }
+
             $price = $item['price'];
             $qty = $item['total_qty'];
             $attribute_set_id = $item['attribute_set'];
@@ -151,6 +152,7 @@ class Productcatalogcontent_m extends MY_Model {
             }
 
         }
+
         return $param;
     }
 
