@@ -3,7 +3,7 @@ class creditcardorder_m extends MY_Model {
     var $filterSession = "DB_USER_FILTER";
     var $db = null;
     var $table = 'creditcard_order';
-    var $sorts = array(1 => "id");
+    var $sorts = array(1 => "updated_at");
     var $pkField = "id";
     var $status=array("cancel"=>2,"approve"=>1);
     var $tableClient ='client';
@@ -21,7 +21,7 @@ class creditcardorder_m extends MY_Model {
 
         $this->relation = array(
             array("type" => "left", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}"),
-            array("type" => "left", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
+            array("type" => "left", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr " )
         );
         $this->select = array(
                             "{$this->table}.{$this->pkField}",
@@ -47,6 +47,7 @@ class creditcardorder_m extends MY_Model {
 
         $this->listWhere['equal'] = array();
         $this->listWhere['like'] = array("order_number", "name");
+
 
     }
 
