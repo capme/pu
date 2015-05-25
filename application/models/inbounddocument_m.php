@@ -686,7 +686,9 @@ class Inbounddocument_m extends MY_Model {
 			//sku
 			if(@$arr_data[$x]['H'] <> ""){
 				$sku = $arr_data[$x]['H'];
-			}
+			} else {
+                $sku = "";
+            }
 			//product name
 			if(@$arr_data[$x]['I'] <> ""){
 				$productname = $arr_data[$x]['I'];
@@ -935,7 +937,7 @@ class Inbounddocument_m extends MY_Model {
 
 			log_message('debug', "skuconfig::".$sku_config."::retailprice::".$retailprice);
 
-            if($retailprice <> ""){
+            if($retailprice <> "" && $sku <> ""){
 
             	/*//validation for SKU Config (same SKU different variant)
             	
@@ -974,17 +976,6 @@ class Inbounddocument_m extends MY_Model {
                     	$msgRet['problemskuconfig'][$productname."##".$colorname] = $tmpArrValSKUConfig[$productname."##".$colorname];
 					}
 				}*/
-
-				//re-update sku simple
-				if($size == ""){
-					$sku_simple = $sku_config."OS";
-	                $size = 'One Size';
-				}elseif(strtoupper(trim($size)) == "F"){
-					$sku_simple = $sku_config."OS";
-	                $size = 'One Size';
-				}else{
-					$sku_simple = $sku_config.$size;
-				}
 					
 				//check sku simple from 3pl sync table
 				$checkReturn = $this->invsync_m->findBySku(strtoupper($sku_simple), $client);
