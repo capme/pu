@@ -1393,7 +1393,7 @@ class Inbounddocument_m extends MY_Model {
 	            <vias:InventoryMethod>".$inventor_method."</vias:InventoryMethod>
 	            <vias:Cost>".$cost."</vias:Cost>
 	            <!--Optional:-->
-	            <vias:UPC>".$upc."</vias:UPC>
+	            <vias:UPC>".htmlspecialchars($upc)."</vias:UPC>
 	            <vias:IsTrackLotNumber>".$track_lot."</vias:IsTrackLotNumber>
 	            <vias:IsTrackLotNumberRequired>".$lot_number_required."</vias:IsTrackLotNumberRequired>
 	            <vias:IsTrackSerialNumber>".$track_serial."</vias:IsTrackSerialNumber>
