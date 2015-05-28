@@ -976,31 +976,31 @@ class Inbounddocument_m extends MY_Model {
                     	$msgRet['problemskuconfig'][$productname."##".$colorname] = $tmpArrValSKUConfig[$productname."##".$colorname];
 					}
 				}*/
-					
+                
 				//check sku simple from 3pl sync table
-				$checkReturn = $this->invsync_m->findBySku(strtoupper($sku_simple), $client);
+				$checkReturn = $this->invsync_m->findOldSimilarSku(strtoupper($sku_config), $inSize, $client);
                 if(empty($checkReturn) && isset($skuConfigNoColor)) {
                     // recheck w/o color
                     $tmp = array();
                     $tmp['config'] = $skuConfigNoColor;
                     $tmp['simple'] = str_replace($sku_config, $tmp['config'], $sku_simple);
-                    $checkReturn = $this->invsync_m->findBySku(strtoupper($tmp['simple']), $client);
+                    $checkReturn = $this->invsync_m->findOldSimilarSku(strtoupper($tmp['config']), $inSize, $client);
                     if(!empty($checkReturn)) {
                         // existing sku found with no color
-                        $sku_simple = $tmp['simple'];
-                        $sku_config = $tmp['config'];
+                        $sku_simple = $checkReturn['sku_simple'];
+                        $sku_config = $checkReturn['sku_config'];
                     } else {
                         // recheck w/ standard color
                         $tmp = array();
                         $basicColor = strtoupper( $inWarna['color_map'] );
                         $tmp['config'] = $skuConfigNoColor . $this->mapColor[$basicColor];
                         $tmp['simple'] = str_replace($sku_config, $tmp['config'], $sku_simple);
-                        $checkReturn = $this->invsync_m->findBySku(strtoupper($tmp['simple']), $client);
+                        $checkReturn = $this->invsync_m->findOldSimilarSku(strtoupper($tmp['config']), $inSize, $client);
 
                         if(!empty($checkReturn)) {
                             // existing sku found with standard color
-                            $sku_simple = $tmp['simple'];
-                            $sku_config = $tmp['config'];
+                            $sku_simple = $checkReturn['sku_simple'];
+                            $sku_config = $checkReturn['sku_config'];
                         }
                     }
                 }
