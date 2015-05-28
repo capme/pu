@@ -733,6 +733,7 @@ class Listinbounddoc extends MY_Controller {
 	public function downloadInboundForm(){
 		$client = $this->input->get('client');
 		$doc = $this->input->get('doc');
+        $user=$this->session->userdata('username');
 
         $docDetail = $this->inbound_m->getInboundById($doc);
 		$dataClient = $this->client_m->getClientById($client);
@@ -743,7 +744,15 @@ class Listinbounddoc extends MY_Controller {
         $this->va_excel->getActiveSheet()->getRowDimension('1')->setRowHeight(30);
         $this->va_excel->getActiveSheet()->getRowDimension('11')->setRowHeight(30);
 		$this->va_excel->getActiveSheet()->freezePane('A13');
-        
+
+        $objDrawing = new PHPExcel_Worksheet_Drawing();
+        $objDrawing->setName('Logo');
+        $objDrawing->setDescription('Logo');
+        $logo = 'assets/img/imgo.jpg'; // Provide path to your logo file
+        $objDrawing->setPath($logo);  //setOffsetY has no effect
+        $objDrawing->setCoordinates('B1');
+        $objDrawing->setWorksheet($this->va_excel->getActiveSheet());
+
         $styleReport1 = new PHPExcel_Style();
         $styleReport1Dinamis = new PHPExcel_Style();
         $styleReport2 = new PHPExcel_Style();
@@ -849,7 +858,10 @@ class Listinbounddoc extends MY_Controller {
 		$this->va_excel->getActiveSheet()->setCellValue('B3', $dataClientRows['client_code'])->getStyle('B3')->getFont()->setSize(12)->setBold(true);
 		$this->va_excel->getActiveSheet()->setCellValue('A4', 'Physical Inbound Date :')->getStyle('A4')->getFont()->setSize(12)->setBold(true);
 		$this->va_excel->getActiveSheet()->setCellValue('A5', 'Doc Number :')->getStyle('A5')->getFont()->setSize(12)->setBold(true);
+        $this->va_excel->getActiveSheet()->setCellValue('A6', 'PIC Ops. Specialist :')->getStyle('A6')->getFont()->setSize(12)->setBold(true);
+
         $this->va_excel->getActiveSheet()->setCellValue('B5', $docDetail['doc_number'])->getStyle('B5')->getFont()->setSize(12)->setBold(true);
+        $this->va_excel->getActiveSheet()->setCellValue('B6', $user)->getStyle('B6')->getFont()->setSize(12)->setBold(true);
 		$this->va_excel->getActiveSheet()->setCellValue('A7', 'Berikut adalah hasil pengecekan (Quality Control) atas barang masuk ke Warehouse - Taman Tekno yang telah dilakukan sebelumnya:');
 		
 			$this->va_excel->getActiveSheet()->mergeCells('A9:A12');
