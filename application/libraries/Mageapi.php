@@ -18,6 +18,9 @@ class Mageapi {
 	const METHOD_CREDITMEMO_LIST = "sales_order_creditmemo.list";
 	const METHOD_CREDITMEMO_INFO = "sales_order_creditmemo.info";
 	const METHOD_CATEGORY_TREE = "catalog_category.tree";
+    const METHOD_CATEGORY_INFO = "catalog_category.info";
+    const METHOD_CATEGORY_PRODUCT_LINK = "catalog_category.assignedProducts";
+    const METHOD_STORE_LIST = "store.list";
 	const METHOD_PRODUCT_LIST = "catalog_product.list";
 	const METHOD_PRODUCT_INFO = "catalog_product.info";
 	const METHOD_CATLOGINVENTORY = "cataloginventory_stock_item.list";
@@ -217,7 +220,21 @@ class Mageapi {
 		
 		return $catList;
 	}
-	
+
+    public function getDetailCategory(){
+        $categories = $this->getCategoryList();
+        $detailCategory = array();
+        foreach($categories as $_id => $_name) {
+            try{
+                $detail = $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_INFO, $_id);
+                $detailCategory[] = $detail;
+            } catch( Exception $e ) {
+                log_message('error', "getDetailCategory(".$_name.") MAGEAPI ==> ". $e->getMessage()." ### ".self::METHOD_CATEGORY_INFO);
+            }
+        }
+        return $detailCategory;
+    }
+
 	public function getCatalog() {
 		$productList = $this->soapClient->call($this->soapSession, self::METHOD_PRODUCT_LIST);
 		$productsInfo = array();
