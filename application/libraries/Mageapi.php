@@ -235,6 +235,37 @@ class Mageapi {
         return $detailCategory;
     }
 
+    public function getCategoryProduct($store=null, $category=null){
+
+        if($store){
+            $stores[]['store_id'] = $store;
+        } else {
+            $stores = $this->soapClient->call($this->soapSession, self::METHOD_STORE_LIST);
+        }
+
+        if($category){
+            $categories[$category] = '';
+        } else {
+            $categories = $this->getCategoryList();
+        }
+
+        $listProduct = array();
+
+        foreach( $categories as $_id => $_name){
+            foreach($stores as $store){
+//                print "category : @$_id , # store : ".@$store['store_id'].",".@$store['name']." \n";
+
+                try{
+                    $product= $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_PRODUCT_LINK, array($_id,$store['store_id']));
+                    $listProduct[$_id][$store['store_id']] = $product;
+                } catch( Exception $e ) {
+                    log_message('error', "getCategoryProduct (".$_id.",".$store['store_id'].") MAGEAPI ==> ". $e->getMessage()." ### ".self::METHOD_CATEGORY_PRODUCT_LINK);
+                }
+            }
+        }
+        return $listProduct;
+    }
+
 	public function getCatalog() {
 		$productList = $this->soapClient->call($this->soapSession, self::METHOD_PRODUCT_LIST);
 		$productsInfo = array();
