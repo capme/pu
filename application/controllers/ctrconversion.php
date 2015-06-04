@@ -24,7 +24,7 @@ class Ctrconversion extends MY_Controller
             ->setHeadingTitle(array("Record #","Product ID","CTR", "Conversion", "Created At"))
             ->setHeadingWidth(array(2, 2,2,4, 4, 2, 2));
 
-        $this->va_list->setInputFilter(1, array("name" => $this->ctrconversion_m->filters["ctr"]));
+        $this->va_list->setInputFilter(1, array("name" => $this->ctrconversion_m->filters["product_id"]));
 
         $this->data['script'] = $this->load->view("script/ctrconversion_list", array("ajaxSource" => site_url("ctrconversion/ctrConversionList")), true);
         $this->load->view("template", $this->data);

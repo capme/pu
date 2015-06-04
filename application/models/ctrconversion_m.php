@@ -9,7 +9,7 @@ class Ctrconversion_m extends MY_Model {
     var $table = 'ctr';
     var $sorts = array(1 => "id");
     var $pkField = "id";
-    var $filters = array("ctr" => "ctr");
+    var $filters = array("product_id" => "product_id");
 
     function __construct()
     {
