@@ -21,8 +21,8 @@ class Ctrconversion extends MY_Controller
 
         $this->load->library("va_list");
         $this->va_list->setListName("CTR")->setAddLabel("Upload CTR")
-            ->setHeadingTitle(array("Record #", "CTR", "Conversion", "Created At"))
-            ->setHeadingWidth(array(2, 2, 4, 4, 2, 2));
+            ->setHeadingTitle(array("Record #","Product ID","CTR", "Conversion", "Created At"))
+            ->setHeadingWidth(array(2, 2,2,4, 4, 2, 2));
 
         $this->va_list->setInputFilter(1, array("name" => $this->ctrconversion_m->filters["ctr"]));
 
@@ -99,6 +99,7 @@ class Ctrconversion extends MY_Controller
             $csv_array = $this->va_csv->get_array($fileData['full_path']);
 
             foreach ($csv_array as $row) {
+                $post['product_id'] = $row['product_id'];
                 $post['ctr'] = $row['ctr'];
                 $post['conversion'] = $row['conversion'];
 

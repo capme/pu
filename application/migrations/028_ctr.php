@@ -5,6 +5,7 @@ class Migration_Ctr extends Base_migration {
         $this->db->trans_start();
         $this->db->query("CREATE TABLE `ctr`
             (`id` int(11) AUTO_INCREMENT,
+            `product_id` int(100),
             `ctr` varchar(100),
 			`conversion` varchar(100),
             `filename` varchar(100),

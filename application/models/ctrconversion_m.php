@@ -38,10 +38,11 @@ class Ctrconversion_m extends MY_Model {
             $records["aaData"][] = array(
                 '<input type="checkbox" name="id[]" value="'.$_result->id.'">',
                 $no=$no+1,
+                $_result->product_id,
                 $_result->ctr,
                 $_result->conversion,
                 $_result->created_at,
-                '<a href="'.site_url("ctrconversion/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>'
+                ''
             );
         }
         $records["sEcho"] = $sEcho;
@@ -62,6 +63,12 @@ class Ctrconversion_m extends MY_Model {
             $msg ="ctr required";
         }
 
+        if(!empty($post['product_id'])) {
+            $data['product_id'] = $post['product_id'];
+        } else {
+            $msg ="product id required";
+        }
+
         if(!empty($post['conversion'])) {
             $data['conversion'] = $post['conversion'];
         } else {
@@ -69,6 +76,11 @@ class Ctrconversion_m extends MY_Model {
         }
 
         if(empty($msg)) {
+
+            $product_id = array($post['product_id']);
+            $this->db->where_in('product_id', $product_id);
+            $this->db->delete($this->table);
+
             $this->db->insert($this->table, $data);
             return $this->db->insert_id();
         } else {

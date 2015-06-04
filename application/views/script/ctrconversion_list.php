@@ -34,6 +34,7 @@
                         { "bSortable": false },
                         { "bSortable": false },
                         { "bSortable": false },
+                        { "bSortable": false },
                         { "bSortable": false }
                     ],
                     /*
@@ -49,7 +50,7 @@
                     "iDisplayLength": 20, // default record count per page
                     "bServerSide": true, // server side processing
                     "sAjaxSource": "<?php echo $ajaxSource?>", // ajax source /metronic_v2.0/v2.0/admin/template/demo/table_ajax.php
-                    "aaSorting": [[ 1, "DESC" ]] // set first column as a default sort by asc
+                    "aaSorting": [[ 1, "ASC" ]] // set first column as a default sort by asc
                 }
             });
 
