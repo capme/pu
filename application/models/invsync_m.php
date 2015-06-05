@@ -18,8 +18,16 @@ class Invsync_m extends MY_Model {
         foreach($data as $row) {
             if(!empty($row)) {
                 $catalog = json_decode($row->data);
-                $insert[] = array('sku_simple' => $row->sku, 'sku_config' => $row->description2, 'sku_description' => $row->i_description, 'updated_at' => date('Y-m-d H:i:s'), 'product_id' => $catalog->info->product_id);
-            }
+                $insert[] = array(
+                    'sku_simple' => $row->sku,
+                    'sku_config' => $row->description2,
+                    'sku_description' => $row->i_description,
+                    'updated_at' => date('Y-m-d H:i:s'),
+                    'product_id' => $catalog->info->product_id,
+                    'price' => (int) $catalog->info->price,
+                    'created_at' => (empty($catalog->info->created_at) ? '0000-00-00 00:00:00' : $catalog->info->created_at)
+                );
+             }
         }
 
         if(!empty($insert)) {
