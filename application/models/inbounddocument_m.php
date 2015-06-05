@@ -985,6 +985,10 @@ class Inbounddocument_m extends MY_Model {
                     $tmp['config'] = $skuConfigNoColor;
                     $tmp['simple'] = str_replace($sku_config, $tmp['config'], $sku_simple);
                     $checkReturn = $this->invsync_m->findOldSimilarSku(strtoupper($tmp['config']), $inSize, $client);
+                    //recheck w/o color (and using 'One Size' pattern. The old sku pattern)
+                    if(empty($checkReturn) and strtolower($inSize)=="os") {
+                        $checkReturn = $this->invsync_m->findOldSimilarSku(strtoupper($tmp['config']), "One Size", $client);
+                    }
                     if(!empty($checkReturn)) {
                         // existing sku found with no color
                         $sku_simple = $checkReturn['sku_simple'];
