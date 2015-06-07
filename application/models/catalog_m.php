@@ -33,7 +33,7 @@ class Catalog_m extends MY_Model
         $this->db->trans_complete();
     }
 
-    public function saveCategoryProductLink($data, $client) {
+    public function insertCategoryProduct($data, $client) {
         $tableCategoryProduct = $this->tableCategoryProduct.$client['id'];
 
         $this->db->trans_start();
@@ -65,5 +65,42 @@ class Catalog_m extends MY_Model
         }
 
         $this->db->trans_complete();
+    }
+
+    public function getCatalogCategoryProduct($client, $categoryId = "", $filters=array()){
+        $tableCategoryProduct = $this->tableCategoryProduct.$client['id'];
+
+        $tableInvItems = 'inv_items_'.$client['id'];
+
+        $mysql = $this->load->database('mysql', TRUE);
+
+        $mysql->select($tableCategoryProduct.'.*, '.$tableInvItems.'.price, '.$tableInvItems.'.created_at');
+
+        $mysql->join($tableInvItems,$tableCategoryProduct.'.sku = '.$tableInvItems.'.sku_config', 'left');
+
+        if(!empty($categoryId)){
+            $mysql->where( $tableCategoryProduct.".category_id = ", $categoryId);
+        }
+
+//
+//        $filter = $filters['filter'];
+//        foreach($filter as $key => $val) {
+//            if(!empty($val)) {
+//                $mysql->where( self::VIEW_STOCKS.'.'.$key, $val);
+//            }
+//        }
+
+        if(!empty($filters['groupby'])){
+            $mysql->group_by( $tableCategoryProduct.'.'.$filters['groupby']);
+        } else {
+            $mysql->group_by( $tableCategoryProduct.'.id');
+        }
+
+        $result = $mysql->get($tableCategoryProduct)->result_array();
+
+        // cek sql query
+        // log_message('debug','getCatalogCategoryProduct : '.$mysql->last_query());
+
+        return $result;
     }
 }
