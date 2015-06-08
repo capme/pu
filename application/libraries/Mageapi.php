@@ -19,7 +19,8 @@ class Mageapi {
 	const METHOD_CREDITMEMO_INFO = "sales_order_creditmemo.info";
 	const METHOD_CATEGORY_TREE = "catalog_category.tree";
     const METHOD_CATEGORY_INFO = "catalog_category.info";
-    const METHOD_CATEGORY_PRODUCT_LINK = "catalog_category.assignedProducts";
+    const METHOD_CATEGORY_ASSIGNED_PRODUCTS = "catalog_category.assignedProducts";
+    const METHOD_CATEGORY_UPDATE_PRODUCT = "catalog_category.updateProduct";
     const METHOD_STORE_LIST = "store.list";
 	const METHOD_PRODUCT_LIST = "catalog_product.list";
 	const METHOD_PRODUCT_INFO = "catalog_product.info";
@@ -214,7 +215,9 @@ class Mageapi {
 	}
 	
 	public function getCategoryList() {
-		$catalogCategory = $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_TREE , 2);
+//		$catalogCategory = $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_TREE , 2);
+        $catalogCategory = $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_TREE);
+
 		$catList = array();
 		$this->_extractCategoryData(array($catalogCategory), $catList);
 		
@@ -235,6 +238,12 @@ class Mageapi {
         return $detailCategory;
     }
 
+    /**
+     * getCategoryProduct : get list of 'catalog_category.assignedProduct'
+     * @param null $store
+     * @param null $category
+     * @return array
+     */
     public function getCategoryProduct($store=null, $category=null){
 
         if($store){
@@ -256,14 +265,35 @@ class Mageapi {
 //                print "category : @$_id , # store : ".@$store['store_id'].",".@$store['name']." \n";
 
                 try{
-                    $product= $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_PRODUCT_LINK, array($_id,$store['store_id']));
+                    $product= $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_ASSIGNED_PRODUCTS, array($_id,$store['store_id']));
                     $listProduct[$_id][$store['store_id']] = $product;
+                    log_message('debug', "getCategoryProduct (".$_id.",".$store['store_id'].") success ==> ". count($product)." ### ".self::METHOD_CATEGORY_ASSIGNED_PRODUCTS);
                 } catch( Exception $e ) {
-                    log_message('error', "getCategoryProduct (".$_id.",".$store['store_id'].") MAGEAPI ==> ". $e->getMessage()." ### ".self::METHOD_CATEGORY_PRODUCT_LINK);
+                    log_message('error', "getCategoryProduct (".$_id.",".$store['store_id'].") MAGEAPI ==> ". $e->getMessage()." ### ".self::METHOD_CATEGORY_ASSIGNED_PRODUCTS);
                 }
             }
         }
         return $listProduct;
+    }
+
+    /**
+     * updateCategoryProductPosition : buat update default sorting position catalog category product
+     * note : on magento configuration # catalog >  Product Listing Sort by > best value
+     * @param $categoryId
+     * @param $productId
+     * @param $position
+     * @return bool
+     */
+    public function updateCategoryProductPosition($categoryId, $productId, $position){
+        try{
+            $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_UPDATE_PRODUCT, array('categoryId'=>$categoryId, 'product'=>$productId, 'position'=>$position));
+
+            return true;
+        } catch( Exception $e ) {
+            log_message('error', "updateCategoryProductPosition (".$categoryId.",".$productId.",".$position.") MAGEAPI ==> ". $e->getMessage()." ### ".self::METHOD_CATEGORY_UPDATE_PRODUCT);
+
+            return false;
+        }
     }
 
 	public function getCatalog() {

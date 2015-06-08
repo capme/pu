@@ -28,6 +28,7 @@ class Migration_Catalog_Category extends Base_Migration {
               `position` smallint,
               `store_id` smallint,
               `manual_weight` tinyint DEFAULT 0,
+              `score` float,
               `result_index` int(11),
               `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
               PRIMARY KEY (`id`)
