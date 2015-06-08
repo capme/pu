@@ -215,7 +215,9 @@ class Mageapi {
 	}
 	
 	public function getCategoryList() {
-		$catalogCategory = $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_TREE , 2);
+//		$catalogCategory = $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_TREE , 2);
+        $catalogCategory = $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_TREE);
+
 		$catList = array();
 		$this->_extractCategoryData(array($catalogCategory), $catList);
 		
