@@ -59,7 +59,7 @@ class Sortingtool extends MY_Controller {
 
         $this->va_input->addHidden( array("name" => "method", "value" => "update") );
         $this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name ", "value" => @$data[0]['client_code'],"disabled"=>"disabled") );
-        $this->va_input->addCustomField( array("name" =>"options", "placeholder" => "Catalog Category", "label" => "Catalog Category", "value" =>$value, "view"=>"form/customCatalog"));
+        $this->va_input->addCustomField( array("name" =>"options", "placeholder" => "Catalog Category", "label" => "Catalog Category", "value" =>$value, "view"=>"form/customSorting"));
         $this->data['script'] = $this->load->view("script/client_add", array(), true);
         $this->load->view('template', $this->data);
     }
@@ -96,7 +96,7 @@ class Sortingtool extends MY_Controller {
         $this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
         $this->va_input->addHidden( array("name" => "client_id", "value" => $client) );
         $this->va_input->addInput( array("name" => "name", "placeholder" => "Name", "help" => "name", "label" => "Name ", "value" => @$value['name'], "msg" => @$msg['name'], "disabled"=>"disabled") );
-        $this->va_input->addInput( array("name" => "sku", "placeholder" => "SKU", "help" => "SKU", "label" => "SKU *", "value" => @$value['sku'], "msg" => @$msg['sku'], "disabled"=>"disabled") );
+        $this->va_input->addInput( array("name" => "sku", "placeholder" => "SKU", "help" => "SKU", "label" => "SKU", "value" => @$value['sku'], "msg" => @$msg['sku'], "disabled"=>"disabled") );
         $this->va_input->addInput( array("name" => "url", "placeholder" => "URL Path", "help" => "URL Path", "label" => "URL Path", "value" => @$value['url_path'], "msg" => @$msg['url_path'], "disabled"=>"disabled") );
         $this->va_input->addSelect( array("name" => "manual_weight", "placeholder" => "Manual Weight", "label" => "Manual Weight", "list" => array("0" => "Not Active", "1" => "Active"),"value" => @$value['manual_weight'], "msg" => @$msg['manual_weight']) );
         $this->va_input->addSelect( array("name" => "position", "placeholder" => "Position","label" => "Position", "list" => array("0" => "Not Active", "1" => "Active"), "value" => @$value['position'], "msg" => @$msg['position']) );
