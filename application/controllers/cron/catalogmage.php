@@ -134,30 +134,23 @@ class CatalogMage extends CI_Controller {
                 continue;
             }
 
-//            print_r($client);
             $categories = $this->catalog_m->getCategory($client);
 
-//            print_r($categories);
             foreach($categories as $_category){
                 if($category && $_category['category_id'] != $category){
                     continue;
                 }
                 print '==> '.$_category['category_id']."\n";
 
-//                print_r($_category);
                 $filters['groupby'] = "product_id";
-//                $categoryProducts = $this->catalog_m->getCatalogCategoryProduct($client, $_category['category_id'], $filters);
+                $categoryProducts = $this->catalog_m->getCatalogCategoryProduct($client, $_category['category_id'], $filters);
 
-//                print_r($categoryProducts);
-//                $this->catalog_m->updateSorting($client, $categoryProducts);
+                print_r($categoryProducts);
+                $this->catalog_m->updateSorting($client, $categoryProducts);
+                echo "\n";
 
             }
-//                $filters['groupby'] = "product_id";
-
-
         }
-//
-//        print_r($result);
         log_message('debug','[CatalogMage.generateScore] end : '.date('Y-m-d H:i:s'));
     }
 }

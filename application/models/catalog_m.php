@@ -6,12 +6,14 @@ class Catalog_m extends MY_Model
     const LOW_CONST = 3;
     const MID_CONST = 2;
     const HIGH_CONST = 1;
-    const POP_CONST = 4;
+    const CTR_CONST = 4;
+    const CR_CONST = 4;
     const LOW_PRICE = 500000;
     const HIGH_PRICE = 2000000;
 
     var $tableCategory = "catalog_category_";
     var $tableCategoryProduct = "catalog_category_product_";
+    var $tableCtr = "ctr";
 
     function __construct()
     {
@@ -166,7 +168,17 @@ class Catalog_m extends MY_Model
 
         $manual_weight = (int) $data['manual_weight'];
 
-        $score = $price_value + $manual_weight;
+        //get CTR and Conversion
+        $dataCtr = $this->getCtr($data['product_id']);
+        if(!is_null($dataCtr)) {
+            $itemCtr = self::CTR_CONST * $dataCtr['ctr'];
+            $itemCr = self::CR_CONST * $dataCtr['conversion '];
+        }else{
+            $itemCtr = 0;
+            $itemCr = 0;
+        }
+
+        $score = $price_value + $manual_weight + $itemCtr + $itemCr;
 
 //        print "score : $score\n\n";
 
@@ -185,5 +197,16 @@ class Catalog_m extends MY_Model
         return ($a['score'] > $b['score']) ? -1 : 1 ;
     }
 
+    public function getCtr($product_id) {
+        //currently only supported for PARAPLOU
+        $mysql = $this->load->database('mysql', TRUE);
+        $query = $mysql->get_where($this->tableCtr, array('product_id'=>$product_id));
+        $rows = $query->result_array();
+        if(empty($rows)){
+            return null;
+        }else{
+            return $rows;
+        }
+    }
 
 }
