@@ -50,7 +50,7 @@ class Migration_Ctr extends Base_migration {
         parent::down();
         $this->db->trans_start();
         $this->db->query("DELETE FROM module WHERE slug like 'ctrcon%'");
-        $this->db->query("DROP TABLE ctr");
+        $this->db->query("DROP TABLE IF EXISTS ctr");
         $this->db->trans_complete();
     }
 }

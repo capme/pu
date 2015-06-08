@@ -103,15 +103,22 @@ class CatalogMage extends CI_Controller {
                 "url" => $client['mage_wsdl']
             );
 
-            if( $this->mageapi->initSoap($config) ) {
+            $categories = $this->catalog_m->getCategory($client);
+
+            foreach($categories as $_category) {
+                if ($category && $_category['category_id'] != $category) {
+                    continue;
+                }
 
                 $filters['groupby'] = "product_id";
-                $categoryProducts = $this->catalog_m->getCatalogCategoryProduct($client, $category, $filters);
+                $categoryProducts = $this->catalog_m->getCatalogCategoryProduct($client, $_category['category_id'], $filters);
 
-                foreach ($categoryProducts as $_product) {
-                    if(!empty($_product['result_index'])){
-                        $update = $this->mageapi->updateCategoryProductPosition($_product['category_id'], $_product['product_id'], $_product['result_index']);
-                        $result[] = array('category_id'=>$_product['category_id'],'product_id'=>$_product['product_id'],'updated'=>$update);
+                if ($this->mageapi->initSoap($config)) {
+                    foreach ($categoryProducts as $_product) {
+                        if (!empty($_product['result_index'])) {
+                            $update = $this->mageapi->updateCategoryProductPosition($_product['category_id'], $_product['product_id'], $_product['result_index']);
+                            $result[] = array('category_id' => $_product['category_id'], 'product_id' => $_product['product_id'], 'updated' => $update);
+                        }
                     }
                 }
             }
@@ -123,7 +130,7 @@ class CatalogMage extends CI_Controller {
 
 
     public function sorting( $code = "", $category = null ){
-        log_message('debug','[CatalogMage.generateScore] start : '.date('Y-m-d H:i:s'));
+        log_message('debug','[CatalogMage.sorting] start : '.date('Y-m-d H:i:s'));
 
         $this->load->model( array('client_m', 'catalog_m') );
 
@@ -140,17 +147,14 @@ class CatalogMage extends CI_Controller {
                 if($category && $_category['category_id'] != $category){
                     continue;
                 }
-                print '==> '.$_category['category_id']."\n";
 
                 $filters['groupby'] = "product_id";
                 $categoryProducts = $this->catalog_m->getCatalogCategoryProduct($client, $_category['category_id'], $filters);
 
-                print_r($categoryProducts);
                 $this->catalog_m->updateSorting($client, $categoryProducts);
-                echo "\n";
 
             }
         }
-        log_message('debug','[CatalogMage.generateScore] end : '.date('Y-m-d H:i:s'));
+        log_message('debug','[CatalogMage.sorting] end : '.date('Y-m-d H:i:s'));
     }
 }

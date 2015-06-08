@@ -287,6 +287,7 @@ class Mageapi {
     public function updateCategoryProductPosition($categoryId, $productId, $position){
         try{
             $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_UPDATE_PRODUCT, array('categoryId'=>$categoryId, 'product'=>$productId, 'position'=>$position));
+            log_message('debug', "updateCategoryProductPosition (".$categoryId.",".$productId.",".$position.") ");
 
             return true;
         } catch( Exception $e ) {

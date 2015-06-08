@@ -89,7 +89,7 @@ class Catalog_m extends MY_Model
 
         $this->db->trans_start();
         usort($data, array($this, "sort_by_score"));
-        print_r($data);
+//        print_r($data);
         foreach($data as $i => $_data){
             $_update = array('result_index' => $i+1, 'score' => $_data['score']);
             $where = array('category_id'=>$_data['category_id'], 'product_id'=>$_data['product_id']);
@@ -171,14 +171,15 @@ class Catalog_m extends MY_Model
         //get CTR and Conversion
         $dataCtr = $this->getCtr($data['product_id']);
         if(!is_null($dataCtr)) {
-            $itemCtr = self::CTR_CONST * $dataCtr['ctr'];
-            $itemCr = self::CR_CONST * $dataCtr['conversion '];
+            $itemCtr = self::CTR_CONST * $dataCtr[0]['ctr'];
+            $itemCr = self::CR_CONST * $dataCtr[0]['conversion'];
         }else{
             $itemCtr = 0;
             $itemCr = 0;
         }
 
         $score = $price_value + $manual_weight + $itemCtr + $itemCr;
+        log_message('debug','score '.$data['product_id']." : ".$score." + ".$manual_weight." + ".$itemCtr." + ".$itemCr);
 
 //        print "score : $score\n\n";
 
