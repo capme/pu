@@ -150,9 +150,6 @@ class CatalogMage extends CI_Controller {
                 echo "\n";
 
             }
-//                $filters['groupby'] = "product_id";
-
-
         }
         log_message('debug','[CatalogMage.generateScore] end : '.date('Y-m-d H:i:s'));
     }

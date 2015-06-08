@@ -6,7 +6,8 @@ class Catalog_m extends MY_Model
     const LOW_CONST = 3;
     const MID_CONST = 2;
     const HIGH_CONST = 1;
-    const POP_CONST = 4;
+    const CTR_CONST = 4;
+    const CR_CONST = 4;
     const LOW_PRICE = 500000;
     const HIGH_PRICE = 2000000;
 
@@ -170,8 +171,8 @@ class Catalog_m extends MY_Model
         //get CTR and Conversion
         $dataCtr = $this->getCtr($data['product_id']);
         if(!is_null($dataCtr)) {
-            $itemCtr = 4 * $dataCtr['ctr'];
-            $itemCr = 4 * $dataCtr['conversion '];
+            $itemCtr = self::CTR_CONST * $dataCtr['ctr'];
+            $itemCr = self::CR_CONST * $dataCtr['conversion '];
         }else{
             $itemCtr = 0;
             $itemCr = 0;
