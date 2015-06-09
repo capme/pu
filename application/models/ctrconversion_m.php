@@ -60,7 +60,7 @@ class Ctrconversion_m extends MY_Model {
         if(!empty($post['ctr'])) {
             $data['ctr'] = $post['ctr'];
         } else {
-            $msg ="ctr required";
+            $data['ctr']=0;
         }
 
         if(!empty($post['product_id'])) {
@@ -72,9 +72,9 @@ class Ctrconversion_m extends MY_Model {
         if(!empty($post['conversion'])) {
             $data['conversion'] = $post['conversion'];
         } else {
-            $msg ="conversion required";
+            $data['conversion']=0;
         }
-
+        
         if(empty($msg)) {
 
             $product_id = array($post['product_id']);
