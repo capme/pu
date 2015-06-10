@@ -1,7 +1,8 @@
 <div class="table-responsive">
     <table class="table table-striped">
         <tr style="font-weight: bold;">
-            <td >No</td>
+            <td>No</td>
+            <td> Category Id</td>
             <td>Name</td>
             <td>Path</td>
             <td>URL Path</td>
@@ -15,6 +16,7 @@
         <tbody>
             <tr class="warning">
                 <td><?php echo $no=$no+1; ?></td>
+                <td><?php echo $data['category_id']?></td>
                 <td><?php echo $data['name'] ?></td>
                 <td><?php echo $data['path'] ?></td>
                 <td><?php echo $data['url_path'] ?></td>

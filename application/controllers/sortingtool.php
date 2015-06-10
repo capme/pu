@@ -68,9 +68,6 @@ class Sortingtool extends MY_Controller {
         $client=$this->input->get("client");
         $id=$this->input->get("category_id");
         $data = $this->sortingtool_m->getCategory($id, $client);
-        if($data->num_rows() < 1) {
-            redirect("sortingtool");
-        }
 
         $this->data['content'] = "form_v.php";
         $this->data['pageTitle'] = "Sorting Tool";
@@ -83,8 +80,7 @@ class Sortingtool extends MY_Controller {
         $this->va_input->addHidden( array("name" => "client_id", "value" => $client) );
         $value = $data->result_array();
         foreach($value as $itemRows){
-            $this->va_input->addSelect( array("name" => "position_".$itemRows['id'],"label" => "", "list" => array(0=>"Non Active", 1 =>"Active"), "value" => @$itemRows['position']) );
-            $this->va_input->addSelect( array("name" => "manualweight_".$itemRows['id'],"label" => "", "list" => array(0=>"Non Active", 1 =>"Active"), "value" => @$itemRows['manual_weight']));
+            $this->va_input->addSelect( array("name" => "manualweight_".$itemRows['id'],"label" => "", "list" => array(0=>"Not Active", 1 =>"Active"), "value" => @$itemRows['manual_weight']));
         }
 
         $this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("layout/customManage.php");
@@ -96,9 +92,6 @@ class Sortingtool extends MY_Controller {
         $client=$this->input->get("client");
         $id=$this->input->get("category_id");
         $data = $this->sortingtool_m->getCategory($id, $client);
-        if($data->num_rows() < 1) {
-            redirect("sortingtool");
-        }
 
         $this->data['content'] = "form_v.php";
         $this->data['pageTitle'] = "Sorting Tool";
@@ -125,11 +118,6 @@ class Sortingtool extends MY_Controller {
         if($post['method'] == "update") {
             $clientid = $post['client_id'];
             foreach ($post as $keyItemPost => $itemPost) {
-                if (strstr($keyItemPost, "position")) {
-                    $tmp = explode("_", $keyItemPost);
-                    $data[$tmp[1]]['position'] = $itemPost;
-                }
-
                 if (strstr($keyItemPost, "manualweight")) {
                     $tmp = explode("_", $keyItemPost);
                     $data[$tmp[1]]['manualweight'] = $itemPost;
