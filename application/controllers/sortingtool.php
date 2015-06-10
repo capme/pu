@@ -64,13 +64,37 @@ class Sortingtool extends MY_Controller {
         $this->load->view('template', $this->data);
     }
 
-    public function manage($id){
+    public function manage(){
+        $client=$this->input->get("client");
+        $id=$this->input->get("category_id");
+        $data = $this->sortingtool_m->getCategory($id, $client);
+        if($data->num_rows() < 1) {
+            redirect("sortingtool");
+        }
 
+        $this->data['content'] = "form_v.php";
+        $this->data['pageTitle'] = "Inbound Document";
+        $this->data['formTitle'] = "Inbound Document - Update Attribute";
+        $this->data['breadcrumb'] = array("Inbound Document"=> "");
+        $this->load->library("va_input", array("group" => "sortingtool"));
+
+        $this->va_input->addHidden( array("name" => "method", "value" => "update") );
+        $this->va_input->addHidden( array("name" => "id", "value" => $id) );
+        $this->va_input->addHidden( array("name" => "client_id", "value" => $client) );
+        $value = $data->result_array();
+        foreach($value as $itemRows){
+            $this->va_input->addSelect( array("name" => "position_".$itemRows['id'],"label" => "", "list" => array(0=>"Non Active", 1 =>"Active"), "value" => @$itemRows['position']) );
+            $this->va_input->addSelect( array("name" => "manualweight_".$itemRows['id'],"label" => "", "list" => array(0=>"Non Active", 1 =>"Active"), "value" => @$itemRows['manual_weight']));
+        }
+
+        $this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("layout/customManage.php");
+        $this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
+        $this->load->view('template', $this->data);
     }
 
     public function viewcategory(){
         $client=$this->input->get("client");
-        $id=$this->input->get("id");
+        $id=$this->input->get("category_id");
         $data = $this->sortingtool_m->getCategory($id, $client);
         if($data->num_rows() < 1) {
             redirect("sortingtool");
@@ -78,8 +102,8 @@ class Sortingtool extends MY_Controller {
 
         $this->data['content'] = "form_v.php";
         $this->data['pageTitle'] = "Sorting Tool";
-        $this->data['breadcrumb'] = array("Sorting Tool"=> "", "Manage Sorting" => "");
-        $this->data['formTitle'] = "Manage Sorting Tool";
+        $this->data['breadcrumb'] = array("Sorting Tool"=> "", "View Sorting" => "");
+        $this->data['formTitle'] = "View Sorting Tool";
 
         $this->load->library("va_input", array("group" => "sortingtool"));
         $flashData = $this->session->flashdata("sortingtoolError");
@@ -89,37 +113,35 @@ class Sortingtool extends MY_Controller {
             $msg = $flashData['msg'];
         } else {
             $msg = array();
-            $value = $data->row_array();
+            $value = $data->result_array();
         }
-
-        $this->va_input->addHidden( array("name" => "method", "value" => "update") );
-        $this->va_input->addHidden( array("name" => "id", "value" => $value['id']) );
-        $this->va_input->addHidden( array("name" => "client_id", "value" => $client) );
-        $this->va_input->addInput( array("name" => "name", "placeholder" => "Name", "help" => "name", "label" => "Name ", "value" => @$value['name'], "msg" => @$msg['name'], "disabled"=>"disabled") );
-        $this->va_input->addInput( array("name" => "sku", "placeholder" => "SKU", "help" => "SKU", "label" => "SKU", "value" => @$value['sku'], "msg" => @$msg['sku'], "disabled"=>"disabled") );
-        $this->va_input->addInput( array("name" => "url", "placeholder" => "URL Path", "help" => "URL Path", "label" => "URL Path", "value" => @$value['url_path'], "msg" => @$msg['url_path'], "disabled"=>"disabled") );
-        $this->va_input->addSelect( array("name" => "manual_weight", "placeholder" => "Manual Weight", "label" => "Manual Weight", "list" => array("0" => "Not Active", "1" => "Active"),"value" => @$value['manual_weight'], "msg" => @$msg['manual_weight']) );
-        $this->va_input->addSelect( array("name" => "position", "placeholder" => "Position","label" => "Position", "list" => array("0" => "Not Active", "1" => "Active"), "value" => @$value['position'], "msg" => @$msg['position']) );
-        $this->va_input->addInput( array("name" => "updated_at", "placeholder" => "Updated At", "help" => "Updated At", "label" => "Updated At", "value" => @$value['updated_at'], "msg" => @$msg['updated_at'], "disabled"=>"disabled") );
+        $this->va_input->addCustomField( array("name" =>"catalogcatagoryproduct", "placeholder" => "Catalog Category Product", "label" => "Catalog Category Product", "value" =>$value, "view"=>"form/customCatalogCategoryProduct"));
         $this->data['script'] = $this->load->view("script/client_add", array(), true);
-
         $this->load->view('template', $this->data);
     }
 
     public function save(){
         $post = $this->input->post("sortingtool");
-        if(empty($post)) {
-            redirect("sortingtool");
-        }
-        if($post['method'] == "update")
-        {
-            $result = $this->sortingtool_m->manageCategory($post);
-            if(is_numeric($result)) {
-                redirect("sortingtool/view/".$post['client_id']."");
+        if($post['method'] == "update") {
+            $clientid = $post['client_id'];
+            foreach ($post as $keyItemPost => $itemPost) {
+                if (strstr($keyItemPost, "position")) {
+                    $tmp = explode("_", $keyItemPost);
+                    $data[$tmp[1]]['position'] = $itemPost;
+                }
+
+                if (strstr($keyItemPost, "manualweight")) {
+                    $tmp = explode("_", $keyItemPost);
+                    $data[$tmp[1]]['manualweight'] = $itemPost;
+                }
             }
-            else{
-                $this->session->set_flashdata( array("sortingtoolError" => json_encode(array("msg" => $result, "data" => $post))) );
-                redirect("sortingtool/viewcategory?id=".$post['id']."&client=".$post['client_id']."");
+
+            $result = $this->sortingtool_m->manageCategory($clientid, $data);
+            if (is_numeric($result)) {
+                redirect("sortingtool/view/" . $post['client_id'] . "");
+            } else {
+                $this->session->set_flashdata(array("sortingtoolError" => json_encode(array("msg" => $result, "data" => $post))));
+                redirect("sortingtool/viewcategory?id=" . $post['id'] . "&client=" . $post['client_id'] . "");
             }
         }
     }

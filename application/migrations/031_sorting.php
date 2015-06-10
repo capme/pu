@@ -26,7 +26,8 @@ class Migration_Sorting extends Base_migration {
             array("name" => "Sorting List", "slug" => "sortingtool/sortingToolList", "hidden" => 1, "status" => 1, "parent" => $parentTags['sortingtool']),
             array("name" => "Sorting View", "slug" => "sortingtool/view", "hidden" => 1, "status" => 1, "parent" => $parentTags['sortingtool']),
             array("name" => "Sorting Save", "slug" => "sortingtool/save", "hidden" => 1, "status" => 1, "parent" => $parentTags['sortingtool']),
-            array("name" => "Sorting View Category", "slug" => "sortingtool/viewcategory", "hidden" => 1, "status" => 1, "parent" => $parentTags['sortingtool'])
+            array("name" => "Sorting View Category", "slug" => "sortingtool/viewcategory", "hidden" => 1, "status" => 1, "parent" => $parentTags['sortingtool']),
+            array("name" => "Sorting View Manage", "slug" => "sortingtool/manage", "hidden" => 1, "status" => 1, "parent" => $parentTags['sortingtool'])
 
         );
 
