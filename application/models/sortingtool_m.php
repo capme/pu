@@ -57,27 +57,19 @@ class Sortingtool_m extends MY_Model {
     }
 
     public function getCategory($id, $client){
-        $this->db->select('name, manual_weight, position, sku, url_path,'.$this->tableCatalogCategory."_".$client.'.updated_at,'.$this->tableCatalogCategory."_".$client.'.id');
-        $this->db->from($this->tableCatalog."_".$client);
-        $this->db->join($this->tableCatalogCategory."_".$client, $this->tableCatalog."_".$client.".category_id=".$this->tableCatalogCategory."_".$client.".category_id");
-        $this->db->where($this->tableCatalogCategory."_".$client.".category_id", $id);
-        return $this->db->get();
+        $this->db->where('category_id', $id);
+        return $this->db->get($this->tableCatalogCategory."_".$client);
     }
 
-    public function manageCategory($post){
+    public function manageCategory($clientid, $data)    {
         $this->db = $this->load->database('mysql', TRUE);
-        if(!empty($post['position'])) {
-            $data['position'] = $post['position'];
-        } else {
-            $data['position'] = 0;
+        $this->db->trans_start();
+        foreach ($data as $id => $value) {
+            $this->db->where('id', $id);
+            $this->db->update($this->tableCatalogCategory."_".$clientid, array("position" => $value['position'], "manual_weight"=>$value['manualweight']));
         }
-        if(!empty($post['manual_weight'])) {
-            $data['manual_weight'] = $post['manual_weight'];
-        } else {
-            $data['manual_weight'] = 0;
-        }
-        $this->db->where($this->pkField, $post['id']);
-        $this->db->update($this->tableCatalogCategory."_".$post['client_id'], $data);
-        return $post['id'];
+        $this->db->trans_complete();
+        return $clientid;
     }
+
 }
