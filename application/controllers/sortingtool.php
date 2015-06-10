@@ -75,12 +75,13 @@ class Sortingtool extends MY_Controller {
         $this->data['breadcrumb'] = array("Sorting Tool"=>"", "Manage Sorting Tool" => "", "Manage Category"=> "");
         $this->load->library("va_input", array("group" => "sortingtool"));
 
-        $this->va_input->addHidden( array("name" => "method", "value" => "update") );
-        $this->va_input->addHidden( array("name" => "id", "value" => $id) );
-        $this->va_input->addHidden( array("name" => "client_id", "value" => $client) );
         $value = $data->result_array();
+        $this->va_input->addHidden( array("name" => "method", "value" => "update") );
+        $this->va_input->addHidden( array("name" => "client_id", "value" => $client) );
+        $this->va_input->addHidden( array("name" => "category_id", "value" => $id) );
+
         foreach($value as $itemRows){
-            $this->va_input->addSelect( array("name" => "manualweight_".$itemRows['id'],"label" => "", "list" => array(0=>"Not Active", 1 =>"Active"), "value" => @$itemRows['manual_weight']));
+            $this->va_input->addSelect( array("name" => "manualweight_".$itemRows['product_id'],"label" => "", "list" => array(0=>"Not Active", 1 =>"Active"), "value" => @$itemRows['manual_weight']));
         }
 
         $this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("layout/customManage.php");
@@ -124,7 +125,7 @@ class Sortingtool extends MY_Controller {
                 }
             }
 
-            $result = $this->sortingtool_m->manageCategory($clientid, $data);
+            $result = $this->sortingtool_m->manageCategory($clientid, $data, $category_id=$post['category_id']);
             if (is_numeric($result)) {
                 redirect("sortingtool/view/" . $post['client_id'] . "");
             } else {

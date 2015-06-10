@@ -4,7 +4,6 @@
         <tr>
             <th>No</th>
             <th>SKU</th>
-            <th>Posistion</th>
             <th>Manual Weight</th>
         </tr>
         </thead>
@@ -23,7 +22,6 @@
         <tr>
         <td><?php echo $no =$no+1?></td>
         <td><?php echo $result['sku']?></td>
-        <td width="30%"><?php echo $this->va_input->getFieldInput($this->va_input->fields[$x]); $x++;?></td>
         <td width="30%"><?php echo $this->va_input->getFieldInput($this->va_input->fields[$x]); $x++;?></td>
         </tr>
     <?php endforeach;?>

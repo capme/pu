@@ -58,15 +58,17 @@ class Sortingtool_m extends MY_Model {
 
     public function getCategory($id, $client){
         $this->db->where('category_id', $id);
+        $this->db->group_by('product_id');
+        $this->db->order_by('product_id');
         return $this->db->get($this->tableCatalogCategory."_".$client);
     }
 
-    public function manageCategory($clientid, $data)    {
+    public function manageCategory($clientid, $data, $category_id)    {
         $this->db = $this->load->database('mysql', TRUE);
         $this->db->trans_start();
         foreach ($data as $id => $value) {
-            $this->db->where('id', $id);
-            $this->db->update($this->tableCatalogCategory."_".$clientid, array("position" => $value['position'], "manual_weight"=>$value['manualweight']));
+            $this->db->where(array('product_id' => $id, 'category_id'=> $category_id));
+            $this->db->update($this->tableCatalogCategory."_".$clientid, array("manual_weight"=>$value['manualweight']));
         }
         $this->db->trans_complete();
         return $clientid;
