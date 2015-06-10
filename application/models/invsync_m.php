@@ -12,28 +12,29 @@ class Invsync_m extends MY_Model {
     public function save($data, $client) {
         $tableName = $this->table.$client['id'];
         $this->db->trans_start();
-        $this->db->truncate($tableName);
-        $insert = array();
+        if(!empty($data)) {
+            $this->db->truncate($tableName);
+            $insert = array();
 
-        foreach($data as $row) {
-            if(!empty($row)) {
-                $catalog = json_decode($row->data);
-                $insert[] = array(
-                    'sku_simple' => $row->sku,
-                    'sku_config' => $row->description2,
-                    'sku_description' => $row->i_description,
-                    'updated_at' => date('Y-m-d H:i:s'),
-                    'product_id' => $catalog->info->product_id,
-                    'price' => (int) $catalog->info->price,
-                    'created_at' => (empty($catalog->info->created_at) ? '0000-00-00 00:00:00' : $catalog->info->created_at)
-                );
-             }
+            foreach ($data as $row) {
+                if (!empty($row)) {
+                    $catalog = json_decode($row->data);
+                    $insert[] = array(
+                        'sku_simple' => $row->sku,
+                        'sku_config' => $row->description2,
+                        'sku_description' => $row->i_description,
+                        'updated_at' => date('Y-m-d H:i:s'),
+                        'product_id' => $catalog->info->product_id,
+                        'price' => (int)$catalog->info->price,
+                        'created_at' => (empty($catalog->info->created_at) ? '0000-00-00 00:00:00' : $catalog->info->created_at)
+                    );
+                }
+            }
         }
-
         if(!empty($insert)) {
             $this->db->insert_batch($tableName, $insert);
         }
-	$this->db->trans_complete();
+	    $this->db->trans_complete();
     }
 
     public function findBySku($sku, $clientId) {
