@@ -1,6 +1,6 @@
 <div class="table-responsive">
     <table class="table table-striped" >
-        <tr>
+        <tr style="font-weight: bold;">
             <td>No</td>
             <td>SKU</td>
             <td>Product Id</td>

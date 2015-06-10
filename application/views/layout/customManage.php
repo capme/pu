@@ -1,13 +1,16 @@
-<table class="table" border=0>
+<div class="table-responsive">
+    <table class="table table-striped">
         <thead>
         <tr>
-            <th width="25%">SKU</th>
-            <th width="20%">Posistion</th>
-            <th width="15%">Manual Weight</th>
+            <th>No</th>
+            <th>SKU</th>
+            <th>Posistion</th>
+            <th>Manual Weight</th>
         </tr>
         </thead>
     <tbody>
     <?php
+    $no=0;
     $client=$this->input->get("client");
     $id=$this->input->get("category_id");
     $data = $this->sortingtool_m->getCategory($id, $client);
@@ -18,10 +21,12 @@
     $x=3;
     foreach ($value as $result):?>
         <tr>
+        <td><?php echo $no =$no+1?></td>
         <td><?php echo $result['sku']?></td>
-        <td><?php echo $this->va_input->getFieldInput($this->va_input->fields[$x]); $x++;?></td>
-        <td><?php echo $this->va_input->getFieldInput($this->va_input->fields[$x]); $x++;?></td>
+        <td width="30%"><?php echo $this->va_input->getFieldInput($this->va_input->fields[$x]); $x++;?></td>
+        <td width="30%"><?php echo $this->va_input->getFieldInput($this->va_input->fields[$x]); $x++;?></td>
         </tr>
     <?php endforeach;?>
 </tbody>
 </table>
+</div>

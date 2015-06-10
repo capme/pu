@@ -41,7 +41,7 @@ class Sortingtool extends MY_Controller {
         $this->data['content'] = "form_v.php";
         $this->data['pageTitle'] = "Sorting Tool";
         $this->data['breadcrumb'] = array("Sorting Tool"=> "sortingtool", "Manage Sorting Tool" => "");
-        $this->data['formTitle'] = "Manage Sorting Tool";
+        $this->data['formTitle'] = "View Catalog Category";
 
         $this->load->library("va_input", array("group" => "sortingtool"));
         $flashData = $this->session->flashdata("sortingtoolError");
@@ -73,9 +73,9 @@ class Sortingtool extends MY_Controller {
         }
 
         $this->data['content'] = "form_v.php";
-        $this->data['pageTitle'] = "Inbound Document";
-        $this->data['formTitle'] = "Inbound Document - Update Attribute";
-        $this->data['breadcrumb'] = array("Inbound Document"=> "");
+        $this->data['pageTitle'] = "Sorting Tool";
+        $this->data['formTitle'] = "Manage Catalog Category Product";
+        $this->data['breadcrumb'] = array("Sorting Tool"=>"", "Manage Sorting Tool" => "", "Manage Category"=> "");
         $this->load->library("va_input", array("group" => "sortingtool"));
 
         $this->va_input->addHidden( array("name" => "method", "value" => "update") );
@@ -103,7 +103,7 @@ class Sortingtool extends MY_Controller {
         $this->data['content'] = "form_v.php";
         $this->data['pageTitle'] = "Sorting Tool";
         $this->data['breadcrumb'] = array("Sorting Tool"=> "", "View Sorting" => "");
-        $this->data['formTitle'] = "View Sorting Tool";
+        $this->data['formTitle'] = "View Catalog Category Product";
 
         $this->load->library("va_input", array("group" => "sortingtool"));
         $flashData = $this->session->flashdata("sortingtoolError");
