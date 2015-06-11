@@ -297,6 +297,36 @@ class Mageapi {
         }
     }
 
+    /**
+     * bulkUpdateCategoryProductPosition : update position using multicall
+     * @param array $datas
+     * @return array|bool
+     */
+    public function bulkUpdateCategoryProductPosition($datas = array()) {
+        try {
+            $newPosition = array();
+            foreach($datas as $_data) {
+                if(!empty($_data)) {
+                    $newPosition[] = array(self::METHOD_CATEGORY_UPDATE_PRODUCT,array('categoryId'=>$_data['category_id'],'product'=>$_data['product_id'],'position'=>$_data['result_index']) );
+                }
+            }
+
+            $updatePosition = $this->soapClient->multiCall($this->soapSession, $newPosition);
+            
+            foreach($newPosition as $k => $data){
+                $newPosition[$k]['mage_result'] = $updatePosition[$k];
+            }
+            log_message('debug','Mageapi.updateCategoryProductPosition bulk result : '.print_r($newPosition,true));
+
+            return $newPosition;
+        } catch( Exception $e ) {
+            log_message('error', "updateCategoryProductPosition bulk (".count($datas).") MAGEAPI ==> ". $e->getMessage()." ### ".self::METHOD_CATEGORY_UPDATE_PRODUCT);
+
+            return false;
+        }
+
+    }
+
 	public function getCatalog() {
 		$productList = $this->soapClient->call($this->soapSession, self::METHOD_PRODUCT_LIST);
 		$productsInfo = array();

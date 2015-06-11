@@ -65,6 +65,7 @@ class CatalogMage extends CI_Controller {
                 "url" => $client['mage_wsdl']
             );
 
+            print_r($config);
             if( $this->mageapi->initSoap($config) ) {
                 log_message('debug','[CatalogMage.productLink] : '.$client['client_code'].'#'.$category,'#',$store);
                 $products = $this->mageapi->getCategoryProduct($store, $category);
@@ -126,6 +127,64 @@ class CatalogMage extends CI_Controller {
 
 //        print_r($result);
         log_message('debug','[CatalogMage.updatePositionCategoryProduct] end : '.date('Y-m-d H:i:s'));
+    }
+
+
+    /**
+     * bulkUpdatePositionCategoryProduct : using multicall to update to magento
+     * @param string $code
+     * @param null $category
+     */
+    public function bulkUpdatePositionCategoryProduct($code = "", $category = null) {
+        log_message('debug','[CatalogMage.bulkUpdatePositionCategoryProduct] start : '.date('Y-m-d H:i:s'));
+
+        $this->load->model( array('client_m', 'catalog_m'));
+        $this->load->library("mageapi");
+
+        $clients = $this->client_m->getClients();
+
+        foreach($clients as $client) {
+            if($code && $client['client_code'] != $code){
+                continue;
+            }
+
+            if(!$client['mage_auth'] && !$client['mage_wsdl']) {
+                continue;
+            }
+
+            $config = array(
+                "auth" => $client['mage_auth'],
+                "url" => $client['mage_wsdl']
+            );
+
+            $categories = $this->catalog_m->getCategory($client);
+
+            foreach($categories as $_category) {
+                if ($category && $_category['category_id'] != $category) {
+                    continue;
+                }
+
+                $filters['groupby'] = "product_id";
+                $categoryProducts = $this->catalog_m->getCatalogCategoryProduct($client, $_category['category_id'], $filters);
+
+                if ($this->mageapi->initSoap($config)) {
+                    foreach ($categoryProducts as $_product) {
+                        if (!empty($_product['result_index'])) {
+                            $newPost[] = $_product;
+                        }
+                    }
+                    if(!empty($newPost)){
+                        $update = $this->mageapi->bulkUpdateCategoryProductPosition($newPost);
+                        if(!$update){
+                            log_message('debug','[CatalogMage.bulkUpdatePositionCategoryProduct] failed : categoryId['.$_category['category_id'].'] countCategoryProduct['.count($categoryProducts).'] attemptUpdate['.count($newPost)."]");
+                        }
+                    }
+                }
+            }
+        }
+
+//        print_r($result);
+        log_message('debug','[CatalogMage.bulkUpdatePositionCategoryProduct] end : '.date('Y-m-d H:i:s'));
     }
 
 

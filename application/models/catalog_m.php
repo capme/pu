@@ -6,6 +6,7 @@ class Catalog_m extends MY_Model
     const LOW_CONST = 3;
     const MID_CONST = 2;
     const HIGH_CONST = 1;
+    const MANUAL_CONST = 1;
     const CTR_CONST = 4;
     const CR_CONST = 4;
     const LOW_PRICE = 500000;
@@ -64,14 +65,21 @@ class Catalog_m extends MY_Model
 
                 if(!empty($_products)) {
                     foreach ($_products as $_product) {
-                        $insertCatalogCategoryProduct[] = array(
-                            'category_id' => $_id,
-                            'product_id' => $_product['product_id'],
-                            'sku' => $_product['sku'],
-                            'position' => $_product['position'],
-                            'store_id ' => $_store,
-                            'updated_at' => date('Y-m-d H:i:s')
-                        );
+//                        if($_product['type'] == 'configurable'){
+                            $insertCatalogCategoryProduct[] = array(
+                                'category_id' => $_id,
+                                'product_id' => $_product['product_id'],
+                                'sku' => $_product['sku'],
+                                'position' => $_product['position'],
+                                'store_id ' => $_store,
+                                'updated_at' => date('Y-m-d H:i:s')
+                            );
+                            if($_product['product_id'] == '890'){
+                                print_r($_store);
+                                print_r($_product);
+                            }
+//                        }
+
                     }
                 }
             }
@@ -79,6 +87,7 @@ class Catalog_m extends MY_Model
 
         if(!empty($insertCatalogCategoryProduct)) {
             $this->db->insert_batch($tableCategoryProduct, $insertCatalogCategoryProduct);
+            log_message('[debug','catalog_m.insertCategoryProduct] inserted:'.count($insertCatalogCategoryProduct));
         }
 
         $this->db->trans_complete();
@@ -131,7 +140,7 @@ class Catalog_m extends MY_Model
         $result = $mysql->get($tableCategoryProduct)->result_array();
 
         // cek sql query
-//         log_message('debug','getCatalogCategoryProduct : '.$mysql->last_query());
+         log_message('debug','getCatalogCategoryProduct : '.$mysql->last_query());
 
         return $result;
     }
@@ -151,22 +160,16 @@ class Catalog_m extends MY_Model
 
         $rand = $this->random(6);
 
-//        print "data : ".$data['price']."\n";
-//        print "rand : $rand\n";
-
         // hitung price weight
         if((int) $data['price'] <= self::LOW_PRICE){
             $price_value = self::LOW_CONST * $rand;
-//            print "low : $price_value\n";
         } elseif( (int) $data['price'] > self::LOW_PRICE && (int) $data['price'] < self::HIGH_PRICE  ){
             $price_value = self::MID_CONST * $rand;
-//            print "mid : $price_value\n";
         } else {
             $price_value = self::HIGH_CONST * $rand;
-//            print "high : $price_value\n";
         }
 
-        $manual_weight = (int) $data['manual_weight'];
+        $manual_weight = self::MANUAL_CONST * (int) $data['manual_weight'] * $rand;
 
         //get CTR and Conversion
         $dataCtr = $this->getCtr($data['product_id']);
@@ -179,7 +182,7 @@ class Catalog_m extends MY_Model
         }
 
         $score = $price_value + $manual_weight + $itemCtr + $itemCr;
-        log_message('debug','score '.$data['product_id']." : ".$score." + ".$manual_weight." + ".$itemCtr." + ".$itemCr);
+        log_message('debug','score '.$data['product_id']." : ".$score." = ".$price_value." + ".$manual_weight." + ".$itemCtr." + ".$itemCr);
 
 //        print "score : $score\n\n";
 
