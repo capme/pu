@@ -75,11 +75,11 @@ class Sortingtool extends MY_Controller {
         $this->data['breadcrumb'] = array("Sorting Tool"=>"", "Manage Sorting Tool" => "", "Manage Category"=> "");
         $this->load->library("va_input", array("group" => "sortingtool"));
 
-        $value = $data->result_array();
         $this->va_input->addHidden( array("name" => "method", "value" => "update") );
         $this->va_input->addHidden( array("name" => "client_id", "value" => $client) );
         $this->va_input->addHidden( array("name" => "category_id", "value" => $id) );
 
+        $value = $data->result_array();
         foreach($value as $itemRows){
             $this->va_input->addSelect( array("name" => "manualweight_".$itemRows['product_id'],"label" => "", "list" => array(0=>"Not Active", 1 =>"Active"), "value" => @$itemRows['manual_weight']));
         }
@@ -132,6 +132,9 @@ class Sortingtool extends MY_Controller {
                 $this->session->set_flashdata(array("sortingtoolError" => json_encode(array("msg" => $result, "data" => $post))));
                 redirect("sortingtool/viewcategory?id=" . $post['id'] . "&client=" . $post['client_id'] . "");
             }
+        }
+        else {
+            redirect("sortingtool");
         }
     }
 }
