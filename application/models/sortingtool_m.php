@@ -8,6 +8,7 @@ class Sortingtool_m extends MY_Model {
     var $pkField = "id";
     var $tableCatalog="catalog_category";
     var $tableCatalogCategory="catalog_category_product";
+    var $tableInv="inv_items";
 
     function __construct(){
         parent::__construct();
@@ -61,6 +62,13 @@ class Sortingtool_m extends MY_Model {
         $this->db->group_by('product_id');
         $this->db->order_by('product_id');
         return $this->db->get($this->tableCatalogCategory."_".$client);
+    }
+
+    public function getName ($client, $sku){
+        $this->db->select('sku_description');
+        $this->db->where('sku_config', $sku);
+        $this->db->group_by('sku_config');
+        return $this->db->get($this->tableInv."_".$client)->row_array();
     }
 
     public function manageCategory($clientid, $data, $category_id)    {

@@ -16,6 +16,7 @@
         <tr>
             <th>No</th>
             <th>SKU</th>
+            <th>Product Name</th>
             <th>Manual Weight</th>
         </tr>
         </thead>
@@ -32,10 +33,13 @@
     $data = $this->sortingtool_m->getCategory($id, $client);
     $value = $data->result_array();
     $x=3;
-    foreach ($value as $result):?>
+    foreach ($value as $result):
+        $name=$this->sortingtool_m->getName($client, $sku=$result['sku']);
+        ?>
         <tr>
         <td><?php echo $no =$no+1?></td>
         <td><?php echo $result['sku']?></td>
+            <td><?php echo $name['sku_description']?></td>
         <td width="30%"><?php echo $this->va_input->getFieldInput($this->va_input->fields[$x]); $x++;?></td>
         </tr>
     <?php endforeach;?>
