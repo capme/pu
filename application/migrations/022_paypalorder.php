@@ -19,13 +19,30 @@ class Migration_paypalorder extends Base_migration {
 			primary key (`id`))ENGINE=InnoDB DEFAULT CHARSET=utf8");
 			
         $this->db->query("DELETE FROM module WHERE slug like 'paypa%'");
-        $new= array(
-            "paypalorder" => array("name" => "Paypal Order", "slug" => "paypalorder", "icon" => "fa-paypal", "hidden" => 0, "status" => 1, "parent" => 1),
+        $this->db->query("DELETE FROM module WHERE slug like 'exportpay%'");
+        /*$new= array(
+            "paypalorder" => array("name" => "Paypal Order", "slug" => "paypalorder", "icon" => "fa-paypal", "hidden" => 0, "status" => 1, "parent" => 1)
         );
         $newIds = array();
 
         $parentTags = array();
         foreach($new as $tag => $module) {
+            $this->db->insert("module", $module);
+            $newIds[] = $parentTags[$tag] = $this->db->insert_id();
+        }*/
+
+        $this->db->insert("module", array("name" => "Paypal Order", "slug" => "paypalorder", "icon" => "fa-paypal", "parent" => 1, "hidden" => 0, "status" => 1));
+        $newIds = array();
+
+        $parentModule = $this->db->insert_id();
+        $newIds[] = $parentModule;
+
+        $newModule = array(
+            "paypalorder" => array("name" => "Paypal Order", "slug" => "paypalorder", "icon" => "fa-paypal", "hidden" => 0, "status" => 1, "parent" => $parentModule),
+            "exportpaypayl" => array("name" => "Export Paypal Order", "slug" => "exportpaypal", "icon" => "glyphicon glyphicon-download-alt", "hidden" => 0, "status" => 1, "parent" => $parentModule)
+        );
+        $parentTags = array();
+        foreach($newModule as $tag => $module) {
             $this->db->insert("module", $module);
             $newIds[] = $parentTags[$tag] = $this->db->insert_id();
         }
@@ -35,7 +52,9 @@ class Migration_paypalorder extends Base_migration {
             array("name" => "Paypal Order View", "slug" => "paypalorder/view", "hidden" => 1, "status" => 1, "parent" => $parentTags['paypalorder']),
 			array("name" => "Paypal Order Cancel", "slug" => "paypalorder/cancel", "hidden" => 1, "status" => 1, "parent" => $parentTags['paypalorder']),
             array("name" => "Paypal Order Approve", "slug" => "paypalorder/approve", "hidden" => 1, "status" => 1, "parent" => $parentTags['paypalorder']),
-           
+
+            array("name" => "Paypal Order List", "slug" => "exportpaypal/exportPaypalList", "hidden" => 1, "status" => 1, "parent" => $parentTags['paypalorder']),
+            array("name" => "Export Paypal Order", "slug" => "exportpaypal/export", "hidden" => 1, "status" => 1, "parent" => $parentTags['paypalorder'])
 			);
 
         foreach($newModule as $module) {
@@ -57,8 +76,9 @@ class Migration_paypalorder extends Base_migration {
         parent::down();
 		$this->db->trans_start();
         $this->db->query("DELETE FROM module WHERE slug like 'paypa%'");
+        $this->db->query("DELETE FROM module WHERE slug like 'exportpay%'");
 		$this->db->query("DROP TABLE paypal_order");
-		 $this->db->trans_complete();
+		$this->db->trans_complete();
     }
 }
 ?>
