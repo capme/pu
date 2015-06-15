@@ -31,7 +31,8 @@ class Migration_Catalog_Category extends Base_Migration {
               `score` float,
               `result_index` int(11),
               `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-              PRIMARY KEY (`id`)
+              PRIMARY KEY (`id`),
+              INDEX (`sku`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8');
         }
         $this->db->trans_complete();

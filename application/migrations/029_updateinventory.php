@@ -15,6 +15,11 @@ class Migration_Updateinventory extends Base_Migration {
                 if($cek > 0){
                     $this->db->query('ALTER TABLE `inv_items_'.$client['id'].'` DROP COLUMN `'.$_column.'`');
                 }
+                $sql = "SHOW INDEX FROM `inv_items_".$client['id']."` WHERE KEY_NAME = 'sku_config'";
+                $cek = $this->db->query($sql)->num_rows();
+                if($cek > 0){
+                    $this->db->query('ALTER TABLE `inv_items_'.$client['id'].'` DROP INDEX sku_config');
+                }
             }
 
             $this->db->query('ALTER TABLE `inv_items_'.$client['id'].'` ADD COLUMN `product_id` int(11), ADD COLUMN `price` int(11), ADD COLUMN `created_at` timestamp');
@@ -34,6 +39,11 @@ class Migration_Updateinventory extends Base_Migration {
                 $cek = $this->db->query($sql)->num_rows();
                 if($cek > 0){
                     $this->db->query('ALTER TABLE `inv_items_'.$client['id'].'` DROP COLUMN `'.$_column.'`');
+                }
+                $sql = "SHOW INDEX FROM `inv_items_".$client['id']."` WHERE KEY_NAME = 'sku_config'";
+                $cek = $this->db->query($sql)->num_rows();
+                if($cek > 0){
+                    $this->db->query('ALTER TABLE `inv_items_'.$client['id'].'` DROP INDEX sku_config');
                 }
             }
         }
