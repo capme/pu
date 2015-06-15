@@ -17,11 +17,8 @@ class Migration_Exportorder extends Base_migration {
 
         $newModule = array(
             array("name" => "Export Order List", "slug" => "exportorder/clientOrderList", "hidden" => 1, "status" => 1, "parent" => $parentTags['exportorder']),
-            array("name" => "Export Order Paypal", "slug" => "exportorder/exportPaypal", "hidden" => 1, "status" => 1, "parent" => $parentTags['exportorder']),
-            array("name" => "Export Order Bank Transfer", "slug" => "exportorder/exportBankTransfer", "hidden" => 1, "status" => 1, "parent" => $parentTags['exportorder']),
-            array("name" => "Export Order Credit Card", "slug" => "exportorder/exportCreditCard", "hidden" => 1, "status" => 1, "parent" => $parentTags['exportorder']),
-            array("name" => "Export Order COD", "slug" => "exportorder/exportCod", "hidden" => 1, "status" => 1, "parent" => $parentTags['exportorder'])
-
+            array("name" => "Export Order Export", "slug" => "exportorder/export", "hidden" => 1, "status" => 1, "parent" => $parentTags['exportorder']),
+            array("name" => "Export Order Save", "slug" => "exportorder/save", "hidden" => 1, "status" => 1, "parent" => $parentTags['exportorder'])
         );
 
         foreach($newModule as $module) {
