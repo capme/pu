@@ -168,6 +168,7 @@ class CatalogMage extends CI_Controller {
                 $categoryProducts = $this->catalog_m->getCatalogCategoryProduct($client, $_category['category_id'], $filters);
 
                 if ($this->mageapi->initSoap($config)) {
+                    $newPost = array();
                     foreach ($categoryProducts as $_product) {
                         if (!empty($_product['result_index'])) {
                             $newPost[] = $_product;
@@ -176,7 +177,9 @@ class CatalogMage extends CI_Controller {
                     if(!empty($newPost)){
                         $update = $this->mageapi->bulkUpdateCategoryProductPosition($newPost);
                         if(!$update){
-                            log_message('debug','[CatalogMage.bulkUpdatePositionCategoryProduct] failed : categoryId['.$_category['category_id'].'] countCategoryProduct['.count($categoryProducts).'] attemptUpdate['.count($newPost)."]");
+                            log_message("debug","[CatalogMage.bulkUpdatePositionCategoryProduct] failed : client[".$code."]  categoryId[".$_category['category_id']."] countCategoryProduct[".count($categoryProducts)."] attemptUpdate[".count($newPost)."]");
+                        } else {
+                            log_message("debug","[CatalogMage.bulkUpdatePositionCategoryProduct] : client[".$code."]  categoryId[".$_category['category_id']."] countCategoryProduct[".count($categoryProducts)."] attemptUpdate[".count($newPost)."] update[data:".count(@$update['data']).", success:".@$update['success'].", error:".@$update['error']."]");
                         }
                     }
                 }

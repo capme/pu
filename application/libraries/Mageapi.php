@@ -305,6 +305,7 @@ class Mageapi {
     public function bulkUpdateCategoryProductPosition($datas = array()) {
         try {
             $newPosition = array();
+            $sum = array('success'=>0, 'error'=>0);
             foreach($datas as $_data) {
                 if(!empty($_data)) {
                     $newPosition[] = array(self::METHOD_CATEGORY_UPDATE_PRODUCT,array('categoryId'=>$_data['category_id'],'product'=>$_data['product_id'],'position'=>$_data['result_index']) );
@@ -312,13 +313,15 @@ class Mageapi {
             }
 
             $updatePosition = $this->soapClient->multiCall($this->soapSession, $newPosition);
-            
+
             foreach($newPosition as $k => $data){
                 $newPosition[$k]['mage_result'] = $updatePosition[$k];
+                if(!is_array($updatePosition[$k]) && $updatePosition[$k] == 1) $sum['success']++;
+                else $sum['error'];
             }
             log_message('debug','Mageapi.updateCategoryProductPosition bulk result : '.print_r($newPosition,true));
 
-            return $newPosition;
+            return array('data'=>$newPosition,'success'=>$sum['success'],'problem'=>$sum['error']);
         } catch( Exception $e ) {
             log_message('error', "updateCategoryProductPosition bulk (".count($datas).") MAGEAPI ==> ". $e->getMessage()." ### ".self::METHOD_CATEGORY_UPDATE_PRODUCT);
 
