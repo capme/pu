@@ -22,7 +22,7 @@ class Migration_Updateinventory extends Base_Migration {
                 }
             }
 
-            $this->db->query('ALTER TABLE `inv_items_'.$client['id'].'` ADD COLUMN `product_id` int(11), ADD COLUMN `price` int(11), ADD COLUMN `created_at` timestamp');
+            $this->db->query('ALTER TABLE `inv_items_'.$client['id'].'` ADD COLUMN `product_id` int(11), ADD COLUMN `price` int(11), ADD COLUMN `created_at` timestamp , ADD INDEX (`sku_config`, `sku_simple`)');
         }
         $this->db->trans_complete();
     }
