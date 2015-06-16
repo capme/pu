@@ -1,0 +1,5 @@
+"attribute_set","brand_size","brand_size_system","paraplou_size","position"
+"MT","S","INT","S",1
+"MT","M","INT","M",2
+"MT","L","INT","L",3
+"MT","XL","INT","XL",4
