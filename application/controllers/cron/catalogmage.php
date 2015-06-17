@@ -20,6 +20,11 @@ class CatalogMage extends CI_Controller {
                 continue;
             }
 
+            // khusus untuk PARAPLOU dulu
+            if($client['client_code'] != 'PARAPLOU'){
+                continue;
+            }
+
             if(!$client['mage_auth'] && !$client['mage_wsdl']) {
                 continue;
             }
@@ -32,6 +37,7 @@ class CatalogMage extends CI_Controller {
             if( $this->mageapi->initSoap($config) ) {
                 $categories = $this->mageapi->getDetailCategory();
                 $this->catalog_m->saveCategory($categories, $client);
+                log_message('debug','[CatalogMage.category]  : '.$client['clint_code']);
             }
         }
         log_message('debug','[CatalogMage.category] end : '.date('Y-m-d H:i:s'));
@@ -56,6 +62,11 @@ class CatalogMage extends CI_Controller {
                 continue;
             }
 
+            // khusus untuk PARAPLOU dulu
+            if($client['client_code'] != 'PARAPLOU'){
+                continue;
+            }
+
             if(!$client['mage_auth'] && !$client['mage_wsdl']) {
                 continue;
             }
@@ -70,6 +81,7 @@ class CatalogMage extends CI_Controller {
                 log_message('debug','[CatalogMage.productLink] : '.$client['client_code'].'#'.$category,'#',$store);
                 $products = $this->mageapi->getCategoryProduct($store, $category);
                 $this->catalog_m->insertCategoryProduct($products, $client);
+                log_message('debug','[CatalogMage.categoryProduct]  : '.$client['client_code']);
             }
         }
 
@@ -92,6 +104,11 @@ class CatalogMage extends CI_Controller {
 
         foreach($clients as $client) {
             if($code && $client['client_code'] != $code){
+                continue;
+            }
+
+            // khusus untuk PARAPLOU dulu
+            if($client['client_code'] != 'PARAPLOU'){
                 continue;
             }
 
@@ -121,6 +138,7 @@ class CatalogMage extends CI_Controller {
                             $result[] = array('category_id' => $_product['category_id'], 'product_id' => $_product['product_id'], 'updated' => $update);
                         }
                     }
+                    log_message('debug','[CatalogMage.updatePositionCategoryProduct] : '.$client['client_code']);
                 }
             }
         }
@@ -148,6 +166,11 @@ class CatalogMage extends CI_Controller {
                 continue;
             }
 
+            // khusus untuk PARAPLOU dulu
+            if($client['client_code'] != 'PARAPLOU'){
+                continue;
+            }
+
             if(!$client['mage_auth'] && !$client['mage_wsdl']) {
                 continue;
             }
@@ -158,6 +181,7 @@ class CatalogMage extends CI_Controller {
             );
 
             $categories = $this->catalog_m->getCategory($client);
+            log_message('debug','[CatalogMage.bulkUpdatePositionCategoryProduct] '.$client['client_code']);
 
             foreach($categories as $_category) {
                 if ($category && $_category['category_id'] != $category) {
