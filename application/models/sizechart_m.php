@@ -50,8 +50,8 @@ class Sizechart_m extends MY_Model {
                 $_result->notes,
                 $_result->created_at,
                 '<a href="'.site_url("sizechart/export/".$_result->client_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-download" ></i> Export</a> |
-                <a href="'.site_url("sizechart/delete/".$_result->client_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Delete</a> |
-                <a href="'.site_url("sizechart/view/".$_result->client_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> View</a>'
+                <a href="'.site_url("sizechart/view/".$_result->client_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a> |
+                <a href="'.site_url("sizechart/delete/".$_result->client_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Delete</a>'
             );
         }
         $records["sEcho"] = $sEcho;
@@ -96,7 +96,6 @@ class Sizechart_m extends MY_Model {
                 $data['client_id'] = $post['client_id'];
             } else {
             }
-
 
         if(empty($msg)) {
             $this->db->insert($this->tableMap, $data);

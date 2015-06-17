@@ -1,18 +1,14 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class Sizechart extends MY_Controller
-{
-
+class Sizechart extends MY_Controller{
     var $data = array();
 
-    public function __construct()
-    {
+    public function __construct(){
         parent::__construct();
         $this->load->model(array("client_m", "sizechart_m","clientoptions_m"));
         $this->load->library('va_csv');
     }
 
-    public function index()
-    {
+    public function index(){
         $this->data['content'] = "list_v.php";
         $this->data['pageTitle'] = "Size Chart";
         $this->data['breadcrumb'] = array("Size Chart" => "");
@@ -28,14 +24,12 @@ class Sizechart extends MY_Controller
         $this->load->view("template", $this->data);
     }
 
-    public function sizeChartList()
-    {
+    public function sizeChartList(){
         $data = $this->sizechart_m->getSizeChartList();
         echo json_encode($data);
     }
 
-    public function add()
-    {
+    public function add(){
         $this->data['content'] = "form_v.php";
         $this->data['pageTitle'] = "Upload File";
         $this->data['breadcrumb'] = array("Size Chart" => "sizechart", "Upload File" => "");
@@ -47,21 +41,21 @@ class Sizechart extends MY_Controller
             $flashData = json_decode($flashData, true);
             $value = $flashData['data'];
             $msg = $flashData['msg'];
+
         } else {
             $msg = $value = array();
         }
 
         $this->va_input->addHidden(array("name" => "method", "value" => "new"));
-        $this->va_input->addSelect(array("name" => "client_id", "label" => "Client *", "list" => $this->client_m->getClientCodeList(), "msg"=>@$msg['client_id']));
+        $this->va_input->addSelect(array("name" => "client_id", "label" => "Client *", "list" => $this->client_m->getClientCodeList()));
         $this->va_input->addTextarea(array("name" => "note", "placeholder" => "Note", "help" => "Note", "label" => "Note"));
-        $this->va_input->addCustomField(array("name" => "userfile", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg['userfile'][0] ?: @$msg['userfile'][1], "label" => "Upload File *", "view" => "form/upload_sizechart.php"));
+        $this->va_input->addCustomField(array("name" => "userfile", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg ?: @$msg['userfile'][0] ?: @$msg['userfile'][1], "label" => "Upload File *", "view" => "form/upload_sizechart.php"));
 
         $this->data['script'] = $this->load->view("script/ctr_add", array(), true);
         $this->load->view('template', $this->data);
     }
 
-    public function save()
-    {
+    public function save(){
         if ($_SERVER['REQUEST_METHOD'] != "POST") {
             redirect("sizechart/add");
         }
@@ -80,8 +74,7 @@ class Sizechart extends MY_Controller
         }
     }
 
-    private function _saveNew($post)
-    {
+    private function _saveNew($post){
         $msg = null;
         $msg = $this->uploadFile();
 
@@ -89,6 +82,7 @@ class Sizechart extends MY_Controller
             // upload failed
             $result['userfile'][0] = $msg['data'];
             $this->session->set_flashdata(array("sizechartError" => json_encode(array("msg" => $result, "data" => $post))));
+            unlink($msg['data']['full_path']);
             redirect("sizechart/add");
         } else {
             $fileData = $msg['data'];
@@ -105,6 +99,7 @@ class Sizechart extends MY_Controller
             if(!empty($cekAvailable) && !empty($cekMap)){
                 $avail="client has availabe";
                 $this->session->set_flashdata(array("sizechartError" => json_encode(array("msg" => $avail, "data" => $post))));
+                unlink($fileData['full_path']);
                 redirect('sizechart/add');
             }
             else{
@@ -132,8 +127,7 @@ class Sizechart extends MY_Controller
         }
     }
 
-    public function uploadFile()
-    {
+    public function uploadFile(){
         $return = array('error' => false, 'data' => array());
 
         $config['upload_path'] = '../public/merchandising/size_chart/';
@@ -201,6 +195,5 @@ class Sizechart extends MY_Controller
         $this->va_input->addCustomField( array("name" =>"size_chart", "placeholder" => "Size Chart", "label" => "Size Chart", "value" =>$value, "view"=>"form/customSizeChart"));
         $this->data['script'] = $this->load->view("script/client_add", array(), true);
         $this->load->view('template', $this->data);
-
     }
 }
