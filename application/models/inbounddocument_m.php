@@ -712,6 +712,8 @@ class Inbounddocument_m extends MY_Model {
 
 			//retail price -> ?
 			$retailprice = @$arr_data[$x]['K'];
+            $retailprice = preg_replace("/[^0-9,.]/", "", str_replace(".","",$retailprice));
+
 			//check if the string contain '=' which refer to another cell value
 			if (substr($retailprice, 0, 1) == "=") {
 				//remove except alphabet

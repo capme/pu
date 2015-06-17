@@ -19,8 +19,8 @@ class Paymentconfirmation_m extends MY_Model {
         $user=$this->session->userdata('group');
 		if ($user == 4) {
             $this->relation = array(
-                array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} where receipt_url=''"),
-                array("type" => "left", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr")
+                array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} "),
+                array("type" => "left", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr  where receipt_url=''")
             );
         }
         else {
@@ -142,7 +142,7 @@ class Paymentconfirmation_m extends MY_Model {
 	public function getConfirmationById($id)
 	{
 		$this->db = $this->load->database('mysql', TRUE);
-		$this->db->select('*, bank_confirmation.created_at,bank_confirmation.id, bank_confirmation.updated_at, auth_users.username, order_history.type, order_history.created_at as history_date');
+		$this->db->select('*, bank_confirmation.status as status_bank, order_history.status as status_history, bank_confirmation.created_at, bank_confirmation.id, bank_confirmation.updated_at, auth_users.username, order_history.type, order_history.created_at as history_date');
 		$this->db->from($this->table);
 		$this->db->join('client','client.id=bank_confirmation.client_id');
         $this->db->join('order_history', 'order_history.order_id=bank_confirmation.id and type=2','left');
@@ -230,12 +230,12 @@ class Paymentconfirmation_m extends MY_Model {
 				$this->db->where(array("order_number" => $payment['order_number'], "client_id" => $client['id']));
 				$this->db->update(
 					$this->table, 
-					array("client_id" => $client['id'], "order_number" => $payment['order_number'], "origin_bank" => $payment['origin_bank'], "dest_bank" => $payment['dest_bank'], "transaction_method" => $payment['transaction_method'], "name" => $payment['name'], "transaction_date" => $payment['transaction_date'], "amount" => $payment['amount'], "receipt_url" => $payment['receipt_url'], "updated_by" => "2", "updated_at" => date("Y-m-d H:i:s") )
+					array("client_id" => $client['id'], "order_number" => $payment['order_number'], "origin_bank" => $payment['origin_bank'], "dest_bank" => $payment['dest_bank'], "transaction_method" => $payment['transaction_method'], "name" => $payment['name'], "transaction_date" => $payment['transaction_date'], "amount" => $payment['amount'], "receipt_url" => $payment['receipt_url'], "updated_by" => "2", "updated_at" => $payment['created_at'] )
 				);
 			} else {
 				$this->db->insert( 
 					$this->table, 
-					array("client_id" => $client['id'], "order_number" => $payment['order_number'], "origin_bank" => $payment['origin_bank'], "dest_bank" => $payment['dest_bank'], "transaction_method" => $payment['transaction_method'], "name" => $payment['name'], "transaction_date" => $payment['transaction_date'], "amount" => $payment['amount'], "receipt_url" => $payment['receipt_url'], "updated_by" => "2", "created_at" => date("Y-m-d H:i:s") )
+					array("client_id" => $client['id'], "order_number" => $payment['order_number'], "origin_bank" => $payment['origin_bank'], "dest_bank" => $payment['dest_bank'], "transaction_method" => $payment['transaction_method'], "name" => $payment['name'], "transaction_date" => $payment['transaction_date'], "amount" => $payment['amount'], "receipt_url" => $payment['receipt_url'], "updated_by" => "2", "created_at" => $payment['created_at'] )
 				);
 			}
 			

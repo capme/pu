@@ -18,6 +18,10 @@ class Mageapi {
 	const METHOD_CREDITMEMO_LIST = "sales_order_creditmemo.list";
 	const METHOD_CREDITMEMO_INFO = "sales_order_creditmemo.info";
 	const METHOD_CATEGORY_TREE = "catalog_category.tree";
+    const METHOD_CATEGORY_INFO = "catalog_category.info";
+    const METHOD_CATEGORY_ASSIGNED_PRODUCTS = "catalog_category.assignedProducts";
+    const METHOD_CATEGORY_UPDATE_PRODUCT = "catalog_category.updateProduct";
+    const METHOD_STORE_LIST = "store.list";
 	const METHOD_PRODUCT_LIST = "catalog_product.list";
 	const METHOD_PRODUCT_INFO = "catalog_product.info";
 	const METHOD_CATLOGINVENTORY = "cataloginventory_stock_item.list";
@@ -211,13 +215,121 @@ class Mageapi {
 	}
 	
 	public function getCategoryList() {
-		$catalogCategory = $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_TREE , 2);
+//		$catalogCategory = $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_TREE , 2);
+        $catalogCategory = $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_TREE);
+
 		$catList = array();
 		$this->_extractCategoryData(array($catalogCategory), $catList);
 		
 		return $catList;
 	}
-	
+
+    public function getDetailCategory(){
+        $categories = $this->getCategoryList();
+        $detailCategory = array();
+        foreach($categories as $_id => $_name) {
+            try{
+                $detail = $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_INFO, $_id);
+                $detailCategory[] = $detail;
+            } catch( Exception $e ) {
+                log_message('error', "getDetailCategory(".$_name.") MAGEAPI ==> ". $e->getMessage()." ### ".self::METHOD_CATEGORY_INFO);
+            }
+        }
+        return $detailCategory;
+    }
+
+    /**
+     * getCategoryProduct : get list of 'catalog_category.assignedProduct'
+     * @param null $store
+     * @param null $category
+     * @return array
+     */
+    public function getCategoryProduct($store=null, $category=null){
+
+        if($store){
+            $stores[]['store_id'] = $store;
+        } else {
+            $stores = $this->soapClient->call($this->soapSession, self::METHOD_STORE_LIST);
+        }
+
+        if($category){
+            $categories[$category] = '';
+        } else {
+            $categories = $this->getCategoryList();
+        }
+
+        $listProduct = array();
+
+        foreach( $categories as $_id => $_name){
+            foreach($stores as $store){
+//                print "category : @$_id , # store : ".@$store['store_id'].",".@$store['name']." \n";
+
+                try{
+                    $product= $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_ASSIGNED_PRODUCTS, array($_id,$store['store_id']));
+                    $listProduct[$_id][$store['store_id']] = $product;
+                    log_message('debug', "getCategoryProduct (".$_id.",".$store['store_id'].") success ==> ". count($product)." ### ".self::METHOD_CATEGORY_ASSIGNED_PRODUCTS);
+                } catch( Exception $e ) {
+                    log_message('error', "getCategoryProduct (".$_id.",".$store['store_id'].") MAGEAPI ==> ". $e->getMessage()." ### ".self::METHOD_CATEGORY_ASSIGNED_PRODUCTS);
+                }
+            }
+        }
+        return $listProduct;
+    }
+
+    /**
+     * updateCategoryProductPosition : buat update default sorting position catalog category product
+     * note : on magento configuration # catalog >  Product Listing Sort by > best value
+     * @param $categoryId
+     * @param $productId
+     * @param $position
+     * @return bool
+     */
+    public function updateCategoryProductPosition($categoryId, $productId, $position){
+        try{
+            $this->soapClient->call($this->soapSession, self::METHOD_CATEGORY_UPDATE_PRODUCT, array('categoryId'=>$categoryId, 'product'=>$productId, 'position'=>$position));
+            log_message('debug', "updateCategoryProductPosition (".$categoryId.",".$productId.",".$position.") ");
+
+            return true;
+        } catch( Exception $e ) {
+            log_message('error', "updateCategoryProductPosition (".$categoryId.",".$productId.",".$position.") MAGEAPI ==> ". $e->getMessage()." ### ".self::METHOD_CATEGORY_UPDATE_PRODUCT);
+
+            return false;
+        }
+    }
+
+    /**
+     * bulkUpdateCategoryProductPosition : update position using multicall
+     * @param array $datas
+     * @return array|bool
+     */
+    public function bulkUpdateCategoryProductPosition($datas = array()) {
+        try {
+            $newPosition = array();
+            $sum = array('success'=>0, 'error'=>0);
+            foreach($datas as $_data) {
+                if(!empty($_data)) {
+                    $newPosition[] = array(self::METHOD_CATEGORY_UPDATE_PRODUCT,array('categoryId'=>$_data['category_id'],'product'=>$_data['product_id'],'position'=>$_data['result_index']) );
+                }
+            }
+
+            $updatePosition = $this->soapClient->multiCall($this->soapSession, $newPosition);
+
+            foreach($newPosition as $k => $data){
+                $newPosition[$k]['mage_result'] = $updatePosition[$k];
+                if(!is_array($updatePosition[$k]) && $updatePosition[$k] == 1) $sum['success']++;
+                else $sum['error'];
+            }
+            log_message('debug','Mageapi.updateCategoryProductPosition bulk result : '.print_r($newPosition,true));
+
+            return array('data'=>$newPosition,'success'=>$sum['success'],'problem'=>$sum['error']);
+        } catch( Exception $e ) {
+            log_message('error', "updateCategoryProductPosition bulk (".count($datas).") MAGEAPI ==> ". $e->getMessage()." ### ".self::METHOD_CATEGORY_UPDATE_PRODUCT);
+
+            return false;
+        }
+
+    }
+
 	public function getCatalog() {
 		$productList = $this->soapClient->call($this->soapSession, self::METHOD_PRODUCT_LIST);
 		$productsInfo = array();

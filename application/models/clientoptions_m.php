@@ -210,4 +210,11 @@ class Clientoptions_m extends MY_Model {
        return  $this->db->get();
     }
 
+    public function getBrandCode($client){
+        $this->db->select('option_value');
+        $this->db->from($this->table);
+        $this->db->where(array('client_id'=>$client,'option_name'=>'brand_code'));
+        return $this->db->get()->result_array();
+    }
+
 }
