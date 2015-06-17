@@ -38,7 +38,8 @@ class Migration_sizechart extends Base_migration {
             array("name" => "Size Chart Mapping Add", "slug" => "sizechart/add", "hidden" => 1, "status" => 1, "parent" => $parentTags['sizechart']),
             array("name" => "Size Chart Mapping Save", "slug" => "sizechart/save", "hidden" => 1, "status" => 1, "parent" => $parentTags['sizechart']),
             array("name" => "Size Chart Mapping Delete", "slug" => "sizechart/delete", "hidden" => 1, "status" => 1, "parent" => $parentTags['sizechart']),
-            array("name" => "Size Chart Mapping Export", "slug" => "sizechart/export", "hidden" => 1, "status" => 1, "parent" => $parentTags['sizechart'])
+            array("name" => "Size Chart Mapping Export", "slug" => "sizechart/export", "hidden" => 1, "status" => 1, "parent" => $parentTags['sizechart']),
+            array("name" => "Size Chart Mapping View", "slug" => "sizechart/view", "hidden" => 1, "status" => 1, "parent" => $parentTags['sizechart'])
         );
 
         foreach($newModule as $module) {

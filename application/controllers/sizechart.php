@@ -75,6 +75,9 @@ class Sizechart extends MY_Controller
             //validate file csv first
             $this->_saveNew($post);
         }
+        else {
+            redirect('sizechart');
+        }
     }
 
     private function _saveNew($post)
@@ -167,5 +170,37 @@ class Sizechart extends MY_Controller
     public function delete($client_id){
         $this->sizechart_m->delete($client_id);
         redirect('sizechart');
+    }
+
+    public function view ($client_id) {
+        $data = $this->sizechart_m->getSizeChartById($client_id);
+        if($data->num_rows() < 1) {
+            redirect("sizechart");
+        }
+        $clientname=$this->client_m->getClientById($client_id)->row_array();
+
+        $this->data['content'] = "form_v.php";
+        $this->data['pageTitle'] = "Client Options";
+        $this->data['breadcrumb'] = array("Size Chart"=> "sizechart", "View Size Chart" => "");
+        $this->data['formTitle'] = "View Size Chart";
+
+        $this->load->library("va_input", array("group" => "sizechart"));
+
+        $flashData = $this->session->flashdata("clientError");
+        if($flashData !== false) {
+            $flashData = json_decode($flashData, true);
+            $value = $flashData['data'];
+            $msg = $flashData['msg'];
+        } else {
+            $msg = array();
+            $value=$data->result_array();
+        }
+
+        $this->va_input->addHidden( array("name" => "method", "value" => "save") );
+        $this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value"=>$clientname['client_code'],"disabled"=>"disabled"));
+        $this->va_input->addCustomField( array("name" =>"size_chart", "placeholder" => "Size Chart", "label" => "Size Chart", "value" =>$value, "view"=>"form/customSizeChart"));
+        $this->data['script'] = $this->load->view("script/client_add", array(), true);
+        $this->load->view('template', $this->data);
+
     }
 }

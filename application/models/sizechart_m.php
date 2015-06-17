@@ -50,7 +50,8 @@ class Sizechart_m extends MY_Model {
                 $_result->notes,
                 $_result->created_at,
                 '<a href="'.site_url("sizechart/export/".$_result->client_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-download" ></i> Export</a> |
-                <a href="'.site_url("sizechart/delete/".$_result->client_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Delete</a>'
+                <a href="'.site_url("sizechart/delete/".$_result->client_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Delete</a> |
+                <a href="'.site_url("sizechart/view/".$_result->client_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> View</a>'
             );
         }
         $records["sEcho"] = $sEcho;
@@ -142,4 +143,7 @@ class Sizechart_m extends MY_Model {
         return $this->db->get_where($this->table, array('client_id'=>$client_id))->row();
     }
 
+    public function getSizeChartById($client_id){
+        return $this->db->get_where($this->tableMap, array('client_id'=>$client_id));
+    }
 }
