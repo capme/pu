@@ -102,7 +102,7 @@ class Sizechart extends MY_Controller{
             $cekAvailable = $this->sizechart_m->cekAvailable($post['brand_code']);
             $cekMap = $this->sizechart_m->cekMap($post['brand_code']);
 
-            if (!empty($cekAvailable) && !empty($cekMap)) {
+            if (!empty($cekAvailable) || !empty($cekMap)) {
                 $this->sizechart_m->deleteTemp($post['brand_code']);
                 $csv_array = $this->va_csv->get_array($fileData['full_path']);
                 foreach ($csv_array as $row) {
