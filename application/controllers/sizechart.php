@@ -53,7 +53,7 @@ class Sizechart extends MY_Controller{
         }
 
         $this->va_input->addHidden(array("name" => "method", "value" => "new"));
-        $this->va_input->addSelect(array("name" => "brand_code", "label" => "Client *", "list" => $list));
+        $this->va_input->addSelect(array("name" => "brand_code", "label" => "Brand *", "list" => $list));
         $this->va_input->addTextarea(array("name" => "note", "placeholder" => "Note", "help" => "Note", "label" => "Note"));
         $this->va_input->addCustomField(array("name" => "userfile", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg ?: @$msg['userfile'][0] ?: @$msg['userfile'][1], "label" => "Upload File *", "view" => "form/upload_sizechart.php"));
 
