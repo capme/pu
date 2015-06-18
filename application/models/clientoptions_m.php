@@ -217,4 +217,16 @@ class Clientoptions_m extends MY_Model {
         return $this->db->get()->result_array();
     }
 
+    public function checkIfBrandIsVirtual($brandInitial){
+        $this->db->select('client_id');
+        $this->db->from($this->table);
+        $this->db->where(array('option_name'=>"brand_initial",'option_value'=>strtoupper($brandInitial)));
+        $res = $this->db->get()->result_array();
+        $numrows = count($res);
+        if($numrows > 0){
+            return $res[0]['client_id'];
+        }else{
+            return -1;
+        }
+    }
 }
