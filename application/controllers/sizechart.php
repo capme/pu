@@ -4,24 +4,29 @@ class Sizechart extends MY_Controller{
 
     public function __construct(){
         parent::__construct();
-        $this->load->model(array("client_m", "sizechart_m","clientoptions_m"));
+        $this->load->model(array("client_m", "sizechart_m","clientoptions_m", "brandcode_m"));
         $this->load->library('va_csv');
     }
 
     public function index(){
         $this->data['content'] = "list_v.php";
-        $this->data['pageTitle'] = "Size Chart";
-        $this->data['breadcrumb'] = array("Size Chart" => "");
+        $this->data['pageTitle'] = "Size Chart Mapping";
+        $this->data['breadcrumb'] = array("Merchandising"=>"merchandising", "Size Chart Mapping" => "sizechart");
 
         $this->sizechart_m->clearCurrentFilter();
 
         $this->load->library("va_list");
         $this->va_list->setListName("Size Chart")->setAddLabel("Upload")
-            ->setHeadingTitle(array("Record #", "Client Name", "Note", "Created At"))
+            ->setHeadingTitle(array("Record #", "Brand Name", "Note", "Created At"))
             ->setHeadingWidth(array(2, 2, 3, 2, 2));
-        $this->va_list->setDropdownFilter(1, array("name" => $this->sizechart_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
+        $this->va_list->setDropdownFilter(1, array("name" => $this->sizechart_m->filters['brand_code'], "option" => $this->lists()));;
         $this->data['script'] = $this->load->view("script/sizechart_list", array("ajaxSource" => site_url("sizechart/sizeChartList")), true);
         $this->load->view("template", $this->data);
+    }
+
+    public function lists(){
+        $brandcode = $this->brandcode_m->getBrandCode($id=6);
+        return $this->brandcode_m->getList($brandcode);
     }
 
     public function sizeChartList(){
@@ -30,9 +35,10 @@ class Sizechart extends MY_Controller{
     }
 
     public function add(){
+        $list=$this->lists();
         $this->data['content'] = "form_v.php";
         $this->data['pageTitle'] = "Upload File";
-        $this->data['breadcrumb'] = array("Size Chart" => "sizechart", "Upload File" => "");
+        $this->data['breadcrumb'] = array("Size Chart Mapping" => "sizechart", "Upload File" => "");
         $this->data['formTitle'] = "Upload File";
         $this->load->library("va_input", array("group" => "sizechart"));
 
@@ -47,7 +53,7 @@ class Sizechart extends MY_Controller{
         }
 
         $this->va_input->addHidden(array("name" => "method", "value" => "new"));
-        $this->va_input->addSelect(array("name" => "client_id", "label" => "Client *", "list" => $this->client_m->getClientCodeList()));
+        $this->va_input->addSelect(array("name" => "brand_code", "label" => "Client *", "list" => $list));
         $this->va_input->addTextarea(array("name" => "note", "placeholder" => "Note", "help" => "Note", "label" => "Note"));
         $this->va_input->addCustomField(array("name" => "userfile", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg ?: @$msg['userfile'][0] ?: @$msg['userfile'][1], "label" => "Upload File *", "view" => "form/upload_sizechart.php"));
 
@@ -91,18 +97,13 @@ class Sizechart extends MY_Controller{
         if ($this->va_csv->get_array($fileData['full_path'])) {
             $post['userfile'] = $fileData['file_name'];
             $post['note'] = $post['note'];
+            $post['brand_code'] = $post['brand_code'];
 
-            $brand_code=$this->clientoptions_m->get($post['client_id'], 'brand_initial');
-            $cekAvailable= $this->sizechart_m->cekAvailable($brand_code['option_value']);
-            $cekMap=$this->sizechart_m->cekMap($post['client_id']);
+            $cekAvailable = $this->sizechart_m->cekAvailable($post['brand_code']);
+            $cekMap = $this->sizechart_m->cekMap($post['brand_code']);
 
-            if(!empty($cekAvailable) && !empty($cekMap)){
-                $avail="client has availabe";
-                $this->session->set_flashdata(array("sizechartError" => json_encode(array("msg" => $avail, "data" => $post))));
-                unlink($fileData['full_path']);
-                redirect('sizechart/add');
-            }
-            else{
+            if (!empty($cekAvailable) && !empty($cekMap)) {
+                $this->sizechart_m->deleteTemp($post['brand_code']);
                 $csv_array = $this->va_csv->get_array($fileData['full_path']);
                 foreach ($csv_array as $row) {
                     $post['attribute_set'] = $row['attribute_set'];
@@ -110,20 +111,42 @@ class Sizechart extends MY_Controller{
                     $post['brand_size_system'] = $row['brand_size_system'];
                     $post['paraplou_size'] = $row['paraplou_size'];
                     $post['position'] = $row['position'];
-                    $post['brand_code']=$brand_code['option_value'];
                     $result = $this->sizechart_m->saveFile($post);
                 }
 
                 if (is_numeric($result)) {
-                    $this->sizechart_m->saveImport($post, $brand_code['option_value']);
+                    $this->sizechart_m->saveImport($post, $post['brand_code']);
                     redirect("sizechart");
                 } else {
-                    $this->sizechart_m->deleteTemp($post['client_id']);
+                    $this->sizechart_m->deleteTemp($post['brand_code']);
                     $this->session->set_flashdata(array("sizechartError" => json_encode(array("msg" => $result, "data" => $post))));
                     unlink($fileData['full_path']);
                     redirect("sizechart/add");
                 }
             }
+            else {
+                $csv_array = $this->va_csv->get_array($fileData['full_path']);
+                foreach ($csv_array as $row) {
+                    $post['attribute_set'] = $row['attribute_set'];
+                    $post['brand_size'] = $row['brand_size'];
+                    $post['brand_size_system'] = $row['brand_size_system'];
+                    $post['paraplou_size'] = $row['paraplou_size'];
+                    $post['position'] = $row['position'];
+                    $result = $this->sizechart_m->saveFile($post);
+                }
+
+                if (is_numeric($result)) {
+                    $this->sizechart_m->saveImport($post, $post['brand_code']);
+                    redirect("sizechart");
+                } else {
+                    $this->sizechart_m->deleteTemp($post['brand_code']);
+                    $this->session->set_flashdata(array("sizechartError" => json_encode(array("msg" => $result, "data" => $post))));
+                    unlink($fileData['full_path']);
+                    redirect("sizechart/add");
+                }
+            }
+
+
         }
     }
 
@@ -147,9 +170,14 @@ class Sizechart extends MY_Controller{
         return $return;
     }
 
-    public function export($client_id){
-        $clientname=$this->client_m->getClientById($client_id)->row_array();
-        $data = $this->sizechart_m->export($client_id);
+    public function export($brand_code){
+        $clientname=$this->brandcode_m->getBrandCode($id=6);
+        $array = array();
+        if (is_object($clientname)) {
+            $array = get_object_vars($clientname);
+        }
+
+        $data = $this->sizechart_m->export($brand_code);
         if (empty($data)) {
             redirect('sizechart');
         } else {
@@ -157,21 +185,25 @@ class Sizechart extends MY_Controller{
             $newline = "\r\n";
             $this->load->dbutil();
             $datas = $this->dbutil->csv_from_result($data, $delimiter, $newline);
-            force_download('paraplou_size_chart_'.$clientname['client_code'].'.csv', $datas);
+            force_download('paraplou_size_chart_'.strtoupper($array[$brand_code]).'.csv', $datas);
         }
     }
 
-    public function delete($client_id){
-        $this->sizechart_m->delete($client_id);
+    public function delete($brand_code){
+        $this->sizechart_m->delete($brand_code);
         redirect('sizechart');
     }
 
-    public function view ($client_id) {
-        $data = $this->sizechart_m->getSizeChartById($client_id);
+    public function view ($brand_code) {
+        $data = $this->sizechart_m->getSizeChartById($brand_code);
         if($data->num_rows() < 1) {
             redirect("sizechart");
         }
-        $clientname=$this->client_m->getClientById($client_id)->row_array();
+        $clientname=$this->brandcode_m->getBrandCode($id=6);
+        $array = array();
+        if (is_object($clientname)) {
+            $array = get_object_vars($clientname);
+        }
 
         $this->data['content'] = "form_v.php";
         $this->data['pageTitle'] = "Client Options";
@@ -191,7 +223,7 @@ class Sizechart extends MY_Controller{
         }
 
         $this->va_input->addHidden( array("name" => "method", "value" => "save") );
-        $this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value"=>$clientname['client_code'],"disabled"=>"disabled"));
+        $this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value"=>strtoupper($array[$brand_code]),"disabled"=>"disabled"));
         $this->va_input->addCustomField( array("name" =>"size_chart", "placeholder" => "Size Chart", "label" => "Size Chart", "value" =>$value, "view"=>"form/customSizeChart"));
         $this->data['script'] = $this->load->view("script/client_add", array(), true);
         $this->load->view('template', $this->data);

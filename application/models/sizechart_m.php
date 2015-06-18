@@ -9,21 +9,17 @@ class Sizechart_m extends MY_Model {
     var $table = 'brand_size_import';
     var $tableMap='brand_size_map';
     var $tableClient ='client';
-    var $sorts = array(1 => "id");
+    var $tableClientOption='client_options';
+    var $sorts = array(1 => "brand_code");
     var $pkField = "id";
     var $status=array("cancel"=>2,"approve"=>1);
     var $path = "";
+    var $filters = array("brand_code"=>"brand_code");
 
     function __construct()
     {
         parent::__construct();
         $this->db = $this->load->database('mysql', TRUE);
-        $this->relation = array(
-            array("type" => "inner", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField} ")
-        );
-
-        $this->select = array("{$this->table}.*", "{$this->tableClient}.client_code");
-        $this->filters = array("client_id"=>"client_id");
     }
 
     public function getSizeChartList(){
@@ -46,12 +42,12 @@ class Sizechart_m extends MY_Model {
             $records["aaData"][] = array(
                 '',
                 $no=$no+1,
-                $_result->client_code,
+                $this->mapping($_result->brand_code),
                 $_result->notes,
                 $_result->created_at,
-                '<a href="'.site_url("sizechart/export/".$_result->client_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-download" ></i> Export</a> |
-                <a href="'.site_url("sizechart/view/".$_result->client_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a> |
-                <a href="'.site_url("sizechart/delete/".$_result->client_id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Delete</a>'
+                '<a href="'.site_url("sizechart/export/".$_result->brand_code).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-download" ></i> Export</a> |
+                <a href="'.site_url("sizechart/view/".$_result->brand_code).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a> |
+                <a href="'.site_url("sizechart/delete/".$_result->brand_code).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Delete</a>'
             );
         }
         $records["sEcho"] = $sEcho;
@@ -60,9 +56,20 @@ class Sizechart_m extends MY_Model {
         return $records;
     }
 
+    public function mapping($brand){
+        $clientname=$this->brandcode_m->getBrandCode($id=6);
+        $array = array();
+        if (is_object($clientname)) {
+            $array = get_object_vars($clientname);
+        }
+        $ar= array_key_exists($brand, $array);
+       return strtoupper($array[$brand]);
+    }
+
     public function saveFile($post) {
         $msg=array();
-        $data['brand_code']=$post['brand_code'];
+            $data['brand_code']=$post['brand_code'];
+
             if(!empty($post['attribute_set'])) {
                 $data['attribute_set'] = $post['attribute_set'];
             } else {
@@ -92,44 +99,51 @@ class Sizechart_m extends MY_Model {
             } else {
                 $msg="position is required";
             }
-            if (!empty($post['client_id'])) {
-                $data['client_id'] = $post['client_id'];
-            } else {
-            }
 
         if(empty($msg)) {
             $this->db->insert($this->tableMap, $data);
-            return $post['client_id'];
-        } else {
+            return $post['position'];
+        }
+        else {
             return $msg;
         }
     }
 
     public function saveImport($post, $brand_code){
-        return $this->db->insert($this->table, array('client_id'=>$post['client_id'], 'brand_code'=>$brand_code,'filename'=>$post['userfile'], 'notes'=>$post['note']));
-    }
-
-    public function deleteTemp($id){
-        $this->db->where('client_id', $id);
-        $this->db->delete($this->tableMap);
-    }
-
-    public function export($client_id){
-        $this->db->select('brand_code,attribute_set, brand_size, brand_size_system, paraplou_size, position');
-        $this->db->from($this->tableMap);
-        $this->db->where('client_id', $client_id);
-        return $this->db->get();
-    }
-
-    public function delete($client_id){
-        $query = $this->db->get_where($this->table, array('client_id' => $client_id))->row_array();
-        $path = BASEPATH .'../public/mechandising/size_chart/'.$query['filename'];
+        $query = $this->db->get_where($this->table, array('brand_code' => $brand_code))->row_array();
+        $path = BASEPATH .'../public/merchandising/size_chart/'.$query['filename'];
         unlink($path);
 
         $this->db->trans_start();
-        $this->db->where('client_id', $client_id);
+        $this->db->where('brand_code', $brand_code);
+        $this->db->delete($this->table);
+
+        $this->db->insert($this->table, array('brand_code'=>$brand_code,'filename'=>$post['userfile'], 'notes'=>$post['note']));
+        $this->db->trans_complete();
+    }
+
+    public function deleteTemp($brand_code){
+        $this->db->where('brand_code', $brand_code);
         $this->db->delete($this->tableMap);
-        $this->db->where('client_id', $client_id);
+    }
+
+    public function export($brand_code ){
+        $this->db->select('attribute_set, brand_size, brand_size_system, paraplou_size, position');
+        $this->db->from($this->tableMap);
+        $this->db->where('brand_code', $brand_code);
+        return $this->db->get();
+    }
+
+    public function delete($brand_code){
+        $query = $this->db->get_where($this->table, array('brand_code' => $brand_code))->row_array();
+        $path = BASEPATH .'../public/merchandising/size_chart/'.$query['filename'];
+        unlink($path);
+
+        $this->db->trans_start();
+        $this->db->where('brand_code', $brand_code);
+        $this->db->delete($this->tableMap);
+
+        $this->db->where('brand_code', $brand_code);
         $this->db->delete($this->table);
         $this->db->trans_complete();
     }
@@ -138,11 +152,12 @@ class Sizechart_m extends MY_Model {
         return $this->db->get_where($this->table, array('brand_code'=>$brand_code))->row();
     }
 
-    public function cekMap($client_id){
-        return $this->db->get_where($this->table, array('client_id'=>$client_id))->row();
+    public function cekMap($brand_code){
+        return $this->db->get_where($this->tableMap, array('brand_code'=>$brand_code))->row();
     }
 
-    public function getSizeChartById($client_id){
-        return $this->db->get_where($this->tableMap, array('client_id'=>$client_id));
+    public function getSizeChartById($brand_code){
+        return $this->db->get_where($this->tableMap, array('brand_code'=>$brand_code));
     }
+
 }

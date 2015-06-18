@@ -3,23 +3,25 @@ class Migration_sizechart extends Base_migration {
     public function up() {
         parent::up();
         $this->db->trans_start();
+        $this->db->query("DROP TABLE IF EXISTS brand_size_import");
+        $this->db->query("DROP TABLE IF EXISTS brand_size_map");
+
         $this->db->query("CREATE TABLE `brand_size_import`
-            (`client_id` int(3), `brand_code` varchar(64),
+            (`brand_code` varchar(64),
             `notes` TEXT,
             `filename` varchar(100),
             `created_at` TIMESTAMP,
 			primary key (`brand_code`))ENGINE=InnoDB DEFAULT CHARSET=utf8");
 
         $this->db->query("CREATE TABLE `brand_size_map`
-            (`client_id` int(3),
-            `brand_code` varchar(64),
+            (`brand_code` varchar(64),
             `attribute_set` varchar(10),
             `brand_size` varchar(64),
             `brand_size_system` varchar(64) default 'LABEL',
             `paraplou_size` varchar(64),
             `position` int(10),
             `created_at` TIMESTAMP,
-			primary key (`client_id`,`brand_code`,`attribute_set`,`brand_size`))ENGINE=InnoDB DEFAULT CHARSET=utf8");
+			primary key (`brand_code`,`attribute_set`,`brand_size`))ENGINE=InnoDB DEFAULT CHARSET=utf8");
 
         $this->db->query("DELETE FROM module WHERE slug like 'sizecha%'");
         $new= array(
