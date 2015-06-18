@@ -15,12 +15,12 @@
             ?>
             <tr>
                 <td><?php echo $no++?></td>
-                <td style="width:30%"><?php echo $sizechart['brand_code'] ?></td>
-                <td style="width:30%"><?php echo $sizechart['attribute_set'] ?></td>
-                <td style="width:30%"><?php echo $sizechart['brand_size'] ?></td>
-                <td style="width:30%"><?php echo $sizechart['brand_size_system'] ?></td>
-                <td style="width:30%"><?php echo $sizechart['paraplou_size'] ?></td>
-                <td style="width:30%"><?php echo $sizechart['position'] ?></td>
+                <td><?php echo $sizechart['brand_code'] ?></td>
+                <td><?php echo $sizechart['attribute_set'] ?></td>
+                <td><?php echo $sizechart['brand_size'] ?></td>
+                <td><?php echo $sizechart['brand_size_system'] ?></td>
+                <td><?php echo $sizechart['paraplou_size'] ?></td>
+                <td><?php echo $sizechart['position'] ?></td>
                 </tr>
         <?php }?>
     </table>
