@@ -755,6 +755,12 @@ class Inbounddocument_m extends MY_Model {
 			}elseif(strtoupper(trim($size)) == "F"){
 				$sku_simple = $sku_config."OS";
                 $size = 'One Size';
+            }elseif(strtoupper(trim($size)) == "ONE SIZE"){
+                $sku_simple = $sku_config."OS";
+                $size = 'One Size';
+            }elseif(strtoupper(trim($size)) == "OS"){
+                $sku_simple = $sku_config."OS";
+                $size = 'One Size';
 			}else{
 				$sku_simple = $sku_config.$size;
 			}
