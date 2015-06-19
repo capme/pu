@@ -41,6 +41,7 @@ class Inbounddocument_m extends MY_Model {
 	function __construct()
     {
         parent::__construct();
+        $this->load->model( array("client_m", "clientoptions_m") );
 		$this->db = $this->load->database('mysql', TRUE);
 		$this->path = BASEPATH ."../public/inbound/catalog_product"; 
 		$this->pathInboundForm = BASEPATH ."../public/inbound/inbound_form"; 
@@ -1269,6 +1270,26 @@ class Inbounddocument_m extends MY_Model {
             $sku_config = $item['sku_config'];
             $sku_simple = $item['sku_simple'];
             $sku_description = $item['sku_description'];
+                $temp_sku_description = explode(",",$sku_description);
+                $brandInitial = $temp_sku_description[0];
+                $retVirtualClient = $this->clientoptions_m->checkIfBrandIsVirtual($brandInitial);
+                if($retVirtualClient > 0){
+                    //brand is not virtual
+                    //get data from table client (get detil info)
+                    $result = $this->client_m->getClientById($retVirtualClient)->row_array();
+                    $itemMageAuth = explode(":",$result['mage_auth']);
+                    $itemMageLogin = $itemMageAuth[0];
+                    $itemMagePassword = $itemMageAuth[1];
+                    $itemMageWsdl = $result['mage_wsdl'];
+                    $itemThreeplUser = $result['threepl_user'];
+                    $itemThreeplPass = $result['threepl_pass'];
+                }else{
+                    $itemMageLogin = "";
+                    $itemMagePassword = "";
+                    $itemMageWsdl = "";
+                    $itemThreeplUser = "";
+                    $itemThreeplPass = "";
+                }
             $weight = $item['weiight'];
             $cost = $item['cost'];
             $upc = explode("|",$item['upc']);
@@ -1296,7 +1317,12 @@ class Inbounddocument_m extends MY_Model {
                     "price" => $price,
                     "qty" => $qty,
                     "attribute_set_id" => $attribute_set_id,
-                    "client_id" => $clientId
+                    "client_id" => $clientId,
+                    "mage_url" => $itemMageWsdl,
+                    "mage_login" => $itemMageLogin,
+                    "mage_password" => $itemMagePassword,
+                    "threepl_login" => $itemThreeplUser,
+                    "threepl_password" => $itemThreeplPass
                 );
             }else{
                 //for non paraplou
