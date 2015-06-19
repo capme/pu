@@ -55,7 +55,6 @@ class Exportorder_m extends MY_Model {
         $this->db->select('client_code,order_number,'.$this->tablePaypal.'.items,'.$this->tablePaypal.'.status, '.$this->tablePaypal.'.amount, '.$this->tablePaypal.'.created_at');
         $this->db->from($this->tablePaypal);
         $this->db->join($this->table, $this->table.".id  = ".$this->tablePaypal.".client_id");
-        $this->db->join($this->tableAwb, $this->tableAwb.".ordernr = ".$this->tablePaypal.".order_number");
         $this->db->where($this->table.".id", $client);
         $this->db->where($this->tablePaypal.'.created_at >=',$period1);
         $this->db->where($this->tablePaypal.'.created_at <=',$period2);
@@ -74,7 +73,7 @@ class Exportorder_m extends MY_Model {
         $this->db->select('client_code, order_number,'.$this->tableBankTransfer.'.amount,'.$this->tableBankTransfer.'.status, '.$this->tableBankTransfer.'.created_at ,'.$this->tableAwb.'.items');
         $this->db->from($this->tableBankTransfer);
         $this->db->join($this->table, $this->table.".id = ".$this->tableBankTransfer.".client_id");
-        $this->db->join($this->tableAwb, $this->tableAwb.".ordernr = ".$this->tableBankTransfer.".order_number");
+        $this->db->join($this->tableAwb, $this->tableAwb.".ordernr = ".$this->tableBankTransfer.".order_number",  "LEFT");
         $this->db->where($this->tableBankTransfer.'.created_at >=',$period1);
         $this->db->where($this->tableBankTransfer.'.created_at <=',$period2);
         $this->db->where($this->table.".id", $client);
@@ -86,9 +85,6 @@ class Exportorder_m extends MY_Model {
         $this->db->select('client_code, order_number,'.$this->tableCod.'.amount, '.$this->tableCod.'.status, '.$this->tableCod.'.items, '.$this->tableCod.'.created_at');
         $this->db->from($this->tableCod);
         $this->db->join($this->table, $this->table.".id = ".$this->tableCod.".client_id");
-        $this->db->join($this->tableAwb, $this->tableAwb.".ordernr = ".$this->tableCod.".order_number");
-        $this->db->where($this->tableCod.".status !=0");
-        $this->db->where($this->tableCod.".status !=2");
         $this->db->where($this->tableCod.'.created_at >=',$period1);
         $this->db->where($this->tableCod.'.created_at <=',$period2);
         $this->db->where($this->table.".id", $client);
@@ -99,7 +95,6 @@ class Exportorder_m extends MY_Model {
         $this->db->select('client_code, order_number, '.$this->tableCredit.'.amount, '.$this->tableCredit.'.items, '.$this->tableCredit.'.created_at,'.$this->tableCredit.'.status');
         $this->db->from($this->tableCredit);
         $this->db->join($this->table, $this->table.".id = ".$this->tableCredit.".client_id" );
-        $this->db->join($this->tableAwb, $this->tableAwb.".ordernr = ".$this->tableCredit.".order_number");
         $this->db->where($this->tableCredit.'.created_at >=',$period1);
         $this->db->where($this->tableCredit.'.created_at <=',$period2);
         $this->db->where($this->table.".id", $client);

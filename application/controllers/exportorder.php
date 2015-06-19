@@ -87,7 +87,9 @@ class Exportorder extends MY_Controller {
                         for ($b = 0; $b < count($items); $b++) {
                             $sum += ceil($items[$b]->qty);
                         }
-                    } else {
+                    }
+                    else if (unserialize($item['items']) !== false)
+                    {
                         $items = unserialize($item['items']);
                         for ($i = 0; $i < count($items); $i++) {
                         }
@@ -95,6 +97,9 @@ class Exportorder extends MY_Controller {
                         for ($b = 0; $b < count($items); $b++) {
                             $sum += ceil($items[$b]['qty']);
                         }
+                    }
+                    else {
+                        $sum=0;
                     }
                     $this->va_excel->getActiveSheet()->mergeCells('E' . $lup . ':F' . $lup . '');
                     $this->va_excel->getActiveSheet()->setCellValue('A' . $lup, $item['order_number']);
