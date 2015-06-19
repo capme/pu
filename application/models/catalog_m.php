@@ -110,7 +110,8 @@ class Catalog_m extends MY_Model
         $this->out = array();
 
         $this->repositionByBrand($data);
-        $sorteddata = $this->sorted;
+//        $sorteddata = $this->sorted;
+        $sorteddata = array_reverse($this->sorted); //magento best value : order by position desc
 
         $this->db->trans_start();
         foreach($sorteddata as $i => $_data){

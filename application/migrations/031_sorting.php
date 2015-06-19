@@ -3,7 +3,7 @@ class Migration_Sorting extends Base_migration {
     public function up(){
         parent::up();
         $this->db->trans_start();
-
+        $this->db->query("DELETE FROM module WHERE name like 'sort%'");
         $new = array(
             "sorting" => array("name" => "Sorting", "slug" => "", "icon" => "fa-sort", "hidden" => 0, "status" => 1, "parent" => 0, 'sort' => 15),
         );
@@ -49,7 +49,7 @@ class Migration_Sorting extends Base_migration {
     public function down(){
         parent::down();
         $this->db->trans_start();
-        $this->db->query("DELETE FROM module WHERE slug like 'sort%'");
+        $this->db->query("DELETE FROM module WHERE name like 'sort%'");
         $this->db->trans_complete();
     }
 }

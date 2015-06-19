@@ -8,6 +8,17 @@
  */
 class CatalogMage extends CI_Controller {
 
+    var $isParaplouOnly = 1;
+
+    public function all($code = ""){
+        $this->category($code);
+        $this->categoryProduct($code);
+        $this->sorting($code);
+        $this->updatePositionCategoryProduct($code);
+//        $this->bulkUpdatePositionCategoryProduct($code);
+    }
+
+
     public function category($code = "") {
         $this->load->model( array('client_m', 'catalog_m'));
         $this->load->library("mageapi");
@@ -17,6 +28,11 @@ class CatalogMage extends CI_Controller {
 
         foreach($clients as $client) {
             if($code && $client['client_code'] != $code){
+                continue;
+            }
+
+            // khusus untuk PARAPLOU dulu
+            if($this->isParaplouOnly && $client['client_code'] != 'PARAPLOU'){
                 continue;
             }
 
@@ -32,6 +48,7 @@ class CatalogMage extends CI_Controller {
             if( $this->mageapi->initSoap($config) ) {
                 $categories = $this->mageapi->getDetailCategory();
                 $this->catalog_m->saveCategory($categories, $client);
+                log_message('debug','== CatalogMage.category  : '.$client['client_code']);
             }
         }
         log_message('debug','[CatalogMage.category] end : '.date('Y-m-d H:i:s'));
@@ -56,6 +73,11 @@ class CatalogMage extends CI_Controller {
                 continue;
             }
 
+            // khusus untuk PARAPLOU dulu
+            if($this->isParaplouOnly && $client['client_code'] != 'PARAPLOU'){
+                continue;
+            }
+
             if(!$client['mage_auth'] && !$client['mage_wsdl']) {
                 continue;
             }
@@ -65,11 +87,18 @@ class CatalogMage extends CI_Controller {
                 "url" => $client['mage_wsdl']
             );
 
-            print_r($config);
-            if( $this->mageapi->initSoap($config) ) {
-                log_message('debug','[CatalogMage.productLink] : '.$client['client_code'].'#'.$category,'#',$store);
-                $products = $this->mageapi->getCategoryProduct($store, $category);
-                $this->catalog_m->insertCategoryProduct($products, $client);
+//            print_r($config);
+
+            $categories = $this->catalog_m->getCategory($client);
+            foreach($categories as $_category){
+                if($category && $_category['category_id'] != $category){
+                    continue;
+                }
+                if( $this->mageapi->initSoap($config) ) {
+                    $products = $this->mageapi->getCategoryProduct($store, $_category['category_id']);
+                    $this->catalog_m->insertCategoryProduct($products, $client);
+                    log_message('debug','== CatalogMage.categoryProduct : '.$client['client_code'].'#'.$_category['category_id'],'#',$store.'#'.count($products));
+                }
             }
         }
 
@@ -92,6 +121,11 @@ class CatalogMage extends CI_Controller {
 
         foreach($clients as $client) {
             if($code && $client['client_code'] != $code){
+                continue;
+            }
+
+            // khusus untuk PARAPLOU dulu
+            if($this->isParaplouOnly && $client['client_code'] != 'PARAPLOU'){
                 continue;
             }
 
@@ -121,6 +155,7 @@ class CatalogMage extends CI_Controller {
                             $result[] = array('category_id' => $_product['category_id'], 'product_id' => $_product['product_id'], 'updated' => $update);
                         }
                     }
+                    log_message('debug','== CatalogMage.updatePositionCategoryProduct : '.$client['client_code'].'#'.$_category['category_id'].'#'.count($result));
                 }
             }
         }
@@ -148,6 +183,11 @@ class CatalogMage extends CI_Controller {
                 continue;
             }
 
+            // khusus untuk PARAPLOU dulu
+            if($this->isParaplouOnly && $client['client_code'] != 'PARAPLOU'){
+                continue;
+            }
+
             if(!$client['mage_auth'] && !$client['mage_wsdl']) {
                 continue;
             }
@@ -158,6 +198,7 @@ class CatalogMage extends CI_Controller {
             );
 
             $categories = $this->catalog_m->getCategory($client);
+            log_message('debug','[CatalogMage.bulkUpdatePositionCategoryProduct] '.$client['client_code']);
 
             foreach($categories as $_category) {
                 if ($category && $_category['category_id'] != $category) {
@@ -177,9 +218,9 @@ class CatalogMage extends CI_Controller {
                     if(!empty($newPost)){
                         $update = $this->mageapi->bulkUpdateCategoryProductPosition($newPost);
                         if(!$update){
-                            log_message("debug","[CatalogMage.bulkUpdatePositionCategoryProduct] failed : client[".$code."]  categoryId[".$_category['category_id']."] countCategoryProduct[".count($categoryProducts)."] attemptUpdate[".count($newPost)."]");
+                            log_message("debug","== CatalogMage.bulkUpdatePositionCategoryProduct] failed : client[".$code."]  categoryId[".$_category['category_id']."] countCategoryProduct[".count($categoryProducts)."] attemptUpdate[".count($newPost)."]");
                         } else {
-                            log_message("debug","[CatalogMage.bulkUpdatePositionCategoryProduct] : client[".$code."]  categoryId[".$_category['category_id']."] countCategoryProduct[".count($categoryProducts)."] attemptUpdate[".count($newPost)."] update[data:".count(@$update['data']).", success:".@$update['success'].", error:".@$update['error']."]");
+                            log_message("debug","== CatalogMage.bulkUpdatePositionCategoryProduct] : client[".$code."]  categoryId[".$_category['category_id']."] countCategoryProduct[".count($categoryProducts)."] attemptUpdate[".count($newPost)."] update[data:".count(@$update['data']).", success:".@$update['success'].", error:".@$update['error']."]");
                         }
                     }
                 }
@@ -214,6 +255,7 @@ class CatalogMage extends CI_Controller {
                 $categoryProducts = $this->catalog_m->getCatalogCategoryProduct($client, $_category['category_id'], $filters);
 
                 $this->catalog_m->updateSorting($client, $categoryProducts);
+                log_message('debug','== CatalogMage.sorting : '.$client['client_code'].'#'.$_category['category_id']);
 
             }
         }

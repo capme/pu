@@ -41,8 +41,11 @@ class Exportorder extends MY_Controller {
 
         $this->load->library("va_input", array("group" => "exportorder"));
         $value=array();
+        $clientname=$this->client_m->getClientById($client)->row_array();
+
         $this->va_input->addHidden( array("name" => "method", "value" => "update"));
         $this->va_input->addHidden( array("name" => "client_id", "value" => $client));
+        $this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value"=>$clientname['client_code'],"disabled"=>"disabled"));
         $this->va_input->addCustomField( array("name" =>"options", "placeholder" => "Input Period", "label" => "Input Period", "value" =>$value, "view"=>"form/customPeriod"));
         $this->data['script'] = $this->load->view("script/client_add", array(), true);
         $this->load->view('template', $this->data);

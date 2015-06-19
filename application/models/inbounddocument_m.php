@@ -687,7 +687,9 @@ class Inbounddocument_m extends MY_Model {
 			//sku
 			if(@$arr_data[$x]['H'] <> ""){
 				$sku = $arr_data[$x]['H'];
-			}
+			} else {
+                $sku = "";
+            }
 			//product name
 			if(@$arr_data[$x]['I'] <> ""){
 				$productname = $arr_data[$x]['I'];
@@ -753,6 +755,12 @@ class Inbounddocument_m extends MY_Model {
                 $size = 'One Size';
 			}elseif(strtoupper(trim($size)) == "F"){
 				$sku_simple = $sku_config."OS";
+                $size = 'One Size';
+            }elseif(strtoupper(trim($size)) == "ONE SIZE"){
+                $sku_simple = $sku_config."OS";
+                $size = 'One Size';
+            }elseif(strtoupper(trim($size)) == "OS"){
+                $sku_simple = $sku_config."OS";
                 $size = 'One Size';
 			}else{
 				$sku_simple = $sku_config.$size;
@@ -938,7 +946,7 @@ class Inbounddocument_m extends MY_Model {
 
 			log_message('debug', "skuconfig::".$sku_config."::retailprice::".$retailprice);
 
-            if($retailprice <> ""){
+            if($retailprice <> "" && $sku <> ""){
 
             	/*//validation for SKU Config (same SKU different variant)
             	
@@ -977,42 +985,35 @@ class Inbounddocument_m extends MY_Model {
                     	$msgRet['problemskuconfig'][$productname."##".$colorname] = $tmpArrValSKUConfig[$productname."##".$colorname];
 					}
 				}*/
-
-				//re-update sku simple
-				if($size == ""){
-					$sku_simple = $sku_config."OS";
-	                $size = 'One Size';
-				}elseif(strtoupper(trim($size)) == "F"){
-					$sku_simple = $sku_config."OS";
-	                $size = 'One Size';
-				}else{
-					$sku_simple = $sku_config.$size;
-				}
-					
+                
 				//check sku simple from 3pl sync table
-				$checkReturn = $this->invsync_m->findBySku(strtoupper($sku_simple), $client);
+				$checkReturn = $this->invsync_m->findOldSimilarSku(strtoupper($sku_config), $inSize, $client);
                 if(empty($checkReturn) && isset($skuConfigNoColor)) {
                     // recheck w/o color
                     $tmp = array();
                     $tmp['config'] = $skuConfigNoColor;
                     $tmp['simple'] = str_replace($sku_config, $tmp['config'], $sku_simple);
-                    $checkReturn = $this->invsync_m->findBySku(strtoupper($tmp['simple']), $client);
+                    $checkReturn = $this->invsync_m->findOldSimilarSku(strtoupper($tmp['config']), $inSize, $client);
+                    //recheck w/o color (and using 'One Size' pattern. The old sku pattern)
+                    if(empty($checkReturn) and strtolower($inSize)=="os") {
+                        $checkReturn = $this->invsync_m->findOldSimilarSku(strtoupper($tmp['config']), "One Size", $client);
+                    }
                     if(!empty($checkReturn)) {
                         // existing sku found with no color
-                        $sku_simple = $tmp['simple'];
-                        $sku_config = $tmp['config'];
+                        $sku_simple = $checkReturn['sku_simple'];
+                        $sku_config = $checkReturn['sku_config'];
                     } else {
                         // recheck w/ standard color
                         $tmp = array();
                         $basicColor = strtoupper( $inWarna['color_map'] );
                         $tmp['config'] = $skuConfigNoColor . $this->mapColor[$basicColor];
                         $tmp['simple'] = str_replace($sku_config, $tmp['config'], $sku_simple);
-                        $checkReturn = $this->invsync_m->findBySku(strtoupper($tmp['simple']), $client);
+                        $checkReturn = $this->invsync_m->findOldSimilarSku(strtoupper($tmp['config']), $inSize, $client);
 
                         if(!empty($checkReturn)) {
                             // existing sku found with standard color
-                            $sku_simple = $tmp['simple'];
-                            $sku_config = $tmp['config'];
+                            $sku_simple = $checkReturn['sku_simple'];
+                            $sku_config = $checkReturn['sku_config'];
                         }
                     }
                 }
@@ -1222,7 +1223,8 @@ class Inbounddocument_m extends MY_Model {
 					$strRec = "".($query->num_rows());
 				}		
 				//------------------ready for processing the query----------------------------
-				$query = $this->db->query("SELECT * FROM inb_inventory_item_".$client." WHERE sku_description=".$this->db->escape($skuDescription)." AND doc_number=".$reference_id);
+				//$query = $this->db->query("SELECT * FROM inb_inventory_item_".$client." WHERE sku_description=".$this->db->escape($skuDescription)." AND doc_number=".$reference_id);
+                $query = $this->db->query("SELECT * FROM inb_inventory_item_".$client." WHERE sku_simple=".$this->db->escape($skuCode)." AND doc_number=".$reference_id);
 				$row = $query->result_array();
 				if(isset($row[0]['id'])){
 					// item_id
@@ -1430,7 +1432,7 @@ class Inbounddocument_m extends MY_Model {
 	            <vias:InventoryMethod>".$inventor_method."</vias:InventoryMethod>
 	            <vias:Cost>".$cost."</vias:Cost>
 	            <!--Optional:-->
-	            <vias:UPC>".$upc."</vias:UPC>
+	            <vias:UPC>".htmlspecialchars($upc)."</vias:UPC>
 	            <vias:IsTrackLotNumber>".$track_lot."</vias:IsTrackLotNumber>
 	            <vias:IsTrackLotNumberRequired>".$lot_number_required."</vias:IsTrackLotNumberRequired>
 	            <vias:IsTrackSerialNumber>".$track_serial."</vias:IsTrackSerialNumber>
