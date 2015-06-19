@@ -582,7 +582,8 @@ class Inbounddocument_m extends MY_Model {
 		$this->load->model( array("invsync_m", 'clientoptions_m') );
 
 		//start parse the array from excel
-		$sizeRowX = count($arr_data); 
+		//$sizeRowX = count($arr_data);
+        $sizeRowX = max(array_keys($arr_data));
 		$sizeRowY = count($arr_data[1]);
 		$brandName = trim(str_replace(":", "", $arr_data[8]['C']));
         //check if the string contain '=' which refer to another cell value
