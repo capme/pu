@@ -3,7 +3,7 @@ class creditcardorder_m extends MY_Model {
     var $filterSession = "DB_USER_FILTER";
     var $db = null;
     var $table = 'creditcard_order';
-    var $sorts = array(1 => "updated_at");
+    var $sorts = array(2 => "created_at", 3 => "updated_at");
     var $pkField = "id";
     var $status=array("cancel"=>2,"approve"=>1);
     var $tableClient ='client';
@@ -21,7 +21,7 @@ class creditcardorder_m extends MY_Model {
 
         $this->relation = array(
             array("type" => "left", "table" => $this->tableClient, "link" => "{$this->table}.client_id  = {$this->tableClient}.{$this->pkField}"),
-            array("type" => "left", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr " )
+            array("type" => "left", "table" => $this->tableAwb, "link" => "{$this->table}.order_number  = {$this->tableAwb}.ordernr and {$this->tableAwb}.status != 3" )
         );
         $this->select = array(
                             "{$this->table}.{$this->pkField}",
@@ -105,10 +105,12 @@ class creditcardorder_m extends MY_Model {
             }else {
                 $statusAWB = $statListAWB[$_resultArr['awb_queue_printing.status']];
             }
-            $date = explode(' ', $_result->created_at);
+            $date = explode(' ', $_result->updated_at);
+            $cDate = explode(' ', $_result->created_at);
             $records["aaData"][] = array(
                 '<input type="checkbox" name="id[]" value="'.$_result->id.'">',
                 $no=$no+1,
+                $cDate[0],
                 $date[0],
                 $_result->client_code,
                 $_result->order_number,
@@ -153,7 +155,7 @@ class creditcardorder_m extends MY_Model {
     	$this->db->trans_start();
 		
     	foreach($datas as $key => $data){
-            $check = $this->db->get_where($this->table, array('order_number' => $key));
+            $check = $this->db->get_where($this->table, array('order_number' => (string) $key));
             if(!$check->num_rows()) {
                 $this->db->insert($this->table, $data);
                 $id = $this->db->insert_id();
