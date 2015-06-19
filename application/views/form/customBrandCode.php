@@ -1,5 +1,5 @@
-<div class="panel panel-default" style="width:100%">
-  <table class="table" >
+<div class="table-responsive">
+    <table class="table table-striped">
 	<tr>
     <td style=" font:bold 12px/30px Arial;">Code</td>
     <td style=" font:bold 12px/30px Arial;">Brand</td>  
@@ -17,7 +17,7 @@ $key=array_keys($brand);
 ?>	<tr> 	
 	<td><input class="form-control" type="text" value="<?php echo $key[$a];?>" name="brandcode[key][<?php echo $a?>]" style="width:80%" required></td>
     <td><input class="form-control" type="text" value="<?php echo $brands[$a]?>" name="brandcode[brands][<?php echo $a ?>]" style="width:80%" required></td>	
-	<td><input type="checkbox" name="brandcode[cek][<?php echo $a?>]" value="<?php echo $brands[$a]?>"></td>
+	<td><input type="checkbox"  name="brandcode[cek][<?php echo $a?>]" value="<?php echo $brands[$a]?>"></td>
 	</tr>	
 <?php
 }
@@ -28,5 +28,5 @@ $key=array_keys($brand);
 	</tr>
 </table>
 </div>
-<p><a href="javascript:action();" class="btn btn-xs default"><i class="glyphicon glyphicon-plus" ></i> Add Brand Code</a></p>
-<p><a href="javascript:removekey();" class="btn btn-xs default"><i class="glyphicon glyphicon-trash" ></i> Remove</a></p>
+<p><a href="javascript:action();" class="btn btn-xs default"><i class="glyphicon glyphicon-plus" ></i> Add Brand Code</a>
+<a href="javascript:removekey();" class="btn btn-xs default"><i class="glyphicon glyphicon-trash" ></i> Remove</a></p>
