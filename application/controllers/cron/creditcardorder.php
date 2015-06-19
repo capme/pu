@@ -28,7 +28,7 @@ class Creditcardorder extends CI_Controller {
 
 			if( $this->mageapi->initSoap($config) ) {
 				$clientId = $client['id'];
-				$dateFrom = date("Y-m-d", strtotime("-2 days"));
+				$dateFrom = date("Y-m-d", strtotime("-14 days"));
 				$dateTo = date("Y-m-d");
 				$orders = $this->mageapi->getCreditCardOrder($dateFrom, $dateTo);
 				if(is_array($orders)){
