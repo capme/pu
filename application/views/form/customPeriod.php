@@ -17,9 +17,6 @@
                     endDate: moment(),
                     minDate: '01/01/2012',
                     maxDate: '06/19/2015',
-                    dateLimit: {
-                        days: 60
-                    },
                     showDropdowns: true,
                     showWeekNumbers: true,
                     timePicker: false,
