@@ -79,33 +79,27 @@ class Exportorder_m extends MY_Model {
         $this->db->where($this->tableBankTransfer.'.created_at >=',$period1);
         $this->db->where($this->tableBankTransfer.'.created_at <=',$period2);
         $this->db->where($this->table.".id", $client);
-        $this->db->where($this->tableBankTransfer.".status != 0");
-        $this->db->where($this->tableAwb.".status != 0");
         return $this->db->get()->result_array();
 
     }
 
     public function getCod($client, $period1, $period2){
-        $status=array("3","4");
         $this->db->select('client_code, order_number,'.$this->tableCod.'.amount, '.$this->tableCod.'.status, '.$this->tableCod.'.items, '.$this->tableCod.'.created_at');
         $this->db->from($this->tableCod);
         $this->db->join($this->table, $this->table.".id = ".$this->tableCod.".client_id");
         $this->db->where($this->tableCod.'.created_at >=',$period1);
         $this->db->where($this->tableCod.'.created_at <=',$period2);
-        $this->db->where_in($this->tableCod.".status", $status);
         $this->db->where($this->table.".id", $client);
         return $this->db->get()->result_array();
     }
 
     public function getCreditCard($client, $period1, $period2){
-        $status=array("2","3","5","6");
         $this->db->select('client_code, order_number, '.$this->tableCredit.'.amount, '.$this->tableCredit.'.items, '.$this->tableCredit.'.created_at,'.$this->tableCredit.'.status');
         $this->db->from($this->tableCredit);
         $this->db->join($this->table, $this->table.".id = ".$this->tableCredit.".client_id" );
         $this->db->where($this->tableCredit.'.created_at >=',$period1);
         $this->db->where($this->tableCredit.'.created_at <=',$period2);
         $this->db->where($this->table.".id", $client);
-        $this->db->where_in($this->tableCredit.".status",$status);
         return $this->db->get()->result_array();
     }
 }
