@@ -52,14 +52,12 @@ class Exportorder_m extends MY_Model {
     }
 
     public function getPaypal($client, $period1, $period2){
-        $status=array("2","3","5","6");
         $this->db->select('client_code,order_number,'.$this->tablePaypal.'.items,'.$this->tablePaypal.'.status, '.$this->tablePaypal.'.amount, '.$this->tablePaypal.'.created_at');
         $this->db->from($this->tablePaypal);
         $this->db->join($this->table, $this->table.".id  = ".$this->tablePaypal.".client_id");
         $this->db->where($this->table.".id", $client);
         $this->db->where($this->tablePaypal.'.created_at >=',$period1);
         $this->db->where($this->tablePaypal.'.created_at <=',$period2);
-        $this->db->where_in($this->tablePaypal.".status", $status);
         return $this->db->get()->result_array();
     }
 
