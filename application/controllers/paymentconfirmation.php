@@ -31,8 +31,10 @@ class Paymentconfirmation extends MY_Controller {
         $this->va_list->setDropdownFilter(8, array("name" => $this->paymentconfirmation_m->filters[$this->paymentconfirmation_m->tableAwb.'.status'], "option" => $this->getStatusAwb()));
         $this->va_list->setInputFilter(6, array("name" => $this->paymentconfirmation_m->filters[$this->paymentconfirmation_m->table.'.amount']));
         $this->va_list->setInputFilter(4, array("name" => $this->paymentconfirmation_m->filters['name']));
+		
+        $this->va_list->setDateFilter(1, array("name"=>$this->paymentconfirmation_m->filters['created_at']));
 
-		$this->data['script'] = $this->load->view("script/paymentconfirmation_list", array("ajaxSource" => site_url("paymentconfirmation/paymentConfirmationList")), true);	
+        $this->data['script'] = $this->load->view("script/paymentconfirmation_list", array("ajaxSource" => site_url("paymentconfirmation/paymentConfirmationList")), true);
 		$this->load->view("template", $this->data);
 	}
 	

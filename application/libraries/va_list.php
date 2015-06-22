@@ -64,6 +64,9 @@ class Va_list {
 					case "select":
 						$result = $this->_CI->load->view("list/filter_select", $field, true);
 						break;
+                    case "daterange":
+                        $result = $this->_CI->load->view("list/filter_daterange", $field, true);
+                        break;
 					default:
 						$result = "";
 						break;
@@ -138,6 +141,16 @@ class Va_list {
 
 		return $this;
 	}
+
+    public function setDateFilter($index, $data = array()) {
+        $index++;
+        $config = array();
+        $config["type"] = "daterange";
+        $config["name"] = $data['name'];
+        $this->headingFilter[$index] = $config;
+
+        return $this;
+    }
 	
 	public function setDropdownFilter($index, $data = array()) {
 		$index++;

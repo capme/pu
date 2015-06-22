@@ -53,11 +53,13 @@ class Paymentconfirmation_m extends MY_Model {
                             $this->table.".client_id"=>$this->table."_client_id",
                             $this->table.".amount"=>$this->table."_amount",
                             $this->tableAwb.".status"=>$this->tableAwb."_status",
-                            "name"=>"name"
+                            "name"=>"name",
+							"created_at"=>"created_at"
                         );
 
         $this->listWhere['equal'] = array();
         $this->listWhere['like'] = array("order_number", "name");
+		$this->daterange=$this->table.".created_at";
 
 	}
 	
