@@ -73,7 +73,7 @@ class Exportorder extends MY_Controller {
             if (!empty($result[0])) {
                 $statList = array(
                     0 => array("New Request", "warning"),
-                    1 => array("Complete", "success"),
+                    1 => array("Approve", "success"),
                     2 => array("Cancel", "danger")
                 );
                 $lup = 3;
@@ -132,7 +132,7 @@ class Exportorder extends MY_Controller {
                     0 => array("New Request", "warning"),
                     1 => array("Approve", "success"),
                     2 => array("Order Cancel", "danger"),
-                    3 => array("Complete", "success"),
+                    3 => array("Received", "success"),
                     4 => array("Cancel", "danger")
                 );
 
