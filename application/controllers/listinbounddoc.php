@@ -1096,10 +1096,13 @@ class Listinbounddoc extends MY_Controller {
                             foreach($itemReturn['msg'] as $itemMsg){
                                 $strError .= $itemMsg."<br>";
                             }
-						}
+						} else if( isset($itemReturn['isFault']) ) {
+                            $flagError = true;
+                            $strError .= $itemReturn['faultMessage']."<br />";
+                        }
 					}
 					if(!$flagError){
-						redirect("listinbounddoc");
+						redirect("productcatalogcontent");
 					}else{
 						echo "Something wrong when calling Mage.<br> ".$strError."<input type='button' value='Back' onclick='window.history.back()'>";
 					}

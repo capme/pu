@@ -20,15 +20,15 @@ class Creditcardorder extends MY_Controller {
 
         $this->load->library("va_list");
         $this->va_list->disableAddPlugin()->setListName("Credit Card Order")
-            ->setHeadingTitle(array("#", "Created Date", "Client Name","Order Number","Name","Amount","Status","Status AWB"))
-            ->setHeadingWidth(array(2,2,2,2,3,3,3,4));
+            ->setHeadingTitle(array("#", "Order Date", "Updated At", "Client Name","Order Number","Name","Amount","Status","Status AWB"))
+            ->setHeadingWidth(array(2,2,2,2,2,3,3,3,4));
 
-        $this->va_list->setInputFilter(3, array("name" => $this->creditcardorder_m->filters['order_number']))
-            ->setDropdownFilter(2, array("name" => $this->creditcardorder_m->filters[$this->creditcardorder_m->table.'.client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
-        $this->va_list->setInputFilter(4, array("name" => $this->creditcardorder_m->filters['name']));
-        $this->va_list->setInputFilter(5, array("name" => $this->creditcardorder_m->filters[$this->creditcardorder_m->table.'.amount']));
-        $this->va_list->setDropdownFilter(6, array("name" => $this->creditcardorder_m->filters[$this->creditcardorder_m->table.'.status'], "option" => $this->getStatus()));
-        $this->va_list->setDropdownFilter(7, array("name" => $this->creditcardorder_m->filters[$this->creditcardorder_m->tableAwb.'.status'], "option" => $this->getStatusAwb()));
+        $this->va_list->setInputFilter(4, array("name" => $this->creditcardorder_m->filters['order_number']))
+            ->setDropdownFilter(3, array("name" => $this->creditcardorder_m->filters[$this->creditcardorder_m->table.'.client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
+        $this->va_list->setInputFilter(5, array("name" => $this->creditcardorder_m->filters['name']));
+        $this->va_list->setInputFilter(6, array("name" => $this->creditcardorder_m->filters[$this->creditcardorder_m->table.'.amount']));
+        $this->va_list->setDropdownFilter(7, array("name" => $this->creditcardorder_m->filters[$this->creditcardorder_m->table.'.status'], "option" => $this->getStatus()));
+        $this->va_list->setDropdownFilter(8, array("name" => $this->creditcardorder_m->filters[$this->creditcardorder_m->tableAwb.'.status'], "option" => $this->getStatusAwb()));
 
         $this->data['script'] = $this->load->view("script/creditcardorder_list", array("ajaxSource" => site_url("creditcardorder/creditCardOrderList")), true);
         $this->load->view("template", $this->data);
