@@ -138,7 +138,16 @@ class Codpaymentconfirmation_m extends MY_Model {
 
         return $this->db->get();
 	}
-	
+
+	public function getCodOrder(){
+        return $this->db->query("select * from cod_confirmation where status = 0 and created_at <= DATE_ADD(CURDATE(), INTERVAL -3 DAY)")->result_array();
+    }
+
+    public function cancelOrder($ordernr){
+        $this->db->where('order_number', $ordernr);
+        $this->db->update($this->table, array('status'=>4));
+    }
+
 	public function Receive($post) 
 	{
         $this->db = $this->load->database('mysql', TRUE);

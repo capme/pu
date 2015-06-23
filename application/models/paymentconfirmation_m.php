@@ -140,6 +140,15 @@ class Paymentconfirmation_m extends MY_Model {
 		$records["iTotalDisplayRecords"] = $iTotalRecords;
 		return $records;
 	}
+
+    public function getNewOrder(){
+        return $this->db->query("select * from bank_confirmation where status = 0 and created_at <= DATE_ADD(CURDATE(), INTERVAL -3 DAY)")->result_array();
+    }
+
+    public function cancelOrder($ordernr){
+        $this->db->where('order_number', $ordernr);
+        $this->db->update($this->table, array('status'=>2));
+    }
 	
 	public function getConfirmationById($id)
 	{
