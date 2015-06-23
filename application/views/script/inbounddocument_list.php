@@ -23,7 +23,15 @@ var TableAjax = function () {
                     // execute some code after table records loaded
                     setTimeout(function(){
                         $('#datatable_ajax a.import3pl').click(function(e) {
-                            if(confirm('Are you sure to import All NEW item into 3PL')) {
+                            if(confirm('Are you sure to import All NEW item into 3PL?')) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        })
+
+                        $('#datatable_ajax a.importmage').click(function(e) {
+                            if(confirm('Are you sure to import All NEW item into MAGE?')) {
                                 return true;
                             } else {
                                 return false;

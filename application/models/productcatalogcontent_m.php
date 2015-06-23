@@ -72,7 +72,9 @@ class Productcatalogcontent_m extends MY_Model {
             $btnAction = "";
             if($_result->type == 1){
                 if($_result->status == 4){
-                    $btnAction .= '<br /><br /><a href="'.base_url().'productcatalogcontent/importItemMage?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-export" ></i> Import Item to MAGE</a>';
+                    $btnAction .= '<a href="'.base_url().'inbounds/download/'.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt"></i> Product Catalogue</a>';
+                    $btnAction .= '&nbsp;&nbsp;<a href="'.base_url().'listinbounddoc/importItemMage?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt"></i> Form Import</a>';
+                    $btnAction .= '<hr /><a href="'.base_url().'listinbounddoc/importItemMage?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default importmage"><i class="glyphicon glyphicon-export" ></i> Import Item to MAGE</a>';
                 }
                 if($_result->status == 1 or $_result->status == 2 or $_result->status == 3 or $_result->status == 4){
                     $records["aaData"][] = array(
