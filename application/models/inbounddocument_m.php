@@ -173,7 +173,6 @@ class Inbounddocument_m extends MY_Model {
                         $btnAction .= '<hr /><a href="'.base_url().'listinbounddoc/importItem3PL?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default import3pl"><i class="glyphicon glyphicon-export" ></i> Import Item to 3PL</a>';
                     }
                     $btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/downloadReceivingForm?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Receiving Form</a>';
-                    $btnAction .= '<br /><br /><a href="'.base_url().'listinbounddoc/importItemMage?client='.$_result->client_id.'&doc='.$_result->id.'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-export" ></i> Import Item to MAGE</a>';
                 }
 				if($_result->status == 1 or $_result->status == 2 or $_result->status == 3 or $_result->status == 4){
 					$records["aaData"][] = array(
@@ -583,7 +582,8 @@ class Inbounddocument_m extends MY_Model {
 		$this->load->model( array("invsync_m", 'clientoptions_m') );
 
 		//start parse the array from excel
-		$sizeRowX = count($arr_data); 
+		//$sizeRowX = count($arr_data);
+        $sizeRowX = max(array_keys($arr_data));
 		$sizeRowY = count($arr_data[1]);
 		$brandName = trim(str_replace(":", "", $arr_data[8]['C']));
         //check if the string contain '=' which refer to another cell value
@@ -997,6 +997,10 @@ class Inbounddocument_m extends MY_Model {
                     //recheck w/o color (and using 'One Size' pattern. The old sku pattern)
                     if(empty($checkReturn) and strtolower($inSize)=="os") {
                         $checkReturn = $this->invsync_m->findOldSimilarSku(strtoupper($tmp['config']), "One Size", $client);
+                    }
+                    //recheck w/o color (and using 'F' pattern. The old sku pattern)
+                    if(empty($checkReturn) and strtolower($inSize)=="f") {
+                        $checkReturn = $this->invsync_m->findOldSimilarSku(strtoupper($tmp['config']), "F", $client);
                     }
                     if(!empty($checkReturn)) {
                         // existing sku found with no color
