@@ -28,6 +28,7 @@ class Paypalorder extends MY_Controller {
         $this->va_list->setInputFilter(5, array("name" => $this->paypalorder_m->filters[$this->paypalorder_m->table.'.amount']));
         $this->va_list->setDropdownFilter(6, array("name" => $this->paypalorder_m->filters[$this->paypalorder_m->table.'.status'], "option" => $this->getStatus()));
         $this->va_list->setDropdownFilter(7, array("name" => $this->paypalorder_m->filters[$this->paypalorder_m->tableAwb.'.status'], "option" => $this->getStatusAwb()));
+        $this->va_list->setDateFilter(1, array("name"=>$this->paypalorder_m->filters["created_at"]));
 
         $this->data['script'] = $this->load->view("script/paypalorder_list", array("ajaxSource" => site_url("paypalorder/paypalOrderList")), true);
         $this->load->view("template", $this->data);
