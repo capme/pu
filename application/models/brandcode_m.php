@@ -62,4 +62,28 @@ class Brandcode_m extends MY_Model {
 	$this->db->where('id', $id);
 	$this->db->update($this->table,array('option_value'=>$value));
 	}
+
+   function getList($brandcode, $withNull = FALSE, $defaultText = "-- Brand --") {
+       $values=array();
+        if($withNull) {
+            $values["-1"] = $defaultText;
+        }
+
+       $array = array();
+       if (is_object($brandcode)) {
+           $array = get_object_vars($brandcode);
+       }
+       $key=array_keys($array);
+       $value=array_values($array);
+       for($i=0; $i < count($key); $i++){
+           $values[$key[$i]]=strtoupper($value[$i]);
+       }
+       return $values;
+    }
+
+    function getBrandCode($id){
+        $mysql = $this->load->database('mysql', TRUE);
+        $query = $mysql->get_where($this->table, array('option_name'=>'brand_code', 'client_id'=>$id))->row_array();
+        return json_decode($query['option_value']);
+    }
 }
