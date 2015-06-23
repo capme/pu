@@ -33,7 +33,8 @@ class Codpaymentconfirmation extends MY_Controller {
         $this->va_list->setInputFilter(3, array("name" => $this->codpaymentconfirmation_m->filters['order_number']));
         $this->va_list->setInputFilter(5, array("name" => $this->codpaymentconfirmation_m->filters[$this->codpaymentconfirmation_m->table.'.amount']));
         $this->va_list->setDropdownFilter(8, array("name" => $this->codpaymentconfirmation_m->filters[$this->codpaymentconfirmation_m->tableAwb.'.status'], "option" => $this->getStatusAwb()));
-		
+        $this->va_list->setDateFilter(1, array("name"=>$this->codpaymentconfirmation_m->filters['created_at']));
+
 		$this->data['script'] = $this->load->view("script/codconfirmation_list", array("ajaxSource" => site_url("codpaymentconfirmation/CodPaymentConfirmationList")), true);	
 		$this->load->view("template", $this->data);
 	}

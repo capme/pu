@@ -37,11 +37,13 @@ class Codconfirmation_m extends MY_Model {
                             $this->table.".client_id"=>$this->table."_client_id",
                             $this->table.".amount"=>$this->table."_amount",
                             $this->tableAwb.".status"=>$this->tableAwb."_status",
-                            "customer_name"=>"customer_name"
+                            "customer_name"=>"customer_name",
+                            "created_at"=>"created_at"
                         );
 
         $this->listWhere['equal'] = array();
         $this->listWhere['like'] = array("order_number", "customer_name");
+        $this->daterange=$this->table.".created_at";
 
 	}
 	

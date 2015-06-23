@@ -59,7 +59,7 @@ class MY_Model extends CI_Model{
                     elseif (in_array($tField, $this->listWhere['like'])) {
                     $this->db->like($tField, $val);
                 }
-                    elseif (!empty($this->daterange)){
+                elseif (!empty($this->daterange) && !empty($val[0]) && !empty($val[1])){
                     $this->db->where("$this->daterange >=", $val[0]."00:00:00");
                     $this->db->where("$this->daterange <=", $val[1]."23:59:59");
                 }
@@ -160,7 +160,7 @@ class MY_Model extends CI_Model{
                 elseif (in_array($tField, $this->listWhere['like'])) {
                     $this->db->like($tField, $val);
                 }
-                elseif (!empty($this->daterange)){
+                elseif (!empty($this->daterange) && !empty($val[0]) && !empty($val[1])){
                     $this->db->where("$this->daterange >=", $val[0]."00:00:00");
                     $this->db->where("$this->daterange <=", $val[1]."23:59:59");
                 }
