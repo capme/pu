@@ -3,7 +3,9 @@ class Migration_Codconfirmation extends Base_migration {
 	public function up() {
 		parent::up();
 		$this->db->trans_start();
-		$this->db->query("DELETE FROM module WHERE slug like 'cod%'");
+        $this->db->query("DELETE FROM module WHERE slug like 'codpay%'");
+        $this->db->query("DELETE FROM module WHERE slug like 'codcon%'");
+        $this->db->query("DELETE FROM module WHERE slug like 'canceled%'");
 		$this->db->insert("module", array("name" => "COD Order", "slug" => "codconfirmation", "icon" => "fa-shopping-cart", "parent" => 1, "hidden" => 0, "status" => 1));
 		$newIds = array();
 		
@@ -12,7 +14,8 @@ class Migration_Codconfirmation extends Base_migration {
 		
 		$newModule = array(
 			"order" => array("name" => "Order Confirmation", "slug" => "codconfirmation", "icon" => "fa-shopping-cart", "hidden" => 0, "status" => 1, "parent" => $parentModule),
-			"payment" => array("name" => "Payment Confirmation", "slug" => "codpaymentconfirmation", "icon" => "fa-money", "hidden" => 0, "status" => 1, "parent" => $parentModule)
+			"payment" => array("name" => "Payment Confirmation", "slug" => "codpaymentconfirmation", "icon" => "fa-money", "hidden" => 0, "status" => 1, "parent" => $parentModule),
+            "canceledorder" => array("name" => "Canceled Order", "slug" => "canceledorder", "icon" => "fa-money", "hidden" => 0, "status" => 1, "parent" => $parentModule)
 		);
 		$parentTags = array();
 		foreach($newModule as $tag => $module) {
@@ -30,6 +33,9 @@ class Migration_Codconfirmation extends Base_migration {
 				array("name" => "Receive", "slug" => "codpaymentconfirmation/receive", "hidden" => 1, "status" => 1, "parent" => $parentTags['payment']),
 				array("name" => "Cancel", "slug" => "codpaymentconfirmation/cancel", "hidden" => 1, "status" => 1, "parent" => $parentTags['payment']),
 				array("name" => "Save", "slug" => "codpaymentconfirmation/save", "hidden" => 1, "status" => 1, "parent" => $parentTags['payment']),
+                array("name" => "List", "slug" => "canceledorder/canceledOrderList", "hidden" => 1, "status" => 1, "parent" => $parentTags['canceledorder']),
+                array("name" => "View", "slug" => "canceledorder/view", "hidden" => 1, "status" => 1, "parent" => $parentTags['canceledorder']),
+
 		);
 		foreach($newModule as $module) {
 			$this->db->insert("module", $module);
@@ -48,7 +54,9 @@ class Migration_Codconfirmation extends Base_migration {
 	
 	public function down() {
 		parent::down();
-		$this->db->query("DELETE FROM module WHERE slug like 'cod%'");
+		$this->db->query("DELETE FROM module WHERE slug like 'codpay%'");
+        $this->db->query("DELETE FROM module WHERE slug like 'codcon%'");
+        $this->db->query("DELETE FROM module WHERE slug like 'canceled%'");
 	}
 }
 ?>
