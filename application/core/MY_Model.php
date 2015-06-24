@@ -64,7 +64,9 @@ class MY_Model extends CI_Model{
                     $this->db->where("$this->daterange <=", $val[1]);
                 }
                     else {
-                    $this->db->where($tField, $val);
+                        if (is_array($val)== false) {
+                            $this->db->where($tField, $val);
+                        }
                 }
             }
 
@@ -139,13 +141,13 @@ class MY_Model extends CI_Model{
 	 */
 	protected function _doGetRows($offset, $limit) {
 		$res = $this->db->limit($limit, $offset);
-	
+
 		$this->_prepareFilter();
-	
+
 		if(!empty($this->select)) {
 			$res->select( implode(",", $this->select) );
 		}
-		
+
 		if( !empty($this->relation) ) {
 			foreach($this->relation as $relation) {
 				$res->join($relation['table'], $relation['link'], $relation['type']);
@@ -165,7 +167,9 @@ class MY_Model extends CI_Model{
                     $this->db->where("$this->daterange <=", $val[1]);
                 }
                 else {
-                    $this->db->where($tField, $val);
+                    if(is_array($val)==false) {
+                        $this->db->where($tField, $val);
+                    }
                 }
             }
 
@@ -173,7 +177,7 @@ class MY_Model extends CI_Model{
                 $this->db->where($tField, $val);
             }
         }
-	
+
 		$iSortingCols = $this->input->post("iSortingCols");
 		if( !empty($iSortingCols) ) {
 			for($i=0; $i<$iSortingCols; $i++) {
@@ -181,13 +185,13 @@ class MY_Model extends CI_Model{
 				$col = $this->sorts[$colId];
 				$dir = $this->input->post("sSortDir_{$i}");
 				$res = $res->order_by($col, $dir);
-	
+
 			}
 		} else {
 			$res = $res->order_by($this->pkField, "asc");
 		}
-		
-		$client = $this->session->userdata("client"); 
+
+		$client = $this->session->userdata("client");
 
 		if(!empty($client)){
 			$res->where("client", $client);
@@ -202,5 +206,5 @@ class MY_Model extends CI_Model{
 		$res = $res->get( $this->table );
 		return $res;
 	}
-	
+
 }
