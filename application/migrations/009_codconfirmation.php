@@ -15,7 +15,7 @@ class Migration_Codconfirmation extends Base_migration {
 		$newModule = array(
 			"order" => array("name" => "Order Confirmation", "slug" => "codconfirmation", "icon" => "fa-shopping-cart", "hidden" => 0, "status" => 1, "parent" => $parentModule),
 			"payment" => array("name" => "Payment Confirmation", "slug" => "codpaymentconfirmation", "icon" => "fa-money", "hidden" => 0, "status" => 1, "parent" => $parentModule),
-            "canceledorder" => array("name" => "Canceled Order", "slug" => "canceledorder", "icon" => "fa-money", "hidden" => 0, "status" => 1, "parent" => $parentModule)
+            "canceledorder" => array("name" => "Canceled Order", "slug" => "canceledorder", "icon" => "fa-remove", "hidden" => 0, "status" => 1, "parent" => $parentModule)
 		);
 		$parentTags = array();
 		foreach($newModule as $tag => $module) {
@@ -54,9 +54,12 @@ class Migration_Codconfirmation extends Base_migration {
 	
 	public function down() {
 		parent::down();
+        $this->db->trans_start();
+        $this->db->query("DROP TABLE IF EXISTS cod_confirmation");
 		$this->db->query("DELETE FROM module WHERE slug like 'codpay%'");
         $this->db->query("DELETE FROM module WHERE slug like 'codcon%'");
         $this->db->query("DELETE FROM module WHERE slug like 'canceled%'");
+        $this->db->trans_complete();
 	}
 }
 ?>
