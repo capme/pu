@@ -77,17 +77,21 @@ class Paymentconfirmation extends MY_Controller {
 			$msg = array();
 			$value = $data->result_array();
 		}
+        $address= $value[0]['address'].", ".$value[0]['city']." - ".$value[0]['province']." ".$value[0]['zipcode'];
 
 		$this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value" => @$value[0]['client_code'], "msg" => @$msg['client_code'], "disabled"=>"disabled") );
 		$this->va_input->addInput( array("name" => "sku", "placeholder" => "Order Number", "help" => "Order Number", "label" => "Order Number", "value" => @$value[0]['order_number'], "msg" => @$msg['order_number'], "disabled"=>"disabled") );
 		$this->va_input->addInput( array("name" => "status", "value" => $this->getStatus()[@$value[0]['status_bank']], "msg" => @$msg['status'], "label" => "Status", "help" => "Order Status", "disabled"=>"disabled") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['name'], "msg" => @$msg['name'], "label" => "Name", "help" => "Name", "disabled"=>"disabled") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['transaction_date'], "msg" => @$msg['transaction_date'], "label" => "Transfer Date", "help" => "Transaction Date", "disabled"=>"disabled") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => number_format(@$value[0]['amount'], 2), "msg" => @$msg['amount'], "label" => "Amount", "help" => "Amount", "disabled"=>"disabled") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['origin_bank'], "msg" => @$msg['origin_bank'], "label" => "Original Bank", "help" => "Original Bank", "disabled"=>"disabled") );
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['transaction_method'], "msg" => @$msg['transaction_method'], "label" => "Transaction Method", "help" => "Transaction Method", "disabled"=>"disabled") );
-		$this->va_input->addCustomField( array("name" =>"receipt_url", "placeholder" => "xx", "label" => "Receipt URL", "value" => @$value[0]['receipt_url'], "msg" => @$msg['receipt_url'], "view"=>"form/customFoto"));
-		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['updated_at'], "msg" => @$msg['updated_at'], "label" => "Updated At", "help" => "Updated At", "disabled"=>"disabled") );
+		$this->va_input->addInput( array("name" => "name", "value" => @$value[0]['name'], "msg" => @$msg['name'], "label" => "Name", "help" => "Name", "disabled"=>"disabled") );
+		$this->va_input->addInput( array("name" => "transaction_date", "value" => @$value[0]['transaction_date'], "msg" => @$msg['transaction_date'], "label" => "Transfer Date", "help" => "Transaction Date", "disabled"=>"disabled") );
+		$this->va_input->addInput( array("name" => "amount", "value" => number_format(@$value[0]['amount'], 2), "msg" => @$msg['amount'], "label" => "Amount", "help" => "Amount", "disabled"=>"disabled") );
+		$this->va_input->addInput( array("name" => "origin", "value" => @$value[0]['origin_bank'], "msg" => @$msg['origin_bank'], "label" => "Original Bank", "help" => "Original Bank", "disabled"=>"disabled") );
+		$this->va_input->addInput( array("name" => "method", "value" => @$value[0]['transaction_method'], "msg" => @$msg['transaction_method'], "label" => "Transaction Method", "help" => "Transaction Method", "disabled"=>"disabled") );
+        $this->va_input->addTextarea( array("name" => "shipping", "value" => @$address, "msg" => @$msg['address'], "label" => "Shipping Address", "help" => "Shipping Address", "disabled"=>"disabled") );
+        $this->va_input->addInput( array("name" => "shipping_type", "value" => @$value[0]['shipping_type'], "msg" => @$msg['shipping_type'], "label" => "Shipping Type", "help" => "Shipping Type", "disabled"=>"disabled") );
+        $this->va_input->addCustomField( array("name" =>"items", "placeholder" => "Items", "label" => "Items", "value" => @$value[0]['items'], "view"=>"form/customItemsBank"));
+        $this->va_input->addCustomField( array("name" =>"receipt_url", "placeholder" => "xx", "label" => "Receipt URL", "value" => @$value[0]['receipt_url'], "msg" => @$msg['receipt_url'], "view"=>"form/customFoto"));
+        $this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['updated_at'], "msg" => @$msg['updated_at'], "label" => "Updated At", "help" => "Updated At", "disabled"=>"disabled") );
 		$this->va_input->addInput( array("name" => "updated_at", "value" => @$value[0]['created_at'], "msg" => @$msg['created_at'], "label" => "Created At", "help" => "Created At", "disabled"=>"disabled") );
         $this->va_input->commitForm(0);
 

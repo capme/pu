@@ -153,11 +153,12 @@ class Paymentconfirmation_m extends MY_Model {
 	public function getConfirmationById($id)
 	{
 		$this->db = $this->load->database('mysql', TRUE);
-		$this->db->select('*, bank_confirmation.status as status_bank, order_history.status as status_history, bank_confirmation.created_at, bank_confirmation.id, bank_confirmation.updated_at, auth_users.username, order_history.type, order_history.created_at as history_date');
+		$this->db->select('*,bank_confirmation.status as status_bank, order_history.status as status_history, bank_confirmation.created_at, bank_confirmation.id, bank_confirmation.updated_at, auth_users.username, order_history.type, order_history.created_at as history_date');
 		$this->db->from($this->table);
 		$this->db->join('client','client.id=bank_confirmation.client_id');
         $this->db->join('order_history', 'order_history.order_id=bank_confirmation.id and type=2','left');
         $this->db->join('auth_users', 'auth_users.pkUserId=order_history.created_by','left');
+        $this->db->join('awb_queue_printing', 'bank_confirmation.order_number=awb_queue_printing.ordernr');
         $this->db->where('bank_confirmation.id', $id);
         $this->db->order_by('order_history.id','desc');
         return $this->db->get();
