@@ -158,7 +158,7 @@ class Paymentconfirmation_m extends MY_Model {
 		$this->db->join('client','client.id=bank_confirmation.client_id');
         $this->db->join('order_history', 'order_history.order_id=bank_confirmation.id and type=2','left');
         $this->db->join('auth_users', 'auth_users.pkUserId=order_history.created_by','left');
-        $this->db->join('awb_queue_printing', 'bank_confirmation.order_number=awb_queue_printing.ordernr');
+        $this->db->join('awb_queue_printing', 'bank_confirmation.order_number=awb_queue_printing.ordernr','LEFT');
         $this->db->where('bank_confirmation.id', $id);
         $this->db->order_by('order_history.id','desc');
         return $this->db->get();

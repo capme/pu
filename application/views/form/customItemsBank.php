@@ -9,12 +9,12 @@ $arr = unserialize(urldecode($strenc));
             <td>QTY</td>
             <td>Weight</td>
         </tr>
-        <?php foreach($arr as $item):?>
+        <?php if (!empty($arr)){foreach($arr as $item):?>
             <tr>
                 <td><?php echo $item['name']; ?></td>
                 <td><?php echo number_format($item['qty']); ?></td>
                 <td><?php echo $item['weight'];?></td>
             </tr>
-        <?php endforeach;?>
+        <?php endforeach;}?>
     </table>
 </div>
