@@ -3,14 +3,17 @@
 class Catalog_m extends MY_Model
 {
 
-    const LOW_CONST = 4;
-    const MID_CONST = 2;
-    const HIGH_CONST = 1;
-    const MANUAL_CONST = 1;
-    const CTR_CONST = 4;
-    const CR_CONST = 4;
-    const LOW_PRICE = 500000;
-    const HIGH_PRICE = 1500000;
+    const DEFAULT_LOW_CONST = 4;
+    const DEFAULT_MID_CONST = 2;
+    const DEFAULT_HIGH_CONST = 1;
+    const DEFAULT_MANUAL_CONST = 1;
+    const DEFAULT_CTR_CONST = 4;
+    const DEFAULT_CR_CONST = 4;
+    const DEFAULT_LOW_PRICE = 500000;
+    const DEFAULT_HIGH_PRICE = 1500000;
+    const DEFAULT_NEWEST_CONST = 0;
+    const DEFAULT_PUSH_TO_MAGENTO = 1;
+
     const ITEMS_PER_PAGE = 12;
     const MAX_BRAND_PER_PAGE = 3;
 
@@ -20,6 +23,8 @@ class Catalog_m extends MY_Model
     var $sorted = array();
     var $sum = array();
     var $out = array();
+
+    var $productStatus = array('synced','sorted','pushed');
 
     function __construct()
     {
@@ -67,24 +72,41 @@ class Catalog_m extends MY_Model
         $debug = array();
         foreach($data as $_id => $row) {
             foreach($row as $_store => $_products) {
-                $this->db->delete($tableCategoryProduct, array("category_id" => $_id, "store_id" => $_store));
-
+//                $this->db->delete($tableCategoryProduct, array("category_id" => $_id, "store_id" => $_store));
 
                 if(!empty($_products)) {
-
                     foreach ($_products as $_product) {
                         if($_product['type'] == 'configurable'){
-                            $insertCatalogCategoryProduct[] = array(
-                                'category_id' => $_id,
-                                'product_id' => $_product['product_id'],
-                                'sku' => $_product['sku'],
-                                'position' => $_product['position'],
-                                'store_id ' => $_store,
-                                'updated_at' => date('Y-m-d H:i:s')
-                            );
+                            $this->db->where('category_id',$_id);
+                            $this->db->where('product_id',$_product['product_id']);
+                            $this->db->where('store_id',$_store);
+                            $cek = $this->db->get($tableCategoryProduct)->num_rows();
+                            if(empty($cek)){
+                                $insertCatalogCategoryProduct[] = array(
+                                    'category_id' => $_id,
+                                    'product_id' => $_product['product_id'],
+                                    'sku' => $_product['sku'],
+                                    'position' => $_product['position'],
+                                    'store_id' => $_store,
+                                    'updated_at' => date('Y-m-d H:i:s'),
+                                    'status' => array_search('synced', $this->productStatus)
+                                );
+                                $debug['debug.insertCategoryProduct'][$_id][$_store][$_product['type']]++;
+
+                            } else {
+                                $updateCatalogCategoryProduct[] = array(
+                                    'category_id' => $_id,
+                                    'product_id' => $_product['product_id'],
+                                    'sku' => $_product['sku'],
+                                    'position' => $_product['position'],
+                                    'store_id' => $_store,
+                                    'updated_at' => date('Y-m-d H:i:s'),
+                                    'status' => array_search('synced', $this->productStatus)
+                                );
+                                $debug['debug.updateCategoryProduct'][$_id][$_store][$_product['type']]++;
+
+                            }
                         }
-                        $debug['debug.insertCategoryProduct'][$_id][$_store][$_product['type']]++;
-                        if($_product['product_id'] == '3279') print_r($_product);
                     }
                 }
             }
@@ -94,6 +116,13 @@ class Catalog_m extends MY_Model
         if(!empty($insertCatalogCategoryProduct)) {
             log_message("debug","catalog_m.insertCategoryProduct] inserted:".count($insertCatalogCategoryProduct));
             $this->db->insert_batch($tableCategoryProduct, $insertCatalogCategoryProduct);
+        }
+
+        if(!empty($updateCatalogCategoryProduct)){
+            foreach($updateCatalogCategoryProduct as $_update){
+                $this->db->where(array('category_id'=>$_update['category_id'], 'product_id' => $_update['product_id'], 'store_id' => $_update['store_id']));
+                $this->db->update($tableCategoryProduct,array('position'=>$_update['position'],'status'=>$_update['status'],'updated_at' => $_update['updated_at']));
+            }
         }
 
         $this->db->trans_complete();
@@ -115,10 +144,26 @@ class Catalog_m extends MY_Model
 
         $this->db->trans_start();
         foreach($sorteddata as $i => $_data){
-            $_update = array('result_index' => $i+1, 'score' => $_data['score']);
+            $_update = array('result_index' => $i+1, 'score' => $_data['score'], 'status' => 1);
             $where = array('category_id'=>$_data['category_id'], 'product_id'=>$_data['product_id']);
             $this->db->where($where);
             $this->db->update($tableCategoryProduct,$_update);
+        }
+        $this->db->trans_complete();
+    }
+
+    public function updateStatusCategoryProduct($client,$data){
+        $tableCategoryProduct = $this->tableCategoryProduct.$client['id'];
+
+        $this->db->trans_start();
+        foreach($data as $i => $_data){
+            if(!empty($_data['pushed'])){
+                $_update = array('status' => 2);
+                $where = array('category_id'=>$_data['category_id'], 'product_id'=>$_data['product_id']);
+                $this->db->where($where);
+                $this->db->update($tableCategoryProduct,$_update);
+            }
+
         }
         $this->db->trans_complete();
     }
@@ -185,6 +230,8 @@ class Catalog_m extends MY_Model
     }
 
     public function getCatalogCategoryProduct($client, $categoryId = "", $filters=array()){
+
+
         $tableCategoryProduct = $this->tableCategoryProduct.$client['id'];
 
         $tableInvItems = 'inv_items_'.$client['id'];
@@ -200,12 +247,28 @@ class Catalog_m extends MY_Model
         }
 
 //
-//        $filter = $filters['filter'];
-//        foreach($filter as $key => $val) {
-//            if(!empty($val)) {
-//                $mysql->where( self::VIEW_STOCKS.'.'.$key, $val);
-//            }
-//        }
+        if(!empty($filters['filter'])) {
+            foreach($filters['filter'] as $key => $val) {
+                if(!empty($val)) {
+                    if($val['type'] == 'like'){
+//                        $mysql->like($tableCategoryProduct.'.'.$key, $val['value']);
+                        $mysql->like($key, $val['value']);
+                    } else {
+//                        $mysql->where($tableCategoryProduct.'.'.$key, $val['value']);
+                        $mysql->where($key, $val['value']);
+                    }
+                }
+            }
+        }
+
+
+        if(!empty($filters['limit'])){
+            $mysql->limit($filters['limit']['limit'], $filters['limit']['offset']);
+        }
+
+        if(!empty($filters['orderby'])){
+            $mysql->order_by($filters['orderby'][0], $filters['orderby'][1]);
+        }
 
         if(!empty($filters['groupby'])){
             $mysql->group_by( $tableCategoryProduct.'.'.$filters['groupby']);
@@ -213,7 +276,9 @@ class Catalog_m extends MY_Model
             $mysql->group_by( $tableCategoryProduct.'.id');
         }
 
-        $result = $mysql->get($tableCategoryProduct)->result_array();
+
+//        $result = $mysql->get($tableCategoryProduct)->result_array();
+        $result = $mysql->get($tableCategoryProduct);
 
         // cek sql query
          log_message('debug','getCatalogCategoryProduct : '.$mysql->last_query());
@@ -222,12 +287,12 @@ class Catalog_m extends MY_Model
     }
 
 
-    public function updateSorting($client, $datas = array()){
+    public function updateSorting($client, $datas = array(), $sortingConfig){
 //        $rand = $this->random(6);
 
         foreach($datas as $i => $data){
             $rand = $this->random(6);
-            $score = $this->score($data,$rand);
+            $score = $this->score($data,$rand,$sortingConfig,$i);
             $updateData[$i] = $data;
             $updateData[$i]['score'] = $score['score'];
             $updateData[$i]['price_stat'] = $score['price_stat'];
@@ -238,31 +303,33 @@ class Catalog_m extends MY_Model
         $this->updateCatalogCategoryProduct($client, $updateData);
     }
 
-    public function score($data = array(),$rand=null){
+    public function score($data = array(),$rand=null,$config,$pos){
 
         if(!$rand){
             $rand = $this->random(2);
         }
 
         // hitung price weight
-        if((int) $data['price'] <= self::LOW_PRICE){
-            $price_value = self::LOW_CONST * $rand;
+        if((int) $data['price'] <= (int) $config['low_price']){
+            $price_value =  (int) $config['low_constant'] * $rand;
             $price_stat = 'low';
-        } elseif( (int) $data['price'] > self::LOW_PRICE && (int) $data['price'] < self::HIGH_PRICE  ){
-            $price_value = self::MID_CONST * $rand;
+        } elseif( (int) $data['price'] > (int) $config['low_price'] && (int) $data['price'] < (int) $config['low_price'] ){
+            $price_value = (int) $config['mid_constant'] * $rand;
             $price_stat = 'mid';
         } else {
-            $price_value = self::HIGH_CONST * $rand;
+            $price_value = (int) $config['high_constant'] * $rand;
             $price_stat = 'high';
         }
 
-        $manual_weight = self::MANUAL_CONST * (int) $data['manual_weight'] * $rand;
+
+        $manual_weight = (int) $config['manual_constant'] * (int) $data['manual_weight'] * $rand;
+        log_message('debug','score '.$data['product_id']." : ".$config['manual_constant'].':'.$data['manual_weight']);
 
         //get CTR and Conversion
         $dataCtr = $this->getCtr($data['product_id']);
         if(!is_null($dataCtr)) {
-            $itemCtr = self::CTR_CONST * $dataCtr[0]['ctr'];
-            $itemCr = self::CR_CONST * $dataCtr[0]['conversion'];
+            $itemCtr = (int) $config['ctr_constant'] * $dataCtr[0]['ctr'];
+            $itemCr = (int) $config['cr_constant'] * $dataCtr[0]['conversion'];
             $ctr_stat = 1;
         }else{
             $itemCtr = 0;
@@ -270,8 +337,11 @@ class Catalog_m extends MY_Model
             $ctr_stat = 0;
         }
 
-        $score = $price_value + $manual_weight + $itemCtr + $itemCr;
-        log_message('debug','score '.$data['product_id']." : ".$score." = ".$price_value." + ".$manual_weight." + ".$itemCtr." + ".$itemCr." ==> rand(".$rand.")");
+        //newest weight
+        $newest_weight = $config['newest_constant'] * $rand ;
+
+        $score = $price_value + $manual_weight + $itemCtr + $itemCr + $newest_weight;
+        log_message('debug','score '.$data['product_id']." : ".$score." = ".$price_value." + ".$manual_weight." + ".$itemCtr." + ".$itemCr." + ".$newest_weight." ==> rand(".$rand.")");
 
 //        print "score : $score\n\n";
         $return = array('score'=>$score, 'price_stat'=>$price_stat, 'ctr_stat'=>$ctr_stat);
