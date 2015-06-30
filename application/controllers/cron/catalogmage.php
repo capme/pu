@@ -150,16 +150,16 @@ class CatalogMage extends CI_Controller {
                 $sortingConfig = $this->sortingtool_m->getConfig($client['id'],$_category['category_id'])->result_array();
 
                 foreach($sortingConfig as $_config){
-                    $config[$_config['name']] = $_config['value'];
+                    $_sortingConfig[$_config['name']] = $_config['value'];
                 }
 
-                if(empty($config)){
+                if(empty($_sortingConfig)){
                     log_message('debug',' ========= sorting >'.$client['client_code'].'#'.$_category['category_id'].'#skip , no configuration');
                     continue;
                 }
 
-                if(!$config['push_to_magento']){
-                    log_message('debug',' ========= sorting >'.$client['client_code'].'#'.$_category['category_id'].'#skip , push_to_magento : '.$config['push_to_magento']);
+                if(!$_sortingConfig['push_to_magento']){
+                    log_message('debug',' ========= sorting >'.$client['client_code'].'#'.$_category['category_id'].'#skip , push_to_magento : '.$_sortingConfig['push_to_magento']);
                     continue;
                 }
 
@@ -233,16 +233,16 @@ class CatalogMage extends CI_Controller {
                 $sortingConfig = $this->sortingtool_m->getConfig($client['id'],$_category['category_id'])->result_array();
 
                 foreach($sortingConfig as $_config){
-                    $config[$_config['name']] = $_config['value'];
+                    $_sortingConfig[$_config['name']] = $_config['value'];
                 }
 
-                if(empty($config)){
+                if(empty($_sortingConfig)){
                     log_message('debug',' ========= sorting >'.$client['client_code'].'#'.$_category['category_id'].'#skip , no configuration');
                     continue;
                 }
 
-                if(!$config['push_to_magento']){
-                    log_message('debug',' ========= sorting >'.$client['client_code'].'#'.$_category['category_id'].'#skip , push_to_magento : '.$config['push_to_magento']);
+                if(!$_sortingConfig['push_to_magento']){
+                    log_message('debug',' ========= sorting >'.$client['client_code'].'#'.$_category['category_id'].'#skip , push_to_magento : '.$_sortingConfig['push_to_magento']);
                     continue;
                 }
 
@@ -298,10 +298,10 @@ class CatalogMage extends CI_Controller {
                 $sortingConfig = $this->sortingtool_m->getConfig($client['id'],$_category['category_id'])->result_array();
 
                 foreach($sortingConfig as $_config){
-                    $config[$_config['name']] = $_config['value'];
+                    $_sortingConfig[$_config['name']] = $_config['value'];
                 }
 
-                if(empty($config)){
+                if(empty($_sortingConfig)){
                     log_message('debug',' ========= sorting >'.$client['client_code'].'#'.$_category['category_id'].'#skip , no configuration');
 
                     continue;
@@ -313,7 +313,7 @@ class CatalogMage extends CI_Controller {
 
                 $categoryProducts = $this->catalog_m->getCatalogCategoryProduct($client, $_category['category_id'], $filters)->result_array();
 
-                $this->catalog_m->updateSorting($client, $categoryProducts,$config);
+                $this->catalog_m->updateSorting($client, $categoryProducts,$_sortingConfig);
             }
         }
         log_message('debug','[CatalogMage.sorting] end : '.date('Y-m-d H:i:s'));

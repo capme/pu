@@ -338,7 +338,7 @@ class Catalog_m extends MY_Model
         }
 
         //newest weight
-        $newest_weight = $config['newest_constant'] * $rand ;
+        $newest_weight = $config['newest_constant'] * $rand * ($pos / 1000);
 
         $score = $price_value + $manual_weight + $itemCtr + $itemCr + $newest_weight;
         log_message('debug','score '.$data['product_id']." : ".$score." = ".$price_value." + ".$manual_weight." + ".$itemCtr." + ".$itemCr." + ".$newest_weight." ==> rand(".$rand.")");
