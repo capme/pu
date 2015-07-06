@@ -9,10 +9,12 @@ class Paymentconfirmation_m extends MY_Model {
     var $statusAWB=array("printed"=>1,"new request"=>0);
 	var $tableClient ='client';
     var $tableAwb = 'awb_queue_printing';
+    var $expired ='expired_order';
 	
 	function __construct()
 	{
 		parent::__construct();
+        $this->load->model("autocancel_m");
         $this->load->library("va_list");
 		$this->db = $this->load->database('mysql', TRUE);
 
@@ -142,7 +144,64 @@ class Paymentconfirmation_m extends MY_Model {
 	}
 
     public function getNewOrder(){
-        return $this->db->query("select * from bank_confirmation where status = 0 and created_at <= DATE_ADD(CURDATE(), INTERVAL -3 DAY)")->result_array();
+        $order = $this->db->query("SELECT id,order_number,client_id,created_at, WEEKDAY(created_at) as weekday FROM bank_confirmation where status = 0 ")->result_array();
+
+        for($a=0; $a < count($order); $a++){
+            $counter=1;
+            $return=false;
+            $orderdate=$order[$a]['created_at'];
+            do {
+                do {
+                    $day1 = $this->db->query("SELECT WEEKDAY('$orderdate') as day1")->result();
+                    if (($day1[$a]->day1 == 5) || ($day1[$a]->day1 == 6)) {
+                        $temp= $this->db->query("select date_add('$orderdate', INTERVAL 1 DAY) as cancelday")->row_array();
+                        $orderdate= $temp['cancelday'];
+                        $counter--;
+
+                    } else {
+                        $holiday = $this->db->query("select date(date) as holiday from holiday ")->result_array();
+                        $date = $this->db->query("select date('$orderdate') as date")->row_array();
+                        $is_holiday = false;
+
+                        for($hol = 0; $hol < count($holiday); $hol++){
+                            if ($holiday[$hol]['holiday'] == $date['date']){
+                                $is_holiday = true;
+                                break;
+                            }
+                            else{
+                                $is_holiday = false;
+                            }
+                        }
+                        if($is_holiday == true ){
+                            $temp = $this->db->query("select date_add('$orderdate', INTERVAL 1 DAY) as cancelday")->row_array();
+                            $orderdate= $temp['cancelday'];
+                            $counter--;
+                        }
+                        else{
+                            $temp = $this->db->query("select date_add('$orderdate', INTERVAL 1 DAY) as cancelday")->row_array();
+                            $orderdate= $temp['cancelday'];
+                            $return = true;
+                        }
+                    }
+                } while (!$return);
+                $counter++;
+            }
+            while($counter <= 3);
+            $temp = $this->db->query("select date_add('$orderdate', INTERVAL -1 DAY) as cancelday")->row_array();
+            $orderdate= $temp['cancelday'];
+            foreach ($order as $result) {
+                $available = $this->autocancel_m->cekOrder($result['order_number'], $result['client_id']);
+                if(empty($available)){
+                    $data = array("id" => $result['id'], "order_method" => "bank", "client_id" => $result['client_id'], "order_number" => $result['order_number'], "expired_date" => $orderdate);
+                    $this->db->insert($this->expired, $data);
+                }
+                else{
+                    $this->autocancel_m->delete($result['order_number']);
+                    $data = array("id" => $result['id'], "order_method" => "bank", "client_id" => $result['client_id'], "order_number" => $result['order_number'], "expired_date" => $orderdate);
+                    $this->db->insert($this->expired, $data);
+                }
+            }
+        }
     }
 
     public function cancelOrder($ordernr){
@@ -183,6 +242,10 @@ class Paymentconfirmation_m extends MY_Model {
 		$this->db->where($this->pkField, $id);
 		$this->db->update($this->table, $data);
 
+        $this->db->where('id',$id);
+        $this->db->update($this->expired, array('status'=>$data['status']));
+
+
         $this->db->insert('order_history', $history);
 		return $id;		
 	}
@@ -211,6 +274,9 @@ class Paymentconfirmation_m extends MY_Model {
 			
 			$this->db->where($this->pkField, $post['id']);			
 			$this->db->update($this->table, $data);
+
+            $this->db->where('id',$post['id']);
+            $this->db->update($this->expired, array('status'=>$data['status']));
 
             $this->db->insert('order_history', $history);
 
