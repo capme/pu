@@ -6,6 +6,7 @@ class Autocancel extends CI_Controller {
         $this->db = $this->load->database('mysql', TRUE);
         $order = $this->autocancel_m->getOrder();
         $curdate = date('Y-m-d', time());
+        $time=date('Y-m-d H:i:s', now());
 
         if (!empty($order)){
                foreach($order as $data){
@@ -25,9 +26,15 @@ class Autocancel extends CI_Controller {
                        if( $this->mageapi->initSoap($config) ) {
                            if($data['order_method'] == 'bank'){
                                 $this->paymentconfirmation_m->cancelOrder($data['order_number']);
+
+                                $sethistory=array("order_id"=>$data['id'],"type"=>2, "created_at"=>$time,"status"=>2, "note"=>"expired_order","created_by"=>2);
+                                $this->paymentconfirmation_m->setHistory($sethistory);
                            }
                            else{
                                $this->codpaymentconfirmation_m->cancelOrder($data['order_number']);
+
+                               $sethistory=array("order_id"=>$data['id'],"type"=>1, "created_at"=>$time,"status"=>2, "note"=>"expired_order","created_by"=>2);
+                               $this->codpaymentconfirmation_m->setHistory($sethistory);
                            }
 
                           $this->autocancel_m->canceled($data['order_number'], $id =$data['id']);

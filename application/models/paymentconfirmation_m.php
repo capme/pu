@@ -208,6 +208,10 @@ class Paymentconfirmation_m extends MY_Model {
         $this->db->where('order_number', $ordernr);
         $this->db->update($this->table, array('status'=>2));
     }
+
+    public function setHistory($setHistory){
+        $this->db->insert('order_history', $setHistory);
+    }
 	
 	public function getConfirmationById($id)
 	{
@@ -245,7 +249,6 @@ class Paymentconfirmation_m extends MY_Model {
         $this->db->where('id',$id);
         $this->db->where('order_method', 'bank');
         $this->db->update($this->expired, array('status'=>$data['status']));
-
 
         $this->db->insert('order_history', $history);
 		return $id;		

@@ -207,6 +207,10 @@ class Codpaymentconfirmation_m extends MY_Model {
         $this->db->update($this->table, array('status'=>4));
     }
 
+    public function setHistory($setHistory){
+        $this->db->insert('order_history', $setHistory);
+    }
+
 	public function Receive($post) 
 	{
         $this->db = $this->load->database('mysql', TRUE);
