@@ -343,6 +343,12 @@ class Inbounds extends MY_Controller {
         foreach($arr_data as $k => $v){
             if( !isset($arr_data[$k]['J']) ) {continue;}
             if(trim($arr_data[$k]['J']) <> "" and $k >= 19){
+                //check empty sku
+                if(trim($arr_data[$k]['H']) == ""){
+                    if($msg['info'][0] == "OK") unset($msg);
+                    $msg['info'][] = "SKU on row ".$k." is empty";
+                }
+
                 //check gender support
                 $arrCheckGender = array('MAN', 'MEN', 'LADIES', 'WOMAN', 'WOMEN', 'M', 'F', 'U', '', 'FEMALE');
                 if(!checkIfInArrayString(strtoupper(trim($arr_data[$k]['E'])), $arrCheckGender)){
