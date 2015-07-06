@@ -242,12 +242,12 @@ class Sortingtool extends MY_Controller {
 
         $this->va_list->setListName("Category Product : ".$categoryDetail['name']." (".$categoryDetail['category_id'].")")->disableAddPlugin()
             ->setMassAction(array("1" => "Active", "0" => "Not Active"))
-            ->setHeadingTitle(array("#", "Product ID","SKU","Description","Position","Score","created","Sort","Manual Weight","Updated at"))
+            ->setHeadingTitle(array("#", "Product ID","SKU","Description","Position","Score","created","Sort","Stock","Manual Weight","Updated at"))
             ->setHeadingWidth(array(2,2,2,2,2,2,2,2,2,2));
 
         $this->va_list->setInputFilter(2, array("name" => 'sku'));
         $this->va_list->setInputFilter(3, array("name" => 'sku_description'));
-        $this->va_list->setDropdownFilter(8, array("name" => 'manual_weight', "option" => $this->getStatus()));
+        $this->va_list->setDropdownFilter(9, array("name" => 'manual_weight', "option" => $this->getStatus()));
 
         $this->data['script'] = $this->load->view("script/catalogcategoryproduct_list", array("ajaxSource" => site_url("sortingtool/productlist?client=".$client."&category_id=".$category)), true);
 

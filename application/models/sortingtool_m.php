@@ -190,7 +190,7 @@ class Sortingtool_m extends MY_Model {
 //        $end = $iDisplayStart + $iDisplayLength;
 //        $end = $end > $iTotalRecords ? $iTotalRecords : $end;
 
-        $sort = array(1=>'id',  2=>'product_id',5=>'position',6=>'score',7=>'created_at', 8=>'result_index',9=>'manual_weight');
+        $sort = array(1=>'id',  2=>'product_id',5=>'position',6=>'score',7=>'created_at', 8=>'result_index',9=>'stock',10=>'manual_weight',11=>'updated_at');
         $iSortingCols = $this->input->post("iSortingCols");
         if( !empty($iSortingCols) ) {
             for($i=0; $i<$iSortingCols; $i++) {
@@ -232,6 +232,7 @@ class Sortingtool_m extends MY_Model {
                 (!empty($_result->score) ? $_result->score : 0),
                 date('Y-m-d',strtotime($_result->created_at)),
                 (!empty($_result->result_index) ? $_result->result_index : ""),
+                (int) $_result->stock,
                 '<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
                 $_result->updated_at,
                 ''

@@ -167,6 +167,7 @@ class CatalogMage extends CI_Controller {
                 $filters['groupby'] = "product_id";
                 $categoryProducts = $this->catalog_m->getCatalogCategoryProduct($client, $_category['category_id'], $filters)->result_array();
 
+                $result = [];
                 if ($this->mageapi->initSoap($config)) {
                     foreach ($categoryProducts as $_product) {
                         if (!empty($_product['result_index'])) {
@@ -176,9 +177,9 @@ class CatalogMage extends CI_Controller {
                     }
                     if(!empty($result)){
                         $update = $this->catalog_m->updateStatusCategoryProduct($client,$result);
-                        log_message('debug','[CatalogMage.updatePositionCategoryProduct] update Status: '.$client['client_code']);
+                        log_message('debug','[CatalogMage.updatePositionCategoryProduct] update Status: '.$client['client_code'].'#'.$_category['category_id']);
                     }
-                    log_message('debug','[CatalogMage.updatePositionCategoryProduct] : '.$client['client_code']);
+                    log_message('debug','[CatalogMage.updatePositionCategoryProduct] : '.$client['client_code'].'#'.$_category['category_id']);
                 }
             }
         }

@@ -26,7 +26,8 @@ class Invsync_m extends MY_Model {
                         'updated_at' => date('Y-m-d H:i:s'),
                         'product_id' => $catalog->info->product_id,
                         'price' => (int)$catalog->info->price,
-                        'created_at' => (empty($catalog->info->created_at) ? '0000-00-00 00:00:00' : $catalog->info->created_at)
+                        'created_at' => (empty($catalog->info->created_at) ? '0000-00-00 00:00:00' : $catalog->info->created_at),
+                        'magestock' => &$catalog->inventory
                     );
                 }
             }

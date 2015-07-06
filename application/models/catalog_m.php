@@ -17,12 +17,16 @@ class Catalog_m extends MY_Model
     const ITEMS_PER_PAGE = 12;
     const MAX_BRAND_PER_PAGE = 3;
 
+    const LIVE = "2014-01-01";
+
     var $tableCategory = "catalog_category_";
     var $tableCategoryProduct = "catalog_category_product_";
+    var $tableInvItem = "inv_items_";
     var $tableCtr = "ctr";
     var $sorted = array();
     var $sum = array();
     var $out = array();
+    var $outstock = array();
 
     var $productStatus = array('synced','sorted','pushed');
 
@@ -132,11 +136,12 @@ class Catalog_m extends MY_Model
         $tableCategoryProduct = $this->tableCategoryProduct.$client['id'];
 
         $this->db->trans_start();
-        usort($data, array($this, "sort_by_score"));
+//        usort($data, array($this, "sort_by_score"));
 
         $this->sorted = array();
         $this->sum = array();
         $this->out = array();
+        $this->outstock = array();
 
         $this->repositionByBrand($data);
 //        $sorteddata = $this->sorted;
@@ -175,10 +180,14 @@ class Catalog_m extends MY_Model
             $page = floor(count($this->sorted) / self::ITEMS_PER_PAGE);
             $_brand = explode(',',$_d['sku_description']);
 
+            if((int) $_d['stock'] == 0){
+                $this->outstock[$_d['product_id']] = $_d;
+                continue;
+            }
+
             if(!empty($_d['ctr_stat'])) {
                 $this->sorted[$_d['product_id']] = $_d;
                 $this->sum[$page][$_brand[0]]++;
-//                print "page : {$page}, brand: {$_brand[0]}, CTR , jml: {$this->sum[$page][$_brand[0]]}, score: {$_d['score']}, price : {$_d['price']} product_id : {$_d['product_id']}\n";
                 $insert++;
                 log_message('debug',"[catalog_m.repositionByBrand] ===> page : {$page}, brand: ".$_brand[0].", CTR, ".(isset($_d['out']) ? 'OUT':'').", score: ".$_d['score'].", price : ".$_d['price']." product_id : ".$_d['product_id']);
 
@@ -197,7 +206,6 @@ class Catalog_m extends MY_Model
                                     $insert++;
 
                                     unset($this->out[$x['product_id']]);
-//                                    print "===> OUT page : {$xpage}, brand: {$_xbrand[0]}, REG ".(isset($x['out']) ? 'OUT':'')." , jml: {$this->sum[$page][$_xbrand[0]]}, score: {$x['score']}, price : {$x['price']} product_id : {$x['product_id']}\n";
                                     log_message('debug',"[catalog_m.repositionByBrand] ===> page : {$xpage}, brand: ".$_xbrand[0].", REG ".(isset($x['out']) ? 'OUT':'').", score: ".$x['score'].", price : ".$x['price']." product_id : ".$x['product_id']);
 
                                 }
@@ -208,7 +216,6 @@ class Catalog_m extends MY_Model
                         if(!isset($this->sorted[$_d['product_id']])){
                             $this->sorted[$_d['product_id']] = $_d;
                             $this->sum[$page][$_brand[0]]++;
-//                            print "page : {$page}, brand: {$_brand[0]}, REG ".(isset($_d['out']) ? 'OUT':'')." , jml: {$this->sum[$page][$_brand[0]]}, score: {$_d['score']}, price : {$_d['price']} product_id : {$_d['product_id']}\n";
                             $insert++;
                             log_message('debug',"[catalog_m.repositionByBrand] ===> page : {$page}, brand: ".$_brand[0].", CTR, ".(isset($_d['out']) ? 'OUT':'').", score: ".$_d['score'].", price : ".$_d['price']." product_id : ".$_d['product_id']);
 
@@ -224,7 +231,8 @@ class Catalog_m extends MY_Model
             }
         }
 
-        $this->sorted = array_merge($this->sorted, $this->out);
+//        $this->sorted = array_merge($this->sorted, $this->out);
+        $this->sorted = array_merge($this->sorted, $this->out, $this->outstock);
 
         return $insert;
     }
@@ -238,9 +246,12 @@ class Catalog_m extends MY_Model
 
         $mysql = $this->load->database('mysql', TRUE);
 
-        $mysql->select($tableCategoryProduct.'.*, '.$tableInvItems.'.price, '.$tableInvItems.'.created_at, '.$tableInvItems.'.sku_description');
+//        $mysql->select($tableCategoryProduct.'.*, '.$tableInvItems.'.price, '.$tableInvItems.'.created_at, '.$tableInvItems.'.sku_description');
+//
+//        $mysql->join($tableInvItems,$tableCategoryProduct.'.sku = '.$tableInvItems.'.sku_config', 'left');
 
-        $mysql->join($tableInvItems,$tableCategoryProduct.'.sku = '.$tableInvItems.'.sku_config', 'left');
+        $mysql->select($tableCategoryProduct.'.*, inv.price, inv.created_at, inv.sku_description, inv.stock');
+        $mysql->join("(select * , sum(magestock) as stock from $tableInvItems group by sku_config) inv",$tableCategoryProduct.'.sku = inv.sku_config', 'left');
 
         if(!empty($categoryId)){
             $mysql->where( $tableCategoryProduct.".category_id = ", $categoryId);
@@ -297,10 +308,16 @@ class Catalog_m extends MY_Model
             $updateData[$i]['score'] = $score['score'];
             $updateData[$i]['price_stat'] = $score['price_stat'];
             $updateData[$i]['ctr_stat'] = $score['ctr_stat'];
+            $sort['stock'][] = (int) $data['stock'];
+            $sort['score'][] = number_format($score['score'],1);
 //            $updateData[] = array('id'=>$data['id'],'score'=>$score,'category_id'=>$data['category_id'],'product_id'=>$data['product_id'],'created_at'=>$data['created_at'],'sku'=>$data['sku']);
         }
-        usort($updateData, array($this, "sort_by_score"));
-        $this->updateCatalogCategoryProduct($client, $updateData);
+
+        if(!empty($updateData)) {
+            usort($updateData, array($this, "sort_by_score"));
+//            $this->updateCatalogCategoryProduct($client, $updateData);
+            array_multisort($sort['score'], SORT_DESC, SORT_NUMERIC, $sort['stock'], SORT_DESC,SORT_NUMERIC, $updateData);
+        }
     }
 
     public function score($data = array(),$rand=null,$config,$pos){
@@ -338,15 +355,24 @@ class Catalog_m extends MY_Model
         }
 
         //newest weight
-        $newest_weight = $config['newest_constant'] * $rand ;
+        if(empty($data['created_at'])) $newest_weight = 0;
+        else {
+            $start = new DateTime(self::LIVE);
+            $today = new DateTime(date('Y-m-d'));
+            $created_at = new DateTime($data['created_at']);
+
+            $diff = $created_at->diff($start)->format("%a");
+            $totalLive = $today->diff($start)->format("%a");
+            log_message('debug','==> creaeted_at['.$data['created_at'].'] today['.$today->format("Ymd").'] start['.$start->format("Ymd").'] diff['.$diff.'] total:'.$totalLive);
+
+            $newest_weight = $config['newest_constant'] * $rand * ($diff / $totalLive);
+        }
 
         $score = $price_value + $manual_weight + $itemCtr + $itemCr + $newest_weight;
         log_message('debug','score '.$data['product_id']." : ".$score." = ".$price_value." + ".$manual_weight." + ".$itemCtr." + ".$itemCr." + ".$newest_weight." ==> rand(".$rand.")");
 
-//        print "score : $score\n\n";
         $return = array('score'=>$score, 'price_stat'=>$price_stat, 'ctr_stat'=>$ctr_stat);
         return $return;
-//        return $score;
     }
 
     private function random($exp = 1){
