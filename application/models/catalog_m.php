@@ -136,15 +136,14 @@ class Catalog_m extends MY_Model
         $tableCategoryProduct = $this->tableCategoryProduct.$client['id'];
 
         $this->db->trans_start();
-//        usort($data, array($this, "sort_by_score"));
 
         $this->sorted = array();
         $this->sum = array();
         $this->out = array();
         $this->outstock = array();
 
+//        $this->sorted = $data;
         $this->repositionByBrand($data);
-//        $sorteddata = $this->sorted;
         $sorteddata = array_reverse($this->sorted); //magento best value : order by position desc
 
         $this->db->trans_start();
@@ -309,14 +308,13 @@ class Catalog_m extends MY_Model
             $updateData[$i]['price_stat'] = $score['price_stat'];
             $updateData[$i]['ctr_stat'] = $score['ctr_stat'];
             $sort['stock'][] = (int) $data['stock'];
-            $sort['score'][] = number_format($score['score'],1);
+            $sort['score'][] = number_format($score['score'],2);
 //            $updateData[] = array('id'=>$data['id'],'score'=>$score,'category_id'=>$data['category_id'],'product_id'=>$data['product_id'],'created_at'=>$data['created_at'],'sku'=>$data['sku']);
         }
 
         if(!empty($updateData)) {
-            usort($updateData, array($this, "sort_by_score"));
-//            $this->updateCatalogCategoryProduct($client, $updateData);
             array_multisort($sort['score'], SORT_DESC, SORT_NUMERIC, $sort['stock'], SORT_DESC,SORT_NUMERIC, $updateData);
+            $this->updateCatalogCategoryProduct($client, $updateData);
         }
     }
 
@@ -340,7 +338,6 @@ class Catalog_m extends MY_Model
 
 
         $manual_weight = (int) $config['manual_constant'] * (int) $data['manual_weight'] * $rand;
-        log_message('debug','score '.$data['product_id']." : ".$config['manual_constant'].':'.$data['manual_weight']);
 
         //get CTR and Conversion
         $dataCtr = $this->getCtr($data['product_id']);
@@ -363,9 +360,11 @@ class Catalog_m extends MY_Model
 
             $diff = $created_at->diff($start)->format("%a");
             $totalLive = $today->diff($start)->format("%a");
-            log_message('debug','==> creaeted_at['.$data['created_at'].'] today['.$today->format("Ymd").'] start['.$start->format("Ymd").'] diff['.$diff.'] total:'.$totalLive);
 
             $newest_weight = $config['newest_constant'] * $rand * ($diff / $totalLive);
+
+//            log_message('debug','score '.$data['product_id'].' ==>  creaeted_at['.$data['created_at'].'] today['.$today->format("Ymd").'] start['.$start->format("Ymd").'] diff['.$diff.'] total:'.$totalLive);
+
         }
 
         $score = $price_value + $manual_weight + $itemCtr + $itemCr + $newest_weight;

@@ -63,8 +63,7 @@ class Sortingtool_m extends MY_Model {
                 '<input type="checkbox" name="id[]" value="'.$_result->id.'">',
                 $no=$no+1,
                 $_result->client_code,
-                '<a href="'.site_url("sortingtool/categorylist/".$_result->id).'" class="btn btn-xs default"><i class="fa fa-list fa-fw"></i> Category</a>',
-//                '<a href="'.site_url("sortingtool/view/".$_result->id).'" class="btn btn-xs default"><i class="fa fa-list fa-fw"></i> Category</a>',
+                '<a href="'.site_url("sortingtool/viewcategory/".$_result->id).'" class="btn btn-xs default"><i class="fa fa-list fa-fw"></i> Category</a>',
 
             );
         }
@@ -169,6 +168,52 @@ class Sortingtool_m extends MY_Model {
         return $return;
     }
 
+    public function getCategoryList($client=array()){
+        $this->db = $this->load->database('mysql', TRUE);
+        $this->table = $this->tableMageCategory."_".$client['id'];
+        $this->filters = array("category_id" => "category_id","name"=>"name","path"=>"path","url_path"=>"url_path");
+        $this->sorts = array(1 => "id", 2=>"category_id",3=>"name",4=>"path",5=>"url_path",6=>"updated_at");
+        $this->listWhere['equal'] = array();
+        $this->listWhere['like'] = array("name","path","url_path");
+
+        $iTotalRecords = $this->_doGetTotalRow();
+        log_message('debug','===>getCategoryList: '.$this->db->last_query());
+        log_message('debug','===>getCategoryList post :  '.print_r($this->input->post(),true));
+
+        $iDisplayLength = intval($this->input->post('iDisplayLength'));
+        $iDisplayLength = $iDisplayLength < 0 ? $iTotalRecords : $iDisplayLength;
+        $iDisplayStart = intval($this->input->post('iDisplayStart'));
+        $sEcho = intval($this->input->post('sEcho'));
+
+        $records = array();
+        $records["aaData"] = array();
+
+        $end = $iDisplayStart + $iDisplayLength;
+        $end = $end > $iTotalRecords ? $iTotalRecords : $end;
+
+        $_row = $this->_doGetRows($iDisplayStart, $iDisplayLength);
+
+        log_message('debug','===>getCategoryList: '.$this->db->last_query());
+        $no=$iDisplayStart;
+        foreach($_row->result() as $_result) {
+            $records["aaData"][] = array(
+                '<input type="checkbox" name="id[]" value="'.$_result->id.'">',
+                $no=$no+1,
+                $_result->category_id,
+                $_result->name,
+                $_result->path,
+                $_result->url_path,
+                $_result->updated_at,
+                '<a href="'.site_url("sortingtool/config?category_id=".$_result->category_id).'&client='.$client['id'].'" class="btn btn-xs default"><i class="fa fa-cog fa-fw"></i> Config</a> &nbsp; <a href="'.site_url("sortingtool/catalogproduct?category_id=".$_result->category_id).'&client='.$client['id'].'" class="btn btn-xs default"><i class="fa fa-list fa-fw"></i> Product</a>'
+            );
+        }
+
+        $records["sEcho"] = $sEcho;
+        $records["iTotalRecords"] = $iTotalRecords;
+        $records["iTotalDisplayRecords"] = $iTotalRecords;
+
+        return $records;
+    }
 
     public function getCategoryProductList($client="", $category="")
     {

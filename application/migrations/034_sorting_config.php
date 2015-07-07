@@ -61,10 +61,17 @@ class Migration_Sorting_Config extends Base_Migration {
     public function down() {
         parent::down();
 
+
         $this->load->model('client_m');
         $clients = $this->client_m->getClients();
         $this->db->trans_start();
         $this->db->query("DROP TABLE IF EXISTS `sorting_config`");
+
+        $this->db->query("DELETE FROM module WHERE slug = 'sortingtool/config'");
+        $this->db->query("DELETE FROM module WHERE slug = 'sortingtool/saveconfig'");
+        $this->db->query("DELETE FROM module WHERE slug = 'sortingtool/catalogproduct'");
+        $this->db->query("DELETE FROM module WHERE slug = 'sortingtool/productlist'");
+        $this->db->query("DELETE FROM module WHERE slug = 'sortingtool/categorylist'");
 
         $this->db->trans_complete();
     }
