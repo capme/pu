@@ -43,7 +43,7 @@ class Holiday_m extends MY_Model {
                 $no=$no+1,
                 $_result->name,
                 $result,
-                '<a href="'.site_url("holiday/delete/".$_result->id).'" class="btn btn-xs default"><i class="fa fa-trash-o"></i> Delete</a>',
+                '<a href="'.site_url("holiday/delete/".$_result->id).'" onClick="return deletechecked()" class="btn btn-xs default"><i class="fa fa-trash-o"></i> Delete</a>',
             );
         }
 

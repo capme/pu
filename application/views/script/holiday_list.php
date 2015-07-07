@@ -1,4 +1,12 @@
 <script>
+    function deletechecked() {
+        if(confirm("Delete selected Holiday ?")){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
     var TableAjax = function () {
 
         var initPickers = function () {
