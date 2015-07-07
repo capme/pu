@@ -22,7 +22,6 @@ class Autocancel extends CI_Controller {
                            "auth" => $client['mage_auth'],
                            "url" => $client['mage_wsdl']
                        );
-
                        if( $this->mageapi->initSoap($config) ) {
                            if($data['order_method'] == 'bank'){
                                 $this->paymentconfirmation_m->cancelOrder($data['order_number']);
@@ -30,7 +29,8 @@ class Autocancel extends CI_Controller {
                            else{
                                $this->codpaymentconfirmation_m->cancelOrder($data['order_number']);
                            }
-                          $this->autocancel_m->canceled($data['order_number']);
+
+                          $this->autocancel_m->canceled($data['order_number'], $id =$data['id']);
                           $this->mageapi->setOrderToCancel($data['order_number'], $commet="expired order");
                        }
                    }

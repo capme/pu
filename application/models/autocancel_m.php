@@ -11,8 +11,9 @@ class Autocancel_m extends MY_Model {
         return $this->db->get($this->expired, array("status"=>0))->result_array();
     }
 
-    public function canceled($ordernr){
+    public function canceled($ordernr, $id){
         $this->db->where('order_number', $ordernr);
+        $this->db->where('id', $id);
         $this->db->update($this->expired, array('status'=>2));
     }
 
@@ -20,7 +21,7 @@ class Autocancel_m extends MY_Model {
         return $this->db->query("select * from expired_order where order_number= '$ordernr' and client_id = '$client_id'")->row_array();
     }
 
-    public function delete($ordernr){
-        $this->db->delete($this->expired, array('order_number'=>$ordernr));
+    public function delete($ordernr, $id){
+        $this->db->delete($this->expired, array('order_number'=>$ordernr, 'id'=>$id));
     }
 }

@@ -10,13 +10,14 @@ class Migration_Expired extends Base_migration {
             `order_number` varchar(30),
             `status` int (3),
             `expired_date` TIMESTAMP,
-			primary key (`id`))ENGINE=InnoDB DEFAULT CHARSET=utf8");
+            `order_method` VARCHAR (10),
+			primary key (`id`,`order_method`))ENGINE=InnoDB DEFAULT CHARSET=utf8");
         $this->db->trans_complete();
 
     }
 
     public function down() {
         parent::down();
-        $this->db->query("DROP TABLE IF EXISTS holiday");
+        $this->db->query("DROP TABLE IF EXISTS expired_order");
     }
 }

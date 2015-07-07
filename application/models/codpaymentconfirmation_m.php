@@ -190,12 +190,12 @@ class Codpaymentconfirmation_m extends MY_Model {
             foreach ($order as $result) {
                 $available = $this->autocancel_m->cekOrder($result['order_number'], $result['client_id']);
                 if(empty($available)){
-                    $data = array("id" => $result['id'], "order_method" => "cod", "client_id" => $result['client_id'], "order_number" => $result['order_number'], "expired_date" => $orderdate);
+                    $data = array("id" => $result['id'],"status"=>0, "order_method" => "cod", "client_id" => $result['client_id'], "order_number" => $result['order_number'], "expired_date" => $orderdate);
                     $this->db->insert($this->expired, $data);
                 }
                 else{
-                    $this->autocancel_m->delete($result['order_number']);
-                    $data = array("id" => $result['id'], "order_method" => "cod", "client_id" => $result['client_id'], "order_number" => $result['order_number'], "expired_date" => $orderdate);
+                    $this->autocancel_m->delete($result['order_number'], $result['id']);
+                    $data = array("id" => $result['id'],"status"=>0, "order_method" => "cod", "client_id" => $result['client_id'], "order_number" => $result['order_number'], "expired_date" => $orderdate);
                     $this->db->insert($this->expired, $data);
                 }
             }
@@ -228,6 +228,7 @@ class Codpaymentconfirmation_m extends MY_Model {
 			$this->db->update($this->table, $data);
 
             $this->db->where('id',$post['id']);
+            $this->db->where('order_method', 'cod');
             $this->db->update($this->expired, array('status'=>$data['status']));
 
 			$this->db->insert('order_history', $note);
@@ -257,6 +258,7 @@ class Codpaymentconfirmation_m extends MY_Model {
 				$this->db->update($this->table, $data);
 
                 $this->db->where('id',$post['id']);
+                $this->db->where('order_method', 'cod');
                 $this->db->update($this->expired, array('status'=>$data['status']));
 
 				$this->db->insert('order_history', $note);
