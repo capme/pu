@@ -33,6 +33,7 @@ class Codconfirmation extends MY_Controller {
         $this->va_list->setInputFilter(5, array("name" => $this->codconfirmation_m->filters[$this->codconfirmation_m->table.'.amount']));
         $this->va_list->setDropdownFilter(7, array("name" => $this->codconfirmation_m->filters[$this->codconfirmation_m->table.'.status'], "option" => $this->getStatus()));
         $this->va_list->setDropdownFilter(8, array("name" => $this->codconfirmation_m->filters[$this->codconfirmation_m->tableAwb.'.status'], "option" => $this->getStatusAwb()));
+        $this->va_list->setDateFilter(1, array("name"=>$this->codconfirmation_m->filters['created_at']));
 
 		$this->data['script'] = $this->load->view("script/codconfirmation_list", array("ajaxSource" => site_url("codconfirmation/CodConfirmationList")), true);	
 		$this->load->view("template", $this->data);

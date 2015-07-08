@@ -20,6 +20,8 @@ class MY_Model extends CI_Model{
 	var $select = array();
 	var $group = array();
     var $listWhere = array();
+    var $daterange=null;
+
 
 	function __construct() {
 		parent::__construct();
@@ -42,7 +44,7 @@ class MY_Model extends CI_Model{
 	 */
 	protected function _doGetTotalRow() {
 		$this->_prepareFilter();
-	
+
 		if( !empty($this->relation) ) {
 			foreach($this->relation as $relation) {
 				$this->db->join($relation['table'], $relation['link'], $relation['type']);
@@ -50,15 +52,25 @@ class MY_Model extends CI_Model{
 		}
 		
 		foreach($this->aFilters as $tField => $val) {
-            if (isset($this->listWhere['equal']) && isset($this->listWhere['like'])){
-			if (in_array($tField, $this->listWhere['equal'])) {
-                $this->db->where($tField, $val);
-            } elseif (in_array($tField, $this->listWhere['like'])) {
-                $this->db->like($tField, $val);
-            } else {
-                $this->db->where($tField, $val);
-            }}
-			else{
+            if (isset($this->datarange) || (isset($this->listWhere['equal']) && isset($this->listWhere['like']))){
+                if (in_array($tField, $this->listWhere['equal'])) {
+                    $this->db->where($tField, $val);
+                }
+                    elseif (in_array($tField, $this->listWhere['like'])) {
+                    $this->db->like($tField, $val);
+                }
+                elseif (!empty($this->daterange) && !empty($val[0]) && !empty($val[1])){
+                    $this->db->where("$this->daterange >=", $val[0]);
+                    $this->db->where("$this->daterange <=", $val[1]);
+                }
+                    else {
+                        if (is_array($val)== false) {
+                            $this->db->where($tField, $val);
+                        }
+                }
+            }
+
+            else{
 			$this->db->where($tField, $val);
 			}
 		}
@@ -129,34 +141,43 @@ class MY_Model extends CI_Model{
 	 */
 	protected function _doGetRows($offset, $limit) {
 		$res = $this->db->limit($limit, $offset);
-	
+
 		$this->_prepareFilter();
-	
+
 		if(!empty($this->select)) {
 			$res->select( implode(",", $this->select) );
 		}
-		
+
 		if( !empty($this->relation) ) {
 			foreach($this->relation as $relation) {
 				$res->join($relation['table'], $relation['link'], $relation['type']);
 			}
 		}
-		
-		foreach($this->aFilters as $tField => $val) {
-		if (isset($this->listWhere['equal']) && isset($this->listWhere['like'])){
-            if (in_array($tField, $this->listWhere['equal'])) {
-                $res->where($tField, $val);
-            } elseif (in_array($tField, $this->listWhere['like'])) {
-                $res->like($tField, $val);
-            } else {
-                $res->where($tField, $val);
+
+        foreach($this->aFilters as $tField => $val) {
+            if (isset($this->datarange) || (isset($this->listWhere['equal']) && isset($this->listWhere['like']))){
+                if (in_array($tField, $this->listWhere['equal'])) {
+                    $this->db->where($tField, $val);
+                }
+                elseif (in_array($tField, $this->listWhere['like'])) {
+                    $this->db->like($tField, $val);
+                }
+                elseif (!empty($this->daterange) && !empty($val[0]) && !empty($val[1])){
+                    $this->db->where("$this->daterange >=", $val[0]);
+                    $this->db->where("$this->daterange <=", $val[1]);
+                }
+                else {
+                    if(is_array($val)==false) {
+                        $this->db->where($tField, $val);
+                    }
+                }
             }
-			}
-			else{
-			$res->where($tField, $val);
-			}
-		}
-	
+
+            else{
+                $this->db->where($tField, $val);
+            }
+        }
+
 		$iSortingCols = $this->input->post("iSortingCols");
 		if( !empty($iSortingCols) ) {
 			for($i=0; $i<$iSortingCols; $i++) {
@@ -164,13 +185,13 @@ class MY_Model extends CI_Model{
 				$col = $this->sorts[$colId];
 				$dir = $this->input->post("sSortDir_{$i}");
 				$res = $res->order_by($col, $dir);
-	
+
 			}
 		} else {
 			$res = $res->order_by($this->pkField, "asc");
 		}
-		
-		$client = $this->session->userdata("client"); 
+
+		$client = $this->session->userdata("client");
 
 		if(!empty($client)){
 			$res->where("client", $client);
@@ -185,5 +206,5 @@ class MY_Model extends CI_Model{
 		$res = $res->get( $this->table );
 		return $res;
 	}
-	
+
 }

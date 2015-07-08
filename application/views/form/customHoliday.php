@@ -1,5 +1,5 @@
-<input  name="<?php echo $name?>[0]" id="period1"  type="text" class="form-control form-filter input-sm" readonly=""/>
-<input  name="<?php echo $name?>[1]" id="period2" type="text" class="form-control form-filter input-sm" readonly=""/>
+<input  name="holiday[period1]" id="period1"  required/>
+<input  name="holiday[period2]" id="period2" required/>
 <div id="period" class="btn default">
     <i class="fa fa-calendar"></i>
     <span></span>
@@ -15,21 +15,14 @@
                 opens: (App.isRTL() ? 'right' : 'left'),
                 startDate: moment().subtract('days', 29),
                 endDate: moment(),
-                minDate: '01/01/2012',
-                maxDate: '06/19/2015',
+                dateLimit: {
+                    days: 60
+                },
                 showDropdowns: true,
                 showWeekNumbers: true,
                 timePicker: false,
                 timePickerIncrement: 1,
                 timePicker12Hour: true,
-                ranges: {
-                    'Today': [moment(), moment()],
-                    'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
-                    'Last 7 Days': [moment().subtract('days', 6), moment()],
-                    'Last 30 Days': [moment().subtract('days', 29), moment()],
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]
-                },
                 buttonClasses: ['btn'],
                 applyClass: 'green',
                 cancelClass: 'default',
@@ -48,7 +41,7 @@
 
             function (start, end) {
                 $("#period1").val(start.format("YYYY-MM-DD 00:00:00"));
-                $("#period2").val(end.format("YYYY-MM-DD 23:59:59"));
+                $("#period2").val(end.format("YYYY-MM-DD 00:00:00"));
             }
         );
     }();

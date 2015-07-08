@@ -96,31 +96,6 @@ class Sortingtool extends MY_Controller {
         $this->load->view('template', $this->data);
     }
 
-    public function viewcategory(){
-        $client=$this->input->get("client");
-        $id=$this->input->get("category_id");
-        $data = $this->sortingtool_m->getCategory($id, $client);
-
-        $this->data['content'] = "form_v.php";
-        $this->data['pageTitle'] = "Sorting Tool";
-        $this->data['breadcrumb'] = array("Sorting Tool"=> "", "View Sorting" => "");
-        $this->data['formTitle'] = "View Catalog Category Product";
-
-        $this->load->library("va_input", array("group" => "sortingtool"));
-        $flashData = $this->session->flashdata("sortingtoolError");
-        if($flashData !== false) {
-            $flashData = json_decode($flashData, true);
-            $value = $flashData['data'];
-            $msg = $flashData['msg'];
-        } else {
-            $msg = array();
-            $value = $data->result_array();
-        }
-        $this->va_input->addCustomField( array("name" =>"catalogcatagoryproduct", "placeholder" => "Catalog Category Product", "label" => "Catalog Category Product", "value" =>$value, "view"=>"form/customCatalogCategoryProduct"));
-        $this->data['script'] = $this->load->view("script/client_add", array(), true);
-        $this->load->view('template', $this->data);
-    }
-
     public function save(){
         $post = $this->input->post("sortingtool");
         if($post['method'] == "update") {
@@ -156,7 +131,7 @@ class Sortingtool extends MY_Controller {
 
         $this->data['content'] = "customForm_v.php";
         $this->data['pageTitle'] = "Sorting Configuration";
-        $this->data['breadcrumb'] = array("Sorting" => "", "Sorting Tools"=> "sortingtool", "Config" => "");
+        $this->data['breadcrumb'] = array("Sorting Tools"=> "sortingtool","Category"=> "sortingtool/viewcategory/".$client, "Config" => "");
         $this->data['formTitle'] = "Form Score Configuration";
         $this->data['formAction'] = "saveconfig";
 
@@ -173,6 +148,7 @@ class Sortingtool extends MY_Controller {
 
         $this->va_input->addHidden( array("name" => "method", "value" => "update") );
         $this->va_input->addHidden( array("name" => "client_id", "value" => $client) );
+        $this->va_input->addHidden( array("name" => "category_id", "value" => $catId) );
         $this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client", "label" => "Client Name", "value"=>$clientDetail['client_code'], "disabled"=>"disabled"));
 
         $this->va_input->addInput( array("name" => "category_name", "placeholder" => "Category Name", "label" => "Category Name", "value"=>$category['name'], "disabled"=>"disabled"));
@@ -186,43 +162,62 @@ class Sortingtool extends MY_Controller {
 
     public function saveconfig(){
         $config = $this->input->post('config');
+        $category = $this->input->post('sortingtool')['category_id'];
         $client = $this->input->post('sortingtool')['client_id'];
         if(!empty($config)){
             $update = $this->sortingtool_m->saveConfig($config);
         }
 
-//        print_r($this->input->post('sortingtool')['client_id']);
-        redirect("sortingtool/categorylist/".$client);
+//        redirect("sortingtool/config/?category_id=".$category.'&client='.$client);
+        redirect("sortingtool/viewcategory/".$client);
+    }
+
+    public function viewcategory($clientid = ""){
+        $clientDetail = $this->clientoptions_m->getClientById($clientid)->row_array();
+
+        $this->data['content'] = "list_v.php";
+        $this->data['pageTitle'] = "Catalog Category (".$clientDetail['client_code'].")";
+        $this->data['breadcrumb'] = array("Sorting Tools"=> "sortingtool", "Category" => "");
+
+        $this->sortingtool_m->clearCurrentFilter();
+        $this->load->library("va_list");
+
+        $this->va_list->setListName("Category List")->disableAddPlugin()
+//            ->setMassAction(array("1" => "Enable", "0" => "Disable"))
+            ->setHeadingTitle(array("#", "Category ID","Name","Path","Url Path","Updated at"))
+            ->setHeadingWidth(array(2,2,2,2,2,2,2));
+
+        $this->va_list->setInputFilter(1, array("name" => 'category_id'));
+        $this->va_list->setInputFilter(2, array("name" => 'name'));
+        $this->va_list->setInputFilter(3, array("name" => 'path'));
+        $this->va_list->setInputFilter(4, array("name" => 'url_path'));
+//        $this->va_list->setDropdownFilter(9, array("name" => 'manual_weight', "option" => $this->getStatus()));
+
+        $this->data['script'] = $this->load->view("script/sortingtool_category_list", array("ajaxSource" => site_url("sortingtool/categorylist?client=".$clientid)), true);
+
+        $this->load->view("template", $this->data);
     }
 
     public function categorylist($id){
-        $data = $this->sortingtool_m->getCatalogById($id);
-        if(!is_array($data)) {
-            redirect("sortingtool");
-        }
 
-        $this->data['content'] = "form/customSorting.php";
-        $this->data['pageTitle'] = "Sorting Tool";
-        $this->data['breadcrumb'] = array("Sorting Tool"=> "sortingtool", "Manage Sorting Tool" => "");
-        $this->data['formTitle'] = "View Catalog Category";
 
-        $this->load->library("va_input", array("group" => "sortingtool"));
-        $flashData = $this->session->flashdata("sortingtoolError");
-        if($flashData !== false) {
-            $flashData = json_decode($flashData, true);
-            $value = $flashData['data'];
-            $msg = $flashData['msg'];
-        } else {
-            $msg = array();
-            for($a=0; $a < count($data[1]); $a++){
-                $data[1][$a]['client_id']=$data[2];
-            }
-            $value=$data[1];
-        }
+        $client = $this->input->get('client');
 
-        $this->data['value'] = $value;
+        $clientDetail = $this->clientoptions_m->getClientById($client)->row_array();
 
-        $this->load->view('template', $this->data);
+        $sAction = $this->input->post("sAction");
+//        if($sAction == "group_action")
+//        {
+//            $productIds = $this->input->post("product_id");
+//            if(sizeof($productIds) > 0)
+//            {
+//                $action = $this->input->post("sGroupActionName");
+//                $this->sortingtool_m->updateManualWeight($client, $category, $productIds, $action);
+//            }
+//        }
+
+        $data = $this->sortingtool_m->getCategoryList($clientDetail);
+        echo json_encode($data);
     }
 
     public function catalogproduct(){
@@ -235,19 +230,19 @@ class Sortingtool extends MY_Controller {
 
         $this->data['content'] = "list_v.php";
         $this->data['pageTitle'] = "Catalog Category Product (".$clientDetail['client_code'].")";
-        $this->data['breadcrumb'] = array("Sorting Toolst"=> "sortingtool", "Product List" => "");
+        $this->data['breadcrumb'] = array("Sorting Tools"=> "sortingtool", "Category" => "sortingtool/viewcategory/".$client, "Product List" => "");
 
         $this->sortingtool_m->clearCurrentFilter();
         $this->load->library("va_list");
 
         $this->va_list->setListName("Category Product : ".$categoryDetail['name']." (".$categoryDetail['category_id'].")")->disableAddPlugin()
             ->setMassAction(array("1" => "Active", "0" => "Not Active"))
-            ->setHeadingTitle(array("#", "Product ID","SKU","Description","Position","Score","created","Sort","Manual Weight","Updated at"))
+            ->setHeadingTitle(array("#", "Product ID","SKU","Description","Position","Score","created","Sort","Stock","Manual Weight","Updated at"))
             ->setHeadingWidth(array(2,2,2,2,2,2,2,2,2,2));
 
         $this->va_list->setInputFilter(2, array("name" => 'sku'));
         $this->va_list->setInputFilter(3, array("name" => 'sku_description'));
-        $this->va_list->setDropdownFilter(8, array("name" => 'manual_weight', "option" => $this->getStatus()));
+        $this->va_list->setDropdownFilter(9, array("name" => 'manual_weight', "option" => $this->getStatus()));
 
         $this->data['script'] = $this->load->view("script/catalogcategoryproduct_list", array("ajaxSource" => site_url("sortingtool/productlist?client=".$client."&category_id=".$category)), true);
 

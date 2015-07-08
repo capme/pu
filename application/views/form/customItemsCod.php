@@ -1,6 +1,6 @@
-<div class="panel panel-default" style="width:50%">
-  <table class="table" >
-	<tr>
+<div class="table-responsive" style="width:50%">
+  <table class="table table-striped" >
+	<tr style="font-weight: bold;">
     <td>ITEM (SKU)</td>
     <td>QTY</td>    
   </tr>
@@ -10,7 +10,7 @@ for ($row = 0; $row < count($val); $row++) {
 	?>
 	<tr>
 	<td><?php echo $val[$row]['item']; ?></td>
-	<td><?php echo $val[$row]['qty']; ?></td>    
+	<td><?php echo number_format($val[$row]['qty']); ?></td>
 	</tr>
 	<?php 
 	}

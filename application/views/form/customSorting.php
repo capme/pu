@@ -1,5 +1,3 @@
-<html xmlns="http://www.w3.org/1999/html">
-<head>
     <link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css">
     <script src="/assets/plugins/jquery-1.10.2.min.js" type="text/javascript"></script>
     <script type="text/javascript" charset="utf8" src="/assets/plugins/data-tables/jquery.dataTables.js"></script>
@@ -8,8 +6,6 @@
             $("#viewcategory").dataTable();
         })
     </script>
-</head>
-<body>
 <div class="table-responsive">
     <table id="viewcategory" class="table table-striped">
         <thead>

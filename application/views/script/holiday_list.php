@@ -1,9 +1,12 @@
 <script>
-    function viewClick()
-    {
-        document.getElementById('view').disabled = true
+    function deletechecked() {
+        if(confirm("Delete selected Holiday ?")){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
-
     var TableAjax = function () {
 
         var initPickers = function () {
@@ -27,19 +30,12 @@
                 },
                 dataTable: {  // here you can define a typical datatable settings from http://datatables.net/usage/options
                     "aoColumns": [
-                        null,
                         { "bSortable": false },
-                        { "bSortable": true },
+                        null, //{ "bSortable": false },
                         { "bSortable": false },
                         { "bSortable": false },
-                        { "bSortable": true },
-                        { "bSortable": true },
-                        { "bSortable": true },
-                        { "bSortable": true },
-                        { "bSortable": true },
-                        { "bSortable": true },
-                        { "bSortable": true },
                         { "bSortable": false }
+
                     ],
                     /*
                      By default the ajax datatable's layout is horizontally scrollable and this can cause an issue of dropdown menu is used in the table rows which.
@@ -54,7 +50,7 @@
                     "iDisplayLength": 20, // default record count per page
                     "bServerSide": true, // server side processing
                     "sAjaxSource": "<?php echo $ajaxSource?>", // ajax source /metronic_v2.0/v2.0/admin/template/demo/table_ajax.php
-                    "aaSorting": [[ 8, "desc" ]] // set first column as a default sort by asc
+                    "aaSorting": [[ 1, "asc" ]] // set first column as a default sort by asc
                 }
             });
 
@@ -64,8 +60,7 @@
                 var action = $(".table-group-action-input", grid.getTableWrapper());
                 if (action.val() != "" && grid.getSelectedRowsCount() > 0)
                 {
-                    if( action.val() == 2 )
-                    { // delete row
+                    if( action.val() == 2 ) { // delete row
                         if( !confirm("Are you sure to remove client?") ){
                             return false;
                         }
