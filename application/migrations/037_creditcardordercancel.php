@@ -7,8 +7,8 @@ class Migration_creditcardordercancel extends Base_migration {
         $this->db->query("DELETE FROM module WHERE slug like 'creditcardorder/save%'");
 
         $newModule = array(
-            array("name" => "Credit Card Order Cancel", "slug" => "creditcardorder/cancel", "hidden" => 1, "status" => 1, "parent" =>'creditcardorder'),
-            array("name" => "Credit Card Order Save", "slug" => "creditcardorder/save", "hidden" => 1, "status" => 1, "parent" =>'creditcardorder'),
+            array("name" => "Credit Card Order Cancel", "slug" => "creditcardorder/cancel", "hidden" => 1, "status" => 1, "parent" =>102),
+            array("name" => "Credit Card Order Save", "slug" => "creditcardorder/save", "hidden" => 1, "status" => 1, "parent" =>102),
         );
 
         foreach($newModule as $module) {
