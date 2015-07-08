@@ -5,7 +5,7 @@ class Autocancel extends CI_Controller {
         $this->load->library("mageapi");
         $this->db = $this->load->database('mysql', TRUE);
         $order = $this->autocancel_m->getOrder();
-        $curdate = date('Y-m-d', time());
+        $curdate = date('Y-m-d H', time());
         $time=date('Y-m-d H:i:s', now());
 
         if (!empty($order)){
