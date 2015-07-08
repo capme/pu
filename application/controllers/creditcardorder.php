@@ -78,6 +78,56 @@ class Creditcardorder extends MY_Controller {
         $this->load->view('template', $this->data);
     }
 
+    public function cancel($id){
+        $data = $this->creditcardorder_m->getCreditCardOrderById($id);
+        if($data->num_rows() < 1) {
+            redirect("creditcardorder");
+        }
+
+        $this->data['content'] = "form_v.php";
+        $this->data['pageTitle'] = "Cancel Credit Card Order";
+        $this->data['breadcrumb'] = array("Credit Card Order "=> "creditcardorder", "Cancel Credit Card Order" => "");
+        $this->data['formTitle'] = "Cancel Credit Card Order";
+
+        $this->load->library("va_input", array("group" => "creditcard"));
+        $flashData = $this->session->flashdata("creditcardError");
+        if($flashData !== false) {
+            $flashData = json_decode($flashData, true);
+            $value = $flashData['data'];
+            $msg = $flashData['msg'];
+        } else {
+            $msg = array();
+            $value = $data->row_array();
+        }
+
+        $this->va_input->addHidden( array("name" => "method", "value" => "cancel") );
+        $this->va_input->addHidden( array("name" => "id", "value" => $value['order_id']) );
+        $this->va_input->addHidden( array("name" => "client_id", "value" => $value['client_id']) );
+        $this->va_input->addHidden( array("name" => "order_number", "value" => $value['order_number']) );
+        $this->va_input->addTextarea( array("name" => "reason", "placeholder" => "Cancel reason", "help" => "Cancel reason", "label" => "Cancel Reason", "value" => @$value['reason'], "msg" => @$msg['reason']) );
+
+        $this->data['script'] = $this->load->view("script/creditcardorder_add", array(), true);
+        $this->load->view('template', $this->data);
+    }
+
+    public function save(){
+        $post = $this->input->post("creditcard");
+        if(empty($post)) {
+            redirect("creditcardorder");
+        }
+
+        else if($post['method'] == "cancel") {
+            $result = $this->creditcardorder_m->Reason($post);
+            if(is_numeric($result)) {
+                redirect("creditcardorder");
+            }
+            else{
+                $this->session->set_flashdata( array("creditcardError" => json_encode(array("msg" => $result, "data" => $post))) );
+                redirect("creditcardorder/cancel/".$post['id']);
+            }
+        }
+    }
+
     private function getStatus() {
 		return array(-1=>"",0 => "pending", 1 => "processing", 2 => "complete", 3 => "fraud", 4 => "payment_review", 5 => "canceled",6 => "closed", 7 => "waiting_payment");
     }

@@ -100,6 +100,7 @@ class creditcardorder_m extends MY_Model {
             $_resultArr = (array)$_result;
             //$status=$statList[$_result->status];
             $status=$statList[$_resultArr['creditcard_order.status']];
+
             if(!isset($statListAWB[$_resultArr['awb_queue_printing.status']])){
                 $statusAWB = "New Request";
             }else {
@@ -107,6 +108,14 @@ class creditcardorder_m extends MY_Model {
             }
             $date = explode(' ', $_result->updated_at);
             $cDate = explode(' ', $_result->created_at);
+
+            if(($_resultArr['creditcard_order.status'] !=2) && ($_resultArr['creditcard_order.status']!=5)){
+                $action = '<a href="'.site_url("creditcardorder/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a> |
+                 <a href="'.site_url("creditcardorder/cancel/".$_result->id).'" class="btn btn-xs default"><i class="fa fa-times" ></i> Cancel</a>';
+            }
+            else{
+                $action = '<a href="'.site_url("creditcardorder/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>';
+            }
             $records["aaData"][] = array(
                 '<input type="checkbox" name="id[]" value="'.$_result->id.'">',
                 $no=$no+1,
@@ -118,8 +127,7 @@ class creditcardorder_m extends MY_Model {
                 "Rp. ".number_format($_resultArr['creditcard_order.amount']),
                 '<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
                 '<span class="label label-sm label-'.($statusAWB[1]).'">'.($statusAWB[0]).'</span>',
-                '<a href="'.site_url("creditcardorder/view/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-search" ></i> View</a>'
-
+                $action
         );
         }
 
@@ -149,6 +157,50 @@ class creditcardorder_m extends MY_Model {
         $this->db->where('creditcard_order.id', $id);
         $this->db->order_by('order_history.id','asc');
         return $this->db->get();
+    }
+
+    public function Reason($post){
+
+        $this->load->model("client_m");
+        $this->load->library("mageapi");
+
+        $msg = array();
+        $user=$this->session->userdata('pkUserId');
+        $time=date('Y-m-d H:i:s', now());
+
+        if(!empty($post['reason'])) {
+
+            $history['note'] = $post['reason'];
+            $history['type']=3;
+            $history['order_id']=$post['id'];
+            $history['created_by']=$user;
+            $history['created_at']=$time;
+            $history['status']=$this->status['cancel'];
+
+            $data['status'] = $this->status['cancel'];
+            $data['updated_by']=$user;
+            $data['updated_at']=$time;
+
+            $this->db->where($this->pkField, $post['id']);
+            $this->db->update($this->table, $data);
+
+            $this->db->insert('order_history', $history);
+
+            $client = $this->client_m->getClientById($post['client_id'])->row_array();
+            $config = array(
+                "auth" => $client['mage_auth'],
+                "url" => $client['mage_wsdl']
+            );
+
+            if( $this->mageapi->initSoap($config) ) {
+                $this->mageapi->cancelPayment($post['order_number'], $post['reason']);
+            }
+
+            return $post['id'];
+        }
+        else {
+            return $msg;
+        }
     }
     
     public function saveCreditCardOrder($clientid, $datas, $histories){
