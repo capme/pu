@@ -26,7 +26,8 @@ class Invsync_m extends MY_Model {
                         'updated_at' => date('Y-m-d H:i:s'),
                         'product_id' => $catalog->info->product_id,
                         'price' => (int)$catalog->info->price,
-                        'created_at' => (empty($catalog->info->created_at) ? '0000-00-00 00:00:00' : $catalog->info->created_at)
+                        'created_at' => (empty($catalog->info->created_at) ? '0000-00-00 00:00:00' : $catalog->info->created_at),
+                        'magestock' => &$catalog->inventory
                     );
                 }
             }
@@ -42,8 +43,19 @@ class Invsync_m extends MY_Model {
     }
 
     public function findOldSimilarSku($config, $size, $clientId) {
+        if(!is_array($size)) {
+            $_sql = '(sku_description like "%S:%'.$this->db->escape_like_str($size).'%" OR sku_description like "%S:'.$this->db->escape_like_str($size).'%")';
+        } else {
+            $_sql = array();
+            foreach($size as $s) {
+                $_sql[] = 'sku_description like "%S:%'.$this->db->escape_like_str($s).'%" OR sku_description like "%S:'.$this->db->escape_like_str($s).'%"';
+            }
+            $_sql = '('.implode(' OR ', $_sql).')';
+        }
+
+
         $sql = 'SELECT * FROM `inv_items_'.$clientId.'` where sku_config = '.$this->db->escape($config);
-        $sql .= 'AND (sku_description like "%S:%'.$this->db->escape_like_str($size).'%" OR sku_description like "%S:'.$this->db->escape_like_str($size).'%")';
+        $sql .= 'AND '.$_sql;
 
         return $this->db->query($sql)->row_array();
     }

@@ -31,7 +31,15 @@
                 <td><?php echo $data['path'] ?></td>
                 <td><?php echo $data['url_path'] ?></td>
                 <td><?php echo $data['updated_at'] ?></td>
-                <td><?php echo '<a href="'.site_url("sortingtool/viewcategory?category_id=".$data['category_id']).'&client='.$data['client_id'].'" class="btn btn-xs default"><i class="fa fa-search"></i> View</a> | <a href="'.site_url("sortingtool/manage?category_id=".$data['category_id']).'&client='.$data['client_id'].'" class="btn btn-xs default"><i class="fa fa-cog fa-fw"></i> Manage</a>'?></td>
+<!--                <td>--><?php //echo '<a href="'.site_url("sortingtool/viewcategory?category_id=".$data['category_id']).'&client='.$data['client_id'].'" class="btn btn-xs default"><i class="fa fa-search"></i> View</a> | <a href="'.site_url("sortingtool/manage?category_id=".$data['category_id']).'&client='.$data['client_id'].'" class="btn btn-xs default"><i class="fa fa-cog fa-fw"></i> Manage</a>'?><!--</td>-->
+
+                <td>
+                    <?php
+//                    echo '<a href="'.site_url("sortingtool/viewcategory?category_id=".$data['category_id']).'&client='.$data['client_id'].'" class="btn btn-xs default"><i class="fa fa-search"></i> View</a> | <a href="'.site_url("sortingtool/config?category_id=".$data['category_id']).'&client='.$data['client_id'].'" class="btn btn-xs default"><i class="fa fa-cog fa-fw"></i> Config</a> | <a href="'.site_url("sortingtool/catalogproduct?category_id=".$data['category_id']).'&client='.$data['client_id'].'" class="btn btn-xs default"><i class="fa fa-list fa-fw"></i> Product</a>'
+
+                        echo '<a href="'.site_url("sortingtool/config?category_id=".$data['category_id']).'&client='.$data['client_id'].'" class="btn btn-xs default"><i class="fa fa-cog fa-fw"></i> Config</a> | <a href="'.site_url("sortingtool/catalogproduct?category_id=".$data['category_id']).'&client='.$data['client_id'].'" class="btn btn-xs default"><i class="fa fa-list fa-fw"></i> Product</a>'
+                    ?>
+                </td>
             </tr>
         <?php endforeach;?>
         </tbody>

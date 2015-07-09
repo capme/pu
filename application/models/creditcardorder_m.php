@@ -207,15 +207,22 @@ class creditcardorder_m extends MY_Model {
     	$this->db->trans_start();
 		
     	foreach($datas as $key => $data){
+            $check = null;
             $check = $this->db->get_where($this->table, array('order_number' => (string) $key));
+            //$n = $check->result_array();
+
+            //echo "order number::".$key."::rows::".$check->num_rows()."\n";
+            //continue;
             if(!$check->num_rows()) {
                 $this->db->insert($this->table, $data);
                 $id = $this->db->insert_id();
             } else {
-                $row = $check->row_array();
+                $this->db->where('order_number', (string) $key);
                 $this->db->update($this->table, $data);
+
+                $row = $check->row_array();
                 $id = $row['id'];
-                $this->db->delete($this->tableOrderHistory, array('order_id' => $id));
+                $this->db->delete($this->tableOrderHistory, array('order_id' => $id, 'type' => 3));
             }
 
             $_history = $histories[$key];

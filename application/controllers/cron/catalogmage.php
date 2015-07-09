@@ -9,6 +9,7 @@
 class CatalogMage extends CI_Controller {
 
     var $isParaplouOnly = 1;
+    var $skipCategory = array("364","365","45","63");
 
     public function all($code = ""){
         $this->category($code);
@@ -20,7 +21,7 @@ class CatalogMage extends CI_Controller {
 
 
     public function category($code = "") {
-        $this->load->model( array('client_m', 'catalog_m'));
+        $this->load->model( array('client_m', 'catalog_m','sortingtool_m'));
         $this->load->library("mageapi");
 
         $clients = $this->client_m->getClients();
@@ -47,8 +48,11 @@ class CatalogMage extends CI_Controller {
 
             if( $this->mageapi->initSoap($config) ) {
                 $categories = $this->mageapi->getDetailCategory();
-                $this->catalog_m->saveCategory($categories, $client);
-                log_message('debug','== CatalogMage.category  : '.$client['client_code']);
+
+                $insCat = $this->catalog_m->saveCategory($categories, $client);
+                log_message('debug','[CatalogMage.category]  : '.$client['client_code']);
+                $insConf = $this->sortingtool_m->insertConfig($categories, $client['id']);
+                log_message('debug','[CatalogMage.category] inserted Config : '.$client['client_code']. ' - '.count($insConf));
             }
         }
         log_message('debug','[CatalogMage.category] end : '.date('Y-m-d H:i:s'));
@@ -87,8 +91,6 @@ class CatalogMage extends CI_Controller {
                 "url" => $client['mage_wsdl']
             );
 
-//            print_r($config);
-
             $categories = $this->catalog_m->getCategory($client);
             foreach($categories as $_category){
                 if($category && $_category['category_id'] != $category){
@@ -114,7 +116,7 @@ class CatalogMage extends CI_Controller {
     public function updatePositionCategoryProduct($code = "", $category = null) {
         log_message('debug','[CatalogMage.updatePositionCategoryProduct] start : '.date('Y-m-d H:i:s'));
 
-        $this->load->model( array('client_m', 'catalog_m'));
+        $this->load->model( array('client_m', 'catalog_m','sortingtool_m'));
         $this->load->library("mageapi");
 
         $clients = $this->client_m->getClients();
@@ -145,17 +147,41 @@ class CatalogMage extends CI_Controller {
                     continue;
                 }
 
-                $filters['groupby'] = "product_id";
-                $categoryProducts = $this->catalog_m->getCatalogCategoryProduct($client, $_category['category_id'], $filters);
+                $sortingConfig = $this->sortingtool_m->getConfig($client['id'],$_category['category_id'])->result_array();
 
+                foreach($sortingConfig as $_config){
+                    $_sortingConfig[$_config['name']] = $_config['value'];
+                }
+
+                if(empty($_sortingConfig)){
+                    log_message('debug',' ========= sorting >'.$client['client_code'].'#'.$_category['category_id'].'#skip , no configuration');
+                    continue;
+                }
+
+                if(!$_sortingConfig['push_to_magento']){
+                    log_message('debug',' ========= sorting >'.$client['client_code'].'#'.$_category['category_id'].'#skip , push_to_magento : '.$_sortingConfig['push_to_magento']);
+                    continue;
+                }
+
+
+                $filters['filter'] = array('status'=>array('type'=>'equal','value'=> array_search('sorted',$this->catalog_m->productStatus)));
+                $filters['groupby'] = "product_id";
+                $categoryProducts = $this->catalog_m->getCatalogCategoryProduct($client, $_category['category_id'], $filters)->result_array();
+
+                $result = [];
                 if ($this->mageapi->initSoap($config)) {
                     foreach ($categoryProducts as $_product) {
                         if (!empty($_product['result_index'])) {
-                            $update = $this->mageapi->updateCategoryProductPosition($_product['category_id'], $_product['product_id'], $_product['result_index']);
-                            $result[] = array('category_id' => $_product['category_id'], 'product_id' => $_product['product_id'], 'updated' => $update);
+                            $pushed = $this->mageapi->updateCategoryProductPosition($_product['category_id'], $_product['product_id'], $_product['result_index']);
+                            $result[] = array('category_id' => $_product['category_id'], 'product_id' => $_product['product_id'], 'pushed' => $pushed);
                         }
                     }
-                    log_message('debug','== CatalogMage.updatePositionCategoryProduct : '.$client['client_code'].'#'.$_category['category_id'].'#'.count($result));
+
+                    if(!empty($result)){
+                        $update = $this->catalog_m->updateStatusCategoryProduct($client,$result);
+                        log_message('debug','[CatalogMage.updatePositionCategoryProduct] update Status: '.$client['client_code'].'#'.$_category['category_id']);
+                    }
+                    log_message('debug','[CatalogMage.updatePositionCategoryProduct] : '.$client['client_code'].'#'.$_category['category_id']);
                 }
             }
         }
@@ -173,7 +199,7 @@ class CatalogMage extends CI_Controller {
     public function bulkUpdatePositionCategoryProduct($code = "", $category = null) {
         log_message('debug','[CatalogMage.bulkUpdatePositionCategoryProduct] start : '.date('Y-m-d H:i:s'));
 
-        $this->load->model( array('client_m', 'catalog_m'));
+        $this->load->model( array('client_m', 'catalog_m','sortingtool_m'));
         $this->load->library("mageapi");
 
         $clients = $this->client_m->getClients();
@@ -205,8 +231,27 @@ class CatalogMage extends CI_Controller {
                     continue;
                 }
 
+                $sortingConfig = $this->sortingtool_m->getConfig($client['id'],$_category['category_id'])->result_array();
+
+                foreach($sortingConfig as $_config){
+                    $_sortingConfig[$_config['name']] = $_config['value'];
+                }
+
+                if(empty($_sortingConfig)){
+                    log_message('debug',' ========= sorting >'.$client['client_code'].'#'.$_category['category_id'].'#skip , no configuration');
+                    continue;
+                }
+
+                if(!$_sortingConfig['push_to_magento']){
+                    log_message('debug',' ========= sorting >'.$client['client_code'].'#'.$_category['category_id'].'#skip , push_to_magento : '.$_sortingConfig['push_to_magento']);
+                    continue;
+                }
+
+                $filters['filter'] = array('status'=>array('type'=>'equal','value'=> array_search('sorted',$this->catalog_m->productStatus)));
+
                 $filters['groupby'] = "product_id";
-                $categoryProducts = $this->catalog_m->getCatalogCategoryProduct($client, $_category['category_id'], $filters);
+//                $categoryProducts = $this->catalog_m->getCatalogCategoryProduct($client, $_category['category_id'], $filters);
+                $categoryProducts = $this->catalog_m->getCatalogCategoryProduct($client, $_category['category_id'], $filters)->result_array();
 
                 if ($this->mageapi->initSoap($config)) {
                     $newPost = array();
@@ -235,7 +280,7 @@ class CatalogMage extends CI_Controller {
     public function sorting( $code = "", $category = null ){
         log_message('debug','[CatalogMage.sorting] start : '.date('Y-m-d H:i:s'));
 
-        $this->load->model( array('client_m', 'catalog_m') );
+        $this->load->model( array('client_m', 'catalog_m','sortingtool_m') );
 
         $clients = $this->client_m->getClients();
 
@@ -251,12 +296,25 @@ class CatalogMage extends CI_Controller {
                     continue;
                 }
 
+                $sortingConfig = $this->sortingtool_m->getConfig($client['id'],$_category['category_id'])->result_array();
+
+                foreach($sortingConfig as $_config){
+                    $_sortingConfig[$_config['name']] = $_config['value'];
+                }
+
+                if(empty($_sortingConfig)){
+                    log_message('debug',' ========= sorting >'.$client['client_code'].'#'.$_category['category_id'].'#skip , no configuration');
+
+                    continue;
+                }
+
+                $filters['filter'] = array('status'=>array('type'=>'equal','value'=>array_search('synced',$this->catalog_m->productStatus)));
                 $filters['groupby'] = "product_id";
-                $categoryProducts = $this->catalog_m->getCatalogCategoryProduct($client, $_category['category_id'], $filters);
+                $filters['orderby'] = array('created_at','asc');
 
-                $this->catalog_m->updateSorting($client, $categoryProducts);
-                log_message('debug','== CatalogMage.sorting : '.$client['client_code'].'#'.$_category['category_id']);
+                $categoryProducts = $this->catalog_m->getCatalogCategoryProduct($client, $_category['category_id'], $filters)->result_array();
 
+                $this->catalog_m->updateSorting($client, $categoryProducts,$_sortingConfig);
             }
         }
         log_message('debug','[CatalogMage.sorting] end : '.date('Y-m-d H:i:s'));
