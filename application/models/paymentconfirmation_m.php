@@ -192,12 +192,12 @@ class Paymentconfirmation_m extends MY_Model {
             foreach ($order as $result) {
                 $available = $this->autocancel_m->cekOrder($result['order_number'], $result['client_id']);
                 if(empty($available)){
-                    $data = array("id" => $result['id'], "status"=>0, "order_method" => "bank", "client_id" => $result['client_id'], "order_number" => $result['order_number'], "expired_date" => $orderdate);
+                    $data = array("id" => $result['id'], "status"=>0, "created_at"=>$result['created_at'],"order_method" => "bank", "client_id" => $result['client_id'], "order_number" => $result['order_number'], "expired_date" => $orderdate);
                     $this->db->insert($this->expired, $data);
                 }
                 else{
                     $this->autocancel_m->delete($result['order_number'], $result['id']);
-                    $data = array("id" => $result['id'], "status"=>0,"order_method" => "bank", "client_id" => $result['client_id'], "order_number" => $result['order_number'], "expired_date" => $orderdate);
+                    $data = array("id" => $result['id'], "created_at"=>$result['created_at'], "status"=>0,"order_method" => "bank", "client_id" => $result['client_id'], "order_number" => $result['order_number'], "expired_date" => $orderdate);
                     $this->db->insert($this->expired, $data);
                 }
             }
