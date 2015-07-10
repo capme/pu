@@ -22,7 +22,7 @@ class Readytocancel extends MY_Controller {
 
         $this->va_list->setInputFilter(2, array("name" => $this->autocancel_m->filters['order_number']))
             ->setDropdownFilter(1, array("name" => $this->autocancel_m->filters['client_id'], "option" => $this->client_m->getClientCodeList(TRUE)));;
-        $this->va_list->setDropdownFilter(4, array("name" => $this->autocancel_m->filters['status'], "option" => $this->getStatus()));
+        $this->va_list->setDropdownFilter(6, array("name" => $this->autocancel_m->filters['status'], "option" => $this->getStatus()));
 
         $this->data['script'] = $this->load->view("script/readytocancel_List", array("ajaxSource" => site_url("readytocancel/readyToCancelList")), true);
         $this->load->view("template", $this->data);
@@ -128,13 +128,14 @@ class Readytocancel extends MY_Controller {
         $client=$this->input->get('client');
         $ordernr=$this->input->get('order_number');
 
+        $value=$this->autocancel_m->getData($id, $method);
+
         $this->data['content'] = "form_v.php";
         $this->data['pageTitle'] = "Edit Expire Order";
         $this->data['breadcrumb'] = array("Expire Order"=> "readytocancel", "Expire Order" => "");
         $this->data['formTitle'] = "Edit Expired Order";
 
         $this->load->library("va_input", array("group" => "expiredorder"));
-        $value=array();
         $clientname=$this->client_m->getClientById($client)->row_array();
 
         $this->va_input->addHidden( array("name" => "method", "value" => "update"));

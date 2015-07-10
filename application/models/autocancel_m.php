@@ -99,6 +99,13 @@ class Autocancel_m extends MY_Model {
         return $post['id'];
     }
 
+    public function getData($id, $method){
+        $this->db->select('*');
+        $this->db->where('id', $id);
+        $this->db->where('order_method', $method);
+        return $this->db->get($this->table)->row_array();
+    }
+
     public function getOrder(){
         return $this->db->get($this->table, array("status"=>0))->result_array();
     }

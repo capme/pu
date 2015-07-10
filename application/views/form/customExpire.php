@@ -9,4 +9,5 @@
         });
     </script>
 </head>
-<input type="text" name="expiredorder[date]" id="date" class="form-control"/>
+
+<input type="text" name="expiredorder[date]" id="date" value="<?php echo $value['expired_date']?>" class="form-control"/>
