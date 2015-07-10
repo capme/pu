@@ -1,13 +1,20 @@
 <head>
-    <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
-    <script type="text/javascript" src="js/jquery-ui-1.8.17.custom.min.js"></script>
-    <link rel="stylesheet" type="text/css"
-          href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/plugins/bootstrap-datetimepicker/css/datetimepicker.css"/>
+    <script type="text/javascript" src="/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+    <script src="/assets/plugins/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+
     <script type="text/javascript">
         $(document).ready(function(){
-            $("#date").datepicker({ dateFormat: 'yy-mm-dd' });
+            $('#date').datetimepicker({
+                formatTime:'H:i',
+                formatDate:'d.m.Y',
+                timepickerScrollbar:true
+            });
         });
     </script>
 </head>
 
 <input type="text" name="expiredorder[date]" id="date" value="<?php echo $value['expired_date']?>" class="form-control"/>
+
+
