@@ -14,9 +14,8 @@ class Migration_Expireorder extends Base_migration {
         if ($exist->num_rows() > 0){
             $this->db->query("ALTER TABLE `expired_order` DROP COLUMN `created_date` ");
         }
-        else{
-            $this->db->query("ALTER TABLE `expired_order` ADD `created_date` TIMESTAMP");
-        }
+
+        $this->db->query("ALTER TABLE `expired_order` ADD `created_date` TIMESTAMP");
 
         $new= array(
             "expireorder" => array("name" => "Expire Order", "slug" => "readytocancel", "icon" => "fa-user", "hidden" => 0, "status" => 1, "parent" => 1),
