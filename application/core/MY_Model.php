@@ -56,12 +56,15 @@ class MY_Model extends CI_Model{
                 if (in_array($tField, $this->listWhere['equal'])) {
                     $this->db->where($tField, $val);
                 }
-                    elseif (in_array($tField, $this->listWhere['like'])) {
+                elseif (in_array($tField, $this->listWhere['like'])) {
                     $this->db->like($tField, $val);
                 }
-                elseif (!empty($this->daterange) && !empty($val[0]) && !empty($val[1])){
-                    $this->db->where("$this->daterange >=", $val[0]);
-                    $this->db->where("$this->daterange <=", $val[1]);
+
+                elseif (!empty($this->daterange) && is_array($val)){
+                    if($val[0] != "" && $val[1] != "") {
+                        $this->db->where("$this->daterange >=", $val[0]);
+                        $this->db->where("$this->daterange <=", $val[1]);
+                    }
                 }
                     else {
                         if (is_array($val)== false) {
@@ -162,9 +165,11 @@ class MY_Model extends CI_Model{
                 elseif (in_array($tField, $this->listWhere['like'])) {
                     $this->db->like($tField, $val);
                 }
-                elseif (!empty($this->daterange) && !empty($val[0]) && !empty($val[1])){
-                    $this->db->where("$this->daterange >=", $val[0]);
-                    $this->db->where("$this->daterange <=", $val[1]);
+                elseif (!empty($this->daterange) && is_array($val)){
+                    if($val[0] != "" && $val[1] != "") {
+                        $this->db->where("$this->daterange >=", $val[0]);
+                        $this->db->where("$this->daterange <=", $val[1]);
+                    }
                 }
                 else {
                     if(is_array($val)==false) {

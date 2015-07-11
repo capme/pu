@@ -15,8 +15,6 @@
                 opens: (App.isRTL() ? 'right' : 'left'),
                 startDate: moment().subtract('days', 29),
                 endDate: moment(),
-                minDate: '01/01/2012',
-                maxDate: '06/19/2015',
                 showDropdowns: true,
                 showWeekNumbers: true,
                 timePicker: false,
