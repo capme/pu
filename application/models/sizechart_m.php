@@ -10,7 +10,7 @@ class Sizechart_m extends MY_Model {
     var $tableMap='brand_size_map';
     var $tableClient ='client';
     var $tableClientOption='client_options';
-    var $sorts = array(1 => "brand_code");
+    var $sorts = array(2 => "brand_code");
     var $pkField = "id";
     var $status=array("cancel"=>2,"approve"=>1);
     var $path = "";
@@ -42,6 +42,7 @@ class Sizechart_m extends MY_Model {
             $records["aaData"][] = array(
                 '',
                 $no=$no+1,
+                $_result->brand_code,
                 $this->mapping($_result->brand_code),
                 $_result->notes,
                 $_result->created_at,

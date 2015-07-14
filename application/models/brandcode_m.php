@@ -73,6 +73,7 @@ class Brandcode_m extends MY_Model {
        if (is_object($brandcode)) {
            $array = get_object_vars($brandcode);
        }
+       ksort($array);
        $key=array_keys($array);
        $value=array_values($array);
        for($i=0; $i < count($key); $i++){
