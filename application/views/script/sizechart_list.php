@@ -37,6 +37,7 @@
                 dataTable: {  // here you can define a typical datatable settings from http://datatables.net/usage/options
                     "aoColumns": [
                         { "bSortable": true },
+                        { "bSortable": false },
                         { "bSortable": true },
                         { "bSortable": false },
                         { "bSortable": false },
@@ -56,7 +57,7 @@
                     "iDisplayLength": 20, // default record count per page
                     "bServerSide": true, // server side processing
                     "sAjaxSource": "<?php echo $ajaxSource?>", // ajax source /metronic_v2.0/v2.0/admin/template/demo/table_ajax.php
-                    "aaSorting": [[ 1, "desc" ]] // set first column as a default sort by asc
+                    "aaSorting": [[ 2, "asc" ]] // set first column as a default sort by asc
                 }
             });
 

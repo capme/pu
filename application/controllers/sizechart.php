@@ -17,9 +17,9 @@ class Sizechart extends MY_Controller{
 
         $this->load->library("va_list");
         $this->va_list->setListName("Size Chart")->setAddLabel("Upload")
-            ->setHeadingTitle(array("Record #", "Brand Name", "Note", "Created At"))
-            ->setHeadingWidth(array(2, 2, 3, 2, 2));
-        $this->va_list->setDropdownFilter(1, array("name" => $this->sizechart_m->filters['brand_code'], "option" => $this->lists()));;
+            ->setHeadingTitle(array("Record #", "Brand Code", "Brand Name", "Note", "Created At"))
+            ->setHeadingWidth(array(1, 2, 3, 2, 2, 2));
+        $this->va_list->setDropdownFilter(2, array("name" => $this->sizechart_m->filters['brand_code'], "option" => $this->lists()));;
         $this->data['script'] = $this->load->view("script/sizechart_list", array("ajaxSource" => site_url("sizechart/sizeChartList")), true);
         $this->load->view("template", $this->data);
     }
