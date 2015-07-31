@@ -182,6 +182,7 @@ class Codconfirmation extends MY_Controller {
 			
 			if( $this->mageapi->initSoap($config) ) {
 				$this->mageapi->setOrderToVerified($data['order_number'], $post['approve']);
+                $this->mageapi->sendNotifBrand($data['client_id'], $data['order_number'], "cod");
 			}
 			
 			$result = $this->codconfirmation_m->Approve($post);

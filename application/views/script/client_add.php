@@ -8,12 +8,14 @@ counter=0;
 	counterNext = counter + 1;
     document.getElementById("key"+counter).innerHTML = "<p><input id='key'  placeholder='Input Brand Name' style='width:80%' class='form-control' type='text' name='brandcode[key]["+count+"]' required><div id=\"key"+counterNext+"\"></div></p>";
 	document.getElementById("brands"+counter).innerHTML = "<p><input  id ='brands' placeholder='Input Brand Name' style='width:80%' class='form-control' type='text' name='brandcode[brands]["+count+"]' required><div id=\"brands"+counterNext+"\"></div></p>";
+    document.getElementById("inboundtype"+counter).innerHTML = "<p><select id='inboundtype' placeholder='Input Brand Name' style='width:80%' class='form-control' type='text' name='brandcode[inboundtype]["+count+"]'><option value='normal'>Normal</option><option value='scrapping'>Scrapping</option><option value='crossdocking'>Cross Docking</option></select><div id=\"inboundtype"+counterNext+"\"></div></p>";
 	counter++;
 	}
 i=0;	
 function removekey(){	
 	$('#key').remove();
 	$('#brands').remove();
+    $('#inboundtype').remove();
     i--;
 	}
 	

@@ -205,7 +205,7 @@ class creditcardorder_m extends MY_Model {
     
     public function saveCreditCardOrder($clientid, $datas, $histories){
     	$this->db->trans_start();
-		
+		//print_r($datas);die();
     	foreach($datas as $key => $data){
             $check = null;
             $check = $this->db->get_where($this->table, array('order_number' => (string) $key));
@@ -216,7 +216,14 @@ class creditcardorder_m extends MY_Model {
             if(!$check->num_rows()) {
                 $this->db->insert($this->table, $data);
                 $id = $this->db->insert_id();
+                if($data['status'] == "2"){
+                    $this->mageapi->sendNotifBrand($clientid, $data['order_number'], "cc");
+                }
             } else {
+                $dataBefore = $check->row_array();
+                if($dataBefore['status'] != $data['status'] and $data['status'] == "2"){
+                    $this->mageapi->sendNotifBrand($clientid, $data['order_number'], "cc");
+                }
                 $this->db->where('order_number', (string) $key);
                 $this->db->update($this->table, $data);
 

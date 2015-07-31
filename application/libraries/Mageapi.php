@@ -425,11 +425,63 @@ class Mageapi {
 			return false;
 		}
 	}
-	
+
+    public function sendNotifBrand($client, $orderNr, $paymentType){
+        try {
+            //get order info
+            $CI =& get_instance();
+            $CI->load->model("inbounddocument_m");
+            $CI->load->model("clientoptions_m");
+            $CI->load->model("notification_m");
+            $calls = array(array(self::METHOD_ORDER_INFO, $orderNr ));
+            $listOrderInfo = $this->soapClient->multiCall($this->soapSession, $calls);
+
+            $listOrderInfoItems = $listOrderInfo[0]['items'];
+            $arrListBrandCode = array();
+            foreach($listOrderInfoItems as $_listOrderInfoItems){
+                if($_listOrderInfoItems['product_type'] == "simple"){
+                    $sku = $_listOrderInfoItems['sku'];
+                    $dataInvItems = $CI->inbounddocument_m->getInvItems($client, $sku);
+                    $temp = explode(",", $dataInvItems[0]['sku_description']);
+                    $arrListBrandCode[$temp[0]][] = $sku;
+                }
+            }
+            $dataClientOptionsInboundType = $CI->clientoptions_m->gets($client, "inbound_type");
+            $dataClientOptionsBrandName = $CI->clientoptions_m->gets($client, "brand_code");
+            $msgNotif = "Order : ".$orderNr."<br>";
+            foreach($arrListBrandCode as $key => $item){
+                if(isset($dataClientOptionsInboundType['inbound_type'][$key])){
+                    $msgNotif .= "<br>";
+                    $msgNotif .= "Brand name : ".$dataClientOptionsBrandName['brand_code'][$key]."<br>";
+                    $msgNotif .= "Inbound Type : ".$dataClientOptionsInboundType['inbound_type'][$key]."<br>";
+                    $msgNotif .= "List SKU : <br>";
+                    foreach($item as $subItem){
+                        $msgNotif .= "- ".$subItem."<br>";
+                    }
+                }
+            }
+            $from=2;
+            $to=1;
+            if($paymentType == "banktransfer"){
+                $url="paymentconfirmation";
+            }elseif($paymentType == "cod"){
+                $url="codpaymentconfirmation";
+            }elseif($paymentType == "cc"){
+                $url="creditcardorder";
+            }
+            $message=$msgNotif;
+            $CI->notification_m->add($from, $to, $url, $message);
+            //print_r($arrListBrandCode);die();
+            return true;
+        } catch( Exception $e ) {
+            log_message('error', "MAGEAPI ==> ". $e->getMessage());
+            return false;
+        }
+    }
+
 	public function processOrder($orderNr) {
 		try {
 			$data = $this->soapClient->call($this->soapSession, self::METHOD_VELA_CONFIRMATION_APPROVE, $orderNr);
-
 			return true;
 		} catch( Exception $e ) {
 			log_message('error', "MAGEAPI ==> ". $e->getMessage());
