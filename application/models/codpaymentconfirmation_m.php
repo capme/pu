@@ -193,11 +193,6 @@ class Codpaymentconfirmation_m extends MY_Model {
                     $data = array("id" => $result['id'],"status"=>0,"created_date"=>$result['created_at'], "order_method" => "cod", "client_id" => $result['client_id'], "order_number" => $result['order_number'], "expired_date" => $orderdate);
                     $this->db->insert($this->expired, $data);
                 }
-                else{
-                    $this->autocancel_m->delete($result['order_number'], $result['id']);
-                    $data = array("id" => $result['id'],"status"=>0,"created_date"=>$result['created_at'], "order_method" => "cod", "client_id" => $result['client_id'], "order_number" => $result['order_number'], "expired_date" => $orderdate);
-                    $this->db->insert($this->expired, $data);
-                }
             }
         }
     }
