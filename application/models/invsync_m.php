@@ -44,11 +44,11 @@ class Invsync_m extends MY_Model {
 
     public function findOldSimilarSku($config, $size, $clientId) {
         if(!is_array($size)) {
-            $_sql = '(sku_description like "%S:%'.$this->db->escape_like_str($size).'%" OR sku_description like "%S:'.$this->db->escape_like_str($size).'%")';
+            $_sql = '(sku_description like "%S:%'.$this->db->escape_like_str($size).',%" OR sku_description like "%S:'.$this->db->escape_like_str($size).',%")';
         } else {
             $_sql = array();
             foreach($size as $s) {
-                $_sql[] = 'sku_description like "%S:%'.$this->db->escape_like_str($s).'%" OR sku_description like "%S:'.$this->db->escape_like_str($s).'%"';
+                $_sql[] = 'sku_description like "%S:%'.$this->db->escape_like_str($s).',%" OR sku_description like "%S:'.$this->db->escape_like_str($s).',%"';
             }
             $_sql = '('.implode(' OR ', $_sql).')';
         }
