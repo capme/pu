@@ -58,13 +58,17 @@ class Extractinboundform extends CI_Controller {
 							try {								
 								$doc_number = $id;
 								$this->inbounddocument_m->changeStatusExtract($doc_number, 2);
-								$return = $this->inbounddocument_m->saveToInboundInventoryStock($client_id, $doc_number, $created_by, $arr_data, $reference_id);
+								$returnInboundInventoryStock = $this->inbounddocument_m->saveToInboundInventoryStock($client_id, $doc_number, $created_by, $arr_data, $reference_id);
 								echo "import inbound form for client ".$client_id." doc number ".$doc_number."<br>";
 								//updating inbound form record into 1
 								$return = $this->inbounddocument_m->updateStatusInboundDocumentList($id,1);
 								//updating inbound document record into 3
-								$return = $this->inbounddocument_m->updateStatusInboundDocumentList($reference_id,3);
-		                        
+                                if($returnInboundInventoryStock == "REPEAT"){
+                                    $return = $this->inbounddocument_m->updateStatusInboundDocumentList($reference_id,4);
+                                }else{
+                                    $return = $this->inbounddocument_m->updateStatusInboundDocumentList($reference_id,3);
+                                }
+
 		                        $from=2;	
 		                        $to=1;
 		                        $url="listinbounddoc";
