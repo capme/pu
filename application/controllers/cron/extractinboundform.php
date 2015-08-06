@@ -63,10 +63,10 @@ class Extractinboundform extends CI_Controller {
 								//updating inbound form record into 1
 								$return = $this->inbounddocument_m->updateStatusInboundDocumentList($id,1);
 								//updating inbound document record into 3
-                                if($returnInboundInventoryStock == "REPEAT"){
-                                    $return = $this->inbounddocument_m->updateStatusInboundDocumentList($reference_id,4);
-                                }else{
+                                if($returnInboundInventoryStock){
                                     $return = $this->inbounddocument_m->updateStatusInboundDocumentList($reference_id,3);
+                                }else{
+                                    $return = $this->inbounddocument_m->updateStatusInboundDocumentList($reference_id,4);
                                 }
 
 		                        $from=2;	

@@ -1169,6 +1169,7 @@ class Inbounddocument_m extends MY_Model {
 		$sizeRowY = count($arr_data[1]);
 
 		$this->db->trans_start();
+        $boolMsgReturn = false;
 		for($x=12;$x<=$sizeRowX;$x++){
 			if(isset($arr_data[$x]['A'])){
 				//------------------get the field items--------------------------
@@ -1254,6 +1255,9 @@ class Inbounddocument_m extends MY_Model {
 
                     //po_type
                     $po_type = $row[0]['po_type'];
+                    if($po_type == "NEW"){
+                        $boolMsgReturn = true;
+                    }
 								
 					$sql = "INSERT INTO ".$this->tableInvStock."_".$client." (item_id, doc_number, reference_num, quantity";
 					$sql .= ", bin_location, created_at, created_by) VALUES";
@@ -1266,7 +1270,7 @@ class Inbounddocument_m extends MY_Model {
 		//end parse the array from excel
 		
 		
-		return $po_type;
+		return $boolMsgReturn;
 	}
 
     public function getParamInboundMage($client, $doc){
