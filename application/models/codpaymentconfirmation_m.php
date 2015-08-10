@@ -227,6 +227,44 @@ class Codpaymentconfirmation_m extends MY_Model {
             }
         }
     }
+
+    public function getPopCodOrder(){
+        $order = $this->db->query("SELECT id,order_number,client_id,created_at, WEEKDAY(created_at) as weekday FROM bank_confirmation where status = 0 and client_id = 6")->result_array();
+        for ($a = 0; $a < count($order); $a++) {
+            $orderdate = $order[$a]['created_at'];
+            do {
+                $cektime =  $this->db->query("select hour('$orderdate') as hour")->row_array();
+                $hour = $cektime['hour'];
+                if($hour > 16 ){
+                    $tempex = explode(" ",$orderdate );
+                    $tempdate = $tempex[0]." 09:00:00";
+                    $temporderdate = $this->db->query("select date_add('$tempdate', INTERVAL 1 DAY) as temp")->row_array();
+                    $time = $temporderdate['temp'];
+                    $temp= $this->db->query("select date_add('$time', INTERVAL 2 HOUR) as cancelday")->row_array();
+                    $orderdate= $temp['cancelday'];
+                }
+                elseif($hour < 9){
+                    $tempex = explode(" ",$orderdate );
+                    $tempdate = $tempex[0]." 09:00:00";
+                    $temp= $this->db->query("select date_add('$tempdate', INTERVAL 2 HOUR) as cancelday")->row_array();
+                    $orderdate= $temp['cancelday'];
+                }else {
+                    $temp= $this->db->query("select date_add('$orderdate', INTERVAL 2 HOUR) as cancelday")->row_array();
+                    $orderdate= $temp['cancelday'];
+                }
+
+            } while($this->paymentconfirmation_m->isWeekEnd($orderdate) || $this->paymentconfirmation_m->isHoliday($orderdate));
+        }
+
+        foreach ($order as $result) {
+            $available = $this->autocancel_m->cekOrder($result['order_number'], $result['client_id']);
+            if(empty($available)){
+                $data = array("id" => $result['id'], "status"=>0, "created_date"=>$result['created_at'],"order_method" => "cod", "client_id" => $result['client_id'], "order_number" => $result['order_number'], "expired_date" => $orderdate);
+                $this->db->insert($this->expired, $data);
+            }
+        }
+    }
+
     public function cancelOrder($ordernr){
         $this->db->where('order_number', $ordernr);
         $this->db->update($this->table, array('status'=>4));
