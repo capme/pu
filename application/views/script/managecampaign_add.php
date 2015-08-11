@@ -1,28 +1,7 @@
 <script>
-counter=0;
-  function action()
-  {
-	length =$('.form-control').length;
-	le = ((length -1)/2)-1;	
-	count = le+1;
-	counterNext = counter + 1;
-    document.getElementById("key"+counter).innerHTML = "<p><input id='key'  placeholder='Input Brand Name' style='width:80%' class='form-control' type='text' name='brandcode[key]["+count+"]' required><div id=\"key"+counterNext+"\"></div></p>";
-	document.getElementById("brands"+counter).innerHTML = "<p><input  id ='brands' placeholder='Input Brand Name' style='width:80%' class='form-control' type='text' name='brandcode[brands]["+count+"]' required><div id=\"brands"+counterNext+"\"></div></p>";
-    document.getElementById("inboundtype"+counter).innerHTML = "<p><select id='inboundtype' placeholder='Input Brand Name' style='width:80%' class='form-control' type='text' name='brandcode[inboundtype]["+count+"]'><option value='normal'>Normal</option><option value='scrapping'>Scrapping</option><option value='crossdocking'>Cross Docking</option></select><div id=\"inboundtype"+counterNext+"\"></div></p>";
-	counter++;
-	}
-i=0;	
-function removekey(){	
-	$('#key').remove();
-	$('#brands').remove();
-    $('#inboundtype').remove();
-    i--;
-	}
-	
-var FormValidation = function () {
-
-    var apiFormValidate = function() {
-        // for more info visit the official plugin documentation: 
+    var FormValidation = function () {
+        var apiFormValidate = function() {
+            // for more info visit the official plugin documentation:
             // http://docs.jquery.com/Plugins/Validation
 
             var form1 = $('#form_<?php echo $this->va_input->getGroup()?>');
@@ -37,13 +16,26 @@ var FormValidation = function () {
                 messages: {
                 },
                 rules: {
-                    "client[client_code]": {
-                        minlength: 5,
+                    "campaign[sku]": {
+                        required: true
+                    },
+                    "campaign[absorb]": {
+                        required: true,
+                        number: true
+                    },
+                    "campaign[campaign]": {
+                        required: true
+                    },
+                    "campaign[start_date]": {
+                        required: true
+                    },
+                    "campaign[end_date]": {
                         required: true
                     }
+
                 },
 
-                invalidHandler: function (event, validator) { //display error alert on form submit              
+                invalidHandler: function (event, validator) { //display error alert on form submit
                     success1.hide();
                     error1.show();
                     App.scrollTo(error1, -200);
@@ -70,15 +62,15 @@ var FormValidation = function () {
                     form.submit();
                 }
             });
-    }
-
-    return {
-        //main function to initiate the module
-        init: function () {
-            apiFormValidate();
         }
 
-    };
+        return {
+            //main function to initiate the module
+            init: function () {
+                apiFormValidate();
+            }
 
-}();
+        };
+
+    }();
 </script>

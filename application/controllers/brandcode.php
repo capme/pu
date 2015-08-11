@@ -56,10 +56,11 @@ class Brandcode extends MY_Controller {
 			$msg = array();
 			$value=$data->row_array();
 		}
-		
+
+        $this->va_input->addHidden( array("name" => "client_id", "value" => $id) );
 		$id= $value['id'];
-		$clientop = $this->brandcode_m->getOptions($id);	
-		$this->va_input->addHidden( array("name" => "method", "value" => "save") );		
+		$clientop = $this->brandcode_m->getOptions($id);
+		$this->va_input->addHidden( array("name" => "method", "value" => "save") );
 		$this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value"=>$value['client_code'], "msg" => @$msg['client_code'], "disabled"=>"disabled"));
 		$this->va_input->addCustomField( array("name" =>"", "placeholder" => "Client Options", "value" =>$clientop, "view"=>"form/customBrandCode"));
 		$this->data['script'] = $this->load->view("script/client_add", array(), true);
@@ -68,39 +69,54 @@ class Brandcode extends MY_Controller {
 	
 	public function save(){
 	$post = $this->input->post("brandcode");
+        //print_r($post);die();
 		if(empty($post)) {
 			redirect("brandcode");
 		}
 		else if($post['method'] == "save") {
-		$id=$post['id'];
-			$cod=array();
-			$brnd=array();
-		if (isset($post['cek'])){			
-			for($i=0; $i < count($post['brands']); $i++ ){				
-				$code=strtoupper($post['key'][$i]);
-				$brand=strtolower(str_replace(" ","",$post['brands'][$i]));
-				$cod = array_merge($cod, array($code));
-				$brnd=array_merge($brnd, array($brand));
-			}
-			
-			for($cek=0; $cek < count($post['cek']); $cek++){
-					$key_cek=array_keys($post['cek']);
-					unset($cod[$key_cek[$cek]]);
-					unset($brnd[$key_cek[$cek]]);
-					}
-			$data=array_combine($cod,$brnd);
-			}
-		else{
-			for($i=0; $i < count($post['brands']); $i++ ){
-				$code=strtoupper($post['key'][$i]);
-				$brand=strtolower(str_replace(" ","",$post['brands'][$i]));
-				$cod = array_merge($cod, array($code));
-				$brnd=array_merge($brnd, array($brand));				
-				}			
-				$data=array_combine($cod,$brnd);			
-			}
-		$this->brandcode_m->updateBrand($id,$data);
-		redirect('brandcode');
+            $id=$post['id'];
+            $idinboundtype=$post['idinboundtype'];
+            $cod=array();
+            $brnd=array();
+            $data=array();
+            if (isset($post['cek'])){
+                for($i=0; $i < count($post['brands']); $i++ ){
+                    $code=strtoupper($post['key'][$i]);
+                    $inboundtype=strtolower($post['inboundtype'][$i]);
+                    $brand=strtolower(str_replace(" ","",$post['brands'][$i]));
+
+                    $cod = array_merge($cod, array($code));
+                    $brnd=array_merge($brnd, array($brand));
+                    if(!isset($post['cek'][$i])){
+                        $data = array_merge($data, array($code => array($brand, $inboundtype)));
+                    }
+                }
+
+                //print_r($data);
+                //print_r($post['cek']);die();
+                /*
+                for($cek=0; $cek < count($post['cek']); $cek++){
+                    $key_cek=array_keys($post['cek']);
+                    unset($cod[$key_cek[$cek]]);
+                    unset($brnd[$key_cek[$cek]]);
+                }
+                */
+                //$data=array_combine($cod,$brnd);
+            }else{
+                for($i=0; $i < count($post['brands']); $i++ ){
+                    $code=strtoupper($post['key'][$i]);
+                    $inboundtype=strtolower($post['inboundtype'][$i]);
+                    $brand=strtolower(str_replace(" ","",$post['brands'][$i]));
+
+                    $cod = array_merge($cod, array($code));
+                    $brnd = array_merge($brnd, array($brand));
+
+                    $data = array_merge($data, array($code => array($brand, $inboundtype)));
+                }
+                //$data=array_combine($cod,$brnd);
+            }
+            $this->brandcode_m->updateBrand($id,$idinboundtype,$data, $post['client_id']);
+            redirect('brandcode');
 		}
 	}
 }
