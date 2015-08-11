@@ -57,26 +57,22 @@ class Invsync_m extends MY_Model {
         $sql = 'SELECT * FROM `inv_items_'.$clientId.'` where sku_config = '.$this->db->escape($config);
         $sql .= 'AND '.$_sql;
 
-        $data = $this->db->query($sql)->row_array();
-        $pass = true;
+        $data = $this->db->query($sql)->result_array();
+        $similarData = array();
+
         if(!empty($data)) {
+            log_message('debug', 'check similar sku::' . print_r($data, true));
             foreach($data as $d) {
                 $skuDesc = explode(',', $d['sku_description']);
-                list(,$size) = explode(":", $skuDesc[5]);
-                if(!in_array(trim($size), $size)) {
-                    $pass = false;
+                list(,$_size) = explode(":", $skuDesc[5]);
+                if(in_array(trim($_size), $size)) {
+                    $similarData = $d;
                 }
 
             }
-        } else {
-            $pass = false;
         }
 
-        if($pass) {
-            return $data;
-        } else {
-            return array();
-        }
+        return $similarData;
     }
 
     public function findConfigs($configs, $clientId) {
