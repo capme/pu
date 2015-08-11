@@ -44,20 +44,39 @@ class Invsync_m extends MY_Model {
 
     public function findOldSimilarSku($config, $size, $clientId) {
         if(!is_array($size)) {
-            $_sql = '(sku_description like "%S:%'.$this->db->escape_like_str($size).',%" OR sku_description like "%S:'.$this->db->escape_like_str($size).',%")';
-        } else {
-            $_sql = array();
-            foreach($size as $s) {
-                $_sql[] = 'sku_description like "%S:%'.$this->db->escape_like_str($s).',%" OR sku_description like "%S:'.$this->db->escape_like_str($s).',%"';
-            }
-            $_sql = '('.implode(' OR ', $_sql).')';
+            $size = array($size);
         }
+
+        $_sql = array();
+        foreach($size as $s) {
+            $_sql[] = 'sku_description like "%S:%'.$this->db->escape_like_str($s).',%" OR sku_description like "%S:'.$this->db->escape_like_str($s).',%" OR sku_description like "%size:%'.$this->db->escape_like_str($s).',%" OR sku_description like "%size:'.$this->db->escape_like_str($s).',%"';
+        }
+        $_sql = '('.implode(' OR ', $_sql).')';
 
 
         $sql = 'SELECT * FROM `inv_items_'.$clientId.'` where sku_config = '.$this->db->escape($config);
         $sql .= 'AND '.$_sql;
 
-        return $this->db->query($sql)->row_array();
+        $data = $this->db->query($sql)->row_array();
+        $pass = true;
+        if(!empty($data)) {
+            foreach($data as $d) {
+                $skuDesc = explode(',', $d['sku_description']);
+                list(,$size) = explode(":", $skuDesc[5]);
+                if(!in_array(trim($size), $size)) {
+                    $pass = false;
+                }
+
+            }
+        } else {
+            $pass = false;
+        }
+
+        if($pass) {
+            return $data;
+        } else {
+            return array();
+        }
     }
 
     public function findConfigs($configs, $clientId) {
