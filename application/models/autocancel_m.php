@@ -107,7 +107,8 @@ class Autocancel_m extends MY_Model {
     }
 
     public function getOrder(){
-        return $this->db->get($this->table, array("status"=>0))->result_array();
+        $query =  $this->db->query('SELECT * FROM `expired_order` where status = 0');
+        return $query->result_array();
     }
 
     public function canceled($ordernr, $id){
