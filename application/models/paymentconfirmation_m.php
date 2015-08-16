@@ -144,50 +144,19 @@ class Paymentconfirmation_m extends MY_Model {
 	}
 
     public function getNewOrder(){
-        $order = $this->db->query("SELECT id,order_number,client_id,created_at, WEEKDAY(created_at) as weekday FROM bank_confirmation where status = 0 and client_id != 6")->result_array();
+        $order = $this->db->query("SELECT id,order_number,client_id,created_at, WEEKDAY(created_at) as weekday FROM bank_confirmation where status = 0 and client_id != 6 ")->result_array();
+
         for($a=0; $a < count($order); $a++){
-            $counter=1;
-            $return=false;
+            $counter = 1;
             $orderdate=$order[$a]['created_at'];
             do {
                 do {
-                    $day1 = $this->db->query("SELECT WEEKDAY('$orderdate') as day1")->result();
-                    if (($day1[$a]->day1 == 5) || ($day1[$a]->day1 == 6)) {
-                        $temp= $this->db->query("select date_add('$orderdate', INTERVAL 1 DAY) as cancelday")->row_array();
-                        $orderdate= $temp['cancelday'];
-                        $counter--;
-
-                    } else {
-                        $holiday = $this->db->query("select date(date) as holiday from holiday ")->result_array();
-                        $date = $this->db->query("select date('$orderdate') as date")->row_array();
-                        $is_holiday = false;
-
-                        for($hol = 0; $hol < count($holiday); $hol++){
-                            if ($holiday[$hol]['holiday'] == $date['date']){
-                                $is_holiday = true;
-                                break;
-                            }
-                            else{
-                                $is_holiday = false;
-                            }
-                        }
-                        if($is_holiday == true ){
-                            $temp = $this->db->query("select date_add('$orderdate', INTERVAL 1 DAY) as cancelday")->row_array();
-                            $orderdate= $temp['cancelday'];
-                            $counter--;
-                        }
-                        else{
-                            $temp = $this->db->query("select date_add('$orderdate', INTERVAL 1 DAY) as cancelday")->row_array();
-                            $orderdate= $temp['cancelday'];
-                            $return = true;
-                        }
-                    }
-                } while (!$return);
+                    $temp = $this->db->query("select date_add('$orderdate', INTERVAL 1 DAY) as cancelday")->row_array();
+                    $orderdate = $temp['cancelday'];
+                } while ($this->isWeekEnd($orderdate) || $this->isHoliday($orderdate));
                 $counter++;
             }
-            while($counter <= 3);
-            $temp = $this->db->query("select date_add('$orderdate', INTERVAL -1 DAY) as cancelday")->row_array();
-            $orderdate= $temp['cancelday'];
+            while($counter < 3);
             foreach ($order as $result) {
                 $available = $this->autocancel_m->cekOrder($result['order_number'], $result['client_id']);
                 if(empty($available)){
