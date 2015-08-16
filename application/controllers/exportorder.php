@@ -51,24 +51,38 @@ class Exportorder extends MY_Controller {
         $this->load->view('template', $this->data);
     }
 
+    private function header(){
+        $this->va_excel->getActiveSheet()->getRowDimension('2')->setRowHeight(20);
+        $this->va_excel->getActiveSheet()->getRowDimension('1')->setRowHeight(20);
+        $this->va_excel->getActiveSheet()->freezePane('H3');
+        $this->va_excel->getActiveSheet()->mergeCells('A1:C1');
+        $this->va_excel->getActiveSheet()->mergeCells('E2:F2');
+        $this->va_excel->getActiveSheet()->setCellValue('A2', 'Order Number')->getColumnDimension('A')->setWidth(20);
+        $this->va_excel->getActiveSheet()->setCellValue('B2', 'Grand Total')->getColumnDimension('B')->setWidth(20);
+        $this->va_excel->getActiveSheet()->setCellValue('C2', 'Total Items')->getColumnDimension('C')->setWidth(20);
+        $this->va_excel->getActiveSheet()->setCellValue('D2', 'Status')->getColumnDimension('D')->setWidth(20);
+        $this->va_excel->getActiveSheet()->setCellValue('E2', 'Order date')->getColumnDimension('E')->setWidth(20);
+    }
+
     public function save(){
         $post = $this->input->post("exportorder");
         $result = $this->exportorder_m->getData($post['client_id'], $post['period1'], $post['period2']);
+
+        $style = array(
+            'alignment' => array(
+                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'vertical'   => PHPExcel_Style_Alignment::VERTICAL_CENTER
+            ),
+            'font'  => array(
+                'size'  => 10,
+                'name'  => 'Verdana'
+            ));
 
         if(!empty ($result[0]) || !empty($result[1]) || !empty( $result[2]) || !empty( $result[3])) {
             $this->va_excel->setActiveSheetIndex(0);
             $this->va_excel->getActiveSheet()->setTitle('Bank Transfer Order');
 
-            $this->va_excel->getActiveSheet()->getRowDimension('2')->setRowHeight(20);
-            $this->va_excel->getActiveSheet()->getRowDimension('1')->setRowHeight(20);
-            $this->va_excel->getActiveSheet()->freezePane('H3');
-            $this->va_excel->getActiveSheet()->mergeCells('A1:C1');
-            $this->va_excel->getActiveSheet()->mergeCells('E2:F2');
-            $this->va_excel->getActiveSheet()->setCellValue('A2', 'Order Number')->getColumnDimension('A')->setWidth(10);
-            $this->va_excel->getActiveSheet()->setCellValue('B2', 'Grand Total')->getColumnDimension('B')->setWidth(10);
-            $this->va_excel->getActiveSheet()->setCellValue('C2', 'Total Items')->getColumnDimension('C')->setWidth(10);
-            $this->va_excel->getActiveSheet()->setCellValue('D2', 'Status')->getColumnDimension('C')->setWidth(10);
-            $this->va_excel->getActiveSheet()->setCellValue('E2', 'Order date')->getColumnDimension('C')->setWidth(10);
+            $this->header();
 
             if (!empty($result[0])) {
                 $statList = array(
@@ -87,9 +101,7 @@ class Exportorder extends MY_Controller {
                         for ($b = 0; $b < count($items); $b++) {
                             $sum += ceil($items[$b]->qty);
                         }
-                    }
-                    else if (unserialize($item['items']) !== false)
-                    {
+                    }else if (unserialize($item['items']) !== false){
                         $items = unserialize($item['items']);
                         for ($i = 0; $i < count($items); $i++) {
                         }
@@ -97,16 +109,15 @@ class Exportorder extends MY_Controller {
                         for ($b = 0; $b < count($items); $b++) {
                             $sum += ceil($items[$b]['qty']);
                         }
-                    }
-                    else {
+                    }else {
                         $sum=0;
                     }
                     $this->va_excel->getActiveSheet()->mergeCells('E' . $lup . ':F' . $lup . '');
-                    $this->va_excel->getActiveSheet()->setCellValue('A' . $lup, $item['order_number']);
-                    $this->va_excel->getActiveSheet()->setCellValue('B' . $lup, $item['amount']);
-                    $this->va_excel->getActiveSheet()->setCellValue('C' . $lup, $sum);
-                    $this->va_excel->getActiveSheet()->setCellValue('D' . $lup, $status);
-                    $this->va_excel->getActiveSheet()->setCellValue('E' . $lup, $item['created_at']);
+                    $this->va_excel->getActiveSheet()->setCellValue('A' . $lup, $item['order_number'])->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('B' . $lup, $item['amount'])->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('C' . $lup, $sum)->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('D' . $lup, $status)->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->mergeCells('E'.$lup.':F'.$lup)->setCellValue('E' . $lup, $item['created_at'])->getDefaultStyle()->applyFromArray($style);
                     $lup++;
                 }
                 $this->va_excel->getActiveSheet()->setCellValue('A1', 'Bank Transfer Order ' . $item['client_code'] . '');
@@ -116,16 +127,7 @@ class Exportorder extends MY_Controller {
             $this->va_excel->setActiveSheetIndex(1);
             $this->va_excel->getActiveSheet()->setTitle('COD Order');
 
-            $this->va_excel->getActiveSheet()->getRowDimension('2')->setRowHeight(20);
-            $this->va_excel->getActiveSheet()->getRowDimension('1')->setRowHeight(20);
-            $this->va_excel->getActiveSheet()->freezePane('H3');
-            $this->va_excel->getActiveSheet()->mergeCells('A1:C1');
-            $this->va_excel->getActiveSheet()->mergeCells('E2:F2');
-            $this->va_excel->getActiveSheet()->setCellValue('A2', 'Order Number')->getColumnDimension('A')->setWidth(10);
-            $this->va_excel->getActiveSheet()->setCellValue('B2', 'Grand Total')->getColumnDimension('B')->setWidth(10);
-            $this->va_excel->getActiveSheet()->setCellValue('C2', 'Total Items')->getColumnDimension('C')->setWidth(10);
-            $this->va_excel->getActiveSheet()->setCellValue('D2', 'Status')->getColumnDimension('C')->setWidth(10);
-            $this->va_excel->getActiveSheet()->setCellValue('E2', 'Order date')->getColumnDimension('C')->setWidth(10);
+            $this->header();
 
             if (!empty($result[1])) {
                 $statList = array(
@@ -170,19 +172,7 @@ class Exportorder extends MY_Controller {
             $this->va_excel->createSheet();
             $this->va_excel->setActiveSheetIndex(2);
             $this->va_excel->getActiveSheet()->setTitle('Paypal Order');
-
-            $this->va_excel->getActiveSheet()->setTitle('Paypal Order');
-            $this->va_excel->getActiveSheet()->getRowDimension('2')->setRowHeight(20);
-            $this->va_excel->getActiveSheet()->getRowDimension('1')->setRowHeight(20);
-            $this->va_excel->getActiveSheet()->freezePane('H3');
-
-            $this->va_excel->getActiveSheet()->mergeCells('A1:C1');
-            $this->va_excel->getActiveSheet()->mergeCells('E2:F2');
-            $this->va_excel->getActiveSheet()->setCellValue('A2', 'Order Number')->getColumnDimension('A')->setWidth(20);
-            $this->va_excel->getActiveSheet()->setCellValue('B2', 'Grand Total')->getColumnDimension('B')->setWidth(20);
-            $this->va_excel->getActiveSheet()->setCellValue('C2', 'Total Items')->getColumnDimension('C')->setWidth(20);
-            $this->va_excel->getActiveSheet()->setCellValue('D2', 'Status')->getColumnDimension('C')->setWidth(20);
-            $this->va_excel->getActiveSheet()->setCellValue('E2', 'Order date')->getColumnDimension('C')->setWidth(20);
+            $this->header();
 
             if (!empty($result[2])) {
                 $statList = array(
@@ -231,17 +221,7 @@ class Exportorder extends MY_Controller {
             $this->va_excel->setActiveSheetIndex(3);
 
             $this->va_excel->getActiveSheet()->setTitle('Credit Card Order');
-            $this->va_excel->getActiveSheet()->getRowDimension('2')->setRowHeight(20);
-            $this->va_excel->getActiveSheet()->getRowDimension('1')->setRowHeight(20);
-            $this->va_excel->getActiveSheet()->freezePane('H3');
-
-            $this->va_excel->getActiveSheet()->mergeCells('A1:C1');
-            $this->va_excel->getActiveSheet()->mergeCells('E2:F2');
-            $this->va_excel->getActiveSheet()->setCellValue('A2', 'Order Number')->getColumnDimension('A')->setWidth(10);
-            $this->va_excel->getActiveSheet()->setCellValue('B2', 'Grand Total')->getColumnDimension('B')->setWidth(10);
-            $this->va_excel->getActiveSheet()->setCellValue('C2', 'Total Items')->getColumnDimension('C')->setWidth(10);
-            $this->va_excel->getActiveSheet()->setCellValue('D2', 'Status')->getColumnDimension('C')->setWidth(10);
-            $this->va_excel->getActiveSheet()->setCellValue('E2', 'Order date')->getColumnDimension('C')->setWidth(10);
+            $this->header();
 
             if (!empty($result[3])) {
                 $statList = array(
