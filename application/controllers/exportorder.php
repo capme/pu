@@ -54,14 +54,19 @@ class Exportorder extends MY_Controller {
     private function header(){
         $this->va_excel->getActiveSheet()->getRowDimension('2')->setRowHeight(20);
         $this->va_excel->getActiveSheet()->getRowDimension('1')->setRowHeight(20);
-        $this->va_excel->getActiveSheet()->freezePane('H3');
+        $this->va_excel->getActiveSheet()->freezePane('K3');
         $this->va_excel->getActiveSheet()->mergeCells('A1:C1');
-        $this->va_excel->getActiveSheet()->mergeCells('E2:F2');
-        $this->va_excel->getActiveSheet()->setCellValue('A2', 'Order Number')->getColumnDimension('A')->setWidth(20);
-        $this->va_excel->getActiveSheet()->setCellValue('B2', 'Grand Total')->getColumnDimension('B')->setWidth(20);
-        $this->va_excel->getActiveSheet()->setCellValue('C2', 'Total Items')->getColumnDimension('C')->setWidth(20);
-        $this->va_excel->getActiveSheet()->setCellValue('D2', 'Status')->getColumnDimension('D')->setWidth(20);
-        $this->va_excel->getActiveSheet()->setCellValue('E2', 'Order date')->getColumnDimension('E')->setWidth(20);
+
+        $this->va_excel->getActiveSheet()->setCellValue('A2', 'No')->getColumnDimension('A')->setWidth(4);
+        $this->va_excel->getActiveSheet()->setCellValue('B2', 'Order Number')->getColumnDimension('B')->setWidth(17);
+        $this->va_excel->getActiveSheet()->setCellValue('C2', 'Grand Total')->getColumnDimension('C')->setWidth(17);
+        $this->va_excel->getActiveSheet()->setCellValue('D2', 'Total Items')->getColumnDimension('D')->setWidth(12);
+        $this->va_excel->getActiveSheet()->setCellValue('E2', 'Status')->getColumnDimension('E')->setWidth(10);
+        $this->va_excel->getActiveSheet()->setCellValue('F2', 'Order date')->getColumnDimension('F')->setWidth(18);
+        $this->va_excel->getActiveSheet()->setCellValue('G2', 'SKU')->getColumnDimension('G')->setWidth(20);
+        $this->va_excel->getActiveSheet()->setCellValue('H2', 'SKU Description')->getColumnDimension('H')->setWidth(30);
+        $this->va_excel->getActiveSheet()->setCellValue('I2', 'Approved Date')->getColumnDimension('I')->setWidth(18);
+        $this->va_excel->getActiveSheet()->setCellValue('J2', 'Approved By')->getColumnDimension('J')->setWidth(18);
     }
 
     public function save(){
@@ -83,6 +88,8 @@ class Exportorder extends MY_Controller {
             $this->va_excel->getActiveSheet()->setTitle('Bank Transfer Order');
 
             $this->header();
+            $lup = 3;
+            $no=1;
 
             if (!empty($result[0])) {
                 $statList = array(
@@ -90,10 +97,11 @@ class Exportorder extends MY_Controller {
                     1 => array("Approve", "success"),
                     2 => array("Cancel", "danger")
                 );
-                $lup = 3;
+
                 foreach ($result[0] as $item) {
                     $status = $statList[$item['status']][0];
                     $items = json_decode($item['items']);
+
                     if (!empty($items)) {
                         for ($i = 0; $i < count($items); $i++) {
                         }
@@ -104,7 +112,18 @@ class Exportorder extends MY_Controller {
                     }else if (unserialize($item['items']) !== false){
                         $items = unserialize($item['items']);
                         for ($i = 0; $i < count($items); $i++) {
+                            if(count($items) > 1){
+                                $lup =$lup+$i;
+                                $sku=trim($items[$i]['name']);
+                                $skuDesc = $this->exportorder_m->getDescription($item['client_id'], $sku);
+                                $this->va_excel->getActiveSheet()->setCellValue('G' . $lup, $sku)->getDefaultStyle()->applyFromArray($style);
+                                $this->va_excel->getActiveSheet()->setCellValue('H' . $lup, $skuDesc['sku_description'])->getDefaultStyle()->applyFromArray($style);
+                            }else{
+                                $sku=trim($items[$i]['name']);
+                                $skuDesc = $this->exportorder_m->getDescription($item['client_id'], $sku);
+                            }
                         }
+
                         $sum = 0;
                         for ($b = 0; $b < count($items); $b++) {
                             $sum += ceil($items[$b]['qty']);
@@ -112,12 +131,17 @@ class Exportorder extends MY_Controller {
                     }else {
                         $sum=0;
                     }
-                    $this->va_excel->getActiveSheet()->mergeCells('E' . $lup . ':F' . $lup . '');
-                    $this->va_excel->getActiveSheet()->setCellValue('A' . $lup, $item['order_number'])->getDefaultStyle()->applyFromArray($style);
-                    $this->va_excel->getActiveSheet()->setCellValue('B' . $lup, $item['amount'])->getDefaultStyle()->applyFromArray($style);
-                    $this->va_excel->getActiveSheet()->setCellValue('C' . $lup, $sum)->getDefaultStyle()->applyFromArray($style);
-                    $this->va_excel->getActiveSheet()->setCellValue('D' . $lup, $status)->getDefaultStyle()->applyFromArray($style);
-                    $this->va_excel->getActiveSheet()->mergeCells('E'.$lup.':F'.$lup)->setCellValue('E' . $lup, $item['created_at'])->getDefaultStyle()->applyFromArray($style);
+
+                    $this->va_excel->getActiveSheet()->setCellValue('A' . $lup, $no++)->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('B' . $lup, $item['order_number'])->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('C' . $lup, $item['amount'])->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('D' . $lup, $sum)->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('E' . $lup, $status)->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('F' . $lup, $item['created_at'])->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('G' . $lup, $sku)->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('H' . $lup, $skuDesc['sku_description'])->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('I' . $lup, $item['updated_at'])->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('J' . $lup, $item['fullname'])->getDefaultStyle()->applyFromArray($style);
                     $lup++;
                 }
                 $this->va_excel->getActiveSheet()->setCellValue('A1', 'Bank Transfer Order ' . $item['client_code'] . '');
@@ -138,12 +162,23 @@ class Exportorder extends MY_Controller {
                     4 => array("Cancel", "danger")
                 );
 
-                $lup = 3;
                 foreach ($result[1] as $item) {
                     $status = $statList[$item['status']][0];
                     $items = json_decode($item['items']);
                     if (!empty($items)) {
                         for ($i = 0; $i < count($items); $i++) {
+                            if(count($items > 1)){
+                                $lup =$lup+$i;
+                                $exSku = explode('(',$items[$i]->item);
+                                $sku=trim(rtrim($exSku[1],')'));
+                                $skuDesc = $this->exportorder_m->getDescription($item['client_id'], $sku);
+                                $this->va_excel->getActiveSheet()->setCellValue('G' . $lup, $sku)->getDefaultStyle()->applyFromArray($style);
+                                $this->va_excel->getActiveSheet()->setCellValue('H' . $lup, $skuDesc['sku_description'])->getDefaultStyle()->applyFromArray($style);
+                            }else{
+                                $exSku = explode('(',$items[$i]->item);
+                                $sku=trim(rtrim($exSku[1],')'));
+                                $skuDesc = $this->exportorder_m->getDescription($item['client_id'], $sku);
+                            }
                         }
                         $sum = 0;
                         for ($b = 0; $b < count($items); $b++) {
@@ -158,12 +193,17 @@ class Exportorder extends MY_Controller {
                             $sum += ceil($items[$b]['qty']);
                         }
                     }
-                    $this->va_excel->getActiveSheet()->mergeCells('E' . $lup . ':F' . $lup . '');
-                    $this->va_excel->getActiveSheet()->setCellValue('A' . $lup, $item['order_number']);
-                    $this->va_excel->getActiveSheet()->setCellValue('B' . $lup, $item['amount']);
-                    $this->va_excel->getActiveSheet()->setCellValue('C' . $lup, $sum);
-                    $this->va_excel->getActiveSheet()->setCellValue('D' . $lup, $status);
-                    $this->va_excel->getActiveSheet()->setCellValue('E' . $lup, $item['created_at']);
+
+                    $this->va_excel->getActiveSheet()->setCellValue('A' . $lup, $no++)->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('B' . $lup, $item['order_number'])->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('C' . $lup, $item['amount'])->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('D' . $lup, $sum)->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('E' . $lup, $status)->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('F' . $lup, $item['created_at'])->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('G' . $lup, $sku)->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('H' . $lup, $skuDesc['sku_description'])->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('I' . $lup, $item['updated_at'])->getDefaultStyle()->applyFromArray($style);
+                    $this->va_excel->getActiveSheet()->setCellValue('J' . $lup, $item['fullname'])->getDefaultStyle()->applyFromArray($style);
                     $lup++;
                 }
                 $this->va_excel->getActiveSheet()->setCellValue('A1', 'COD Order ' . $item['client_code'] . '');
