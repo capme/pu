@@ -52,22 +52,17 @@ class Exportorder_m extends MY_Model {
         return $records;
     }
 
-    public function getPaypal($client, $period1, $period2){
-        $this->db->select('client_code,order_number,'.$this->tablePaypal.'.items,'.$this->tablePaypal.'.status, '.$this->tablePaypal.'.amount, '.$this->tablePaypal.'.created_at');
-        $this->db->from($this->tablePaypal);
-        $this->db->join($this->table, $this->table.".id  = ".$this->tablePaypal.".client_id");
-        $this->db->where($this->table.".id", $client);
-        $this->db->where($this->tablePaypal.'.created_at >=',$period1);
-        $this->db->where($this->tablePaypal.'.created_at <=',$period2);
-        return $this->db->get()->result_array();
-    }
-
     public function getData($client, $period1, $period2){
         $banktransfer=$this->getBankTransfer($client, $period1, $period2);
         $cod=$this->getCod($client, $period1, $period2);
         $paypal=$this->getPaypal($client, $period1, $period2);
         $creditcard= $this->getCreditCard($client, $period1, $period2);
-        return array($banktransfer, $cod, $paypal, $creditcard);
+        $clientName= $this->getClientName($client);
+        return array($clientName, $banktransfer, $cod, $paypal, $creditcard);
+    }
+
+    public function getClientName($client){
+       return $this->db->get_where($this->table, array('id'=>$client))->row_array();
     }
 
     public function getBankTransfer($client, $period1, $period2){
@@ -87,17 +82,29 @@ class Exportorder_m extends MY_Model {
         $this->db->select('client_code, order_number,'.$this->tableCod.'.amount,'.$this->tableCod.'.client_id,'.$this->tableCod.'.updated_at,'.$this->tableCod.'.status, '.$this->users.'.fullname,'.$this->tableCod.'.items, '.$this->tableCod.'.created_at');
         $this->db->from($this->tableCod);
         $this->db->join($this->table, $this->table.".id = ".$this->tableCod.".client_id");
-        $this->db->join($this->users, $this->users.".pkUserId=".$this->tableCod.".updated_by");
+        $this->db->join($this->users, $this->users.".pkUserId=".$this->tableCod.".updated_by","LEFT");
         $this->db->where($this->tableCod.'.created_at >=',$period1);
         $this->db->where($this->tableCod.'.created_at <=',$period2);
         $this->db->where($this->table.".id", $client);
         return $this->db->get()->result_array();
     }
 
+    public function getPaypal($client, $period1, $period2){
+        $this->db->select('client_code,order_number,'.$this->tablePaypal.'.client_id,'.$this->users.'.fullname,'.$this->tablePaypal.'.items,'.$this->tablePaypal.'.updated_at,'.$this->tablePaypal.'.status, '.$this->tablePaypal.'.amount, '.$this->tablePaypal.'.created_at');
+        $this->db->from($this->tablePaypal);
+        $this->db->join($this->table, $this->table.".id  = ".$this->tablePaypal.".client_id");
+        $this->db->join($this->users, $this->users.".pkUserId=".$this->tablePaypal.".updated_by","LEFT");
+        $this->db->where($this->tablePaypal.'.created_at >=',$period1);
+        $this->db->where($this->tablePaypal.'.created_at <=',$period2);
+        $this->db->where($this->table.".id", $client);
+        return $this->db->get()->result_array();
+    }
+
     public function getCreditCard($client, $period1, $period2){
-        $this->db->select('client_code, order_number, '.$this->tableCredit.'.amount, '.$this->tableCredit.'.items, '.$this->tableCredit.'.created_at,'.$this->tableCredit.'.status');
+        $this->db->select('client_code, order_number, '.$this->users.'.fullname,'.$this->tableCredit.'.updated_at,'.$this->tableCredit.'.client_id,'.$this->tableCredit.'.amount, '.$this->tableCredit.'.items, '.$this->tableCredit.'.created_at,'.$this->tableCredit.'.status');
         $this->db->from($this->tableCredit);
-        $this->db->join($this->table, $this->table.".id = ".$this->tableCredit.".client_id" );
+        $this->db->join($this->table, $this->table.".id = ".$this->tableCredit.".client_id");
+        $this->db->join($this->users, $this->users.".pkUserId=".$this->tableCredit.".updated_by", "LEFT");
         $this->db->where($this->tableCredit.'.created_at >=',$period1);
         $this->db->where($this->tableCredit.'.created_at <=',$period2);
         $this->db->where($this->table.".id", $client);
@@ -105,6 +112,9 @@ class Exportorder_m extends MY_Model {
     }
 
     public function getDescription($client_id, $sku){
-        return $this->db->get_where('inv_items_'.$client_id, array('sku_simple'=>$sku))->row_array();
+        $this->db->select('sku_description');
+        $this->db->where('sku_simple', $sku);
+        $table = $this->db->get('inv_items_'.$client_id);
+        return $table->row_array();
     }
 }
