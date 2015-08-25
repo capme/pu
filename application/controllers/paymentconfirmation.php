@@ -81,7 +81,7 @@ class Paymentconfirmation extends MY_Controller {
 
 		$this->va_input->addInput( array("name" => "client_code", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value" => @$value[0]['client_code'], "msg" => @$msg['client_code'], "disabled"=>"disabled") );
 		$this->va_input->addInput( array("name" => "sku", "placeholder" => "Order Number", "help" => "Order Number", "label" => "Order Number", "value" => @$value[0]['order_number'], "msg" => @$msg['order_number'], "disabled"=>"disabled") );
-		$this->va_input->addInput( array("name" => "status", "value" => $this->getStatus()[@$value[0]['status_bank']], "msg" => @$msg['status'], "label" => "Status", "help" => "Order Status", "disabled"=>"disabled") );
+		$this->va_input->addInput( array("name" => "status", "value" => $this->getStatus()[@$value[0]['status']], "msg" => @$msg['status'], "label" => "Status", "help" => "Order Status", "disabled"=>"disabled") );
 		$this->va_input->addInput( array("name" => "name", "value" => @$value[0]['name'], "msg" => @$msg['name'], "label" => "Name", "help" => "Name", "disabled"=>"disabled") );
 		$this->va_input->addInput( array("name" => "transaction_date", "value" => @$value[0]['transaction_date'], "msg" => @$msg['transaction_date'], "label" => "Transfer Date", "help" => "Transaction Date", "disabled"=>"disabled") );
 		$this->va_input->addInput( array("name" => "amount", "value" => number_format(@$value[0]['amount'], 2), "msg" => @$msg['amount'], "label" => "Amount", "help" => "Amount", "disabled"=>"disabled") );
