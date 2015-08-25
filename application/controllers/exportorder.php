@@ -148,20 +148,26 @@ class Exportorder extends MY_Controller {
             $items = json_decode($item['items']);
             $sum = 0;
 
-            if (!empty($items)) {
-                for ($i = 0; $i < count($items); $i++) {
-                    $sum += ceil($items[$i]->qty);
-                }
-            }
-            else if (!empty(unserialize($item['items']))){
+            $this->va_excel->getActiveSheet()->setCellValue('A' . $lup, $no++)->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('B' . $lup, $item['order_number'])->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('C' . $lup, $item['amount'])->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('E' . $lup, $status)->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('F' . $lup, $item['created_at'])->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('I' . $lup, $item['updated_at'])->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('J' . $lup, $item['fullname'])->getDefaultStyle()->applyFromArray($style);
+
+            if (!empty(unserialize($item['items']))){
                 $itemss = unserialize($item['items']);
+
                 for ($i = 0; $i < count($itemss); $i++) {
                     $sum += ceil($itemss[$i]['qty']);
                     if(count($itemss) > 1){
-                        $lup =$lup+$i;
                         $sku=trim($itemss[$i]['name']);
                         $skuDesc = $this->exportorder_m->getDescription($item['client_id'], $sku);
                         $sum=$itemss[$i]['qty'];
+                        if($i >=1){
+                            $lup = $lup+1;
+                        }
 
                         $this->va_excel->getActiveSheet()->setCellValue('D' . $lup, $sum)->getDefaultStyle()->applyFromArray($style);
                         $this->va_excel->getActiveSheet()->setCellValue('G' . $lup, $sku)->getDefaultStyle()->applyFromArray($style);
@@ -179,18 +185,11 @@ class Exportorder extends MY_Controller {
                 $sum=0;
             }
 
-            $this->va_excel->getActiveSheet()->setCellValue('A' . $lup, $no++)->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('B' . $lup, $item['order_number'])->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('C' . $lup, $item['amount'])->getDefaultStyle()->applyFromArray($style);
             $this->va_excel->getActiveSheet()->setCellValue('D' . $lup, $sum)->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('E' . $lup, $status)->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('F' . $lup, $item['created_at'])->getDefaultStyle()->applyFromArray($style);
             $this->va_excel->getActiveSheet()->setCellValue('G' . $lup, $sku)->getDefaultStyle()->applyFromArray($style);
             if(!empty($skuDesc)){
                 $this->va_excel->getActiveSheet()->setCellValue('H' . $lup, $skuDesc['sku_description'])->getDefaultStyle()->applyFromArray($style);
             }
-            $this->va_excel->getActiveSheet()->setCellValue('I' . $lup, $item['updated_at'])->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('J' . $lup, $item['fullname'])->getDefaultStyle()->applyFromArray($style);
             $lup++;
         }
         $this->va_excel->getActiveSheet()->setCellValue('A1', 'Bank Transfer Order ' . $item['client_code'] . '');
@@ -210,15 +209,26 @@ class Exportorder extends MY_Controller {
             $status = $statList[$item['status']][0];
             $items = json_decode($item['items']);
             $sum = 0;
+
+            $this->va_excel->getActiveSheet()->setCellValue('A' . $lup, $no++)->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('B' . $lup, $item['order_number'])->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('C' . $lup, $item['amount'])->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('E' . $lup, $status)->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('F' . $lup, $item['created_at'])->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('I' . $lup, $item['updated_at'])->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('J' . $lup, $item['fullname'])->getDefaultStyle()->applyFromArray($style);
+
             if (!empty($items)) {
                 for ($i = 0; $i < count($items); $i++) {
                     $sum += ceil($items[$i]->qty);
                     if(count($items > 1)){
-                        $lup =$lup+$i;
                         $exSku = explode('(',$items[$i]->item);
                         $sku=trim(rtrim($exSku[1],')'));
                         $skuDesc = $this->exportorder_m->getDescription($item['client_id'], $sku);
                         $sum=$items[$i]->qty;
+                        if($i >=1){
+                            $lup = $lup+1;
+                        }
 
                         $this->va_excel->getActiveSheet()->setCellValue('D' . $lup, $sum)->getDefaultStyle()->applyFromArray($style);
                         $this->va_excel->getActiveSheet()->setCellValue('G' . $lup, $sku)->getDefaultStyle()->applyFromArray($style);
@@ -231,29 +241,17 @@ class Exportorder extends MY_Controller {
                         $skuDesc = $this->exportorder_m->getDescription($item['client_id'], $sku);
                     }
                 }
-            } else if(!empty(unserialize($item['items']))){
-                $itemss = unserialize($item['items']);
-                for ($i = 0; $i < count($itemss); $i++) {
-                    $sum += ceil($itemss[$i]['qty']);
-                }
             }else{
                 $sku='';
                 $skuDesc['sku_description']='';
                 $sum=0;
             }
 
-            $this->va_excel->getActiveSheet()->setCellValue('A' . $lup, $no++)->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('B' . $lup, $item['order_number'])->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('C' . $lup, $item['amount'])->getDefaultStyle()->applyFromArray($style);
             $this->va_excel->getActiveSheet()->setCellValue('D' . $lup, $sum)->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('E' . $lup, $status)->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('F' . $lup, $item['created_at'])->getDefaultStyle()->applyFromArray($style);
             $this->va_excel->getActiveSheet()->setCellValue('G' . $lup, $sku)->getDefaultStyle()->applyFromArray($style);
             if(!empty($skuDesc)){
                 $this->va_excel->getActiveSheet()->setCellValue('H' . $lup, $skuDesc['sku_description'])->getDefaultStyle()->applyFromArray($style);
             }
-            $this->va_excel->getActiveSheet()->setCellValue('I' . $lup, $item['updated_at'])->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('J' . $lup, $item['fullname'])->getDefaultStyle()->applyFromArray($style);
             $lup++;
         }
         $this->va_excel->getActiveSheet()->setCellValue('A1', 'COD Order ' . $item['client_code'] . '');
@@ -277,15 +275,26 @@ class Exportorder extends MY_Controller {
             $status = $statList[$item['status']][0];
             $items = json_decode($item['items']);
             $sum = 0;
+
+            $this->va_excel->getActiveSheet()->setCellValue('A' . $lup, $no++)->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('B' . $lup, $item['order_number'])->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('C' . $lup, $item['amount'])->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('E' . $lup, $status)->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('F' . $lup, $item['created_at'])->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('I' . $lup, $item['updated_at'])->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('J' . $lup, $item['fullname'])->getDefaultStyle()->applyFromArray($style);
+
             if (!empty($items)) {
                 for ($i = 0; $i < count($items); $i++) {
                     $sum += ceil($items[$i]->qty);
                     if(count($items > 1)){
-                        $lup =$lup+$i;
                         $exSku = explode(' ',$items[$i]->item);
                         $sku=trim($exSku[count($exSku)-1],'()');
                         $skuDesc = $this->exportorder_m->getDescription($item['client_id'], $sku);
                         $sum =$items[$i]->qty;
+                        if($i >=1){
+                            $lup = $lup+1;
+                        }
 
                         $this->va_excel->getActiveSheet()->setCellValue('D' . $lup, $sum)->getDefaultStyle()->applyFromArray($style);
                         $this->va_excel->getActiveSheet()->setCellValue('G' . $lup, $sku)->getDefaultStyle()->applyFromArray($style);
@@ -298,30 +307,17 @@ class Exportorder extends MY_Controller {
                         $skuDesc = $this->exportorder_m->getDescription($item['client_id'], $sku);
                     }
                 }
-            } else if(!empty(unserialize($item['items']))){
-                $itemss = unserialize($item['items']);
-                for ($i = 0; $i < count($itemss); $i++) {
-                    $sum += ceil($itemss[$i]['qty']);
-                }
             }else{
                 $sku='';
                 $skuDesc['sku_description']='';
                 $sum=0;
             }
 
-            $this->va_excel->getActiveSheet()->setCellValue('A' . $lup, $no++)->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('B' . $lup, $item['order_number'])->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('C' . $lup, $item['amount'])->getDefaultStyle()->applyFromArray($style);
             $this->va_excel->getActiveSheet()->setCellValue('D' . $lup, $sum)->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('E' . $lup, $status)->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('F' . $lup, $item['created_at'])->getDefaultStyle()->applyFromArray($style);
             $this->va_excel->getActiveSheet()->setCellValue('G' . $lup, $sku)->getDefaultStyle()->applyFromArray($style);
             if(!empty($skuDesc)){
                 $this->va_excel->getActiveSheet()->setCellValue('H' . $lup, $skuDesc['sku_description'])->getDefaultStyle()->applyFromArray($style);
             }
-            $this->va_excel->getActiveSheet()->setCellValue('I' . $lup, $item['updated_at'])->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('J' . $lup, $item['fullname'])->getDefaultStyle()->applyFromArray($style);
-
             $lup++;
         }
         $this->va_excel->getActiveSheet()->setCellValue('A1', 'Paypal Order ' . $item['client_code'] . '');
@@ -346,15 +342,25 @@ class Exportorder extends MY_Controller {
             $items = json_decode($item['items']);
             $sum = 0;
 
+            $this->va_excel->getActiveSheet()->setCellValue('A' . $lup, $no++)->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('B' . $lup, $item['order_number'])->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('C' . $lup, $item['amount'])->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('E' . $lup, $status)->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('F' . $lup, $item['created_at'])->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('I' . $lup, $item['updated_at'])->getDefaultStyle()->applyFromArray($style);
+            $this->va_excel->getActiveSheet()->setCellValue('J' . $lup, $item['fullname'])->getDefaultStyle()->applyFromArray($style);
+
             if (!empty($items)) {
                 for ($i = 0; $i < count($items); $i++) {
                     $sum += ceil($items[$i]->qty);
                     if(count($items > 1)){
-                        $lup =$lup+$i;
                         $exSku = explode('(',$items[$i]->item);
                         $sku=trim(rtrim($exSku[1],')'));
                         $skuDesc = $this->exportorder_m->getDescription($item['client_id'], $sku);
                         $sum =$items[$i]->qty;
+                        if($i >=1){
+                            $lup = $lup+1;
+                        }
 
                         $this->va_excel->getActiveSheet()->setCellValue('D' . $lup, $sum)->getDefaultStyle()->applyFromArray($style);
                         $this->va_excel->getActiveSheet()->setCellValue('G' . $lup, $sku)->getDefaultStyle()->applyFromArray($style);
@@ -367,28 +373,16 @@ class Exportorder extends MY_Controller {
                         $skuDesc = $this->exportorder_m->getDescription($item['client_id'], $sku);
                     }
                 }
-            } else if(!empty(unserialize($item['items']))) {
-                $itemss = unserialize($item['items']);
-                for ($i = 0; $i < count($itemss); $i++) {
-                    $sum += ceil($itemss[$i]['qty']);
-                }
             }else{
                 $sku='';
                 $skuDesc['sku_description']='';
             }
 
-            $this->va_excel->getActiveSheet()->setCellValue('A' . $lup, $no++)->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('B' . $lup, $item['order_number'])->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('C' . $lup, $item['amount'])->getDefaultStyle()->applyFromArray($style);
             $this->va_excel->getActiveSheet()->setCellValue('D' . $lup, $sum)->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('E' . $lup, $status)->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('F' . $lup, $item['created_at'])->getDefaultStyle()->applyFromArray($style);
             $this->va_excel->getActiveSheet()->setCellValue('G' . $lup, $sku)->getDefaultStyle()->applyFromArray($style);
             if(!empty($skuDesc)){
                 $this->va_excel->getActiveSheet()->setCellValue('H' . $lup, $skuDesc['sku_description'])->getDefaultStyle()->applyFromArray($style);
             }
-            $this->va_excel->getActiveSheet()->setCellValue('I' . $lup, $item['updated_at'])->getDefaultStyle()->applyFromArray($style);
-            $this->va_excel->getActiveSheet()->setCellValue('J' . $lup, $item['fullname'])->getDefaultStyle()->applyFromArray($style);
             $lup++;
         }
         $this->va_excel->getActiveSheet()->setCellValue('A1', 'Credit Card Order ' . $item['client_code'] . '');
