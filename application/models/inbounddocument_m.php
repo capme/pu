@@ -813,7 +813,8 @@ class Inbounddocument_m extends MY_Model {
 			$cost = $retailprice;
 			
 			//upc
-			if($client == "6"){
+			//if($client == "6" ){
+            if(!empty($isMultiBrand)){
 				//internal client
 				//get 2 digit inisial brand
 				$itemAttrSet = "";
