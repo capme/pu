@@ -77,6 +77,17 @@ class Managecampaign_m extends MY_Model {
         return $query->row();
     }
 
+    public function getData(){
+        return $this->db->get_where($this->table, array("status"=>0))->result_array();
+    }
+
+    public function updateCampaign($result){
+        foreach($result as $data =>$d){
+         $this->db->where('id', $d->id);
+         $this->db->update($this->table, array("status"=>1));
+        }
+    }
+
     public  function newCampaign($post){
         $msg = array();
         $sku = trim($post['sku']);

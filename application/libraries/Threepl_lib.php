@@ -23,7 +23,7 @@ class Threepl_lib {
 	const METHOD_UPDATE_TRACKING = "update_tracking";
 	const METHOD_GET_ORDER_BY_DATE = "get_order_by_date";
     const METHOD_GET_ACTIVE_INVENTORY = "get_active_inventory";
-	
+	const METHOD_GET_CAMPIAIGN="receiveCampaign";
 	
 	function __construct() {
 		$config = config_item("dart");
@@ -275,6 +275,13 @@ class Threepl_lib {
             return array();
         }
     }
+
+    public function sendCampaign($data){
+        $url = trim($this->_dartUrl, "/") . "/" . self::METHOD_GET_CAMPIAIGN;
+        $postData = array('data' => json_encode($data));
+        $response = json_decode($this->postData($url, $postData));
+        return $response;
+    }
 	
 	private function postData($url, $data) {
 		$data[self::PARAM_DART_KEY] = $this->_dartkey;
@@ -287,7 +294,7 @@ class Threepl_lib {
 		curl_setopt($ch,CURLOPT_POSTFIELDS, implode("&", $dataString));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		
-		$result = curl_exec($ch);
+    	$result = curl_exec($ch);
 
 		curl_close($ch);
 
