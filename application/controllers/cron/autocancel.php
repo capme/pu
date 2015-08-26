@@ -11,7 +11,7 @@ class Autocancel extends CI_Controller {
         if (!empty($order)){
                foreach($order as $data){
                    $expired = $data['expired_date'];
-                   $date=$this->db->query("select date('$expired') as date")->row_array();
+                   $date = $date=$this->db->query("SELECT DATE_FORMAT('$expired', '%Y-%m-%d %H') as date")->row_array();
 
                    if($date['date'] == $curdate){
                        $client = $this->client_m->getClientById($data['client_id'])->row_array();

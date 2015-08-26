@@ -125,6 +125,7 @@ class Paymentconfirmation extends MY_Controller {
 		
 		if( $this->mageapi->initSoap($config) ) {
 			$this->mageapi->processOrder($data['order_number']);
+            $this->mageapi->sendNotifBrand($data['client_id'], $data['order_number'], "banktransfer");
 		}
 		redirect("paymentconfirmation");
 	}

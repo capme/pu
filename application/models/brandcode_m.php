@@ -51,16 +51,48 @@ class Brandcode_m extends MY_Model {
         return $records;
     }
 	public function getOptions($id){
+        //$arrayWhere = array('client_id' => $id, 'option_name' => 'brand_code', 'option_name' => 'inbound_type');
+
 		$this->db->select('*');		
 		$this->db->where('client_id',$id);
-		$this->db->where('option_name','brand_code');
-		return $this->db->get($this->table)->result_array();
+		//$this->db->where('option_name','brand_code');
+        //$this->db->where('option_name','inbound_type');
+        //$this->db->where($arrayWhere);
+        $where = '(option_name="brand_code" or option_name = "inbound_type")';
+        $this->db->where($where);
+        return $this->db->get($this->table)->result_array();
 	}
-	
-	public function updateBrand($id,$data){
-	$value=json_encode($data);
-	$this->db->where('id', $id);
-	$this->db->update($this->table,array('option_value'=>$value));
+
+    public function updateBrand($id,$idinboundtype,$data, $client_id){
+        //echo $id."<br>";
+        //echo $idinboundtype."<br>";die();
+        //print_r($data);die();
+        //ready formating array to json
+        $arrBrandName = array();
+        $arrBrandInbound = array();
+        foreach($data as $key => $value){
+            $arrBrandName[$key] = $value[0];
+            $arrBrandInbound[$key] = $value[1];
+        }
+        //updating brand name
+        //$value=json_encode($data);
+        //print_r($arrBrandName);
+        //print_r($arrBrandInbound);die();
+        $arrBrandNameJson = json_encode($arrBrandName);
+        $arrBrandInboundJson = json_encode($arrBrandInbound);
+
+        $this->db->where('id', $id);
+        //$this->db->update($this->table,array('option_value'=>$value));
+        $this->db->update($this->table,array('option_value'=>$arrBrandNameJson));
+        //updating brand inbound type
+        //$value=json_encode($data);
+        if($idinboundtype == "0"){
+            $this->db->insert($this->table, array('client_id' => $client_id, 'option_name' => 'inbound_type', 'option_value' => $arrBrandInboundJson));
+        }else {
+            $this->db->where('id', $idinboundtype);
+            //$this->db->update($this->table,array('option_value'=>$value));
+            $this->db->update($this->table, array('option_value' => $arrBrandInboundJson));
+        }
 	}
 
    function getList($brandcode, $withNull = FALSE, $defaultText = "-- Brand --") {

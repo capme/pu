@@ -1519,5 +1519,11 @@ class Inbounddocument_m extends MY_Model {
 		$this->db->where('type',$type);
 		$this->db->update('inb_document',array('status'=>2));
 	}
-	
+	public function getInvItems($client, $sku){
+        if(!$client) return array();
+        $mysql = $this->load->database('mysql', TRUE);
+        $query = $mysql->get_where($this->tableInvItems.'_'.$client, array('sku_simple'=>$sku));
+        $rows = $query->result_array();
+        return $rows;
+    }
 }
