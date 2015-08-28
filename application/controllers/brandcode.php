@@ -69,7 +69,6 @@ class Brandcode extends MY_Controller {
 	
 	public function save(){
 	$post = $this->input->post("brandcode");
-        //print_r($post);die();
 		if(empty($post)) {
 			redirect("brandcode");
 		}
@@ -81,9 +80,9 @@ class Brandcode extends MY_Controller {
             $data=array();
             if (isset($post['cek'])){
                 for($i=0; $i < count($post['brands']); $i++ ){
-                    $code=strtoupper($post['key'][$i]);
+                    $code=trim(strtoupper($post['key'][$i]));
                     $inboundtype=strtolower($post['inboundtype'][$i]);
-                    $brand=strtolower(str_replace(" ","",$post['brands'][$i]));
+                    $brand=trim(strtolower(str_replace(" ","",$post['brands'][$i])));
 
                     $cod = array_merge($cod, array($code));
                     $brnd=array_merge($brnd, array($brand));
@@ -104,9 +103,9 @@ class Brandcode extends MY_Controller {
                 //$data=array_combine($cod,$brnd);
             }else{
                 for($i=0; $i < count($post['brands']); $i++ ){
-                    $code=strtoupper($post['key'][$i]);
+                    $code=trim(strtoupper($post['key'][$i]));
                     $inboundtype=strtolower($post['inboundtype'][$i]);
-                    $brand=strtolower(str_replace(" ","",$post['brands'][$i]));
+                    $brand=trim(strtolower(str_replace(" ","",$post['brands'][$i])));
 
                     $cod = array_merge($cod, array($code));
                     $brnd = array_merge($brnd, array($brand));
