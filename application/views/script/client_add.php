@@ -3,7 +3,7 @@ counter=0;
   function action()
   {
 	length =$('.form-control').length;
-	le = ((length -1)/2)-1;	
+	le = ((length -1)/3)-1;
 	count = le+1;
 	counterNext = counter + 1;
     document.getElementById("key"+counter).innerHTML = "<p><input id='key'  placeholder='Input Brand Name' style='width:80%' class='form-control' type='text' name='brandcode[key]["+count+"]' required><div id=\"key"+counterNext+"\"></div></p>";
