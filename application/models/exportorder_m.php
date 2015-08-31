@@ -74,6 +74,7 @@ class Exportorder_m extends MY_Model {
         $this->db->where($this->tableBankTransfer.'.created_at >=',$period1);
         $this->db->where($this->tableBankTransfer.'.created_at <=',$period2);
         $this->db->where($this->table.".id", $client);
+        $this->db->group_by($this->tableBankTransfer.'.order_number');
         return $this->db->get()->result_array();
 
     }
