@@ -41,7 +41,7 @@ for($a=0; $a < count($brand);$a++){
             <?php
             if(isset($inboundtypes[$a])) {
                 ?>
-                <select name="brandcode[inboundtype][<?php echo $a ?>]">
+                <select name="brandcode[inboundtype][<?php echo $a ?>]" class="form-control">
                     <option value="normal"<?php if ($inboundtypes[$a] == "normal") echo " selected";?>>Normal</option>
                     <option value="scrapping"<?php if ($inboundtypes[$a] == "scrapping") echo " selected";?>>Scrapping</option>
                     <option value="crossdocking"<?php if ($inboundtypes[$a] == "crossdocking") echo " selected";?>>Cross Docking</option>
@@ -49,7 +49,7 @@ for($a=0; $a < count($brand);$a++){
             <?php
             }else{
                 ?>
-                <select name="brandcode[inboundtype][<?php echo $a ?>]">
+                <select name="brandcode[inboundtype][<?php echo $a ?>]" class="form-control">
                     <option value="normal">Normal</option>
                     <option value="scrapping">Scrapping</option>
                     <option value="crossdocking">Cross Docking</option>
