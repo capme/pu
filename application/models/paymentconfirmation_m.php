@@ -181,9 +181,16 @@ class Paymentconfirmation_m extends MY_Model {
                     $time = $temporderdate['temp'];
                     $temp= $this->db->query("select date_add('$time', INTERVAL 12 HOUR) as cancelday")->row_array();
                     $orderdate= $temp['cancelday'];
-                }else{
+                } elseif ($hour < 9){
+                    $tempex = explode(" ",$orderdate );
+                    $tempdate = $tempex[0]." 09:00:00";
+                    $temp= $this->db->query("select date_add('$tempdate', INTERVAL 12 HOUR) as cancelday")->row_array();
+                    $orderdate= $temp['cancelday'];
+                }
+                else{
                     $temp= $this->db->query("select date_add('$orderdate', INTERVAL 12 HOUR) as cancelday")->row_array();
                     $orderdate= $temp['cancelday'];
+
                 }
 
             } while($this->isWeekEnd($orderdate) || $this->isHoliday($orderdate));

@@ -155,6 +155,7 @@ class Codpaymentconfirmation_m extends MY_Model {
                 $counter++;
             }
             while($counter < 3);
+
             foreach ($order as $result) {
                 $available = $this->autocancel_m->cekOrder($result['order_number'], $result['client_id']);
                 if(empty($available)){
@@ -166,7 +167,7 @@ class Codpaymentconfirmation_m extends MY_Model {
     }
 
     public function getPluCodOrder(){
-        $order = $this->db->query("SELECT id,order_number,client_id,created_at, WEEKDAY(created_at) as weekday FROM bank_confirmation where status = 0 and client_id = 6")->result_array();
+        $order = $this->db->query("SELECT id,order_number,client_id,created_at, WEEKDAY(created_at) as weekday FROM cod_confirmation where status = 0 and client_id = 6")->result_array();
         for ($a = 0; $a < count($order); $a++) {
             $orderdate = $order[$a]['created_at'];
             do {
@@ -179,7 +180,13 @@ class Codpaymentconfirmation_m extends MY_Model {
                     $time = $temporderdate['temp'];
                     $temp= $this->db->query("select date_add('$time', INTERVAL 12 HOUR) as cancelday")->row_array();
                     $orderdate= $temp['cancelday'];
-                }else{
+                }elseif ($hour < 9){
+                    $tempex = explode(" ",$orderdate );
+                    $tempdate = $tempex[0]." 09:00:00";
+                    $temp= $this->db->query("select date_add('$tempdate', INTERVAL 12 HOUR) as cancelday")->row_array();
+                    $orderdate= $temp['cancelday'];
+                }
+                else{
                     $temp= $this->db->query("select date_add('$orderdate', INTERVAL 12 HOUR) as cancelday")->row_array();
                     $orderdate= $temp['cancelday'];
                 }
@@ -197,7 +204,7 @@ class Codpaymentconfirmation_m extends MY_Model {
     }
 
     public function getPopCodOrder(){
-        $order = $this->db->query("SELECT id,order_number,client_id,created_at, WEEKDAY(created_at) as weekday FROM bank_confirmation where status = 0 and client_id = 6")->result_array();
+        $order = $this->db->query("SELECT id,order_number,client_id,created_at, WEEKDAY(created_at) as weekday FROM cod_confirmation where status = 0 and client_id = 6")->result_array();
         for ($a = 0; $a < count($order); $a++) {
             $orderdate = $order[$a]['created_at'];
             do {
