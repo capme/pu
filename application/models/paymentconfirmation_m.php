@@ -145,7 +145,6 @@ class Paymentconfirmation_m extends MY_Model {
 
     public function getNewOrder(){
         $order = $this->db->query("SELECT id,order_number,client_id,created_at, WEEKDAY(created_at) as weekday FROM bank_confirmation where status = 0 and client_id != 6 ")->result_array();
-
         for($a=0; $a < count($order); $a++){
             $counter = 1;
             $orderdate=$order[$a]['created_at'];
@@ -157,12 +156,10 @@ class Paymentconfirmation_m extends MY_Model {
                 $counter++;
             }
             while($counter < 3);
-            foreach ($order as $result) {
-                $available = $this->autocancel_m->cekOrder($result['order_number'], $result['client_id']);
-                if(empty($available)){
-                    $data = array("id" => $result['id'], "status"=>0, "created_date"=>$result['created_at'],"order_method" => "bank", "client_id" => $result['client_id'], "order_number" => $result['order_number'], "expired_date" => $orderdate);
-                    $this->db->insert($this->expired, $data);
-                }
+            $available = $this->autocancel_m->cekOrder($order[$a]['order_number'], $order[$a]['client_id']);
+            if(empty($available)){
+                $data = array("id" => $order[$a]['id'], "status"=>0, "created_date"=>$order[$a]['created_at'],"order_method" => "bank", "client_id" => $order[$a]['client_id'], "order_number" => $order[$a]['order_number'], "expired_date" => $orderdate);
+                $this->db->insert($this->expired, $data);
             }
         }
     }
@@ -192,17 +189,15 @@ class Paymentconfirmation_m extends MY_Model {
                     $orderdate= $temp['cancelday'];
 
                 }
+                    $available = $this->autocancel_m->cekOrder($order[$a]['order_number'], $order[$a]['client_id']);
+                    if(empty($available)){
+                        $data = array("id" => $order[$a]['id'], "status"=>0, "created_date"=>$order[$a]['created_at'],"order_method" => "bank", "client_id" => $order[$a]['client_id'], "order_number" => $order[$a]['order_number'], "expired_date" => $orderdate);
+                        $this->db->insert($this->expired, $data);
+                    }
 
             } while($this->isWeekEnd($orderdate) || $this->isHoliday($orderdate));
         }
 
-        foreach ($order as $result) {
-            $available = $this->autocancel_m->cekOrder($result['order_number'], $result['client_id']);
-            if(empty($available)){
-                $data = array("id" => $result['id'], "status"=>0, "created_date"=>$result['created_at'],"order_method" => "bank", "client_id" => $result['client_id'], "order_number" => $result['order_number'], "expired_date" => $orderdate);
-                $this->db->insert($this->expired, $data);
-            }
-        }
     }
 
     public function getPopOrder(){
