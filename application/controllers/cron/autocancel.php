@@ -11,7 +11,7 @@ class Autocancel extends CI_Controller {
         if (!empty($order)){
                foreach($order as $data){
                    $expired = $data['expired_date'];
-                   $date = $date=$this->db->query("SELECT DATE_FORMAT('$expired', '%Y-%m-%d %H') as date")->row_array();
+                   $date=$this->db->query("SELECT DATE_FORMAT('$expired', '%Y-%m-%d %H') as date")->row_array();
 
                    if($date['date'] == $curdate){
                        $client = $this->client_m->getClientById($data['client_id'])->row_array();
@@ -27,13 +27,12 @@ class Autocancel extends CI_Controller {
                            if($data['order_method'] == 'bank'){
                                 $this->paymentconfirmation_m->cancelOrder($data['order_number']);
 
-                                $sethistory=array("order_id"=>$data['id'],"type"=>2, "created_at"=>$time,"status"=>2, "note"=>"expired_order","created_by"=>2);
+                                $sethistory=array("order_id"=>$data['id'],"type"=>2, "created_at"=>$time,"status"=>2, "note"=>"expired order (autocancel)","created_by"=>2);
                                 $this->paymentconfirmation_m->setHistory($sethistory);
-                           }
-                           else{
+                           }else{
                                $this->codpaymentconfirmation_m->cancelOrder($data['order_number']);
 
-                               $sethistory=array("order_id"=>$data['id'],"type"=>1, "created_at"=>$time,"status"=>2, "note"=>"expired_order","created_by"=>2);
+                               $sethistory=array("order_id"=>$data['id'],"type"=>1, "created_at"=>$time,"status"=>2, "note"=>"expired order (autocancel)","created_by"=>2);
                                $this->codpaymentconfirmation_m->setHistory($sethistory);
                            }
 
