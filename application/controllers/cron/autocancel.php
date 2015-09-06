@@ -1,13 +1,14 @@
 <?php
 class Autocancel extends CI_Controller {
     public function run(){
+        date_default_timezone_set('Asia/Jakarta');
         $this->load->model(array("client_m","paymentconfirmation_m","codpaymentconfirmation_m","autocancel_m"));
         $this->load->library("mageapi");
         $this->db = $this->load->database('mysql', TRUE);
         $order = $this->autocancel_m->getOrder();
-        $curdate = date('Y-m-d H', time());
-        $time=date('Y-m-d H:i:s', now());
-
+        $curdate = date('Y-m-d H');
+        $time=date('Y-m-d H:i:s');
+       
         if (!empty($order)){
                foreach($order as $data){
                    $expired = $data['expired_date'];
