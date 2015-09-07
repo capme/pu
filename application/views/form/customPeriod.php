@@ -46,7 +46,7 @@
 
                 function (start, end) {
                     $("#period1").val(start.format("YYYY-MM-DD 00:00:00"));
-                    $("#period2").val(end.format("YYYY-MM-DD 00:00:00"));
+                    $("#period2").val(end.format("YYYY-MM-DD 23:59:59"));
                 }
             );
         }();
