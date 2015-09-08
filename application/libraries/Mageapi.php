@@ -44,7 +44,8 @@ class Mageapi {
 	const METHOD_VELA_BAYMAX_PAYPAL = "vela_baymax_paypal.fetch";
 	const METHOD_VELA_BAYMAX_PAYPAL_APPROVE="vela_baymax_paypal.approve";
     const METHOD_ATTRIBUTE_SET_LIST = "product_attribute_set.list";
-	
+    const METHOD_VELA_BAYMAX_BBM_MONEY = "vela_baymax_bbmmoney.fetch";
+
 	public function __construct( $config = array() ) {
 		if(!empty($config)) {
 			$this->initSoap($config);
@@ -468,6 +469,8 @@ class Mageapi {
                 $url="codpaymentconfirmation";
             }elseif($paymentType == "cc"){
                 $url="creditcardorder";
+            }elseif($paymentType == "bbm"){
+                $url="bbmmoneyorder";
             }
             $message=$msgNotif;
             $CI->notification_m->add($from, $to, $url, $message);
@@ -586,8 +589,20 @@ class Mageapi {
             return false;
         }
     }
-	
-	public function getPaypalOrder($fromDate, $toDate){
+
+    public function getBbmMoneyOrder($fromDate, $toDate){
+        try {
+            $rangeDate = array($fromDate, $toDate);
+            $data = $this->soapClient->call($this->soapSession, self::METHOD_VELA_BAYMAX_BBM_MONEY, $rangeDate);
+
+            return $data;
+        } catch( Exception $e ) {
+            log_message('error', "MAGEAPI creditcard ==> ". $e->getMessage());
+            return false;
+        }
+    }
+
+    public function getPaypalOrder($fromDate, $toDate){
         try {
             $rangeDate = array($fromDate, $toDate);
             $data = $this->soapClient->call($this->soapSession, self::METHOD_VELA_BAYMAX_PAYPAL, $rangeDate);
