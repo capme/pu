@@ -8,16 +8,19 @@ class Autocancel extends CI_Controller {
         $order = $this->autocancel_m->getOrder();
         $time=date('Y-m-d H:i:s');
 
+        log_message("debug","[autocancel] total order to process : ".count($order));
         if (!empty($order)){
                foreach($order as $data){
                    $expired = $data['expired_date'];
 
-                   if($expired  <= $time){
+                   if(strtotime($expired)  <= strtotime($time)){
+                       log_message("debug","[autocancel] try to cancel : ".$data['order_number']." # ".$data['expired_date']);
                        $client = $this->client_m->getClientById($data['client_id'])->row_array();
 
                        if (!$client['mage_auth'] && !$client['mage_wsdl']) {
                            continue;
                        }
+
                        $config = array(
                            "auth" => $client['mage_auth'],
                            "url" => $client['mage_wsdl']
@@ -38,6 +41,8 @@ class Autocancel extends CI_Controller {
                                $this->autocancel_m->canceled($data['order_number'], $id = $data['id']);
                            }
                        }
+                   } else {
+                       log_message("debug","[autocancel] ignore : ".$data['order_number']." # ".$data['expired_date']);
                    }
                }
            }
