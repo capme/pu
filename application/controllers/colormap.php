@@ -135,7 +135,7 @@ class Colormap extends MY_Controller {
             $fileData = $msg['data'];
         }
 
-        $truncate=$this->colormap_m->truncate();
+
         $colormap = $this->_validate($fileData);
         $basicColor = $this->inbounddocument_m->getMapColor();
         $errorMsg = array();
@@ -143,7 +143,7 @@ class Colormap extends MY_Controller {
         foreach($colormap as $colorex){
             $colorex['C'] = trim(strtoupper($colorex['C']));
             if(!isset($basicColor[$colorex['C']])) {
-                $errorMsg[] = "Color map " . $colorex['C'] .' is unsupported';
+                $errorMsg[] = "Color map " . $colorex['B'] .' row '.$colorex['A'].' is unsupported';
             }
            $original_color[]=strtoupper(trim($colorex['B']));
            $mapping_color[]=strtoupper(trim($colorex['C']));
@@ -152,6 +152,7 @@ class Colormap extends MY_Controller {
         }
 
         if(empty($errorMsg)) {
+            $this->colormap_m->truncate();
             for($i=0; $i < count($original_color); $i++){
                 $result =$this->colormap_m->savefile($original_color[$i], $mapping_color[$i], $color_code[$i]);
             }
