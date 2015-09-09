@@ -8,7 +8,7 @@ class Autocancel extends CI_Controller {
         $order = $this->autocancel_m->getOrder();
         $curdate = date('Y-m-d H');
         $time=date('Y-m-d H:i:s');
-       
+
         if (!empty($order)){
                foreach($order as $data){
                    $expired = $data['expired_date'];
