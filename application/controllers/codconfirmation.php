@@ -166,6 +166,7 @@ class Codconfirmation extends MY_Controller {
 	public function save() 
 	{
 		$this->load->library("mageapi");
+        $this->load->model("autocancel_m");
 		$post = $this->input->post("codconfirmation");	
 		
 		if(empty($post)) {
@@ -186,8 +187,9 @@ class Codconfirmation extends MY_Controller {
 			}
 			
 			$result = $this->codconfirmation_m->Approve($post);
-			
-			if(is_numeric($result)) 
+            $this->autocancel_m->remove($data['order_number']);
+
+            if(is_numeric($result))
 			{
 				redirect("codconfirmation");
 			} 
@@ -211,6 +213,7 @@ class Codconfirmation extends MY_Controller {
 			}
 			
 			$result = $this->codconfirmation_m->Cancel($post);
+            $this->autocancel_m->remove($data['order_number']);
 			if(is_numeric($result)) 
 			{
 				redirect("codconfirmation");

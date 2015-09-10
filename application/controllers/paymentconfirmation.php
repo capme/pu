@@ -113,7 +113,7 @@ class Paymentconfirmation extends MY_Controller {
 	public function approve ($id)
 	{
 		$this->paymentconfirmation_m->Approve($id);
-		$this->load->model("client_m");
+		$this->load->model(array("client_m","autocancel_m"));
 		$this->load->library("mageapi");
 		$data = $this->paymentconfirmation_m->getConfirmationById($id)->row_array();
 		$client = $this->client_m->getClientById($data['client_id'])->row_array();
@@ -126,6 +126,7 @@ class Paymentconfirmation extends MY_Controller {
 		if( $this->mageapi->initSoap($config) ) {
 			$this->mageapi->processOrder($data['order_number']);
             $this->mageapi->sendNotifBrand($data['client_id'], $data['order_number'], "banktransfer");
+            $this->autocancel_m->remove($data['order_number']);
 		}
 		redirect("paymentconfirmation");
 	}
@@ -172,7 +173,8 @@ class Paymentconfirmation extends MY_Controller {
 		
 		else if($post['method'] == "update") {
 			$result = $this->paymentconfirmation_m->Reason($post);
-			if(is_numeric($result)) 
+            $this->autocancel_m->remove($post['order_number']);
+			if(is_numeric($result))
 			{
 				redirect("paymentconfirmation");
 			} 

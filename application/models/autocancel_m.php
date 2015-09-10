@@ -120,4 +120,9 @@ class Autocancel_m extends MY_Model {
     public function cekOrder($ordernr, $client_id){
         return $this->db->query("select * from expired_order where order_number= '$ordernr' and client_id = '$client_id'")->row_array();
     }
+
+    public function remove($order){
+        log_message("debug","[autocancel] remove : ".$order);
+        return $this->db->delete($this->table, array('order_number' => $order));
+    }
 }
