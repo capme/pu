@@ -191,14 +191,15 @@ class Paymentconfirmation_m extends MY_Model {
                     $orderdate= $temp['cancelday'];
 
                 }
+                    $available = $this->autocancel_m->cekOrder($order[$a]['order_number'], $order[$a]['client_id']);
+                    if(!empty($available)){
+                        break;
+                    } else{
+                        $data = array("id" => $order[$a]['id'], "status"=>0, "created_date"=>$order[$a]['created_at'],"order_method" => "bank", "client_id" => $order[$a]['client_id'], "order_number" => $order[$a]['order_number'], "expired_date" => $orderdate);
+                        $this->db->insert($this->expired, $data);
+                    }
+
             } while($this->isWeekEnd($orderdate) || $this->isHoliday($orderdate));
-            $available = $this->autocancel_m->cekOrder($order[$a]['order_number'], $order[$a]['client_id']);
-            if(!empty($available)){
-                break;
-            } else{
-                $data = array("id" => $order[$a]['id'], "status"=>0, "created_date"=>$order[$a]['created_at'],"order_method" => "bank", "client_id" => $order[$a]['client_id'], "order_number" => $order[$a]['order_number'], "expired_date" => $orderdate);
-                $this->db->insert($this->expired, $data);
-            }
         }
 
     }
