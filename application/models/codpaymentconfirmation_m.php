@@ -189,14 +189,14 @@ class Codpaymentconfirmation_m extends MY_Model {
                     $temp= $this->db->query("select date_add('$orderdate', INTERVAL 12 HOUR) as cancelday")->row_array();
                     $orderdate= $temp['cancelday'];
                 }
-                $available = $this->autocancel_m->cekOrder($order[$a]['order_number'], $order[$a]['client_id']);
-                if(!empty($available)){
-                    break;
-                } else{
-                    $data = array("id" => $order[$a]['id'], "status"=>0, "created_date"=>$order[$a]['created_at'],"order_method" => "cod", "client_id" => $order[$a]['client_id'], "order_number" => $order[$a]['order_number'], "expired_date" => $orderdate);
-                    $this->db->insert($this->expired, $data);
-                }
             } while($this->paymentconfirmation_m->isWeekEnd($orderdate) || $this->paymentconfirmation_m->isHoliday($orderdate));
+            $available = $this->autocancel_m->cekOrder($order[$a]['order_number'], $order[$a]['client_id']);
+            if(!empty($available)){
+                break;
+            } else{
+                $data = array("id" => $order[$a]['id'], "status"=>0, "created_date"=>$order[$a]['created_at'],"order_method" => "cod", "client_id" => $order[$a]['client_id'], "order_number" => $order[$a]['order_number'], "expired_date" => $orderdate);
+                $this->db->insert($this->expired, $data);
+            }
         }
     }
 
