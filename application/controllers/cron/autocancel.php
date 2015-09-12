@@ -27,20 +27,21 @@ class Autocancel extends CI_Controller {
                        );
                        if( $this->mageapi->initSoap($config) ) {
                            // try to update magento first , if success update baymax
-                           if( $this->mageapi->setOrderToCancel($data['order_number'], $commet="expired order") ) {
                                if ($data['order_method'] == 'bank') {
-                                   $this->paymentconfirmation_m->cancelOrder($data['order_number']);
-                                   $sethistory = array("order_id" => $data['id'], "type" => 2, "created_at" => $time, "status" => 2, "note" => "expired order (autocancel)", "created_by" => 2);
-                                   $this->paymentconfirmation_m->setHistory($sethistory);
+                                   if($this->mageapi->cancelPayment($data['order_number'], $commet="expired order")){
+                                       $this->paymentconfirmation_m->cancelOrder($data['order_number']);
+                                       $sethistory = array("order_id" => $data['id'], "type" => 2, "created_at" => $time, "status" => 2, "note" => "expired order (autocancel)", "created_by" => 2);
+                                       $this->paymentconfirmation_m->setHistory($sethistory);
+                                   }
                                } else {
-                                   $this->codpaymentconfirmation_m->cancelOrder($data['order_number']);
-
-                                   $sethistory = array("order_id" => $data['id'], "type" => 1, "created_at" => $time, "status" => 2, "note" => "expired order (autocancel)", "created_by" => 2);
-                                   $this->codpaymentconfirmation_m->setHistory($sethistory);
+                                   if($this->mageapi->setOrderToCancel($data['order_number'], $commet="expired order")) {
+                                       $this->codpaymentconfirmation_m->cancelOrder($data['order_number']);
+                                       $sethistory = array("order_id" => $data['id'], "type" => 1, "created_at" => $time, "status" => 2, "note" => "expired order (autocancel)", "created_by" => 2);
+                                       $this->codpaymentconfirmation_m->setHistory($sethistory);
+                                   }
                                }
                                $this->autocancel_m->canceled($data['order_number'], $id = $data['id']);
                            }
-                       }
                    } else {
                        log_message("debug","[autocancel] ignore : ".$data['order_number']." # ".$data['expired_date']);
                    }
