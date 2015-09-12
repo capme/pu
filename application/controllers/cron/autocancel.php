@@ -6,15 +6,13 @@ class Autocancel extends CI_Controller {
         $this->load->library("mageapi");
         $this->db = $this->load->database('mysql', TRUE);
         $order = $this->autocancel_m->getOrder();
-        $curdate = date('Y-m-d H');
         $time=date('Y-m-d H:i:s');
 
         if (!empty($order)){
                foreach($order as $data){
                    $expired = $data['expired_date'];
-                   $date=$this->db->query("SELECT DATE_FORMAT('$expired', '%Y-%m-%d %H') as date")->row_array();
 
-                   if($date['date'] == $curdate){
+                   if($expired  <= $time){
                        $client = $this->client_m->getClientById($data['client_id'])->row_array();
 
                        if (!$client['mage_auth'] && !$client['mage_wsdl']) {
