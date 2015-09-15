@@ -4,8 +4,7 @@ class Rpx_m extends MY_Model
 {
     var $filterSession = "DB_AWB_FILTER";
     var $db = null;
-    var $table = 'rpx_awb_mapping';
-    var $tableAwb = 'rpx_awb';
+    var $table = 'rpx_awb';
     var $sorts = array(1 => "id");
     var $pkField = "id";
     var $path = "../public/rpx_doc/awb/";
@@ -14,13 +13,13 @@ class Rpx_m extends MY_Model
     {
         parent::__construct();
         $this->db = $this->load->database('mysql', TRUE);
-        $this->relation = array(
-            array("type" => "left", "table" => $this->tableAwb, "link" => "{$this->table}.id_awb  = {$this->tableAwb}.id")
-        );
 
-        $this->select = array("{$this->table}.order_no", "{$this->tableAwb}.*");
+        $this->select = array("{$this->table}.*");
         $this->filters = array("awb_number" => "awb_number", "order_no" => "order_no");
         $this->load->helper('path');
+        $this->listWhere['equal'] = array();
+        $this->listWhere['like'] = array("awb_number","order_no");
+
     }
 
     public function getInboundList()
@@ -42,11 +41,14 @@ class Rpx_m extends MY_Model
 
         $no=0;
         foreach($_row->result() as $_result) {
-            if($_result->type == 1){
-                $btnAction='
-                    <a href="'.site_url("rpx/edit/".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-edit" ></i> Edit</a>
-                    <a href="'.site_url("rpx/delete/".$_result->id).'" onClick="return deletechecked()" class="btn btn-xs default"  ><i class="fa fa-trash-o"></i>Delete<a>
+            if($_result->order_no == "") {
+                $btnAction = '
+                    <a href="' . site_url("rpx/delete/" . $_result->id) . '" onClick="return deletechecked()" class="btn btn-xs default"  ><i class="fa fa-trash-o"></i>Delete<a>
                 ';
+            }else{
+                $btnAction = '
+                ';
+            }
                 $records["aaData"][] = array(
                     '<input type="checkbox" name="id[]" value="'.$_result->id.'">',
                     $no=$no+1,
@@ -55,7 +57,6 @@ class Rpx_m extends MY_Model
                     $_result->created_at,
                     $btnAction
                 );
-            }
         }
         $records["sEcho"] = $sEcho;
         $records["iTotalRecords"] = $iTotalRecords;
@@ -72,7 +73,7 @@ class Rpx_m extends MY_Model
         $data = $this->extractCsv($post['userfile']);
 
         if(empty($msg)) {
-            $this->db->insert_batch($this->tableAwb, $data);
+            $this->db->insert_batch($this->table, $data);
             return $this->db->insert_id();
         } else {
             return $msg;
@@ -97,20 +98,27 @@ class Rpx_m extends MY_Model
         {
             $arrData = fgetcsv($file);
             if(strlen($arrData[0]) != strlen($arrData[1])) return false;
-            $awbFrom = (int)$arrData[0];
-            $awbTo = (int)$arrData[1];
+
+            preg_match_all('!\d+!', $arrData[0], $completeAwbFrom);
+            preg_match_all('!\d+!', $arrData[1], $completeAwbTo);
+
+            $awbFrom = (int)$completeAwbFrom[0][0];
+            $awbTo = (int)$completeAwbTo[0][0];
             if($awbFrom > $awbTo) return false;
             $prefix = preg_replace("/[^A-Z]+/", "", $arrData[0]);
             for($x=$awbFrom;$x<=$awbTo;$x++){
                 $noAWB = $prefix.$this->_retZeroAWBFormat($prefix,strlen($arrData[0]),$x).$x;
-                $dataRow[] = array($noAWB);
+                $dataRow[] = array("awb_number" => $noAWB);
             }
-            //sampai sini
         }
 
         fclose($file);
 
         return $dataRow;
+    }
+
+    public function deleteRpx($id){
+        $this->db->delete($this->table, array('id' => $id));
     }
 
 }

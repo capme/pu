@@ -107,7 +107,7 @@ class Rpx extends MY_Controller {
     private function _doUploadFile() {
         $return = array('error' => false, 'data' => array());
 
-        $config['upload_path'] = '../public/rpx/awb/';
+        $config['upload_path'] = $this->rpx_m->path;
         $config['allowed_types'] = 'csv';
         $config['max_size']	= '2000';
         $config['file_name'] = date("YmdHis");
@@ -123,6 +123,11 @@ class Rpx extends MY_Controller {
         }
 
         return $return;
+    }
+
+    public function delete($id){
+        $data = $this->rpx_m->deleteRpx($id);
+        redirect('rpx');
     }
 
 }

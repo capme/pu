@@ -20,7 +20,7 @@ var FormValidation = function () {
                     },
                     "userfile": {
                         required: true,
-						extension: "xls|xlsx"
+						extension: "csv"
                     }
                 },		
 				

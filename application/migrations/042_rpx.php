@@ -6,11 +6,6 @@ class Migration_rpx extends Base_migration {
         $this->db->query("CREATE TABLE `rpx_awb`
             (`id` int(11) AUTO_INCREMENT,
             `awb_number` text,
-            `created_at` TIMESTAMP,
-			primary key (`id`))ENGINE=InnoDB DEFAULT CHARSET=utf8");
-        $this->db->query("CREATE TABLE `rpx_awb_mapping`
-            (`id` int(11) AUTO_INCREMENT,
-            `id_awb` int(11),
             `order_no` text,
             `created_at` TIMESTAMP,
 			primary key (`id`))ENGINE=InnoDB DEFAULT CHARSET=utf8");
@@ -29,7 +24,7 @@ class Migration_rpx extends Base_migration {
 
         $newModule = array(
             array("name" => "Rpx AWB Upload", "slug" => "rpx/add", "hidden" => 1, "status" => 1, "parent" => $parentTags['rpx']),
-            array("name" => "Rpx AWB Edit", "slug" => "rpx/edit", "hidden" => 1, "status" => 1, "parent" => $parentTags['rpx']),
+            array("name" => "Rpx AWB Delete", "slug" => "rpx/delete", "hidden" => 1, "status" => 1, "parent" => $parentTags['rpx']),
             array("name" => "Rpx AWB Save", "slug" => "rpx/save", "hidden" => 1, "status" => 1, "parent" => $parentTags['rpx']),
             array("name" => "Rpx AWB List", "slug" => "rpx/RpxList", "hidden" => 1, "status" => 1, "parent" => $parentTags['rpx']),
         );
@@ -54,7 +49,6 @@ class Migration_rpx extends Base_migration {
         $this->db->trans_start();
         $this->db->query("DELETE FROM module WHERE slug like 'rpx%'");
         $this->db->query("DROP TABLE rpx_awb");
-        $this->db->query("DROP TABLE rpx_awb_mapping");
         $this->db->trans_complete();
     }
 }
