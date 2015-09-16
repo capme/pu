@@ -7,12 +7,14 @@ class Migration_rpx extends Base_migration {
             (`id` int(11) AUTO_INCREMENT,
             `awb_number` text,
             `order_no` text,
+            `awb_return` text,
+            `pickup_request_no` text,
             `created_at` TIMESTAMP,
 			primary key (`id`))ENGINE=InnoDB DEFAULT CHARSET=utf8");
 
         $this->db->query("DELETE FROM module WHERE slug like 'rpx%'");
         $new= array(
-            "rpx" => array("name" => "Rpx AWB List", "slug" => "rpx", "icon" => "fa-cubes", "hidden" => 0, "status" => 1, "parent" => 74),
+            "rpx" => array("name" => "Rpx AWB", "slug" => "rpx", "icon" => "fa-cubes", "hidden" => 0, "status" => 1, "parent" => 74),
         );
         $newIds = array();
 

@@ -15,10 +15,10 @@ class Rpx_m extends MY_Model
         $this->db = $this->load->database('mysql', TRUE);
 
         $this->select = array("{$this->table}.*");
-        $this->filters = array("awb_number" => "awb_number", "order_no" => "order_no");
+        $this->filters = array("awb_number" => "awb_number", "order_no" => "order_no", "awb_return" => "awb_return", "pickup_request_no" => "pickup_request_no");
         $this->load->helper('path');
         $this->listWhere['equal'] = array();
-        $this->listWhere['like'] = array("awb_number","order_no");
+        $this->listWhere['like'] = array("awb_number","order_no","awb_return","pickup_request_no");
 
     }
 
@@ -57,6 +57,8 @@ class Rpx_m extends MY_Model
                     $no=$no+1,
                     $_result->awb_number,
                     $_result->order_no,
+                    $_result->awb_return,
+                    $_result->pickup_request_no,
                     $_result->created_at,
                     $btnAction
                 );
@@ -138,5 +140,11 @@ class Rpx_m extends MY_Model
         }
         return $arr;
 
+    }
+
+    public function saveAwbReturn($awbReturn, $awb, $orderNo){
+        $sql = "UPDATE ".$this->table." SET awb_return='".$awbReturn."', order_no='".$orderNo."' WHERE awb_number='".$awb."'";
+        $query = $this->db->query($sql);
+        return true;
     }
 }
