@@ -1,12 +1,17 @@
 <?php
 class Rpx_lib
 {
+    const API_ENDPOINT = "http://api.rpxholding.com/wsdl/rpxwsdl.php";
+    const API_ENDPOINT_SOAP = "http://api.rpxholding.com/wsdl/rpxwsdl.php?wsdl";
+
     private $_rpxUser = "";
     private $_rpxPassword = "";
     private $_rpxAccount = "";
     private $_params = "";
     private $_listServices = array();
     private $_helper;
+
+
 
     const METHOD_SEND_SHIPMENT_INFO = "sendShipmentData";
     const METHOD_SEND_PICKUP_REQ = "sendPickupRequest";
@@ -19,6 +24,34 @@ class Rpx_lib
         $this->_helper = & get_instance();
         $this->_helper->load->helper('xml');
     }
+
+    public function getRpxAccount(){
+        return $this->_rpxAccount;
+    }
+
+    private function _sendRequestSOAP($method, $param) {
+        $client = new SoapClient(self::API_ENDPOINT_SOAP);
+        $username = $this->_rpxUser;
+        $password  = $this->_rpxPassword;
+        try {
+            if($method == "getService") {
+                $result = $client->getService($username, $password);
+            }elseif($method == "getPostalCode") {
+                //param[0] -> city id
+                $result = $client->getPostalCode($username, $password, $param[0]);
+            }elseif($method == "getRouteOrigin") {
+                //param[0] -> postal code
+                $result = $client->getRouteOrigin($username, $password, $param[0]);
+            }elseif($method == "getCity") {
+                $result = $client->getCity($username, $password);
+            }
+            return $result;
+        }
+        catch ( Exception $e ) {
+            return false;
+        }
+    }
+
 
     private function _sendRequest($method, $param) {
         libxml_use_internal_errors(true);
@@ -58,7 +91,28 @@ class Rpx_lib
 
     public function getService(){
         $ret = $this->_sendRequest("getService","");
-        return $ret;
+        if(!$ret) return false;
+        $_data = simplexml_load_string($ret);
+        $DATA = $_data->DATA;
+        $arrRet = array();
+        foreach($DATA as $itemData){
+            $temp = explode("-",$itemData->SERVICE);
+            $arrRet[$temp[0]] = $temp[1];
+        }
+        return $arrRet;
+    }
+
+    public function getServiceSOAP(){
+        $ret = $this->_sendRequestSOAP("getService","");
+        if(!$ret) return false;
+        $arr = json_decode(json_encode((array) simplexml_load_string($ret)),1);
+        $DATA = $arr['DATA'];
+        $arrRet = array();
+        foreach($DATA as $itemData){
+            $temp = explode("-",$itemData['SERVICE']);
+            $arrRet[$temp[0]] = $temp[1];
+        }
+        return $arrRet;
     }
 
     public function sendShipmentInformation($arrParam){
@@ -88,5 +142,112 @@ class Rpx_lib
             return $DATA;
         }
     }
+
+    public function getRouteOrigin($arrParam){
+        $retParam = $this->_generateParam($arrParam);
+        $ret = $this->_sendRequest("getRouteOrigin",$retParam);
+        if(!$ret) return false;
+        $_data = simplexml_load_string($ret);
+        $DATA = $_data->DATA;
+
+        if(trim($DATA->ORIGIN) == ""){
+            return false;
+        }else{
+            return $DATA;
+        }
+    }
+
+    public function getRouteOriginSOAP($postalcode){
+        $ret = $this->_sendRequestSOAP("getRouteOrigin",$postalcode);
+        if(!$ret) return false;
+        $arr = json_decode(json_encode((array) simplexml_load_string($ret)),1);
+        $DATA = $arr['DATA'];
+
+        $origin = $DATA['ORIGIN'];
+        $originBillCity = $DATA['ORIGIN_BILL_CITY'];
+        $originCityName = $DATA['ORIGIN_CITY_NAME'];
+
+        return $origin;
+    }
+
+    public function getPostalCode($arrParam){
+        $retParam = $this->_generateParam($arrParam);
+        $ret = $this->_sendRequest("getPostalCode",$retParam);
+        if(!$ret) return false;
+        $_data = simplexml_load_string($ret);
+        $DATA = $_data->DATA;
+        $arrRet = array();
+        foreach($DATA as $itemData){
+            $cityId = $itemData->CITY_ID;
+            $cityName = $itemData->CITY_NAME;
+            $postalCode = $itemData->POSTAL_CODE;
+            $postalName = $itemData->POSTAL_NAME;
+            $stationId = $itemData->STATION_ID;
+
+            $arrRet[$postalCode] = $postalCode." - ".$postalName ;
+        }
+        return $arrRet;
+    }
+
+    public function getPostalCodeSOAP($cityid){
+        $ret = $this->_sendRequestSOAP("getPostalCode",$cityid);
+        if(!$ret) return false;
+        $arr = json_decode(json_encode((array) simplexml_load_string($ret)),1);
+        $DATA = $arr['DATA'];
+        $arrRet = array();
+        foreach($DATA as $itemData){
+            $cityId = $itemData['CITY_ID'];
+            $cityName = $itemData['CITY_NAME'];
+            $postalCode = $itemData['POSTAL_CODE'];
+            $postalName = $itemData['POSTAL_NAME'];
+            $arrRet[$postalCode] = $postalCode." - ".$postalName;
+        }
+        return $arrRet;
+    }
+
+    public function getCity(){
+        $ret = $this->_sendRequest("getCity","");
+        if(!$ret) return false;
+        $_data = simplexml_load_string($ret);
+        $DATA = $_data->DATA;
+        $arrRet = array();
+        foreach($DATA as $itemData){
+            $cityId = $itemData->CITY_ID;
+            $cityName = $itemData->CITY_NAME;
+            $stationId = $itemData->STATION_ID;
+
+            $arrRet[$cityId] = $cityName;
+        }
+        return $arrRet;
+    }
+
+    public function getCitySOAP(){
+        $ret = $this->_sendRequestSOAP("getCity","");
+        if(!$ret) return false;
+        $arr = json_decode(json_encode((array) simplexml_load_string($ret)),1);
+        $DATA = $arr['DATA'];
+        $arrRet = array();
+        foreach($DATA as $itemData){
+            $cityId = $itemData['CITY_ID'];
+            $cityName = $itemData['CITY_NAME'];
+            $stationId = $itemData['STATION_ID'];
+            $arrRet[$cityId] = $cityName;
+        }
+        return $arrRet;
+    }
+
+    public function getProvince(){
+        $ret = $this->_sendRequest("getProvince","");
+        if(!$ret) return false;
+        $_data = simplexml_load_string($ret);
+        $DATA = $_data->DATA;
+        $arrRet = array();
+        foreach($DATA as $itemData){
+            $province = $itemData->PROVINCE;
+            $arrRet[$province] = $province;
+        }
+        return $arrRet;
+    }
+
 }
 ?>

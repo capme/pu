@@ -22,7 +22,7 @@ class Rpx_m extends MY_Model
 
     }
 
-    public function getInboundList()
+    public function getRpxList()
     {
         $this->db = $this->load->database('mysql', TRUE);
         $iTotalRecords = $this->_doGetTotalRow();
@@ -41,14 +41,17 @@ class Rpx_m extends MY_Model
 
         $no=0;
         foreach($_row->result() as $_result) {
+            $btnAction = "";
             if($_result->order_no == "") {
                 $btnAction = '
                     <a href="' . site_url("rpx/delete/" . $_result->id) . '" onClick="return deletechecked()" class="btn btn-xs default"  ><i class="fa fa-trash-o"></i>Delete<a>
                 ';
-            }else{
-                $btnAction = '
-                ';
             }
+                $btnAction .= '
+                    <a href="' . site_url("rpx/shipment?awb=" . $_result->awb_number ."&orderno=" . $_result->order_no) . '" class="btn btn-xs default"  ><i class="glyphicon glyphicon-export"></i>Send Shipment<a>
+                    <a href="' . site_url("rpx/pickup?awb=" . $_result->awb_number ."&orderno=" . $_result->order_no) . '" class="btn btn-xs default"  ><i class="glyphicon glyphicon-export"></i>Pickup Request<a>
+                ';
+
                 $records["aaData"][] = array(
                     '<input type="checkbox" name="id[]" value="'.$_result->id.'">',
                     $no=$no+1,
@@ -121,4 +124,19 @@ class Rpx_m extends MY_Model
         $this->db->delete($this->table, array('id' => $id));
     }
 
+    public function getAWBList($param = null){
+        if(is_null($param)){
+            $sql = "SELECT * FROM " . $this->table;
+        }else {
+            $sql = "SELECT * FROM " . $this->table . " WHERE awb_number='".$param."'";
+        }
+        $query = $this->db->query($sql);
+        $rows = $query->result_array();
+        $arr = array();
+        foreach($rows as $itemRows){
+            $arr[$itemRows['awb_number']] = $itemRows['awb_number'];
+        }
+        return $arr;
+
+    }
 }

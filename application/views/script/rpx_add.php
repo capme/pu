@@ -1,4 +1,8 @@
 <script>
+    $(function(){
+
+    }
+
 var FormValidation = function () {
 
     var apiFormValidate = function() {

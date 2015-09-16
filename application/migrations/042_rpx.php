@@ -12,7 +12,7 @@ class Migration_rpx extends Base_migration {
 
         $this->db->query("DELETE FROM module WHERE slug like 'rpx%'");
         $new= array(
-            "rpx" => array("name" => "Rpx AWB Status", "slug" => "rpx", "icon" => "fa-cubes", "hidden" => 0, "status" => 1, "parent" => 74),
+            "rpx" => array("name" => "Rpx AWB List", "slug" => "rpx", "icon" => "fa-cubes", "hidden" => 0, "status" => 1, "parent" => 74),
         );
         $newIds = array();
 
@@ -27,6 +27,8 @@ class Migration_rpx extends Base_migration {
             array("name" => "Rpx AWB Delete", "slug" => "rpx/delete", "hidden" => 1, "status" => 1, "parent" => $parentTags['rpx']),
             array("name" => "Rpx AWB Save", "slug" => "rpx/save", "hidden" => 1, "status" => 1, "parent" => $parentTags['rpx']),
             array("name" => "Rpx AWB List", "slug" => "rpx/RpxList", "hidden" => 1, "status" => 1, "parent" => $parentTags['rpx']),
+            array("name" => "Rpx AWB - Shipment", "slug" => "rpx/shipment", "hidden" => 1, "status" => 1, "parent" => $parentTags['rpx']),
+            array("name" => "Rpx AWB - Pickup", "slug" => "rpx/pickup", "hidden" => 1, "status" => 1, "parent" => $parentTags['rpx']),
         );
 
         foreach($newModule as $module) {
