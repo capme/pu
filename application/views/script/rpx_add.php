@@ -1,6 +1,6 @@
 <script>
         $('#destin_city').change(function(){
-                document.location = 'pickup?awb=<?php echo $_GET['awb'];?>&orderno=<?php echo $_GET['orderno'];?>&destin_city=' + document.getElementById("destin_city").value;
+                document.location = 'pickup?awb=<?php echo $_GET['awb'];?>&orderno=<?php echo $_GET['orderno'];?>&destin_city=' + document.getElementById("destin_city").value + '&destin_province=' + document.getElementById("destin_province").value;
         });
 
 var FormValidation = function () {

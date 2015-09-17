@@ -188,10 +188,16 @@ class Rpx extends MY_Controller {
     }
 
     public function pickup(){
+        $awb = array("awb" => $_GET['awb']);
+        if(isset($_GET['destin_province']) and $_GET['destin_province'] != "") {
+            $destin_province = array("destin_province" => $_GET['destin_province']);
+        }else{
+            $destin_province = array("destin_province" => "BALI");
+        }
         if(isset($_GET['destin_city']) and $_GET['destin_city'] != ""){
             $destin_city = array("destin_city" => $_GET['destin_city']);
         }else{
-            $destin_city = array("destin_city" => "");
+            $destin_city = array("destin_city" => "APR");
         }
         $pickup_ready_time = array("pickup_ready_time" => date("Y-m-d H:i"));
         $pickup_request_by = array("pickup_request_by" => "PT. Vela Asia");
@@ -220,6 +226,7 @@ class Rpx extends MY_Controller {
             $msg = $value = array();
         }
         $this->va_input->addHidden( array("name" => "method", "value" => "pickuprequest") );
+        $this->va_input->addHidden( array("name" => "awb", "value" => $awb['awb']) );
         $this->va_input->addInput( array("name" => "pickup_ready_time", "placeholder" => "Pickup Date and Time", "label" => "Pickup Date and Time", "value" => @$pickup_ready_time['pickup_ready_time'], "msg" => @$msg['pickup_ready_time']) );
         $this->va_input->addInput( array("name" => "pickup_request_by", "placeholder" => "Pickup Request By", "label" => "Pickup Request By", "value" => @$pickup_request_by['pickup_request_by'], "msg" => @$msg['pickup_request_by']) );
         $this->va_input->addInput( array("name" => "pickup_account_number", "placeholder" => "Pickup Account Number", "label" => "Pickup Account Number", "value" => @$pickup_account_number['pickup_account_number'], "msg" => @$msg['pickup_account_number']) );
@@ -230,11 +237,9 @@ class Rpx extends MY_Controller {
         $this->va_input->addInput( array("name" => "pickup_city", "placeholder" => "Pickup City", "label" => "Pickup City", "value" => @$pickup_city['pickup_city'], "msg" => @$msg['pickup_city']) );
         $this->va_input->addSelect( array("name" => "pickup_postal_code","label" => "Pickup Postal Code", "list" => $this->_getPostalCode('TAN'), "value" => @$value['pickup_postal_code'], "msg" => @$msg['pickup_postal_code']) );
         $this->va_input->addSelect( array("name" => "service_type","label" => "Service Type", "list" => $this->_getService(), "value" => @$value['service_type'], "msg" => @$msg['service_type']) );
-        $this->va_input->addSelect( array("name" => "destin_province","label" => "Destination Province", "list" => $this->_getProvince(), "value" => @$value['destin_province'], "msg" => @$msg['destin_province']) );
+        $this->va_input->addSelect( array("name" => "destin_province","label" => "Destination Province", "list" => $this->_getProvince(), "value" => @$destin_province['destin_province'], "msg" => @$msg['destin_province']) );
         $this->va_input->addSelect( array("name" => "destin_city","label" => "Destination City", "list" => $this->_getCity(), "value" => @$destin_city['destin_city'], "msg" => @$msg['destin_city']) );
-        if(isset($_GET['destin_city']) and $_GET['destin_city'] != "") {
-            $this->va_input->addSelect( array("name" => "destin_postal_code","label" => "Destination Postal Code", "list" => $this->_getPostalCode($_GET['destin_city']), "value" => @$value['destin_postal_code'], "msg" => @$msg['destin_postal_code']) );
-        }
+        $this->va_input->addSelect( array("name" => "destin_postal_code","label" => "Destination Postal Code", "list" => $this->_getPostalCode(@$destin_city['destin_city']), "value" => @$value['destin_postal_code'], "msg" => @$msg['destin_postal_code']) );
         $this->data['script'] = $this->load->view("script/rpx_add", array(), true);
         $this->load->view('template', $this->data);
 
@@ -318,7 +323,6 @@ class Rpx extends MY_Controller {
             ""
         );
         $return = $this->rpx_lib->sendShipmentDataSOAP($data);
-        if($return)
         if(empty($return['AWB_RETURN'])){
             redirect("rpx?res=failed&msg=".$return['RESULT']);
         }else{
@@ -328,9 +332,38 @@ class Rpx extends MY_Controller {
     }
 
     private function _sendPickupRequest($param){
-        print_r($param);
-        die();
-        redirect("rpx");
+        $data = array(
+            "",
+            "",
+            $param['pickup_ready_time'],
+            $param['pickup_request_by'],
+            $param['pickup_account_number'],
+            $param['pickup_company_name'],
+            $param['pickup_company_address'],
+            $param['pickup_city'],
+            $param['pickup_postal_code'],
+            $param['service_type'],
+            "",
+            "",
+            "",
+            $param['pickup_shipper_name'],
+            "",
+            "",
+            $param['pickup_phone'],
+            $param['destin_postal_code'],
+            $param['destin_city'],
+            $param['destin_province'],
+            "",
+            "",
+            ""
+        );
+        $return = $this->rpx_lib->sendPickupRequestSOAP($data);
+        if(empty($return['PICKUP_REQUEST_NO'])){
+            redirect("rpx?res=failed&msg=".$return['RESULT']);
+        }else{
+            $this->rpx_m->savePickupReturn($return['PICKUP_REQUEST_NO'], $param['awb']);
+            redirect("rpx?res=success&pickup_request_no=".$return['PICKUP_REQUEST_NO']);
+        }
     }
 
 }

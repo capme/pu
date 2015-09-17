@@ -42,7 +42,7 @@ class Rpx_m extends MY_Model
         $no=0;
         foreach($_row->result() as $_result) {
             $btnAction = "";
-            if($_result->order_no == "") {
+            if($_result->order_no == "" and $_result->awb_return == "" and $_result->pickup_request_no == "") {
                 $btnAction = '
                     <a href="' . site_url("rpx/delete/" . $_result->id) . '" onClick="return deletechecked()" class="btn btn-xs default"  ><i class="fa fa-trash-o"></i>Delete<a>
                 ';
@@ -147,4 +147,11 @@ class Rpx_m extends MY_Model
         $query = $this->db->query($sql);
         return true;
     }
+
+    public function savePickupReturn($pickupReturn, $awb){
+        $sql = "UPDATE ".$this->table." SET pickup_request_no='".$pickupReturn."' WHERE awb_number='".$awb."'";
+        $query = $this->db->query($sql);
+        return true;
+    }
+
 }

@@ -356,10 +356,10 @@ class Rpx_lib
         $arr = json_decode(json_encode((array) simplexml_load_string($ret)),1);
         $DATA = $arr['DATA'];
 
-        $dataResult = $DATA['RESULT'];
-        $dataPickupRequestNo = $DATA['PICKUP_REQUEST_NO'];
+        //$dataResult = $DATA['RESULT'];
+        //$dataPickupRequestNo = $DATA['PICKUP_REQUEST_NO'];
 
-        return $dataPickupRequestNo;
+        return $DATA;
     }
 
 }
