@@ -236,13 +236,16 @@ class Rpx_lib
         $ret = $this->_sendRequestSOAP("getRouteOrigin",$postalcode);
         if(!$ret) return false;
         $arr = json_decode(json_encode((array) simplexml_load_string($ret)),1);
-        $DATA = $arr['DATA'];
+        if(isset($arr['DATA'])) {
+            $DATA = $arr['DATA'];
+            $origin = $DATA['ORIGIN'];
+            $originBillCity = $DATA['ORIGIN_BILL_CITY'];
+            $originCityName = $DATA['ORIGIN_CITY_NAME'];
 
-        $origin = $DATA['ORIGIN'];
-        $originBillCity = $DATA['ORIGIN_BILL_CITY'];
-        $originCityName = $DATA['ORIGIN_CITY_NAME'];
-
-        return $origin;
+            return $origin;
+        }else{
+            return $ret['RESULT'];
+        }
     }
 
     public function getPostalCode($arrParam){
@@ -272,11 +275,13 @@ class Rpx_lib
         $arrRet = array();
         if(!is_array($DATA)) return array("" => "No Data Found");
         foreach($DATA as $itemData){
-            $cityId = $itemData['CITY_ID'];
-            $cityName = $itemData['CITY_NAME'];
-            $postalCode = $itemData['POSTAL_CODE'];
-            $postalName = $itemData['POSTAL_NAME'];
-            $arrRet[$postalCode] = $postalCode." - ".$postalName;
+            if(isset($itemData['CITY_ID']) and isset($itemData['CITY_NAME']) and isset($itemData['POSTAL_CODE']) and isset($itemData['POSTAL_NAME'])){
+                $cityId = $itemData['CITY_ID'];
+                $cityName = $itemData['CITY_NAME'];
+                $postalCode = $itemData['POSTAL_CODE'];
+                $postalName = $itemData['POSTAL_NAME'];
+                $arrRet[$postalCode] = $postalCode . " - " . $postalName;
+            }
         }
         return $arrRet;
     }
@@ -354,12 +359,15 @@ class Rpx_lib
         $ret = $this->_sendRequestSOAP("sendPickupRequest",$arrParam);
         if(!$ret) return false;
         $arr = json_decode(json_encode((array) simplexml_load_string($ret)),1);
-        $DATA = $arr['DATA'];
-
+        if(isset($arr['DATA'])) {
+            $DATA = $arr['DATA'];
+        }else{
+            $DATA = $arr['RESULT'];
+        }
         //$dataResult = $DATA['RESULT'];
         //$dataPickupRequestNo = $DATA['PICKUP_REQUEST_NO'];
-
         return $DATA;
+
     }
 
 }
