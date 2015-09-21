@@ -9,6 +9,7 @@ class Migration_rpx extends Base_migration {
             `order_no` text,
             `awb_return` text,
             `pickup_request_no` text,
+            `status` char(1),
             `created_at` TIMESTAMP,
 			primary key (`id`))ENGINE=InnoDB DEFAULT CHARSET=utf8");
 

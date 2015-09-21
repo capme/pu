@@ -37,6 +37,7 @@ var TableAjax = function () {
 						   { "bSortable": false },
                         { "bSortable": false },
                         { "bSortable": false },
+                        { "bSortable": false },
                     ],
                     /* 
                         By default the ajax datatable's layout is horizontally scrollable and this can cause an issue of dropdown menu is used in the table rows which.

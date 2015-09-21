@@ -20,7 +20,7 @@ class Rpx extends MY_Controller {
 
         $this->load->library("va_list");
         $this->va_list->setListName("RPX")->setAddLabel("Upload RPX AWB")
-            ->setHeadingTitle(array("Record #", "AWB Number","Order Number","AWB Return","Pickup Request No.","Created At"))
+            ->setHeadingTitle(array("Record #", "AWB Number","Order Number","AWB Return","Pickup Request No.","Status","Created At"))
             ->setHeadingWidth(array(2, 2,2,3,2,2,2,4));
 
         $this->va_list->setInputFilter(1, array("name" => $this->rpx_m->filters['awb_number']));

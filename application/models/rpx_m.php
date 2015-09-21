@@ -34,6 +34,13 @@ class Rpx_m extends MY_Model
         $records = array();
         $records["aaData"] = array();
 
+        $statList= array(
+            "0" =>array("Ready to Send Shipment", "success"),
+            "1" => array("Ready to PickupRequest","primary"),
+            "2" => array("Complete","warning")
+        );
+
+
         $end = $iDisplayStart + $iDisplayLength;
         $end = $end > $iTotalRecords ? $iTotalRecords : $end;
 
@@ -41,17 +48,26 @@ class Rpx_m extends MY_Model
 
         $no=0;
         foreach($_row->result() as $_result) {
+            $status=$statList[$_result->status];
+
             $btnAction = "";
-            if($_result->order_no == "" and $_result->awb_return == "" and $_result->pickup_request_no == "") {
+            //if($_result->order_no == "" and $_result->awb_return == "" and $_result->pickup_request_no == "") {
+            if($_result->status == "0") {
                 $btnAction = '
                     <a href="' . site_url("rpx/delete/" . $_result->id) . '" onClick="return deletechecked()" class="btn btn-xs default"  ><i class="fa fa-trash-o"></i>Delete<a>
+                    <a href="' . site_url("rpx/shipment?awb=" . $_result->awb_number ."&orderno=" . $_result->order_no) . '" class="btn btn-xs default"  ><i class="glyphicon glyphicon-export"></i>Send Shipment<a>
+                ';
+            }elseif($_result->status == "1"){
+                $btnAction .= '
+                    <a href="' . site_url("rpx/pickup?awb=" . $_result->awb_number ."&orderno=" . $_result->order_no) . '" class="btn btn-xs default"  ><i class="glyphicon glyphicon-export"></i>Pickup Request<a>
                 ';
             }
+            /*
                 $btnAction .= '
                     <a href="' . site_url("rpx/shipment?awb=" . $_result->awb_number ."&orderno=" . $_result->order_no) . '" class="btn btn-xs default"  ><i class="glyphicon glyphicon-export"></i>Send Shipment<a>
                     <a href="' . site_url("rpx/pickup?awb=" . $_result->awb_number ."&orderno=" . $_result->order_no) . '" class="btn btn-xs default"  ><i class="glyphicon glyphicon-export"></i>Pickup Request<a>
                 ';
-
+            */
                 $records["aaData"][] = array(
                     '<input type="checkbox" name="id[]" value="'.$_result->id.'">',
                     $no=$no+1,
@@ -59,6 +75,7 @@ class Rpx_m extends MY_Model
                     $_result->order_no,
                     $_result->awb_return,
                     $_result->pickup_request_no,
+                    '<span class="label label-sm label-'.($status[1]).'">'.($status[0]).'</span>',
                     $_result->created_at,
                     $btnAction
                 );
@@ -113,7 +130,7 @@ class Rpx_m extends MY_Model
             $prefix = preg_replace("/[^A-Z]+/", "", $arrData[0]);
             for($x=$awbFrom;$x<=$awbTo;$x++){
                 $noAWB = $prefix.$this->_retZeroAWBFormat($prefix,strlen($arrData[0]),$x).$x;
-                $dataRow[] = array("awb_number" => $noAWB);
+                $dataRow[] = array("awb_number" => $noAWB, "status" => "0");
             }
         }
 
@@ -143,13 +160,13 @@ class Rpx_m extends MY_Model
     }
 
     public function saveAwbReturn($awbReturn, $awb, $orderNo){
-        $sql = "UPDATE ".$this->table." SET awb_return='".$awbReturn."', order_no='".$orderNo."' WHERE awb_number='".$awb."'";
+        $sql = "UPDATE ".$this->table." SET awb_return='".$awbReturn."', order_no='".$orderNo."', status='1' WHERE awb_number='".$awb."'";
         $query = $this->db->query($sql);
         return true;
     }
 
     public function savePickupReturn($pickupReturn, $awb){
-        $sql = "UPDATE ".$this->table." SET pickup_request_no='".$pickupReturn."' WHERE awb_number='".$awb."'";
+        $sql = "UPDATE ".$this->table." SET pickup_request_no='".$pickupReturn."', status='2' WHERE awb_number='".$awb."'";
         $query = $this->db->query($sql);
         return true;
     }
