@@ -302,31 +302,31 @@ class Rpx extends MY_Controller {
         $this->load->library("threepl_lib");
         $this->load->model( array("client_m") );
 
+        //========== proses confirm order ke 3pl ==============
+        /*
+         * proses ini sementara ditiadakan
+         *
         $records = (array) $this->threepl_lib->getOrderByRefnumber($param['order_number']);
-
         $client = $this->client_m->getClientByClientCode($records['Source']);
         $client = $client->row_array();
-
         if(!$client['threepl_user'] && !$client['threepl_pass']) {
             log_message("debug", self::TAG . " Client doesn't had 3PL detail");
             die;
         }
-
-
         $c['threepluser'] = $client['threepl_user'];
         $c['threeplpass'] = $client['threepl_pass'];
-
         $this->outbound_threepl->setConfig( array("username" => $c['threepluser'], "password" => $c['threeplpass']) );
 
-        //proses confirm order ke 3pl
         $return = $this->outbound_threepl->confirmOrders($records['nOrderId'], $param['awb']);
         if(!$return){
             $result['awb'] = "Failed confirmed order on 3PL";
             $this->session->set_flashdata( array("rpxError" => json_encode(array("msg"=>$result, "data" => $param))));
             redirect("rpx/shipment?res=failed&msg=".$result['awb']);
         }
+        */
+        //============================================================
         $data = array(
-            "",
+            $param['awb'],
             "",
             "",
             $param['order_number'],
