@@ -208,7 +208,8 @@ class Threepl_lib {
 				'dDeliveredOn' => ($fkStatusId == 4 ? date("m/d/Y H:i", strtotime($res->delivered_date)) : ""),
 				'fkPostalServiceId' => array_search($res->load_number, $this->_carrier),
 				'PostalTrackingNumber' => $res->tracking_number,
-				"fkStatusId" => $fkStatusId
+				"fkStatusId" => $fkStatusId,
+                "nOrderId" => $res->warehouse_transaction_id
 			);
 		}
 		

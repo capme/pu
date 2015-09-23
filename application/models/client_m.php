@@ -202,8 +202,16 @@ class Client_m extends MY_Model {
 		$this->db->where_in($this->pkField, $id);
 		return $this->db->get($this->table);		
 	}
-	
-	public function updateClient($post) 
+
+    public function getClientByClientCode( $client_code )
+    {
+        $this->db = $this->load->database('mysql', TRUE);
+
+        $this->db->where_in("client_code", $client_code);
+        return $this->db->get($this->table);
+    }
+
+    public function updateClient($post)
 	{
 		$this->db = $this->load->database('mysql', TRUE);
 		$msg = array();		
