@@ -13,6 +13,7 @@ class Rpx_m extends MY_Model
     {
         parent::__construct();
         $this->db = $this->load->database('mysql', TRUE);
+        $this->load->library('va_excel');
 
         $this->select = array("{$this->table}.*");
         $this->filters = array("awb_number" => "awb_number", "order_no" => "order_no", "awb_return" => "awb_return", "pickup_request_no" => "pickup_request_no");
@@ -55,11 +56,11 @@ class Rpx_m extends MY_Model
             if($_result->status == "0") {
                 $btnAction = '
                     <a href="' . site_url("rpx/delete/" . $_result->id) . '" onClick="return deletechecked()" class="btn btn-xs default"  ><i class="fa fa-trash-o"></i>Delete<a>
-                    <a href="' . site_url("rpx/shipment?awb=" . $_result->awb_number ."&orderno=" . $_result->order_no) . '" class="btn btn-xs default"  ><i class="glyphicon glyphicon-export"></i>Send Shipment<a>
+                    <a href="' . site_url("rpx/shipment?awb=" . $_result->awb_number ."&account_number=" . $_result->account_number) . '" class="btn btn-xs default"  ><i class="glyphicon glyphicon-export"></i>Send Shipment<a>
                 ';
             }elseif($_result->status == "1"){
                 $btnAction .= '
-                    <a href="' . site_url("rpx/pickup?awb=" . $_result->awb_number ."&orderno=" . $_result->order_no) . '" class="btn btn-xs default"  ><i class="glyphicon glyphicon-export"></i>Pickup Request<a>
+                    For Pickup Request, <br>use "Pickup Request" <br>option above
                 ';
             }
             /*
@@ -92,7 +93,8 @@ class Rpx_m extends MY_Model
         $msg = array();
         $user=$this->session->userdata('pkUserId');
 
-        $data = $this->extractCsv($post['userfile']);
+        //$data = $this->extractCsv($post['userfile']);
+        $data = $this->extractBulkAwb($post['userfile']);
 
         if(empty($msg)) {
             $this->db->insert_batch($this->table, $data);
@@ -111,6 +113,26 @@ class Rpx_m extends MY_Model
             $strZero .= "0";
         }
         return $strZero;
+    }
+
+    public function extractBulkAwb($namaFile){
+        $file = fopen($this->path.$namaFile,"r");
+        $dataRow = array();
+        $lup = 0;
+        while(! feof($file)) {
+            $arrData = fgetcsv($file);
+            $lup++;
+            if($lup == 1) continue;
+
+            $awb_last_number = $arrData[0];
+            $account_number = $arrData[1];
+
+            if($awb_last_number == "" or $account_number == "") continue;
+            $dataRow[] = array("awb_number" => $awb_last_number, "status" => "0", "account_number" => $account_number);
+        }
+        fclose($file);
+
+        return $dataRow;
     }
 
     public function extractCsv($namaFile){
@@ -159,14 +181,32 @@ class Rpx_m extends MY_Model
 
     }
 
-    public function saveAwbReturn($awbReturn, $awb, $orderNo){
-        $sql = "UPDATE ".$this->table." SET awb_return='".$awbReturn."', order_no='".$orderNo."', status='1' WHERE awb_number='".$awb."'";
+    public function getAwbStatus($id){
+        $sql = "SELECT * FROM ".$this->table." where id in (".$id.") and status='0'";
+        $query = $this->db->query($sql);
+        $num = $query->num_rows();
+        if($num > 0){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    public function getSumTotalWeight($id){
+        $sql = "SELECT sum(total_weight) as jum_total_weight FROM ".$this->table." where id in (".$id.") and status='1'";
+        $query = $this->db->query($sql);
+        $rows = $query->result_array();
+        return $rows[0]['jum_total_weight'];
+    }
+
+    public function saveAwbReturn($awbReturn, $awb, $orderNo, $total_weight){
+        $sql = "UPDATE ".$this->table." SET awb_return='".$awbReturn."', order_no='".$orderNo."', status='1', total_weight='".$total_weight."' WHERE awb_number='".$awb."'";
         $query = $this->db->query($sql);
         return true;
     }
 
-    public function savePickupReturn($pickupReturn, $awb){
-        $sql = "UPDATE ".$this->table." SET pickup_request_no='".$pickupReturn."', status='2' WHERE awb_number='".$awb."'";
+    public function savePickupReturn($pickupReturn, $ids){
+        $sql = "UPDATE ".$this->table." SET pickup_request_no='".$pickupReturn."', status='2' WHERE id in ($ids)";
         $query = $this->db->query($sql);
         return true;
     }

@@ -20,6 +20,7 @@ class Rpx extends MY_Controller {
 
         $this->load->library("va_list");
         $this->va_list->setListName("RPX")->setAddLabel("Upload RPX AWB")
+            ->setMassAction(array("0" => "Pickup Request"))
             ->setHeadingTitle(array("Record #", "AWB Number","Order Number","AWB Return","Pickup Request No.","Status","Created At"))
             ->setHeadingWidth(array(2, 2,2,3,2,2,2,4));
 
@@ -156,8 +157,12 @@ class Rpx extends MY_Controller {
         {
             $msg = $value = array();
             $value['awb'] = $_GET['awb'];
-            $value['order_number'] = $_GET['orderno'];
-            $value['shipper_account'] = $this->rpx_lib->getRpxAccount();
+            $value['order_number'] = "";
+            if(trim($_GET['account_number']) == ""){
+                $value['shipper_account'] = $this->rpx_lib->getRpxAccount();
+            }else{
+                $value['shipper_account'] = trim($_GET['account_number']);
+            }
             $value['shipper_address1'] = "Komplek Taman Tekno Blok H2 No. 27";
             $value['shipper_zip'] = "15314";
             $value['shipper_phone'] = "021-75876427";
@@ -169,42 +174,56 @@ class Rpx extends MY_Controller {
             $value['shipper_state'] = "Tangerang";
         }
         $this->va_input->addHidden( array("name" => "method", "value" => "sendshipment") );
-        $this->va_input->addSelect( array("name" => "awb","label" => "AWB", "list" => $this->rpx_m->getAWBList(@$value['awb']), "value" => @$value['awb'], "msg" => @$msg['awb']) );
+        $this->va_input->addSelect( array("name" => "awb","label" => "AWB *", "list" => $this->rpx_m->getAWBList(@$value['awb']), "value" => @$value['awb'], "msg" => @$msg['awb']) );
         $this->va_input->addInput( array("name" => "order_number", "placeholder" => "Order Number", "label" => "Order Number", "value" => @$value['order_number'], "msg" => @$msg['order_number']) );
-        $this->va_input->addSelect( array("name" => "service","label" => "Service", "list" => $this->_getService(), "value" => @$value['service'], "msg" => @$msg['service']) );
+        $this->va_input->addSelect( array("name" => "service","label" => "Service *", "list" => $this->_getService(), "value" => @$value['service'], "msg" => @$msg['service']) );
         //shipper
-        $this->va_input->addInput( array("name" => "shipper_account", "placeholder" => "Shipper Account", "label" => "Shipper Account", "value" => @$value['shipper_account'], "msg" => @$msg['shipper_account']) );
-        $this->va_input->addInput( array("name" => "shipper_name", "placeholder" => "Shipper Name", "label" => "Shipper Name", "value" => @$value['shipper_name'], "msg" => @$msg['shipper_name']) );
-        $this->va_input->addInput( array("name" => "shipper_company", "placeholder" => "Shipper Company", "label" => "Shipper Company", "value" => @$value['shipper_company'], "msg" => @$msg['shipper_company']) );
-        $this->va_input->addTextarea( array("name" => "shipper_address1", "placeholder" => "Shipper Address", "help" => "Shipper Address", "label" => "Shipper Address", "value" => @$value['shipper_address1'], "msg" => @$msg['shipper_address1']) );
+        $this->va_input->addInput( array("name" => "shipper_account", "placeholder" => "Shipper Account", "label" => "Shipper Account *", "value" => @$value['shipper_account'], "msg" => @$msg['shipper_account']) );
+        $this->va_input->addInput( array("name" => "shipper_name", "placeholder" => "Shipper Name", "label" => "Shipper Name *", "value" => @$value['shipper_name'], "msg" => @$msg['shipper_name']) );
+        $this->va_input->addInput( array("name" => "shipper_company", "placeholder" => "Shipper Company", "label" => "Shipper Company *", "value" => @$value['shipper_company'], "msg" => @$msg['shipper_company']) );
+        $this->va_input->addTextarea( array("name" => "shipper_address1", "placeholder" => "Shipper Address", "help" => "Shipper Address", "label" => "Shipper Address *", "value" => @$value['shipper_address1'], "msg" => @$msg['shipper_address1']) );
         $this->va_input->addInput( array("name" => "shipper_kelurahan", "placeholder" => "Shipper Kelurahan", "label" => "Shipper Kelurahan", "value" => @$value['shipper_kelurahan'], "msg" => @$msg['shipper_kelurahan']) );
         $this->va_input->addInput( array("name" => "shipper_kecamatan", "placeholder" => "Shipper Kecamatan", "label" => "Shipper Kecamatan", "value" => @$value['shipper_kecamatan'], "msg" => @$msg['shipper_kecamatan']) );
-        $this->va_input->addInput( array("name" => "shipper_city", "placeholder" => "Shipper City", "label" => "Shipper City", "value" => @$value['shipper_city'], "msg" => @$msg['shipper_city']) );
-        $this->va_input->addInput( array("name" => "shipper_state", "placeholder" => "Shipper State", "label" => "Shipper State", "value" => @$value['shipper_state'], "msg" => @$msg['shipper_state']) );
+        $this->va_input->addInput( array("name" => "shipper_city", "placeholder" => "Shipper City", "label" => "Shipper City *", "value" => @$value['shipper_city'], "msg" => @$msg['shipper_city']) );
+        $this->va_input->addInput( array("name" => "shipper_state", "placeholder" => "Shipper State", "label" => "Shipper State *", "value" => @$value['shipper_state'], "msg" => @$msg['shipper_state']) );
         $this->va_input->addInput( array("name" => "shipper_zip", "placeholder" => "Shipper ZIP", "label" => "Shipper ZIP", "value" => @$value['shipper_zip'], "msg" => @$msg['shipper_zip']) );
-        $this->va_input->addInput( array("name" => "shipper_phone", "placeholder" => "Shipper Phone", "label" => "Shipper Phone", "value" => @$value['shipper_phone'], "msg" => @$msg['shipper_phone']) );
+        $this->va_input->addInput( array("name" => "shipper_phone", "placeholder" => "Shipper Phone", "label" => "Shipper Phone *", "value" => @$value['shipper_phone'], "msg" => @$msg['shipper_phone']) );
         $this->va_input->addInput( array("name" => "shipper_mobile_no", "placeholder" => "Shipper Mobile Number", "label" => "Shipper Mobile Number", "value" => @$value['shipper_mobile_no'], "msg" => @$msg['shipper_mobile_no']) );
         //consignee
-        $this->va_input->addInput( array("name" => "consignee_name", "placeholder" => "Consignee Name", "label" => "Consignee Name", "value" => @$value['consignee_name'], "msg" => @$msg['consignee_name']) );
+        $this->va_input->addInput( array("name" => "consignee_name", "placeholder" => "Consignee Name", "label" => "Consignee Name *", "value" => @$value['consignee_name'], "msg" => @$msg['consignee_name']) );
         $this->va_input->addInput( array("name" => "consignee_company", "placeholder" => "Consignee Company", "label" => "Consignee Company", "value" => @$value['consignee_company'], "msg" => @$msg['consignee_company']) );
-        $this->va_input->addTextarea( array("name" => "consignee_address1", "placeholder" => "Consignee Address", "help" => "Consignee Address", "label" => "Consignee Address", "value" => @$value['consignee_address1'], "msg" => @$msg['consignee_address1']) );
+        $this->va_input->addTextarea( array("name" => "consignee_address1", "placeholder" => "Consignee Address", "help" => "Consignee Address", "label" => "Consignee Address *", "value" => @$value['consignee_address1'], "msg" => @$msg['consignee_address1']) );
         $this->va_input->addInput( array("name" => "consignee_kelurahan", "placeholder" => "Consignee Kelurahan", "label" => "Consignee Kelurahan", "value" => @$value['consignee_kelurahan'], "msg" => @$msg['consignee_kelurahan']) );
         $this->va_input->addInput( array("name" => "consignee_kecamatan", "placeholder" => "Consignee Kecamatan", "label" => "Consignee Kecamatan", "value" => @$value['consignee_kecamatan'], "msg" => @$msg['consignee_kecamatan']) );
-        $this->va_input->addInput( array("name" => "consignee_city", "placeholder" => "Consignee City", "label" => "Consignee City", "value" => @$value['consignee_city'], "msg" => @$msg['consignee_city']) );
-        $this->va_input->addInput( array("name" => "consignee_state", "placeholder" => "Consignee State", "label" => "Consignee State", "value" => @$value['consignee_state'], "msg" => @$msg['consignee_state']) );
+        $this->va_input->addInput( array("name" => "consignee_city", "placeholder" => "Consignee City", "label" => "Consignee City *", "value" => @$value['consignee_city'], "msg" => @$msg['consignee_city']) );
+        $this->va_input->addInput( array("name" => "consignee_state", "placeholder" => "Consignee State", "label" => "Consignee State *", "value" => @$value['consignee_state'], "msg" => @$msg['consignee_state']) );
         $this->va_input->addInput( array("name" => "consignee_zip", "placeholder" => "Consignee ZIP", "label" => "Consignee ZIP", "value" => @$value['consignee_zip'], "msg" => @$msg['consignee_zip']) );
-        $this->va_input->addInput( array("name" => "consignee_phone", "placeholder" => "Consignee Phone", "label" => "Consignee Phone", "value" => @$value['consignee_phone'], "msg" => @$msg['consignee_phone']) );
+        $this->va_input->addInput( array("name" => "consignee_phone", "placeholder" => "Consignee Phone", "label" => "Consignee Phone *", "value" => @$value['consignee_phone'], "msg" => @$msg['consignee_phone']) );
         $this->va_input->addInput( array("name" => "consignee_mobile_no", "placeholder" => "Consignee Mobile Number", "label" => "Consignee Mobile Number", "value" => @$value['consignee_mobile_no'], "msg" => @$msg['consignee_mobile_no']) );
         $this->va_input->addTextarea( array("name" => "desc_of_goods", "placeholder" => "Description of goods/package", "help" => "Description of goods/package", "label" => "Description of goods/package", "value" => @$value['desc_of_goods'], "msg" => @$msg['desc_of_goods']) );
-        $this->va_input->addInput( array("name" => "tot_package", "placeholder" => "Total package", "label" => "Total package", "value" => "1", "msg" => @$msg['tot_package']) );
+        $this->va_input->addInput( array("name" => "tot_package", "placeholder" => "Total package", "label" => "Total package *", "value" => "1", "msg" => @$msg['tot_package']) );
         $this->va_input->addInput( array("name" => "actual_weight", "placeholder" => "Actual weight of package", "label" => "Actual weight of package", "value" => @$value['actual_weight'], "msg" => @$msg['actual_weight']) );
-        $this->va_input->addInput( array("name" => "tot_weight", "placeholder" => "Total weight of package", "label" => "Total weight of package", "value" => @$value['tot_weight'], "msg" => @$msg['tot_weight']) );
+        $this->va_input->addInput( array("name" => "tot_weight", "placeholder" => "Total weight of package", "label" => "Total weight of package *", "value" => @$value['tot_weight'], "msg" => @$msg['tot_weight']) );
 
         $this->data['script'] = $this->load->view("script/rpx_add", array(), true);
         $this->load->view('template', $this->data);
     }
 
     public function pickup(){
+        if(!isset($_GET['ids'])) redirect("rpx");
+        //check whether more than one shipment for one pickup
+        if(strpos($_GET['ids'],",") >= 0){
+            $arrids = explode(",", $_GET['ids']);
+            $totalPackage = count($arrids);
+        }else{
+            $totalPackage = 1;
+        }
+
+        $totalWeight = $this->rpx_m->getSumTotalWeight($_GET['ids']);
+
+        $ret = $this->rpx_m->getAwbStatus($_GET['ids']);
+        if(!$ret) redirect("rpx");
+
         $this->data['content'] = "form_v.php";
         $this->data['pageTitle'] = "Send Shipment";
         $this->data['breadcrumb'] = array("RPX AWB List"=>"rpx", "Send Shipment Data" => "");
@@ -221,8 +240,6 @@ class Rpx extends MY_Controller {
         else
         {
             $msg = $value = array();
-            $value['awb'] = $_GET['awb'];
-            $value['orderno'] = $_GET['orderno'];
             if(isset($_GET['service_type']) and $_GET['service_type'] != "") {
                 $value['service_type'] = $_GET['service_type'];
             }else{
@@ -238,31 +255,37 @@ class Rpx extends MY_Controller {
             }else{
                 $value['destin_city'] = "APR";
             }
-            $value['pickup_ready_time'] = date("Y-m-d H:i");
+            $value['pickup_ready_time'] = date("H:i");
             $value['pickup_request_by'] = "PT. Vela Asia";
             $value['pickup_account_number'] = $this->rpx_lib->getRpxAccount();
             $value['pickup_company_name'] = "PT. Vela Asia";
+            $value['pickup_company_email'] = "opswh@paraplou.com";
             $value['pickup_company_address'] = "Komplek Taman Tekno Blok H2 No. 27, BSD Serpong, Tangerang";
             $value['pickup_shipper_name'] = "PT. Vela Asia";
             $value['pickup_phone'] = "021-75876427";
             $value['pickup_city'] = $this->_getRouteOrigin("15314");
         }
         $this->va_input->addHidden( array("name" => "method", "value" => "pickuprequest") );
-        $this->va_input->addHidden( array("name" => "awb", "value" => $value['awb']) );
-        $this->va_input->addHidden( array("name" => "orderno", "value" => $value['orderno']) );
-        $this->va_input->addInput( array("name" => "pickup_ready_time", "placeholder" => "Pickup Date and Time", "label" => "Pickup Date and Time", "value" => $value['pickup_ready_time'], "msg" => @$msg['pickup_ready_time']) );
+        $this->va_input->addHidden( array("name" => "ids", "value" => $_GET['ids']) );
+        $this->va_input->addHidden( array("name" => "total_package", "value" => $totalPackage) );
+        $this->va_input->addHidden( array("name" => "total_weight", "value" => $totalWeight) );
+        $this->va_input->addHidden( array("name" => "office_closed_time", "value" => "18:00") );
+        $this->va_input->addHidden( array("name" => "desc_of_goods", "value" => "Paraplou shipment ".date("d:m:Y")) );
+        $this->va_input->addHidden( array("name" => "pickup_cellphone", "value" => $value['pickup_phone']) );
+        $this->va_input->addInput( array("name" => "pickup_ready_time", "placeholder" => "Pickup Ready Time", "label" => "Pickup Ready Time", "value" => $value['pickup_ready_time'], "msg" => @$msg['pickup_ready_time']) );
         $this->va_input->addInput( array("name" => "pickup_request_by", "placeholder" => "Pickup Request By", "label" => "Pickup Request By", "value" => @$value['pickup_request_by'], "msg" => @$msg['pickup_request_by']) );
         $this->va_input->addInput( array("name" => "pickup_account_number", "placeholder" => "Pickup Account Number", "label" => "Pickup Account Number", "value" => @$value['pickup_account_number'], "msg" => @$msg['pickup_account_number']) );
         $this->va_input->addInput( array("name" => "pickup_company_name", "placeholder" => "Pickup Company Name", "label" => "Pickup Company Name", "value" => @$value['pickup_company_name'], "msg" => @$msg['pickup_company_name']) );
         $this->va_input->addTextarea( array("name" => "pickup_company_address", "placeholder" => "Pickup Company Address", "help" => "Pickup Company Address", "label" => "Pickup Company Address", "value" => @$value['pickup_company_address'], "msg" => @$msg['pickup_company_address']) );
         $this->va_input->addInput( array("name" => "pickup_shipper_name", "placeholder" => "Pickup Shipper Name", "label" => "Pickup Shipper Name", "value" => @$value['pickup_shipper_name'], "msg" => @$msg['pickup_shipper_name']) );
         $this->va_input->addInput( array("name" => "pickup_phone", "placeholder" => "Pickup Phone", "label" => "Pickup Phone", "value" => @$value['pickup_phone'], "msg" => @$msg['pickup_phone']) );
+        $this->va_input->addInput( array("name" => "pickup_company_email", "placeholder" => "Pickup Company Email", "label" => "Pickup Company Email", "value" => @$value['pickup_company_email'], "msg" => @$msg['pickup_company_email']) );
         $this->va_input->addInput( array("name" => "pickup_city", "placeholder" => "Pickup City", "label" => "Pickup City", "value" => @$value['pickup_city'], "msg" => @$msg['pickup_city']) );
         $this->va_input->addSelect( array("name" => "pickup_postal_code","label" => "Pickup Postal Code", "list" => $this->_getPostalCode('TAN'), "value" => @$value['pickup_postal_code'], "msg" => @$msg['pickup_postal_code']) );
         $this->va_input->addSelect( array("name" => "service_type","label" => "Service Type", "list" => $this->_getService(), "value" => @$value['service_type'], "msg" => @$msg['service_type']) );
-        $this->va_input->addSelect( array("name" => "destin_province","label" => "Destination Province", "list" => $this->_getProvince(), "value" => @$value['destin_province'], "msg" => @$msg['destin_province']) );
-        $this->va_input->addSelect( array("name" => "destin_city","label" => "Destination City", "list" => $this->_getCity(), "value" => @$value['destin_city'], "msg" => @$msg['destin_city']) );
-        $this->va_input->addSelect( array("name" => "destin_postal_code","label" => "Destination Postal Code", "list" => $this->_getPostalCode(@$value['destin_city']), "value" => @$value['destin_postal_code'], "msg" => @$msg['destin_postal_code']) );
+        //$this->va_input->addSelect( array("name" => "destin_province","label" => "Destination Province", "list" => $this->_getProvince(), "value" => @$value['destin_province'], "msg" => @$msg['destin_province']) );
+        //$this->va_input->addSelect( array("name" => "destin_city","label" => "Destination City", "list" => $this->_getCity(), "value" => @$value['destin_city'], "msg" => @$msg['destin_city']) );
+        //$this->va_input->addSelect( array("name" => "destin_postal_code","label" => "Destination Postal Code", "list" => $this->_getPostalCode(@$value['destin_city']), "value" => @$value['destin_postal_code'], "msg" => @$msg['destin_postal_code']) );
         $this->data['script'] = $this->load->view("script/rpx_add", array(), true);
         $this->load->view('template', $this->data);
 
@@ -370,7 +393,6 @@ class Rpx extends MY_Controller {
             "",
             "",
             "",
-            "",
             ""
         );
         $return = $this->rpx_lib->sendShipmentDataSOAP($data);
@@ -379,7 +401,7 @@ class Rpx extends MY_Controller {
                 $this->session->set_flashdata( array("rpxError" => json_encode(array("msg"=>$result, "data" => $param))));
                 redirect("rpx/shipment?res=failed&msg=".$return['RESULT']);
         }else{
-            $this->rpx_m->saveAwbReturn($return['AWB_RETURN'], $param['awb'], $param['order_number']);
+            $this->rpx_m->saveAwbReturn($return['AWB_RETURN'], $param['awb'], $param['order_number'], $param['tot_weight']);
             redirect("rpx?res=success&awb_return=".$return['AWB_RETURN']);
         }
     }
@@ -396,18 +418,18 @@ class Rpx extends MY_Controller {
             $param['pickup_city'],
             $param['pickup_postal_code'],
             $param['service_type'],
+            $param['desc_of_goods'],
             "",
-            "",
-            "",
+            $param['office_closed_time'],
             $param['pickup_shipper_name'],
-            "",
-            "",
+            $param['pickup_company_email'],
+            $param['pickup_cellphone'],
             $param['pickup_phone'],
-            $param['destin_postal_code'],
-            $param['destin_city'],
-            $param['destin_province'],
             "",
             "",
+            "",
+            $param['total_weight'],
+            $param['total_package'],
             ""
         );
         $return = $this->rpx_lib->sendPickupRequestSOAP($data);
@@ -416,7 +438,7 @@ class Rpx extends MY_Controller {
             $this->session->set_flashdata( array("rpxError" => json_encode(array("msg"=>$result, "data" => $param))));
             redirect("rpx/pickup?res=failed&msg=".$return."&awb=".$param['awb']."&orderno=".$param['orderno']);
         }else{
-            $this->rpx_m->savePickupReturn($return['PICKUP_REQUEST_NO'], $param['awb']);
+            $this->rpx_m->savePickupReturn($return['PICKUP_REQUEST_NO'], $param['ids']);
             redirect("rpx?res=success&pickup_request_no=".$return['PICKUP_REQUEST_NO']);
         }
     }

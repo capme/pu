@@ -56,31 +56,36 @@ var TableAjax = function () {
                 }
             });
 
-            // handle group actionsubmit button click
-            grid.getTableWrapper().on('click', '.table-group-action-submit', function(e){
-                e.preventDefault();
-                var action = $(".table-group-action-input", grid.getTableWrapper());
-                if (action.val() != "" && grid.getSelectedRowsCount() > 0) 
-				{
-                    if( action.val() == 2 ) { // delete row
-                        if( !confirm("Are you sure to remove client?") ){
-                            return false;
-                        }
-                    }
-                    grid.addAjaxParam("sAction", "group_action");
-                    grid.addAjaxParam("sGroupActionName", action.val());
+        // handle group actionsubmit button click
+        grid.getTableWrapper().on('click', '.table-group-action-submit', function(e){
+            e.preventDefault();
+            var action = $(".table-group-action-input", grid.getTableWrapper());
+            if (action.val() != "" && grid.getSelectedRowsCount() > -1)
+            {
+                if ( action.val()==0||1)
+                {
                     var records = grid.getSelectedRows();
+                    var ids = [];
                     for (var i in records) {
-                        grid.addAjaxParam(records[i]["name"], records[i]["value"]);    
+                        ids.push(records[i]["value"]);
                     }
-                    grid.getDataTable().fnDraw();
+                    var command = action.val();
                     grid.clearAjaxParams();
-                } else if (action.val() == "") {
-                    App.alert({type: 'danger', icon: 'warning', message: 'Please select an action', container: grid.getTableWrapper(), place: 'prepend'});
-                } else if (grid.getSelectedRowsCount() === 0) {
-                    App.alert({type: 'danger', icon: 'warning', message: 'No record selected', container: grid.getTableWrapper(), place: 'prepend'});
+                    if(action.val() == 0){
+                        document.location = "rpx/pickup?ids="+ids.join(",") +"&command="+command;
+                    }
                 }
-            });
+                grid.addAjaxParam("sAction", "group_action");
+                grid.addAjaxParam("sGroupActionName", action.val());
+
+                grid.getDataTable().fnDraw();
+                grid.clearAjaxParams();
+            } else if (action.val() == "") {
+                App.alert({type: 'danger', icon: 'warning', message: 'Please select an action', container: grid.getTableWrapper(), place: 'prepend'});
+            } else if (grid.getSelectedRowsCount() === 0) {
+                App.alert({type: 'danger', icon: 'warning', message: 'No record selected', container: grid.getTableWrapper(), place: 'prepend'});
+            }
+        });
 
     }
 

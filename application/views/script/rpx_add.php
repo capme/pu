@@ -1,6 +1,6 @@
 <script>
         $('#destin_city').change(function(){
-                document.location = 'pickup?awb=<?php echo $_GET['awb'];?>&orderno=<?php echo $_GET['orderno'];?>&destin_city=' + document.getElementById("destin_city").value + '&destin_province=' + document.getElementById("destin_province").value + '&service_type=' + document.getElementById("service_type").value;
+                document.location = 'pickup?awb=<?php echo $_GET['awb'];?>&destin_city=' + document.getElementById("destin_city").value + '&destin_province=' + document.getElementById("destin_province").value + '&service_type=' + document.getElementById("service_type").value;
         });
 
 var FormValidation = function () {
@@ -19,14 +19,67 @@ var FormValidation = function () {
                 focusInvalid: false, // do not focus the last invalid input
                 ignore: "",                
                 rules: {
-                    "inbound[docnumber]": {                        
+                    "rpx[awb]": {
+                        minlength: 1,
                         required: true
                     },
-                    "userfile": {
+                    "rpx[service]": {
+                        minlength: 1,
+                        required: true
+                    },
+                    "rpx[shipper_name]": {
+                        minlength: 1,
+                        required: true
+                    },
+                    "rpx[shipper_company]": {
+                        minlength: 1,
+                        required: true
+                    },
+                    "rpx[shipper_address1]": {
+                        minlength: 1,
+                        required: true
+                    },
+                    "rpx[shipper_city]": {
+                        minlength: 1,
+                        required: true
+                    },
+                    "rpx[shipper_state]": {
+                        minlength: 1,
+                        required: true
+                    },
+                    "rpx[shipper_account]": {
+                        minlength: 1,
+                        required: true
+                    },
+                    "rpx[consignee_name]": {
+                        minlength: 1,
+                        required: true
+                    },
+                    "rpx[consignee_address1]": {
+                        minlength: 1,
+                        required: true
+                    },
+                    "rpx[consignee_city]": {
+                        minlength: 1,
+                        required: true
+                    },
+                    "rpx[consignee_state]": {
+                        minlength: 1,
+                        required: true
+                    },
+                    "rpx[consignee_phone]": {
                         required: true,
-						extension: "csv"
+                        minlength: 1
+                    },
+                    "rpx[tot_package]": {
+                        required: true,
+                        minlength: 1
+                    },
+                    "rpx[tot_weight]": {
+                        minlength: 1,
+                        required: true
                     }
-                },		
+                },
 				
 								
                 invalidHandler: function (event, validator) { //display error alert on form submit              

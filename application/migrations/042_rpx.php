@@ -6,10 +6,12 @@ class Migration_rpx extends Base_migration {
         $this->db->query("CREATE TABLE `rpx_awb`
             (`id` int(11) AUTO_INCREMENT,
             `awb_number` text,
+            `account_number` text,
             `order_no` text,
             `awb_return` text,
             `pickup_request_no` text,
             `status` char(1),
+            `total_weight` text,
             `created_at` TIMESTAMP,
 			primary key (`id`))ENGINE=InnoDB DEFAULT CHARSET=utf8");
 
