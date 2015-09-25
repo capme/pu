@@ -182,7 +182,7 @@ class Rpx_m extends MY_Model
     }
 
     public function getAwbStatus($id){
-        $sql = "SELECT * FROM ".$this->table." where id in (".$id.") and status='0'";
+        $sql = "SELECT * FROM ".$this->table." where id in (".$id.") and (status='0' or status='2')";
         $query = $this->db->query($sql);
         $num = $query->num_rows();
         if($num > 0){
