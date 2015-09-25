@@ -225,9 +225,9 @@ class Rpx extends MY_Controller {
         if(!$ret) redirect("rpx");
 
         $this->data['content'] = "form_v.php";
-        $this->data['pageTitle'] = "Send Shipment";
-        $this->data['breadcrumb'] = array("RPX AWB List"=>"rpx", "Send Shipment Data" => "");
-        $this->data['formTitle'] = "Send Shipment Data";
+        $this->data['pageTitle'] = "Send Pickup Request";
+        $this->data['breadcrumb'] = array("RPX AWB List"=>"rpx", "Send Pickup Request" => "");
+        $this->data['formTitle'] = "Send Pickup Request";
         $this->load->library("va_input", array("group" => "rpx"));
 
         $flashData = $this->session->flashdata("rpxError");
