@@ -62,6 +62,10 @@ class Rpx_m extends MY_Model
                 $btnAction .= '
                     For Pickup Request, <br>use "Pickup Request" <br>option above
                 ';
+            }else{
+                $btnAction = '
+                    <a href="' . site_url("rpx/view/" . $_result->id) . '" class="btn btn-xs default"  ><i class="fa fa-truck"></i>View Data Shipping<a>
+                ';
             }
             /*
                 $btnAction .= '
@@ -192,6 +196,13 @@ class Rpx_m extends MY_Model
         }
     }
 
+    public function getShippingInfo($id){
+        $sql = "SELECT * FROM ".$this->table." where id=".$id;
+        $query = $this->db->query($sql);
+        $rows = $query->result_array();
+        return $rows;
+    }
+
     public function getSumTotalWeight($id){
         $sql = "SELECT sum(total_weight) as jum_total_weight FROM ".$this->table." where id in (".$id.") and status='1'";
         $query = $this->db->query($sql);
@@ -199,8 +210,15 @@ class Rpx_m extends MY_Model
         return $rows[0]['jum_total_weight'];
     }
 
-    public function saveAwbReturn($awbReturn, $awb, $orderNo, $total_weight){
-        $sql = "UPDATE ".$this->table." SET awb_return='".$awbReturn."', order_no='".$orderNo."', status='1', total_weight='".$total_weight."' WHERE awb_number='".$awb."'";
+    public function saveAwbReturn($awbReturn, $awb, $orderNo, $total_weight, $paramRpx = array()){
+        if(!empty($paramRpx)){
+            //param2 rpx
+            $strParamRpx = "";
+            foreach($paramRpx as $key => $value){
+                $strParamRpx .= $key."='".$value."', ";
+            }
+        }
+        $sql = "UPDATE ".$this->table." SET ".$strParamRpx."awb_return='".$awbReturn."', order_no='".$orderNo."', status='1', total_weight='".$total_weight."' WHERE awb_number='".$awb."'";
         $query = $this->db->query($sql);
         return true;
     }

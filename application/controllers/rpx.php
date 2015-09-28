@@ -291,6 +291,51 @@ class Rpx extends MY_Controller {
 
     }
 
+    public function view($id)
+    {
+        $data = $this->rpx_m->getShippingInfo($id);
+
+        $this->data['content'] = "form_v.php";
+        $this->data['pageTitle'] = "View Shipment Data";
+        $this->data['breadcrumb'] = array("RPX AWB List"=>"rpx", "View Shipment Data" => "");
+        $this->data['formTitle'] = "View Shipment Data";
+        $this->load->library("va_input", array("group" => "rpx"));
+        $this->va_input->setJustView();
+
+        $flashData = $this->session->flashdata("rpxError");
+        if($flashData !== false)
+        {
+            $flashData = json_decode($flashData, true);
+            $value = $flashData['data'];
+            $msg = $flashData['msg'];
+        }
+        else
+        {
+            $msg = $value = array();
+            $value = $data[0];
+        }
+
+        $this->va_input->addInput( array("name" => "consignee_name", "placeholder" => "Consignee Name", "label" => "Consignee Name *", "value" => @$value['rpx_consignee_name'], "msg" => @$msg['consignee_name'], "disabled"=>"disabled") );
+        $this->va_input->addInput( array("name" => "consignee_company", "placeholder" => "Consignee Company", "label" => "Consignee Company", "value" => @$value['rpx_consignee_company'], "msg" => @$msg['consignee_company'], "disabled"=>"disabled") );
+        $this->va_input->addTextarea( array("name" => "consignee_address1", "placeholder" => "Consignee Address", "help" => "Consignee Address", "label" => "Consignee Address *", "value" => @$value['rpx_consignee_address1'], "msg" => @$msg['consignee_address1'], "disabled"=>"disabled") );
+        $this->va_input->addInput( array("name" => "consignee_kelurahan", "placeholder" => "Consignee Kelurahan", "label" => "Consignee Kelurahan", "value" => @$value['rpx_consignee_kelurahan'], "msg" => @$msg['consignee_kelurahan'], "disabled"=>"disabled") );
+        $this->va_input->addInput( array("name" => "consignee_kecamatan", "placeholder" => "Consignee Kecamatan", "label" => "Consignee Kecamatan", "value" => @$value['rpx_consignee_kecamatan'], "msg" => @$msg['consignee_kecamatan'], "disabled"=>"disabled") );
+        $this->va_input->addInput( array("name" => "consignee_city", "placeholder" => "Consignee City", "label" => "Consignee City *", "value" => @$value['rpx_consignee_city'], "msg" => @$msg['consignee_city'], "disabled"=>"disabled") );
+        $this->va_input->addInput( array("name" => "consignee_state", "placeholder" => "Consignee State", "label" => "Consignee State *", "value" => @$value['rpx_consignee_state'], "msg" => @$msg['consignee_state'], "disabled"=>"disabled") );
+        $this->va_input->addInput( array("name" => "consignee_zip", "placeholder" => "Consignee ZIP", "label" => "Consignee ZIP", "value" => @$value['rpx_consignee_zip'], "msg" => @$msg['consignee_zip'], "disabled"=>"disabled") );
+        $this->va_input->addInput( array("name" => "consignee_phone", "placeholder" => "Consignee Phone", "label" => "Consignee Phone *", "value" => @$value['rpx_consignee_phone'], "msg" => @$msg['consignee_phone'], "disabled"=>"disabled") );
+        $this->va_input->addInput( array("name" => "consignee_mobile_no", "placeholder" => "Consignee Mobile Number", "label" => "Consignee Mobile Number", "value" => @$value['rpx_consignee_mobile_no'], "msg" => @$msg['consignee_mobile_no'], "disabled"=>"disabled") );
+        $this->va_input->addTextarea( array("name" => "desc_of_goods", "placeholder" => "Description of goods/package", "help" => "Description of goods/package", "label" => "Description of goods/package", "value" => @$value['rpx_desc_of_goods'], "msg" => @$msg['desc_of_goods'], "disabled"=>"disabled") );
+        $this->va_input->addInput( array("name" => "tot_package", "placeholder" => "Total package", "label" => "Total package *", "value" => @$value['rpx_tot_package'], "msg" => @$msg['tot_package'], "disabled"=>"disabled") );
+        $this->va_input->addInput( array("name" => "actual_weight", "placeholder" => "Actual weight of package", "label" => "Actual weight of package", "value" => @$value['rpx_actual_weight'], "msg" => @$msg['actual_weight'], "disabled"=>"disabled") );
+        $this->va_input->addInput( array("name" => "tot_weight", "placeholder" => "Total weight of package", "label" => "Total weight of package *", "value" => @$value['rpx_tot_weight'], "msg" => @$msg['tot_weight'], "disabled"=>"disabled") );
+
+        $this->data['script'] = $this->load->view("script/rpx_add", array(), true);
+        $this->load->view('template', $this->data);
+
+    }
+
+
     private function _getService(){
         //$ret = $this->rpx_lib->getService();
         $ret = $this->rpx_lib->getServiceSOAP();
@@ -401,7 +446,23 @@ class Rpx extends MY_Controller {
                 $this->session->set_flashdata( array("rpxError" => json_encode(array("msg"=>$result, "data" => $param))));
                 redirect("rpx/shipment?res=failed&msg=".$return['RESULT']);
         }else{
-            $this->rpx_m->saveAwbReturn($return['AWB_RETURN'], $param['awb'], $param['order_number'], $param['tot_weight']);
+            $paramRpx = array(
+                "rpx_consignee_name" => $param['consignee_name'],
+                "rpx_consignee_company" => $param['consignee_company'],
+                "rpx_consignee_address1" => $param['consignee_address1'],
+                "rpx_consignee_kelurahan" => $param['consignee_kelurahan'],
+                "rpx_consignee_kecamatan" => $param['consignee_kecamatan'],
+                "rpx_consignee_city" => $param['consignee_city'],
+                "rpx_consignee_state" => $param['consignee_state'],
+                "rpx_consignee_zip" => $param['consignee_zip'],
+                "rpx_consignee_phone" => $param['consignee_phone'],
+                "rpx_consignee_mobile_no" => $param['consignee_mobile_no'],
+                "rpx_desc_of_goods" => $param['desc_of_goods'],
+                "rpx_tot_package" => $param['tot_package'],
+                "rpx_actual_weight" => $param['actual_weight'],
+                "rpx_tot_weight" => $param['tot_weight']
+            );
+            $this->rpx_m->saveAwbReturn($return['AWB_RETURN'], $param['awb'], $param['order_number'], $param['tot_weight'], $paramRpx);
             redirect("rpx?res=success&awb_return=".$return['AWB_RETURN']);
         }
     }

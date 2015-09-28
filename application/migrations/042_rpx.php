@@ -12,6 +12,20 @@ class Migration_rpx extends Base_migration {
             `pickup_request_no` text,
             `status` char(1),
             `total_weight` text,
+            `rpx_consignee_name` text,
+            `rpx_consignee_company` text,
+            `rpx_consignee_address1` text,
+            `rpx_consignee_kelurahan` text,
+            `rpx_consignee_kecamatan` text,
+            `rpx_consignee_city` text,
+            `rpx_consignee_state` text,
+            `rpx_consignee_zip` text,
+            `rpx_consignee_phone` text,
+            `rpx_consignee_mobile_no` text,
+            `rpx_desc_of_goods` text,
+            `rpx_tot_package` text,
+            `rpx_actual_weight` text,
+            `rpx_tot_weight` text,
             `created_at` TIMESTAMP,
 			primary key (`id`))ENGINE=InnoDB DEFAULT CHARSET=utf8");
 
@@ -34,6 +48,7 @@ class Migration_rpx extends Base_migration {
             array("name" => "Rpx AWB List", "slug" => "rpx/RpxList", "hidden" => 1, "status" => 1, "parent" => $parentTags['rpx']),
             array("name" => "Rpx AWB - Shipment", "slug" => "rpx/shipment", "hidden" => 1, "status" => 1, "parent" => $parentTags['rpx']),
             array("name" => "Rpx AWB - Pickup", "slug" => "rpx/pickup", "hidden" => 1, "status" => 1, "parent" => $parentTags['rpx']),
+            array("name" => "Rpx AWB - View Shipment", "slug" => "rpx/view", "hidden" => 1, "status" => 1, "parent" => $parentTags['rpx']),
         );
 
         foreach($newModule as $module) {
