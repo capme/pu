@@ -21,6 +21,12 @@ define('DIR_WRITE_MODE', 0777);
 define('GROUP_OPERATION', 1);
 define('USER_CRON', 2);
 
+
+define('MAGE_PATH', 'C:/xampp/htdocs/work/paraplou/paraplou/');
+define('MAGE_STORE_ID', '1');
+define('MAGE_WEBSITE_ID', '1');
+define('MAGE_ATTR_DEFAULT_ID', '1');
+
 /*
 |--------------------------------------------------------------------------
 | File Stream Modes
@@ -39,7 +45,7 @@ define('FOPEN_READ_WRITE_CREATE',				'a+b');
 define('FOPEN_WRITE_CREATE_STRICT',				'xb');
 define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 
-define('DART_URL', 'http://dart.velaasia.com/xhr_threepl/');
+define('DART_URL', 'http://dart.paraplougroup.com/xhr_threepl/');
 define('DART_KEY', 'Vela123!');
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

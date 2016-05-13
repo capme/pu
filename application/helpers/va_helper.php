@@ -85,6 +85,7 @@ function execProcess($command = null) {
 
     $cmd = PHP_BINDIR."/php " . FCPATH . "index.php ".$command;
     if (substr(php_uname(), 0, 7) == "Windows"){
+        $cmd = "C:/xampp/php/php " . FCPATH . "index.php ".$command;
         pclose(popen("start /B ". $cmd, "r"));
     } else {
         exec($cmd . " > /dev/null &");

@@ -9,94 +9,107 @@ class Testform extends MY_Controller {
 	public function index() 
 	{
 		
-		//create items in magento
-		$this->_mageCreateItem();
-		echo "<br><br>";
-		//create items in 3PL
-		$this->_3PLCreateItem();			
+        $content = $this->rpx();
+        $xml = $content;
+        print_r($xml);
 
 	}
 
-	private function _mageCreateItem(){
-		$this->load->library("Mageapi");
-		$this->load->model( array("client_m", "inbounddocument_m") );
-		
-			$config = array(
-				"auth" => "dart:Vela123!",
-				"url" => "http://leecooper.localhost/api/soap/?wsdl"
-			);
-			
-		$client = $_GET['client'];
-		$doc = $_GET['doc'];
-		
-		$param = $this->inbounddocument_m->getParamInboundMage($client, $doc);		
-							
-		if( $this->mageapi->initSoap($config) ) {
-				$return = $this->mageapi->inboundCreateItem($param);
-				if(is_array($return)){
-					print_r($return);
-				}else{
-					echo $return;
-				}
-		}
-		
-	}
-	
-	private function _3PLCreateItem(){
-		$this->load->add_package_path(APPPATH."third_party/threepl/");
-		$this->load->library("inbound_threepl", null, "inbound_threepl");
-		$this->load->model( array("client_m", "inbounddocument_m") );
-		
-		$client = $_GET['client'];
-		$doc = $_GET['doc'];
-		
-		$c['threepluser'] = "dev_test";
-		$c['threeplpass'] = "Vela123!";
-		
-		$this->inbound_threepl->setConfig( array("username" => $c['threepluser'], "password" => $c['threeplpass']) );
-		$returnMsgItem = $this->inbounddocument_m->getParamInbound3PL($client, $doc);
-		$return = $this->inbound_threepl->createItems($returnMsgItem);
-				if(is_array($return)){
-					print_r($return);
-				}else{
-					echo $return;
-				}
-	}
-	
-	private function _page4(){
-		$this->data['content'] = "form_v.php";
-		$this->data['pageTitle'] = "test ajah form custom";
-		$this->data['formTitle'] = "test ajah form custom";
-		$this->data['breadcrumb'] = array("Test Form 2"=> "");
-		$this->load->library("va_input", array("group" => "codconfirmation"));
-		
-		$this->va_input->addSelect( array("name" => "status", "label" => "Status *", "list" => array("1"=>"Processing","3" => "Receive","4"=>"Cancel"), "value" => "isi value", "msg" => "isi msg"));	
-		$this->va_input->addInput( array("name" => "client_code_1", "placeholder" => "Client name", "help" => "Client Name", "label" => "Client Name", "value" => "value 2", "msg" => "test", "disabled"=>"disabled"));
-		
-		$this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("layout/custom1.php");
-		$this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
-		$this->load->view('template', $this->data);
-				
-	}
-	
-	private function _creditcard(){
-		$this->load->library("Mageapi");
-			$config = array(
-				"auth" => "dart:Vela123!",
-				"url" => "http://leecooper.localhost/api/soap/?wsdl"
-			);
-			
-			if( $this->mageapi->initSoap($config) ) {
-				echo "test";
-				$return = $this->mageapi->getCreditCardOrder('2015-01-01', '2015-12-31');
-				if(is_array($return)){
-					print_r($return);
-				}else{
-					echo $return;
-				}
-			}
-	}
-	
-	
+    public function rpx(){
+        $this->load->library("rpx_lib");
+        //method get services
+        $ret = $this->rpx_lib->getService();
+        if(!$ret){
+            echo "RPX getService failed. Please see log file.";
+        }else{
+            return $ret;
+        }
+
+        //method sendShipmentData
+        /*
+        $testArrParam = array(
+            "awb" => "RPX00000001",
+            "package_id" => "",
+            "order_type" => "",
+            "order_number" => "PLOU00012345",
+            "service_type_id" => "RGP",
+            "shipper_account" => "234098705",
+            "shipper_name" => "Purbo",
+            "shipper_company" => "PT. PARAPLOU",
+            "shipper_address1" => "Graha Tirtadi lt. 2",
+            "shipper_address2" => "Jl. Senopati no 71-73",
+            "shipper_kelurahan" => "",
+            "shipper_kecamatan" => "",
+            "shipper_city" => "Jakarta Selatan",
+            "shipper_state" => "DKI Jakarta",
+            "shipper_zip" => "",
+            "shipper_phone" => "081318759311",
+            "identity_no" => "",
+            "shipper_mobile_no" => "081318759311",
+            "shipper_email" => "",
+            "consignee_account" => "",
+            "consignee_mobile_no" => "",
+            "consignee_email" => "",
+            "consignee_name" => "",
+            "consignee_company" => "",
+            "consignee_address1" => "",
+            "consignee_address2" => "",
+            "consignee_kelurahan" => "",
+            "consignee_kecamatan" => "",
+            "consignee_city" => "",
+            "consignee_state" => "",
+            "consignee_zip" => "",
+            "consignee_phone" => "",
+            "desc_of_goods" => "",
+            "tot_package" => "",
+            "actual_weight" => "",
+            "tot_weight" => "",
+            "tot_declare_value" => "",
+            "tot_dimensi" => "",
+            "format" => ""
+        );
+        $ret = $this->rpx_lib->sendShipmentInformation($testArrParam);
+        if(!$ret){
+            echo "RPX sendShipmentInformation failed. Please see log file.";
+        }else{
+            return $ret;
+        }
+*/
+        //method sendPickupRequest
+        /*
+        $testArrParam = array(
+            "order_type" => "",
+            "pickup_agent_id" => "",
+            "pickup_ready_time" => "",
+            "pickup_request_by" => "",
+            "pickup_account_number" => "234098705",
+            "pickup_company_name" => "PT. PARAPLOU",
+            "pickup_company_address" => "Graha Tirtadi lt. 2",
+            "pickup_city" => "Jakarta Selatan",
+            "pickup_postal_code" => "",
+            "service_type" => "RGP",
+            "desc_of_goods" => "",
+            "tot_declare_value" => "",
+            "office_closed_time" => "",
+            "pickup_shipper_name" => "",
+            "pickup_company_email" => "",
+            "pickup_cellphone" => "",
+            "pickup_phone" => "",
+            "destin_postal_code" => "",
+            "destin_city" => "",
+            "destin_province" => "",
+            "total_weight" => "",
+            "total_package" => "",
+            "format" => ""
+        );
+        $ret = $this->rpx_lib->sendPickupRequest($testArrParam);
+        if(!$ret){
+            echo "RPX sendPickupRequest failed. Please see log file.";
+        }else{
+            return $ret;
+        }
+        */
+
+    }
 }
 ?>

@@ -359,5 +359,12 @@ $config['proxy_ips'] = '';
 
 $config['dart']['dart_key'] = DART_KEY;
 $config['dart']['dart_url'] = DART_URL;
+
+$config['rpx']['rpx_user'] = "vela";
+$config['rpx']['rpx_password'] = "Asdasd$123";
+$config['rpx']['rpx_user'] = "paraplou";
+$config['rpx']['rpx_password'] = "paraplou2015";
+$config['rpx']['rpx_account'] = "800050723";
+
 /* End of file config.php */
 /* Location: ./application/config/config.php */
