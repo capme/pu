@@ -20,11 +20,23 @@ class Va_input {
 		if(!is_array($conf)) {
 			return $this;
 		}
-		
+
 		$input = $this->_prepareBasicField($conf);
 		$input["type"] = "text";
-		
-		
+		if(isset($conf['maxlength'])) {
+			$input['maxlength'] = $conf['maxlength'];
+		} else {
+			$input['maxlength'] = "";
+		}
+
+		if(isset($conf['size'])) {
+			$input['size'] = $conf['size'];
+		} else {
+			$input['size'] = "";
+		}
+
+
+
 		$this->fields[] = $input;
 		
 		return $this;

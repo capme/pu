@@ -59,30 +59,20 @@ class Ringkasandata extends MY_Controller {
         force_download($name['filename'],$data);       
     }
 
-    public function add(){
+    public function addIdentifikasi(){
         $this->data['content'] = "form_v.php";
-        $this->data['pageTitle'] = "Upload File";
-        $this->data['breadcrumb'] = array("Inbound"=> "inbound", "Upload File" => "");
-        $this->data['formTitle'] = "Upload File";
-        $this->load->library("va_input", array("group" => "inbound"));
+        //$this->data['pageTitle'] = "Inbound Document";
+        $this->data['formTitle'] = "Ringkasan Data - Identifikasi";
+        $this->data['breadcrumb'] = array("Identifikasi"=> "ringkasandata/addIdentifikasi");
+        $this->load->library("va_input", array("group" => "ringkasandata"));
 
-        $flashData = $this->session->flashdata("inboundError");
-        if($flashData !== false)
-        {
-            $flashData = json_decode($flashData, true);
-            $value = $flashData['data'];
-            $msg = $flashData['msg'];
-        }
-        else
-        {
-            $msg = $value = array();
-        }
-        $this->va_input->addHidden( array("name" => "method", "value" => "new") );
-        $this->va_input->addSelect( array("name" => "client","label" => "Client *", "list" => $this->client_m->getClientCodeList(), "value" => @$value['client'], "msg" => @$msg['client']) );
-        $this->va_input->addTextarea( array("name" => "note", "placeholder" => "Note", "help" => "Note", "label" => "Note", "value" => '', "msg" => @$msg['note']) );
-        $this->va_input->addCustomField( array("name" =>"userfile", "placeholder" => "Upload File ", "value" => @$value['userfile'], "msg" => @$msg['userfile'][0]?:@$msg['userfile'][1], "label" => "Upload File *", "view"=>"form/upload_inbound"));
-        $this->data['script'] = $this->load->view("script/inbound_add", array(), true);
+        $this->va_input->addHidden( array("name" => "method", "value" => "identifikasi") );
+        $this->va_input->addInput( array("name" => "name", "maxlength" => "4", "size" => "4") );
+        $this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("ringkasandata/addIdentifikasi.php");
+
+        $this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
         $this->load->view('template', $this->data);
+
     }
 }
 ?>
