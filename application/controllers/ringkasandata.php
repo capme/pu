@@ -67,7 +67,7 @@ class Ringkasandata extends MY_Controller {
         $this->load->library("va_input", array("group" => "ringkasandata"));
 
         $this->va_input->addHidden( array("name" => "method", "value" => "identifikasi") );
-        $this->va_input->addInput( array("name" => "name", "maxlength" => "4", "size" => "4") );
+        $this->va_input->addInput( array("name" => "name", "maxlength" => "4", "size" => "4", "label" => "") );
         $this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("ringkasandata/addIdentifikasi.php");
 
         $this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
