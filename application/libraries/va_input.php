@@ -15,7 +15,33 @@ class Va_input {
 		$this->_CI->load->helper("inflector");
 		$this->_group = $data['group'];
 	}
-	
+
+	public function addInputPu( $conf = array() ) {
+		if(!is_array($conf)) {
+			return $this;
+		}
+
+		$input = $this->_prepareBasicField($conf);
+		$input["type"] = "text_pu";
+		if(isset($conf['maxlength'])) {
+			$input['maxlength'] = $conf['maxlength'];
+		} else {
+			$input['maxlength'] = "";
+		}
+
+		if(isset($conf['size'])) {
+			$input['size'] = $conf['size'];
+		} else {
+			$input['size'] = "";
+		}
+
+
+
+		$this->fields[] = $input;
+
+		return $this;
+	}
+
 	public function addInput( $conf = array() ) {
 		if(!is_array($conf)) {
 			return $this;
@@ -260,6 +286,11 @@ class Va_input {
 		$html = "";
 		foreach($fields as $field) {
 			switch($field['type']) {
+				case "text_pu":
+					$field['group'] = $this->_group;
+					$result = $this->_CI->load->view("form/input_pu", $field, true);
+					$html .= $result;
+					break;
 				case "text":
 					$field['group'] = $this->_group;
 					$result = $this->_CI->load->view("form/input", $field, true);
@@ -374,6 +405,11 @@ class Va_input {
 	public function getFieldInput($field){
 		$html = "";
 			switch($field['type']) {
+				case "text_pu":
+					$field['group'] = $this->_group;
+					$result = $this->_CI->load->view("form/input_pu", $field, true);
+					$html .= $result;
+					break;
 				case "text":
 					$field['group'] = $this->_group;
 					$result = $this->_CI->load->view("form/input", $field, true);

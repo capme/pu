@@ -3,6 +3,7 @@
  * 
  * @property leger_m
  * @property Va_list $va_list
+ * @property Va_input $va_input
  * @property Leger_m $leger_m
  *
  */
@@ -59,19 +60,60 @@ class Ringkasandata extends MY_Controller {
         force_download($name['filename'],$data);       
     }
 
+	public function save(){
+		if($_SERVER['REQUEST_METHOD'] != "POST") {
+			redirect("ringkasandata");
+		}
+		$post = $this->input->post("ringkasandata");
+		if(empty($post)) {
+			redirect("ringkasandata");
+		}
+
+		if($post['method'] == "identifikasi") {
+			redirect("ringkasandata/addIdentifikasi");
+		}
+	}
+
     public function addIdentifikasi(){
         $this->data['content'] = "form_v.php";
-        //$this->data['pageTitle'] = "Inbound Document";
+        $this->data['pageTitle'] = "";
         $this->data['formTitle'] = "Ringkasan Data - Identifikasi";
         $this->data['breadcrumb'] = array("Identifikasi"=> "ringkasandata/addIdentifikasi");
         $this->load->library("va_input", array("group" => "ringkasandata"));
 
         $this->va_input->addHidden( array("name" => "method", "value" => "identifikasi") );
-        $this->va_input->addInput( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "") );
-		$this->va_input->addInput( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "") );
-		$this->va_input->addInput( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "") );
-		$this->va_input->addInput( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "") );
-        $this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("ringkasandata/addIdentifikasi.php");
+        $this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "") );
+		$dataList = array(
+			"" => "-- pilih tipe dokumen --",
+			"asal" => "asal",
+			"pemutakhiran1" => "pemutakhiran 1",
+			"pemutakhiran2" => "pemutakhiran 2",
+			"pemutakhiran3" => "pemutakhiran 3",
+			"pemutakhiran4" => "pemutakhiran 4"
+		);
+		$this->va_input->addSelect( array("name" => "tipe","label" => "", "list" => $dataList, "value" => "") );
+		$this->va_input->addInputPu( array("name" => "nomor_panjang_ruas_jalan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "nama_pengenal_jalan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "titik_awal_ruas_jalan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "deskripsi_titik_awal_ruas_jalan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "titik_akhir_ruas_jalan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "deskripsi_titik_akhir_ruas_jalan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "titik_ikat_awal_patok", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "deskripsi_titik_ikat_patok", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "sistem_jaringan_jalan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "peran_jalan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "status_jalan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "kelas_jalan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "pembina_jalan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "tanggal_selesai_diwujudkan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "tanggal_dibuka_untuk_lalin", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "tanggal_ditutup_untuk_lalin", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "tahun", "maxlength" => "4", "size" => "4", "label" => "") );
+
+		$this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("ringkasandata/addIdentifikasi.php");
 
         $this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
         $this->load->view('template', $this->data);
