@@ -8,7 +8,7 @@ jQuery(document).ready(function() {
 
 <div class="footer">
 	<div class="footer-inner">
-		 2014 &copy; <a href="http://www.velaasia.com">Vela Asia<a>
+		 2014 &copy; <a href="http://www.pu.go.id/">Kementrian Pekerjaan Umum Dan Perumahan Rakyat<a>
 	</div>
 	<div class="footer-tools">
 		<span class="go-top">

@@ -45,10 +45,7 @@ Purchase: http://themeforest.net/item/metronic-responsive-admin-dashboard-templa
 <body class="login">
 <!-- BEGIN LOGO -->
 <div class="logo">
-	<a href="http://dart.velaasia.com">
-		<img width="150" src="/assets/img/logo-white.png" alt=""/>
-		<img height="70" src="/assets/img/baymax.png" alt=""/>
-	</a>
+		<img width="150" src="/assets/img/logo-pu.png" alt=""/>
 </div>
 <!-- END LOGO -->
 <!-- BEGIN LOGIN -->
@@ -436,7 +433,7 @@ Purchase: http://themeforest.net/item/metronic-responsive-admin-dashboard-templa
 <!-- END LOGIN -->
 <!-- BEGIN COPYRIGHT -->
 <div class="copyright">
-	 &copy; 2014 <a href="http://www.velaasia.com" target="_blank" style="color: #E00606">Vela</a>.
+	 &copy; 2016 <a href="http://www.pu.go.id/" target="_blank" style="color: #ffff00">Kementrian Pekerjaan Umum Dan Perumahan Rakyat</a>.
 </div>
 <!-- END COPYRIGHT -->
 <!-- BEGIN JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->

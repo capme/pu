@@ -10,7 +10,7 @@ class Dashboard extends MY_Controller {
 	public function index()
 	{
 		$this->data['content'] = "dashboard_v.php";
-		$this->data['pageTitle'] = "Dashboard <small>statistics and more</small>";
+		$this->data['pageTitle'] = "Dashboard";
 		$this->data['breadcrumb'] = array("Dashboard" => "");
 		
 		$this->load->view("template", $this->data);

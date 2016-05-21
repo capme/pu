@@ -4,8 +4,7 @@
 	<div class="header-inner">
 		<!-- BEGIN LOGO -->
 		<a class="navbar-brand" href="<?php echo site_url()?>">
-			<img src="/assets/img/logo-white.png" alt="logo" class="" height="30" style="margin-top: -10px;">
-			<img src="/assets/img/baymax.png" alt="logo" class="" height="35" style="margin-top: -10px; margin-left: -5px;">
+			<img src="/assets/img/logo-pu.png" alt="logo" class="" height="30" style="margin-top: -10px;">
 		</a>
 		<!-- END LOGO -->
 		<!-- BEGIN RESPONSIVE MENU TOGGLER -->

@@ -1,7 +1,7 @@
 <?php echo $this->va_input->getFieldInput($this->va_input->fields[0]);?>
 <div class="panel panel-default" style="width:100%">
 	<br />
-				<table align="center" style="border: 1px solid black;">
+				<table align="center" style="border: 1px solid rgba(0, 0, 0, 0.16);">
 					<tr>
 						<td>
 							Distribusi Ke
