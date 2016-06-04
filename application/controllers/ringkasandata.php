@@ -119,5 +119,118 @@ class Ringkasandata extends MY_Controller {
         $this->load->view('template', $this->data);
 
     }
+
+	public function addLokasi(){
+		$this->data['content'] = "form_v.php";
+		$this->data['pageTitle'] = "";
+		$this->data['formTitle'] = "Ringkasan Data - Lokasi";
+		$this->data['breadcrumb'] = array("Lokasi"=> "ringkasandata/addLokasi");
+		$this->load->library("va_input", array("group" => "ringkasandata"));
+
+		$this->va_input->addHidden( array("name" => "method", "value" => "lokasi") );
+		$this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "") );
+		$this->va_input->addCustomField( array("name" =>"provinsi", "placeholder" => "Upload File ", "view"=>"form/upload_peta"));
+		$this->va_input->addCustomField( array("name" =>"jalan", "placeholder" => "Upload File ", "view"=>"form/upload_peta"));
+		$this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("ringkasandata/addLokasi.php");
+
+		$this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
+		$this->load->view('template', $this->data);
+
+	}
+
+	public function addPerwujudan(){
+		//sampai sini
+		$this->data['content'] = "form_v.php";
+		$this->data['pageTitle'] = "";
+		$this->data['formTitle'] = "Ringkasan Data - Perwujudan";
+		$this->data['breadcrumb'] = array("Perwujudan"=> "ringkasandata/addPerwujudan");
+		$this->load->library("va_input", array("group" => "ringkasandata"));
+
+		$this->va_input->addHidden( array("name" => "method", "value" => "perwujudan") );
+		$this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "") );
+		$dataList = array(
+			"" => "-- pilih tipe dokumen --",
+			"asal" => "asal",
+			"pemutakhiran1" => "pemutakhiran 1",
+			"pemutakhiran2" => "pemutakhiran 2",
+			"pemutakhiran3" => "pemutakhiran 3",
+			"pemutakhiran4" => "pemutakhiran 4"
+		);
+		$dataListBagian = array(
+			"" => "-- pilih tipe perwujudan --",
+			"pelaksana" => "pelaksana",
+			"cacah" => "cacah",
+			"biaya" => "biaya (Rp.1000)",
+			"sumberdana" => "sumber dana"
+		);
+		$this->va_input->addSelect( array("name" => "tipe","label" => "", "list" => $dataList, "value" => "") );
+		$this->va_input->addInputPu( array("name" => "tahun", "maxlength" => "4", "size" => "4", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "desain", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "pembebasan_lahan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "pembangunan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "peningkatan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "penunjangan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "pemeliharaan_dan_rehab", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "supervisi", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addSelect( array("name" => "tipe_bagian","label" => "", "list" => $dataListBagian, "value" => "") );
+
+		$this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("ringkasandata/addPerwujudan.php");
+
+		$this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
+		$this->load->view('template', $this->data);
+
+	}
+
+	public function addLintasHarianRata2(){
+		//sampai sini
+		$this->data['content'] = "form_v.php";
+		$this->data['pageTitle'] = "";
+		$this->data['formTitle'] = "Ringkasan Data - Lintas Harian Rata-rata";
+		$this->data['breadcrumb'] = array("Lintas Harian Rata-rata"=> "ringkasandata/addLintasHarianRata2");
+		$this->load->library("va_input", array("group" => "ringkasandata"));
+
+		$this->va_input->addHidden( array("name" => "method", "value" => "lintas harian rata2") );
+		$this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "") );
+		$dataList = array(
+			"" => "-- pilih tipe dokumen --",
+			"asal" => "asal",
+			"pemutakhiran1" => "pemutakhiran 1",
+			"pemutakhiran2" => "pemutakhiran 2",
+			"pemutakhiran3" => "pemutakhiran 3",
+			"pemutakhiran4" => "pemutakhiran 4"
+		);
+
+		$this->va_input->addSelect( array("name" => "tipe","label" => "", "list" => $dataList, "value" => "") );
+		$this->va_input->addInputPu( array("name" => "tahun", "maxlength" => "4", "size" => "4", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "sepeda_motor", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "mobil_pribadi", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "mobil_penumpang", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "mobil_barang", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "bis_kecil", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "bis_besar", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "truk_2_sumbu_kecil", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "truk_2_sumbu_besar", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "truk_3_sumbu_atau_lebih", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "truk_dengan_gandengan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "truk_semi_trailer", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "kendaraan_tidak_bermotor", "maxlength" => "40", "size" => "30", "label" => "") );
+
+		$this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("ringkasandata/addLintasHarianRata2.php");
+
+		$this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
+		$this->load->view('template', $this->data);
+
+	}
+
+
 }
 ?>

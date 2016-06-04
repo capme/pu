@@ -34,7 +34,7 @@
 					</tr>
 				</table>
 <br />
-	<table>
+	<table align="center" style="border: 1px solid rgba(0, 0, 0, 0.16);">
 		<tr>
 			<td>
 				Tahun
@@ -111,4 +111,5 @@
 			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[21]);?></td>
 		</tr>
 	</table>
+	<br />
 </div>
