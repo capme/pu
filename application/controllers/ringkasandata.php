@@ -231,6 +231,135 @@ class Ringkasandata extends MY_Controller {
 
 	}
 
+	public function addLuasLahanRumija(){
+		//sampai sini
+		$this->data['content'] = "form_v.php";
+		$this->data['pageTitle'] = "";
+		$this->data['formTitle'] = "Ringkasan Data - Luas Lahan Rumija";
+		$this->data['breadcrumb'] = array("Luas Lahan Rumija"=> "ringkasandata/addLuasLahanRumija");
+		$this->load->library("va_input", array("group" => "ringkasandata"));
+
+		$this->va_input->addHidden( array("name" => "method", "value" => "luas_lahan_rumija") );
+		$this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "") );
+		$dataList = array(
+			"" => "-- pilih tipe dokumen --",
+			"asal" => "asal",
+			"pemutakhiran1" => "pemutakhiran 1",
+			"pemutakhiran2" => "pemutakhiran 2",
+			"pemutakhiran3" => "pemutakhiran 3",
+			"pemutakhiran4" => "pemutakhiran 4"
+		);
+
+		$this->va_input->addSelect( array("name" => "tipe","label" => "", "list" => $dataList, "value" => "") );
+		$this->va_input->addInputPu( array("name" => "tahun", "maxlength" => "4", "size" => "4", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "luas", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "data_perolehan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "njop", "maxlength" => "40", "size" => "30", "label" => "") );
+
+		$this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("ringkasandata/addLuasLahanRumija.php");
+
+		$this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
+		$this->load->view('template', $this->data);
+
+	}
+
+	public function addDataTeknik(){
+		//sampai sini
+		$this->data['content'] = "form_v.php";
+		$this->data['pageTitle'] = "";
+		$this->data['formTitle'] = "Ringkasan Data - Data Teknik";
+		$this->data['breadcrumb'] = array("Data Teknik"=> "ringkasandata/addDataTeknik");
+		$this->load->library("va_input", array("group" => "ringkasandata"));
+
+		$this->va_input->addHidden( array("name" => "method", "value" => "data_teknik") );
+		$this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "") );
+		$dataList = array(
+			"" => "-- pilih tipe dokumen --",
+			"asal" => "asal",
+			"pemutakhiran1" => "pemutakhiran 1",
+			"pemutakhiran2" => "pemutakhiran 2",
+			"pemutakhiran3" => "pemutakhiran 3",
+			"pemutakhiran4" => "pemutakhiran 4"
+		);
+		$dataListBagian = array(
+			"" => "-- pilih tipe data teknik --",
+			"km" => "KM",
+			"m2" => "M2"
+		);
+		$this->va_input->addSelect( array("name" => "tipe","label" => "", "list" => $dataList, "value" => "") );
+		$this->va_input->addSelect( array("name" => "tipe_bagian","label" => "", "list" => $dataListBagian, "value" => "") );
+		$this->va_input->addInputPu( array("name" => "tahun", "maxlength" => "4", "size" => "4", "label" => "") );
+
+		$this->va_input->addInputPu( array("name" => "a_tanah", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "a_kerikil", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "a_aspal_beton", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "a_aspal_lainnya", "maxlength" => "40", "size" => "30", "label" => "") );
+
+		$this->va_input->addInputPu( array("name" => "b_belum_ada", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "b_pelayangan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "b_sementara", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "b_semi_permanen", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "b_permanen", "maxlength" => "40", "size" => "30", "label" => "") );
+
+		$this->va_input->addInputPu( array("name" => "c_gorong_gorong", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "c_saluran_permanen", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "c_drainase_bawah_tanah", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "c_manhole", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "c_riol", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "c_bangunan_penahan_tanah", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "c_kerb", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "c_penutup_lereng", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "c_krib", "maxlength" => "40", "size" => "30", "label" => "") );
+
+		$this->va_input->addInputPu( array("name" => "d_pagar_pengaman", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "d_dinding_pengaman", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "d_patok_pemandu", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "d_patok_kilometer", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "d_patok_hektometer", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "d_patok_leger_jalan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "d_patok_rumija", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "d_marka_jalan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "d_rambu_lalin", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "d_lampu_lalin", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "d_lampu_penerangan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "d_jembatan_penyebrangan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "d_shelter_bis", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "d_cermin_jalan", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "d_lainnya", "maxlength" => "40", "size" => "30", "label" => "") );
+
+		$this->va_input->addInputPu( array("name" => "e_prasarana_air", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_prasarana_listrik", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_prasarana_listrik_dalam_tanah", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_prasarana_telepon", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_prasarana_telepon_dalam_tanah", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_prasarana_minyak", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_prasarana_gas", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_prasarana_hidran", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_prasarana_rumah_kabel", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_prasarana_lainnya", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_sarana_air", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_sarana_listrik", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_sarana_listrik_dalam_tanah", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_sarana_telepon", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_sarana_telepon_dalam_tanah", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_sarana_minyak", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_sarana_gas", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_sarana_hidran", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_sarana_rumah_kabel", "maxlength" => "40", "size" => "30", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "e_sarana_lainnya", "maxlength" => "40", "size" => "30", "label" => "") );
+
+		$this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("ringkasandata/addDataTeknik.php");
+
+		$this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
+		$this->load->view('template', $this->data);
+
+	}
 
 }
 ?>
