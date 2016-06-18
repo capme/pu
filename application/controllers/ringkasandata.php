@@ -18,7 +18,7 @@ class Ringkasandata extends MY_Controller {
 	
 	public function index(){
 		$this->data['content'] = "list_v.php";
-		//$this->data['pageTitle'] = "Leger Jalan";
+		$this->data['pageTitle'] = "";
 		$this->data['breadcrumb'] = array("List Ringkasan Data"=>"ringkasandata");
 		
 		$this->leger_m->clearCurrentFilter();
