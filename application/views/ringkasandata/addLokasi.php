@@ -3,7 +3,10 @@
     <br />
     <table align="center" style="border: 1px solid rgba(0, 0, 0, 0.16);">
         <tr>
-            <td>
+            <td colspan="4" bgcolor="#6495ed">&nbsp;</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 10px;padding-right: 10px">
                 Distribusi Ke
             </td>
             <td>
@@ -11,7 +14,7 @@
             </td>
         </tr>
         <tr>
-            <td>
+            <td style="padding-left: 10px;padding-right: 10px">
                 Nomor Lembar Kartu Leger Jalan
             </td>
             <td colspan="3">
@@ -19,13 +22,13 @@
             </td>
         </tr>
         <tr>
-            <td>
+            <td style="padding-left: 10px;padding-right: 10px">
                 Kode Provinsi
             </td>
             <td>
                 <?php echo $this->va_input->getFieldInput($this->va_input->fields[3]);?>
             </td>
-            <td>
+            <td style="padding-left: 10px;padding-right: 10px">
                 Nama Provinsi
             </td>
             <td>
@@ -35,6 +38,9 @@
     </table>
     <br />
     <table align="center" style="border: 1px solid rgba(0, 0, 0, 0.16);">
+        <tr>
+            <td bgcolor="#6495ed">&nbsp;</td>
+        </tr>
         <tr>
             <td>
                 <?php echo $this->va_input->getFieldInput($this->va_input->fields[5]);?>

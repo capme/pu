@@ -3,6 +3,9 @@
 	<br />
 				<table align="center" style="border: 1px solid rgba(0, 0, 0, 0.16);">
 					<tr>
+						<td colspan="4" bgcolor="#6495ed">&nbsp;</td>
+					</tr>
+					<tr>
 						<td>
 							Distribusi Ke
 						</td>
