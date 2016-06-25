@@ -88,5 +88,10 @@ class Area_m extends MY_Model {
         $this->db->trans_complete();
     }
 
+	public function getAreaData(){
+		$query = $this->db->query('SELECT * FROM pu_area');
+		$result = $query->result_array();
+		return $result;
+	}
 }
 ?>
