@@ -45,8 +45,6 @@ class Masterdata_m extends MY_Model {
 		$no=0;
 		foreach($_row->result() as $_result) {
 			$btnAction='
-            	Add
-            	<br />
             	';
 			if(!$this->checkExistDataItem("data teknik", $_result->id)){
 				$btnAction.='
