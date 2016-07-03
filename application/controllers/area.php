@@ -62,6 +62,7 @@ class Area extends MY_Controller {
 		}
 
 		if($post['method'] == "area") {
+			$this->area_m->saveArea($post);
 			redirect("area");
 		}
 	}

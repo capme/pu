@@ -116,5 +116,13 @@ class Masterdata_m extends MY_Model {
         $this->db->trans_complete();
     }
 
+	public function saveMasterData($data){
+		$this->db->trans_start();
+		$sql = "INSERT INTO ".$this->table." (id_provinsi, lembar_distribusi, no_leger, tipe_leger) VALUES";
+			$sql .= " (".$data['id_provinsi'].",".$data['lembar_distribusi'].",'".$data['no_leger']."','".$data['tipe_leger']."')";
+			$this->db->query($sql);
+		$this->db->trans_complete();
+	}
+
 }
 ?>

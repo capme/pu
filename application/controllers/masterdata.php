@@ -58,12 +58,13 @@ class Masterdata extends MY_Controller {
 		if($_SERVER['REQUEST_METHOD'] != "POST") {
 			redirect("masterdata");
 		}
-		$post = $this->input->post("area");
+		$post = $this->input->post("masterdata");
 		if(empty($post)) {
 			redirect("masterdata");
 		}
 
-		if($post['method'] == "area") {
+		if($post['method'] == "masterdata") {
+			$this->masterdata_m->saveMasterData($post);
 			redirect("masterdata");
 		}
 	}
@@ -81,7 +82,7 @@ class Masterdata extends MY_Controller {
 		$rawListArea = $this->getIdProvinsiList();
 		$dataArea = [];
 		foreach($rawListArea as $item){
-			$dataArea[$item['kode']] = $item['nama'];
+			$dataArea[$item['id']] = $item['nama'];
 		}
 
 		$this->va_input->addSelect( array("name" => "id_provinsi","label" => "Area Provinsi", "list" => $dataArea, "value" => "") );

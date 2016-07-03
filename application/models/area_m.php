@@ -93,5 +93,14 @@ class Area_m extends MY_Model {
 		$result = $query->result_array();
 		return $result;
 	}
+
+	public function saveArea($data){
+		$this->db->trans_start();
+		$sql = "INSERT INTO ".$this->table." (kode, tipe, nama) VALUES";
+		$sql .= " ('".$data['kode_area']."','".$data['tipe']."','".$data['nama']."')";
+		$this->db->query($sql);
+		$this->db->trans_complete();
+	}
+
 }
 ?>
