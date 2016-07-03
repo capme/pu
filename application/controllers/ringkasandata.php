@@ -142,7 +142,6 @@ class Ringkasandata extends MY_Controller {
 	}
 
 	public function addPerwujudan(){
-		//sampai sini
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "";
 		$this->data['formTitle'] = "Ringkasan Data - Perwujudan";
@@ -188,7 +187,6 @@ class Ringkasandata extends MY_Controller {
 	}
 
 	public function addLintasHarianRata2(){
-		//sampai sini
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "";
 		$this->data['formTitle'] = "Ringkasan Data - Lintas Harian Rata-rata";
@@ -232,7 +230,6 @@ class Ringkasandata extends MY_Controller {
 	}
 
 	public function addLuasLahanRumija(){
-		//sampai sini
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "";
 		$this->data['formTitle'] = "Ringkasan Data - Luas Lahan Rumija";
@@ -267,7 +264,6 @@ class Ringkasandata extends MY_Controller {
 	}
 
 	public function addDataTeknik(){
-		//sampai sini
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "";
 		$this->data['formTitle'] = "Ringkasan Data - Data Teknik";
@@ -358,6 +354,22 @@ class Ringkasandata extends MY_Controller {
 
 		$this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
 		$this->load->view('template', $this->data);
+
+	}
+
+	public function addLegalisasi(){
+		//sampai sini
+		$this->data['content'] = "form_v.php";
+		$this->data['pageTitle'] = "";
+		$this->data['formTitle'] = "Ringkasan Data - Legalisasi";
+		$this->data['breadcrumb'] = array("Data Teknik"=> "ringkasandata/addLegalisasi");
+		$this->load->library("va_input", array("group" => "ringkasandata"));
+
+		$this->va_input->addHidden( array("name" => "method", "value" => "legalisasi") );
+		$this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "") );
 
 	}
 

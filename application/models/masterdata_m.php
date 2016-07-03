@@ -45,10 +45,28 @@ class Masterdata_m extends MY_Model {
 		$no=0;
 		foreach($_row->result() as $_result) {
 			$btnAction='
-            	Export to PDF
+            	Add
             	<br />
+            	';
+			if(!$this->checkExistDataItem("data teknik", $_result->id)){
+				$btnAction.='
             	<a href="'.site_url("ringkasandata/addDataTeknik").'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Data Teknik</a>&nbsp;
-            	<a href="'.site_url("ringkasandata/addIdentifikasi").'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Identifikasi</a>&nbsp;
+            	';
+			}else{
+				$btnAction.='
+            	<a href="'.site_url("ringkasandata/addDataTeknik").'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Data Teknik</a>&nbsp;
+            	';
+			}
+			if(!$this->checkExistDataItem("identifikasi", $_result->id)) {
+				$btnAction .= '
+            	<a href="' . site_url("ringkasandata/addIdentifikasi") . '"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Identifikasi</a>&nbsp;
+            	';
+			}else{
+				$btnAction .= '
+            	<a href="' . site_url("ringkasandata/addIdentifikasi") . '"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Identifikasi</a>&nbsp;
+            	';
+			}
+			$btnAction.='
             	<a href="'.site_url("ringkasandata/addLegalisasi").'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Legalisasi</a>&nbsp;
             	<br />
             	<a href="'.site_url("ringkasandata/addLintasHarianRata2").'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Lintas Harian rata-rata</a>
@@ -56,18 +74,6 @@ class Masterdata_m extends MY_Model {
             	<a href="'.site_url("ringkasandata/addLuasLahanRumija").'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Luas Lahan Rumija</a>&nbsp;
             	<br />
             	<a href="'.site_url("ringkasandata/addPerwujudan").'"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Perwujudan</a>&nbsp;
-            	<hr />
-            	Add
-            	<br />
-            	<a href="'.site_url("ringkasandata/addDataTeknik").'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Data Teknik</a>&nbsp;
-            	<a href="'.site_url("ringkasandata/addIdentifikasi").'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Identifikasi</a>&nbsp;
-            	<a href="'.site_url("ringkasandata/addLegalisasi").'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Legalisasi</a>&nbsp;
-            	<br />
-            	<a href="'.site_url("ringkasandata/addLintasHarianRata2").'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Lintas Harian rata-rata</a>
-            	<a href="'.site_url("ringkasandata/addLokasi").'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Lokasi</a>&nbsp;
-            	<a href="'.site_url("ringkasandata/addLuasLahanRumija").'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Luas Lahan Rumija</a>&nbsp;
-            	<br />
-            	<a href="'.site_url("ringkasandata/addPerwujudan").'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Perwujudan</a>&nbsp;
             	';
 			$records["aaData"][] = array(
 					'<input type="checkbox" name="id[]" value="'.$_result->id.'">',
@@ -122,6 +128,36 @@ class Masterdata_m extends MY_Model {
 			$sql .= " (".$data['id_provinsi'].",".$data['lembar_distribusi'].",'".$data['no_leger']."','".$data['tipe_leger']."')";
 			$this->db->query($sql);
 		$this->db->trans_complete();
+	}
+
+	public function checkExistDataItem($form, $idmasterdata){
+		if($form == "data teknik"){
+			$sql = "select a.id_provinsi, a.lembar_distribusi, a.no_leger, a.tipe_leger, b.id, b.id_master_data";
+			$sql .= " from pu_master_data as a inner join pu_leger_ringkasan_data_data_teknik as b";
+			$sql .= " on a.id = b.id_master_data where a.id = ".$idmasterdata;
+		}elseif($form == "identifikasi"){
+			$sql = "select a.id_provinsi, a.lembar_distribusi, a.no_leger, a.tipe_leger, b.id, b.id_master_data";
+			$sql .= " from pu_master_data as a inner join pu_leger_ringkasan_data_identifikasi as b";
+			$sql .= " on a.id = b.id_master_data where a.id = ".$idmasterdata;
+		}elseif($form == "legalisasi"){
+
+		}elseif($form == "lintas harian rata2"){
+
+		}elseif($form == "lokasi"){
+
+		}elseif($form == "luas lahan rumija"){
+
+		}elseif($form == "perwujudan"){
+
+		}
+
+		$query = $query = $this->db->query($sql);
+		if ($query->num_rows() > 0){
+			return true;
+		}else{
+			return false;
+		}
+
 	}
 
 }
