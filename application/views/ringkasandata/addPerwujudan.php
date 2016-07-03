@@ -3,7 +3,10 @@
 	<br />
 				<table align="center" style="border: 1px solid rgba(0, 0, 0, 0.16);">
 					<tr>
-						<td>
+						<td colspan="4" bgcolor="#6495ed">&nbsp;</td>
+					</tr>
+					<tr>
+						<td style="padding-left: 10px;padding-right: 10px">
 							Distribusi Ke
 						</td>
 						<td>
@@ -11,7 +14,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td>
+						<td style="padding-left: 10px;padding-right: 10px">
 							Nomor Lembar Kartu Leger Jalan
 						</td>
 						<td colspan="3">
@@ -19,13 +22,13 @@
 						</td>
 					</tr>
 					<tr>
-						<td>
+						<td style="padding-left: 10px;padding-right: 10px">
 							Kode Provinsi
 						</td>
 						<td>
 							<?php echo $this->va_input->getFieldInput($this->va_input->fields[3]);?>
 						</td>
-						<td>
+						<td style="padding-left: 10px;padding-right: 10px">
 							Nama Provinsi
 						</td>
 						<td>
@@ -36,49 +39,52 @@
 <br />
 	<table align="center" style="border: 1px solid rgba(0, 0, 0, 0.16);">
 		<tr>
-			<td>
+			<td colspan="6" bgcolor="#6495ed">&nbsp;</td>
+		</tr>
+		<tr>
+			<td style="padding-left: 10px;padding-right: 10px">
 				Tahun
 			</td>
-			<td>
+			<td style="padding-left: 10px;padding-right: 10px">
 				<?php echo $this->va_input->getFieldInput($this->va_input->fields[6]);?>
 			</td>
-			<td>
+			<td style="padding-left: 10px;padding-right: 10px">
 				<?php echo $this->va_input->getFieldInput($this->va_input->fields[5]);?>
 			</td>
 			<td></td>
 			<td></td>
-			<td>
+			<td style="padding-left: 10px;padding-right: 10px">
 				<?php echo $this->va_input->getFieldInput($this->va_input->fields[14]);?>
 			</td>
 		</tr>
 		<tr>
-			<td>Desain</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[7]);?></td>
-			<td>Pembebasan Lahan</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[8]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Desain</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[7]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Pembebasan Lahan</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[8]);?></td>
 		</tr>
 		<tr>
-			<td>Pembangunan</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[9]);?></td>
-			<td>Peningkatan</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[10]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Pembangunan</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[9]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Peningkatan</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[10]);?></td>
 		</tr>
 		<tr>
-			<td>Penunjangan</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[11]);?></td>
-			<td>Pemeliharaan & Rehab</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[12]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Penunjangan</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[11]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Pemeliharaan & Rehab</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[12]);?></td>
 		</tr>
 		<tr>
-			<td>Supervisi</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[13]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Supervisi</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[13]);?></td>
 			<td></td>
 			<td></td>
 			<td></td>

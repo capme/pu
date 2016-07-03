@@ -3,7 +3,10 @@
 	<br />
 				<table align="center" style="border: 1px solid rgba(0, 0, 0, 0.16);">
 					<tr>
-						<td>
+						<td colspan="4" bgcolor="#6495ed">&nbsp;</td>
+					</tr>
+					<tr>
+						<td style="padding-left: 10px;padding-right: 10px">
 							Distribusi Ke
 						</td>
 						<td>
@@ -11,7 +14,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td>
+						<td style="padding-left: 10px;padding-right: 10px">
 							Nomor Lembar Kartu Leger Jalan
 						</td>
 						<td colspan="3">
@@ -19,13 +22,13 @@
 						</td>
 					</tr>
 					<tr>
-						<td>
+						<td style="padding-left: 10px;padding-right: 10px">
 							Kode Provinsi
 						</td>
 						<td>
 							<?php echo $this->va_input->getFieldInput($this->va_input->fields[3]);?>
 						</td>
-						<td>
+						<td style="padding-left: 10px;padding-right: 10px">
 							Nama Provinsi
 						</td>
 						<td>
@@ -36,63 +39,66 @@
 <br />
 	<table align="center" style="border: 1px solid rgba(0, 0, 0, 0.16);">
 		<tr>
-			<td>
+			<td colspan="6" bgcolor="#6495ed">&nbsp;</td>
+		</tr>
+		<tr>
+			<td style="padding-left: 10px;padding-right: 10px">
 				Tahun
 			</td>
-			<td>
+			<td style="padding-left: 10px;padding-right: 10px">
 				<?php echo $this->va_input->getFieldInput($this->va_input->fields[6]);?>
 			</td>
-			<td>
+			<td style="padding-left: 10px;padding-right: 10px">
 				<?php echo $this->va_input->getFieldInput($this->va_input->fields[5]);?>
 			</td>
 		</tr>
 		<tr>
-			<td>Sepeda Motor / Kend. Roda 3</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[7]);?></td>
-			<td>Mobil Pribadi</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[8]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Sepeda Motor / Kend. Roda 3</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[7]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Mobil Pribadi</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[8]);?></td>
 		</tr>
 		<tr>
-			<td>Mobil Penumpang</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[9]);?></td>
-			<td>Mobil barang</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[10]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Mobil Penumpang</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[9]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Mobil barang</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[10]);?></td>
 		</tr>
 		<tr>
-			<td>Bis (kecil)</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[11]);?></td>
-			<td>Bis (besar)</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[12]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Bis (kecil)</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[11]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Bis (besar)</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[12]);?></td>
 		</tr>
 		<tr>
-			<td>Truk 2 sumbu (kecil)</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[13]);?></td>
-			<td>Truk 2 sumbu (besar)</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[14]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Truk 2 sumbu (kecil)</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[13]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Truk 2 sumbu (besar)</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[14]);?></td>
 		</tr>
 		<tr>
-			<td>Truk 3 sumbu atau lebih</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[15]);?></td>
-			<td>Truk gandengan</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[16]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Truk 3 sumbu atau lebih</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[15]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Truk gandengan</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[16]);?></td>
 		</tr>
 		<tr>
-			<td>Semi trailer</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[17]);?></td>
-			<td>Kendaraan tidak bermotor</td>
-			<td>:</td>
-			<td><?php echo $this->va_input->getFieldInput($this->va_input->fields[18]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Semi trailer</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[17]);?></td>
+			<td style="padding-left: 10px;padding-right: 10px">Kendaraan tidak bermotor</td>
+			<td style="padding-left: 10px;padding-right: 10px">:</td>
+			<td style="padding-left: 10px;padding-right: 10px"><?php echo $this->va_input->getFieldInput($this->va_input->fields[18]);?></td>
 		</tr>
 	</table>
 	<br />
