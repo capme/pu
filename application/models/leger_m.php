@@ -100,27 +100,48 @@ class Leger_m extends MY_Model {
         return $this->db->get()->row_array();
 	}
 
-    public function deleteRingkasanData($id){
-        $query = $this->db->get_where($this->table, array('id' => $id));
-        $name = $query->row();
-        $path = BASEPATH .'../public/inbound/catalog_product/'.$name->filename;
-        @unlink($path);
+	public function saveRingkasanData($data){
+		print_r($data);
+		$method = $data['method'];
+		if($method == "identifikasi"){
+			//ringkasan data - identifikasi
+			$lembar_distribusi_ke = $data['lembar_distribusi_ke'];
+			$nomer_lembar = $data['nomer_lembar'];
+			$kode_provinsi = $data['kode_provinsi'];
+			$nama_provinsi = $data['nama_provinsi'];
+			$tahun = $data['tahun'];
+			$tipe = $data['tipe'];
+			$nomor_panjang_ruas_jalan = $data['nomor_panjang_ruas_jalan'];
+			$nama_pengenal_jalan = $data['nama_pengenal_jalan'];
+			$titik_awal_ruas_jalan = $data['titik_awal_ruas_jalan'];
+			$deskripsi_titik_awal_ruas_jalan = $data['deskripsi_titik_awal_ruas_jalan'];
+			$titik_akhir_ruas_jalan = $data['titik_akhir_ruas_jalan'];
+			$deskripsi_titik_akhir_ruas_jalan = $data['deskripsi_titik_akhir_ruas_jalan'];
+			$titik_ikat_awal_patok = $data['titik_ikat_awal_patok'];
+			$deskripsi_titik_ikat_patok = $data['deskripsi_titik_ikat_patok'];
+			$sistem_jaringan_jalan = $data['sistem_jaringan_jalan'];
+			$peran_jalan = $data['peran_jalan'];
+			$status_jalan = $data['status_jalan'];
+			$kelas_jalan = $data['kelas_jalan'];
+			$pembina_jalan = $data['pembina_jalan'];
+			$tanggal_selesai_diwujudkan = $data['tanggal_selesai_diwujudkan'];
+			$tanggal_dibuka_untuk_lalin = $data['tanggal_dibuka_untuk_lalin'];
+			$tanggal_ditutup_untuk_lalin = $data['tanggal_ditutup_untuk_lalin'];
+			$id_master_data = $data['id_master_data'];
 
-        // delete file, inbound file, inbound item, receving item
-        $this->db->trans_start();
+			$sql = "insert into ".$this->tableRingkasanDataIdentifikasi." (id_master_data) values (".$id_master_data.")";
+		}
 
-        $this->db->where_in($this->pkField, $id)->delete($this->table);
-        $this->db->delete('inb_inventory_item_' . $name->client_id, array('doc_number' => $id));
-        $inbFiles = $this->db->get_where($this->table, array('reference_id' => $id))->result_array();
-        if(!empty($inbFiles)) {
-            foreach($inbFiles as $inbFile) {
-                $this->db->delete($this->table, array('id' => $inbFile['id']));
-                $this->db->delete('inb_inventory_stock_' . $name->client_id, array('doc_number' => $inbFile['id']));
-            }
-        }
+		$this->db->trans_start();
+		$this->db->query($sql);
+		$this->db->trans_complete();
 
-        $this->db->trans_complete();
-    }
+	}
 
+	public function deleteRingkasanData($table, $id_master_data){
+		$this->db->trans_start();
+		$this->db->delete($table, array('id_master_data' => $id_master_data));
+		$this->db->trans_complete();
+	}
 }
 ?>

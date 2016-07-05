@@ -48,8 +48,8 @@ class Ringkasandata extends MY_Controller {
 		echo json_encode($data);
 	}
     
-    public function delete($id){
-        $data = $this->leger_m->deleteRingkasanData($id);
+    public function delete($table, $id_master_data){
+        $data = $this->leger_m->deleteRingkasanData($table, $id_master_data);
     	redirect('ringkasandata');
     }
     
@@ -70,11 +70,12 @@ class Ringkasandata extends MY_Controller {
 		}
 
 		if($post['method'] == "identifikasi") {
-			redirect("ringkasandata/addIdentifikasi");
+			$this->leger_m->saveRingkasanData($post);
+			redirect("masterdata");
 		}
 	}
 
-    public function addIdentifikasi(){
+    public function addIdentifikasi($id){
         $this->data['content'] = "form_v.php";
         $this->data['pageTitle'] = "";
         $this->data['formTitle'] = "Ringkasan Data - Identifikasi";
@@ -112,6 +113,8 @@ class Ringkasandata extends MY_Controller {
 		$this->va_input->addInputPu( array("name" => "tanggal_dibuka_untuk_lalin", "maxlength" => "40", "size" => "30", "label" => "") );
 		$this->va_input->addInputPu( array("name" => "tanggal_ditutup_untuk_lalin", "maxlength" => "40", "size" => "30", "label" => "") );
 		$this->va_input->addInputPu( array("name" => "tahun", "maxlength" => "4", "size" => "4", "label" => "") );
+
+		$this->va_input->addHidden( array("name" => "id_master_data", "value" => $id) );
 
 		$this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("ringkasandata/addIdentifikasi.php");
 
