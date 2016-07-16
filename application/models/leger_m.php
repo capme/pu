@@ -101,7 +101,8 @@ class Leger_m extends MY_Model {
 	}
 
 	public function saveRingkasanData($data){
-		print_r($data);
+		$this->db->trans_start();
+
 		$method = $data['method'];
 		if($method == "identifikasi"){
 			//ringkasan data - identifikasi
@@ -130,10 +131,48 @@ class Leger_m extends MY_Model {
 			$id_master_data = $data['id_master_data'];
 
 			$sql = "insert into ".$this->tableRingkasanDataIdentifikasi." (id_master_data) values (".$id_master_data.")";
+			$this->db->query($sql);
+
+		}elseif($method == "lokasi"){
+			$id_master_data = $data['id_master_data'];
+
+			$config['upload_path']   = '../public/leger/lokasi/';
+			$config['allowed_types'] = 'gif|jpg|png';
+			$this->load->library('upload', $config);
+
+			$images = array();
+
+			foreach ($_FILES['lokasi']['name'] as $key => $image) {
+				$_FILES['lokasi[]']['name']= $_FILES['lokasi']['name'][$key];
+				$_FILES['lokasi[]']['type']= $_FILES['lokasi']['type'][$key];
+				$_FILES['lokasi[]']['tmp_name']= $_FILES['lokasi']['tmp_name'][$key];
+				$_FILES['lokasi[]']['error']= $_FILES['lokasi']['error'][$key];
+				$_FILES['lokasi[]']['size']= $_FILES['lokasi']['size'][$key];
+
+				$fileName = $_FILES['lokasi[]']['name'];
+
+				$images[] = $fileName;
+
+				$config['file_name'] = $id_master_data."_".$fileName;
+
+				$this->upload->initialize($config);
+
+				if ($this->upload->do_upload('lokasi[]')) {
+					$this->upload->data();
+					if($key == 0){
+						$sql = "insert into ".$this->tableRingkasanDataLokasi." (id_master_data, peta_prov) values (".$id_master_data.",'".$id_master_data."_.".$fileName."')";
+					}else{
+						$sql = "insert into ".$this->tableRingkasanDataLokasi." (id_master_data, peta_lokasi) values (".$id_master_data.",'".$id_master_data."_.".$fileName."')";
+					}
+					$this->db->query($sql);
+				} else {
+
+				}
+			}
+
+
 		}
 
-		$this->db->trans_start();
-		$this->db->query($sql);
 		$this->db->trans_complete();
 
 	}

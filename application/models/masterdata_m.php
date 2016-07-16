@@ -53,7 +53,7 @@ class Masterdata_m extends MY_Model {
             	';
 			}else{
 				$btnAction.='
-            	<a href="'.site_url("ringkasandata/addDataTeknik").'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Data Teknik [delete]</a>&nbsp;
+            	<a href="'.site_url("ringkasandata/delete?mod=datateknik&id=".$_result->id).'"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Data Teknik [delete]</a>&nbsp;
             	';
 			}
 			if(!$this->checkExistDataItem("identifikasi", $_result->id)) {
@@ -62,45 +62,45 @@ class Masterdata_m extends MY_Model {
             	';
 			}else{
 				$btnAction .= '
-            	<a href="' . site_url("ringkasandata/delete?") . '"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Identifikasi [delete]</a>&nbsp;
+            	<a href="' . site_url("ringkasandata/delete?mod=identifikasi&id=".$_result->id) . '"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Identifikasi [delete]</a>&nbsp;
             	';
 			}
 			if(!$this->checkExistDataItem("legalisasi", $_result->id)) {
 				$btnAction .= '
-            	<a href="' . site_url("ringkasandata/addLegalisasi") . '"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Legalisasi</a>&nbsp;
+            	<a href="' . site_url("ringkasandata/addLegalisasi/".$_result->id) . '"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Legalisasi</a>&nbsp;
             	';
 			}else{
 				$btnAction .= '
-            	<a href="' . site_url("ringkasandata/addLegalisasi") . '"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Legalisasi [delete]</a>&nbsp;
+            	<a href="' . site_url("ringkasandata/delete?mod=legalisasi&id=".$_result->id) . '"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Legalisasi [delete]</a>&nbsp;
             	';
 			}
 			$btnAction.='
             	<br />';
 			if(!$this->checkExistDataItem("lintas harian rata2", $_result->id)) {
 				$btnAction .= '
-            	<a href="' . site_url("ringkasandata/addLintasHarianRata2") . '"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Lintas Harian rata-rata</a>
+            	<a href="' . site_url("ringkasandata/addLintasHarianRata2/".$_result->id) . '"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Lintas Harian rata-rata</a>
             	';
 			}else{
 				$btnAction .= '
-            	<a href="' . site_url("ringkasandata/addLintasHarianRata2") . '"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Lintas Harian rata-rata [delete]</a>
+            	<a href="' . site_url("ringkasandata/delete?mod=lintasharianrata2&id=".$_result->id) . '"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Lintas Harian rata-rata [delete]</a>
             	';
 			}
 			if(!$this->checkExistDataItem("lokasi", $_result->id)) {
 				$btnAction .= '
-            	<a href="' . site_url("ringkasandata/addLokasi") . '"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Lokasi</a>&nbsp;
+            	<a href="' . site_url("ringkasandata/addLokasi/".$_result->id) . '"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Lokasi</a>&nbsp;
             	';
 			}else{
 				$btnAction .= '
-            	<a href="' . site_url("ringkasandata/addLokasi") . '"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Lokasi [delete]</a>&nbsp;
+            	<a href="' . site_url("ringkasandata/delete?mod=lokasi&id=".$_result->id) . '"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Lokasi [delete]</a>&nbsp;
             	';
 			}
 			if(!$this->checkExistDataItem("luas lahan rumija", $_result->id)) {
 				$btnAction .= '
-            	<a href="' . site_url("ringkasandata/addLuasLahanRumija") . '"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Luas Lahan Rumija</a>&nbsp;
+            	<a href="' . site_url("ringkasandata/addLuasLahanRumija/".$_result->id) . '"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Luas Lahan Rumija</a>&nbsp;
             	';
 			}else{
 				$btnAction .= '
-            	<a href="' . site_url("ringkasandata/addLuasLahanRumija") . '"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Luas Lahan Rumija [delete]</a>&nbsp;
+            	<a href="' . site_url("ringkasandata/delete?mod=luaslahanrumija&id=".$_result->id) . '"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Luas Lahan Rumija [delete]</a>&nbsp;
             	';
 			}
 				$btnAction.='
@@ -108,11 +108,11 @@ class Masterdata_m extends MY_Model {
             	';
 			if(!$this->checkExistDataItem("perwujudan", $_result->id)) {
 				$btnAction .= '
-            	<a href="' . site_url("ringkasandata/addPerwujudan") . '"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Perwujudan</a>&nbsp;
+            	<a href="' . site_url("ringkasandata/addPerwujudan/".$_result->id) . '"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Perwujudan</a>&nbsp;
             	';
 			}else{
 				$btnAction .= '
-            	<a href="' . site_url("ringkasandata/addPerwujudan") . '"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Perwujudan [delete]</a>&nbsp;
+            	<a href="' . site_url("ringkasandata/delete?mod=perwujudan&id=".$_result->id) . '"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Perwujudan [delete]</a>&nbsp;
             	';
 			}
 			$btnAction.='<br><br>
@@ -120,11 +120,11 @@ class Masterdata_m extends MY_Model {
             	';
 			if(!$this->checkExistDataItem("jalan identifikasi", $_result->id)) {
 				$btnAction .= '
-            	<a href="' . site_url("kartujalan/addIdentifikasi") . '"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Identifikasi</a>&nbsp;
+            	<a href="' . site_url("kartujalan/addIdentifikasi/".$_result->id) . '"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Identifikasi</a>&nbsp;
             	';
 			}else{
 				$btnAction .= '
-            	<a href="' . site_url("kartujalan/addIdentifikasi") . '"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Identifikasi [delete]</a>&nbsp;
+            	<a href="' . site_url("kartujalan/delete?mod=jalanidentifikasi&id=".$_result->id) . '"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Identifikasi [delete]</a>&nbsp;
             	';
 			}
 			$btnAction.='<br><br>
@@ -132,11 +132,11 @@ class Masterdata_m extends MY_Model {
             	';
 			if(!$this->checkExistDataItem("jembatan identifikasi", $_result->id)) {
 				$btnAction .= '
-            	<a href="' . site_url("kartujembatan/addIdentifikasi") . '"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Identifikasi</a>&nbsp;
+            	<a href="' . site_url("kartujembatan/addIdentifikasi/".$_result->id) . '"  enabled="enabled" class="btn btn-xs default"><i class="glyphicon glyphicon-download-alt" ></i> Identifikasi</a>&nbsp;
             	';
 			}else{
 				$btnAction .= '
-            	<a href="' . site_url("kartujembatan/addIdentifikasi") . '"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Identifikasi [delete]</a>&nbsp;
+            	<a href="' . site_url("kartujembatan/delete?mod=jembatanidentifikasi&id=".$_result->id) . '"  enabled="enabled" class="btn btn-xs default"><i class="fa fa-trash-o" ></i> Identifikasi [delete]</a>&nbsp;
             	';
 			}
 

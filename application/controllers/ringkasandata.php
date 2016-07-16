@@ -48,9 +48,26 @@ class Ringkasandata extends MY_Controller {
 		echo json_encode($data);
 	}
     
-    public function delete($table, $id_master_data){
-        $data = $this->leger_m->deleteRingkasanData($table, $id_master_data);
-    	redirect('ringkasandata');
+    public function delete(){
+		$mod = $_GET['mod'];
+		$id = $_GET['id'];
+		if($mod == "datateknik"){
+			$table = "pu_leger_ringkasan_data_data_teknik";
+		}elseif($mod == "identifikasi"){
+			$table = "pu_leger_ringkasan_data_identifikasi";
+		}elseif($mod == "legalisasi"){
+			$table = "pu_leger_ringkasan_data_legalisasi";
+		}elseif($mod == "lintasharianrata2"){
+			$table = "pu_leger_ringkasan_data_lintas_harian_rata2";
+		}elseif($mod == "lokasi"){
+			$table = "pu_leger_ringkasan_data_lokasi";
+		}elseif($mod == "luaslahanrumija"){
+			$table = "pu_leger_ringkasan_data_luas_lahan_rumija";
+		}elseif($mod == "perwujudan"){
+			$table = "pu_leger_ringkasan_data_perwujudan";
+		}
+        $data = $this->leger_m->deleteRingkasanData($table, $id);
+    	redirect('masterdata');
     }
     
     public function download($id){
@@ -69,10 +86,8 @@ class Ringkasandata extends MY_Controller {
 			redirect("ringkasandata");
 		}
 
-		if($post['method'] == "identifikasi") {
-			$this->leger_m->saveRingkasanData($post);
-			redirect("masterdata");
-		}
+		$this->leger_m->saveRingkasanData($post);
+		redirect("masterdata");
 	}
 
     public function addIdentifikasi($id){
@@ -123,7 +138,7 @@ class Ringkasandata extends MY_Controller {
 
     }
 
-	public function addLokasi(){
+	public function addLokasi($id){
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "";
 		$this->data['formTitle'] = "Ringkasan Data - Lokasi";
@@ -135,8 +150,9 @@ class Ringkasandata extends MY_Controller {
 		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "") );
 		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "") );
 		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "") );
-		$this->va_input->addCustomField( array("name" =>"provinsi", "placeholder" => "Upload File ", "view"=>"form/upload_peta"));
-		$this->va_input->addCustomField( array("name" =>"jalan", "placeholder" => "Upload File ", "view"=>"form/upload_peta"));
+		$this->va_input->addCustomField( array("name" =>"lokasi[]", "placeholder" => "Upload File ", "view"=>"form/upload_peta", "label"=>"Provinsi"));
+		$this->va_input->addCustomField( array("name" =>"lokasi[]", "placeholder" => "Upload File ", "view"=>"form/upload_peta", "label"=>"Jalan"));
+		$this->va_input->addHidden( array("name" => "id_master_data", "value" => $id) );
 		$this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("ringkasandata/addLokasi.php");
 
 		$this->data['script'] = $this->load->view("script/codgroup_view", array(), true);
@@ -375,6 +391,5 @@ class Ringkasandata extends MY_Controller {
 		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "") );
 
 	}
-
 }
 ?>
