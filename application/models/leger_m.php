@@ -130,7 +130,62 @@ class Leger_m extends MY_Model {
 			$tanggal_ditutup_untuk_lalin = $data['tanggal_ditutup_untuk_lalin'];
 			$id_master_data = $data['id_master_data'];
 
-			$sql = "insert into ".$this->tableRingkasanDataIdentifikasi." (id_master_data) values (".$id_master_data.")";
+			if($tipe == "asal"){
+				$sql = "insert into ".$this->tableRingkasanDataIdentifikasi;
+				$sql .= "(id_master_data, asal_tahun, no_panjang_ruas_jalan_asal, nama_pengenal_jalan_asal, titik_awal_ruas_jalan_awal, ";
+				$sql .= "desc_titik_awal_ruas_jalan_awal, titik_akhir_ruas_jalan_awal, desc_titik_akhir_ruas_jalan_awal, titik_ikat_awal_patok_km_asal, ";
+				$sql .= "desc_titik_ikat_awal_patok_km_asal, sistem_jaringan_jalan_asal, peran_jalan_asal, status_jalan_asal, kelas_jalan_asal, ";
+				$sql .= "pembina_jalan_asal, tanggal_selesai_diwujudkan_asal, tanggal_dibuka_lalin_asal, tanggal_ditutup_lalin_asal) values ";
+				$sql .= "(".$id_master_data.", '".$tahun."', '".$nomor_panjang_ruas_jalan."', '".$nama_pengenal_jalan."', '".$titik_awal_ruas_jalan;
+				$sql .= "', '".$deskripsi_titik_awal_ruas_jalan."', '".$titik_akhir_ruas_jalan."', '".$deskripsi_titik_akhir_ruas_jalan;
+				$sql .= "', '".$titik_ikat_awal_patok."', '".$deskripsi_titik_ikat_patok."', '".$sistem_jaringan_jalan."', '".$peran_jalan;
+				$sql .= "', '".$status_jalan."', '".$kelas_jalan."', '".$pembina_jalan."', '".$tanggal_selesai_diwujudkan;
+				$sql .= "', '".$tanggal_dibuka_untuk_lalin."', '".$tanggal_ditutup_untuk_lalin."')";
+			}elseif($tipe == "pemutakhiran1"){
+				$sql = "insert into ".$this->tableRingkasanDataIdentifikasi;
+				$sql .= "(id_master_data, pemutakhiran_1, no_panjang_ruas_jalan_pemutakhiran_1, nama_pengenal_jalan_pemutakhiran_1, titik_awal_ruas_jalan_pemutakhiran_1, ";
+				$sql .= "desc_titik_awal_ruas_jalan_pemutakhiran_1, titik_akhir_ruas_jalan_pemutakhiran_1, desc_titik_akhir_ruas_jalan_pemutakhiran_1, titik_ikat_awal_patok_km_pemutakhiran_1, ";
+				$sql .= "desc_titik_ikat_awal_patok_km_pemutakhiran_1, sistem_jaringan_jalan_pemutakhiran_1, peran_jalan_pemutakhiran_1, status_jalan_pemutakhiran_1, kelas_jalan_pemutakhiran_1, ";
+				$sql .= "pembina_jalan_pemutakhiran_1, tanggal_selesai_diwujudkan_pemutakhiran_1, tanggal_dibuka_lalin_pemutakhiran_1, tanggal_ditutup_lalin_pemutakhiran_1) values ";
+				$sql .= "(".$id_master_data.", '".$tahun."', '".$nomor_panjang_ruas_jalan."', '".$nama_pengenal_jalan."', '".$titik_awal_ruas_jalan;
+				$sql .= "', '".$deskripsi_titik_awal_ruas_jalan."', '".$titik_akhir_ruas_jalan."', '".$deskripsi_titik_akhir_ruas_jalan;
+				$sql .= "', '".$titik_ikat_awal_patok."', '".$deskripsi_titik_ikat_patok."', '".$sistem_jaringan_jalan."', '".$peran_jalan;
+				$sql .= "', '".$status_jalan."', '".$kelas_jalan."', '".$pembina_jalan."', '".$tanggal_selesai_diwujudkan;
+				$sql .= "', '".$tanggal_dibuka_untuk_lalin."', '".$tanggal_ditutup_untuk_lalin."')";
+			}elseif($tipe == "pemutakhiran2"){
+				$sql = "insert into ".$this->tableRingkasanDataIdentifikasi;
+				$sql .= "(id_master_data, pemutakhiran_2, no_panjang_ruas_jalan_pemutakhiran_2, nama_pengenal_jalan_pemutakhiran_2, titik_awal_ruas_jalan_pemutakhiran_2, ";
+				$sql .= "desc_titik_awal_ruas_jalan_pemutakhiran_2, titik_akhir_ruas_jalan_pemutakhiran_2, desc_titik_akhir_ruas_jalan_pemutakhiran_2, titik_ikat_awal_patok_km_pemutakhiran_2, ";
+				$sql .= "desc_titik_ikat_awal_patok_km_pemutakhiran_2, sistem_jaringan_jalan_pemutakhiran_2, peran_jalan_pemutakhiran_2, status_jalan_pemutakhiran_2, kelas_jalan_pemutakhiran_2, ";
+				$sql .= "pembina_jalan_pemutakhiran_2, tanggal_selesai_diwujudkan_pemutakhiran_2, tanggal_dibuka_lalin_pemutakhiran_2, tanggal_ditutup_lalin_pemutakhiran_2) values ";
+				$sql .= "(".$id_master_data.", '".$tahun."', '".$nomor_panjang_ruas_jalan."', '".$nama_pengenal_jalan."', '".$titik_awal_ruas_jalan;
+				$sql .= "', '".$deskripsi_titik_awal_ruas_jalan."', '".$titik_akhir_ruas_jalan."', '".$deskripsi_titik_akhir_ruas_jalan;
+				$sql .= "', '".$titik_ikat_awal_patok."', '".$deskripsi_titik_ikat_patok."', '".$sistem_jaringan_jalan."', '".$peran_jalan;
+				$sql .= "', '".$status_jalan."', '".$kelas_jalan."', '".$pembina_jalan."', '".$tanggal_selesai_diwujudkan;
+				$sql .= "', '".$tanggal_dibuka_untuk_lalin."', '".$tanggal_ditutup_untuk_lalin."')";
+			}elseif($tipe == "pemutakhiran3"){
+				$sql = "insert into ".$this->tableRingkasanDataIdentifikasi;
+				$sql .= "(id_master_data, pemutakhiran_3, no_panjang_ruas_jalan_pemutakhiran_3, nama_pengenal_jalan_pemutakhiran_3, titik_awal_ruas_jalan_pemutakhiran_3, ";
+				$sql .= "desc_titik_awal_ruas_jalan_pemutakhiran_3, titik_akhir_ruas_jalan_pemutakhiran_3, desc_titik_akhir_ruas_jalan_pemutakhiran_3, titik_ikat_awal_patok_km_pemutakhiran_3, ";
+				$sql .= "desc_titik_ikat_awal_patok_km_pemutakhiran_3, sistem_jaringan_jalan_pemutakhiran_3, peran_jalan_pemutakhiran_3, status_jalan_pemutakhiran_3, kelas_jalan_pemutakhiran_3, ";
+				$sql .= "pembina_jalan_pemutakhiran_3, tanggal_selesai_diwujudkan_pemutakhiran_3, tanggal_dibuka_lalin_pemutakhiran_3, tanggal_ditutup_lalin_pemutakhiran_3) values ";
+				$sql .= "(".$id_master_data.", '".$tahun."', '".$nomor_panjang_ruas_jalan."', '".$nama_pengenal_jalan."', '".$titik_awal_ruas_jalan;
+				$sql .= "', '".$deskripsi_titik_awal_ruas_jalan."', '".$titik_akhir_ruas_jalan."', '".$deskripsi_titik_akhir_ruas_jalan;
+				$sql .= "', '".$titik_ikat_awal_patok."', '".$deskripsi_titik_ikat_patok."', '".$sistem_jaringan_jalan."', '".$peran_jalan;
+				$sql .= "', '".$status_jalan."', '".$kelas_jalan."', '".$pembina_jalan."', '".$tanggal_selesai_diwujudkan;
+				$sql .= "', '".$tanggal_dibuka_untuk_lalin."', '".$tanggal_ditutup_untuk_lalin."')";
+			}elseif($tipe == "pemutakhiran4"){
+				$sql = "insert into ".$this->tableRingkasanDataIdentifikasi;
+				$sql .= "(id_master_data, pemutakhiran_4, no_panjang_ruas_jalan_pemutakhiran_4, nama_pengenal_jalan_pemutakhiran_4, titik_awal_ruas_jalan_pemutakhiran_4, ";
+				$sql .= "desc_titik_awal_ruas_jalan_pemutakhiran_4, titik_akhir_ruas_jalan_pemutakhiran_4, desc_titik_akhir_ruas_jalan_pemutakhiran_4, titik_ikat_awal_patok_km_pemutakhiran_4, ";
+				$sql .= "desc_titik_ikat_awal_patok_km_pemutakhiran_4, sistem_jaringan_jalan_pemutakhiran_4, peran_jalan_pemutakhiran_4, status_jalan_pemutakhiran_4, kelas_jalan_pemutakhiran_4, ";
+				$sql .= "pembina_jalan_pemutakhiran_4, tanggal_selesai_diwujudkan_pemutakhiran_4, tanggal_dibuka_lalin_pemutakhiran_4, tanggal_ditutup_lalin_pemutakhiran_4) values ";
+				$sql .= "(".$id_master_data.", '".$tahun."', '".$nomor_panjang_ruas_jalan."', '".$nama_pengenal_jalan."', '".$titik_awal_ruas_jalan;
+				$sql .= "', '".$deskripsi_titik_awal_ruas_jalan."', '".$titik_akhir_ruas_jalan."', '".$deskripsi_titik_akhir_ruas_jalan;
+				$sql .= "', '".$titik_ikat_awal_patok."', '".$deskripsi_titik_ikat_patok."', '".$sistem_jaringan_jalan."', '".$peran_jalan;
+				$sql .= "', '".$status_jalan."', '".$kelas_jalan."', '".$pembina_jalan."', '".$tanggal_selesai_diwujudkan;
+				$sql .= "', '".$tanggal_dibuka_untuk_lalin."', '".$tanggal_ditutup_untuk_lalin."')";
+			}
 			$this->db->query($sql);
 
 		}elseif($method == "lokasi"){

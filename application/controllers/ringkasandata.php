@@ -5,6 +5,7 @@
  * @property Va_list $va_list
  * @property Va_input $va_input
  * @property Leger_m $leger_m
+ * @property Masterdata_m $masterdata_m
  *
  */
 class Ringkasandata extends MY_Controller {
@@ -12,7 +13,7 @@ class Ringkasandata extends MY_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model( array("leger_m") );
+		$this->load->model( array("leger_m", "masterdata_m") );
         $this->load->library('va_excel');
 	}
 	
@@ -97,11 +98,13 @@ class Ringkasandata extends MY_Controller {
         $this->data['breadcrumb'] = array("Identifikasi"=> "ringkasandata/addIdentifikasi");
         $this->load->library("va_input", array("group" => "ringkasandata"));
 
+		$dataMaster = $this->getDataMasterById($id);
+
         $this->va_input->addHidden( array("name" => "method", "value" => "identifikasi") );
-        $this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "") );
+        $this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "", "value" => $dataMaster[0]['lembar_distribusi']) );
+		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "", "value" => $dataMaster[0]['no_leger']) );
+		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "", "value" => $dataMaster[0]['id_provinsi']) );
+		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "", "value" => $dataMaster[0]['nama']) );
 		$dataList = array(
 			"" => "-- pilih tipe dokumen --",
 			"asal" => "asal",
@@ -145,11 +148,13 @@ class Ringkasandata extends MY_Controller {
 		$this->data['breadcrumb'] = array("Lokasi"=> "ringkasandata/addLokasi");
 		$this->load->library("va_input", array("group" => "ringkasandata"));
 
+		$dataMaster = $this->getDataMasterById($id);
+
 		$this->va_input->addHidden( array("name" => "method", "value" => "lokasi") );
-		$this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "", "value" => $dataMaster[0]['lembar_distribusi']) );
+		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "", "value" => $dataMaster[0]['no_leger']) );
+		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "", "value" => $dataMaster[0]['id_provinsi']) );
+		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "", "value" => $dataMaster[0]['nama']) );
 		$this->va_input->addCustomField( array("name" =>"lokasi[]", "placeholder" => "Upload File ", "view"=>"form/upload_peta", "label"=>"Provinsi"));
 		$this->va_input->addCustomField( array("name" =>"lokasi[]", "placeholder" => "Upload File ", "view"=>"form/upload_peta", "label"=>"Jalan"));
 		$this->va_input->addHidden( array("name" => "id_master_data", "value" => $id) );
@@ -160,18 +165,20 @@ class Ringkasandata extends MY_Controller {
 
 	}
 
-	public function addPerwujudan(){
+	public function addPerwujudan($id){
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "";
 		$this->data['formTitle'] = "Ringkasan Data - Perwujudan";
 		$this->data['breadcrumb'] = array("Perwujudan"=> "ringkasandata/addPerwujudan");
 		$this->load->library("va_input", array("group" => "ringkasandata"));
 
+		$dataMaster = $this->getDataMasterById($id);
+
 		$this->va_input->addHidden( array("name" => "method", "value" => "perwujudan") );
-		$this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "", "value" => $dataMaster[0]['lembar_distribusi']) );
+		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "", "value" => $dataMaster[0]['no_leger']) );
+		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "", "value" => $dataMaster[0]['id_provinsi']) );
+		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "", "value" => $dataMaster[0]['nama']) );
 		$dataList = array(
 			"" => "-- pilih tipe dokumen --",
 			"asal" => "asal",
@@ -205,18 +212,20 @@ class Ringkasandata extends MY_Controller {
 
 	}
 
-	public function addLintasHarianRata2(){
+	public function addLintasHarianRata2($id){
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "";
 		$this->data['formTitle'] = "Ringkasan Data - Lintas Harian Rata-rata";
 		$this->data['breadcrumb'] = array("Lintas Harian Rata-rata"=> "ringkasandata/addLintasHarianRata2");
 		$this->load->library("va_input", array("group" => "ringkasandata"));
 
+		$dataMaster = $this->getDataMasterById($id);
+
 		$this->va_input->addHidden( array("name" => "method", "value" => "lintas harian rata2") );
-		$this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "", "value" => $dataMaster[0]['lembar_distribusi']) );
+		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "", "value" => $dataMaster[0]['no_leger']) );
+		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "", "value" => $dataMaster[0]['id_provinsi']) );
+		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "", "value" => $dataMaster[0]['nama']) );
 		$dataList = array(
 			"" => "-- pilih tipe dokumen --",
 			"asal" => "asal",
@@ -248,18 +257,20 @@ class Ringkasandata extends MY_Controller {
 
 	}
 
-	public function addLuasLahanRumija(){
+	public function addLuasLahanRumija($id){
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "";
 		$this->data['formTitle'] = "Ringkasan Data - Luas Lahan Rumija";
 		$this->data['breadcrumb'] = array("Luas Lahan Rumija"=> "ringkasandata/addLuasLahanRumija");
 		$this->load->library("va_input", array("group" => "ringkasandata"));
 
+		$dataMaster = $this->getDataMasterById($id);
+
 		$this->va_input->addHidden( array("name" => "method", "value" => "luas_lahan_rumija") );
-		$this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "", "value" => $dataMaster[0]['lembar_distribusi']) );
+		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "", "value" => $dataMaster[0]['no_leger']) );
+		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "", "value" => $dataMaster[0]['id_provinsi']) );
+		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "", "value" => $dataMaster[0]['nama']) );
 		$dataList = array(
 			"" => "-- pilih tipe dokumen --",
 			"asal" => "asal",
@@ -282,18 +293,20 @@ class Ringkasandata extends MY_Controller {
 
 	}
 
-	public function addDataTeknik(){
+	public function addDataTeknik($id){
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "";
 		$this->data['formTitle'] = "Ringkasan Data - Data Teknik";
 		$this->data['breadcrumb'] = array("Data Teknik"=> "ringkasandata/addDataTeknik");
 		$this->load->library("va_input", array("group" => "ringkasandata"));
 
+		$dataMaster = $this->getDataMasterById($id);
+
 		$this->va_input->addHidden( array("name" => "method", "value" => "data_teknik") );
-		$this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "") );
+		$this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "", "value" => $dataMaster[0]['lembar_distribusi']) );
+		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "", "value" => $dataMaster[0]['no_leger']) );
+		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "", "value" => $dataMaster[0]['id_provinsi']) );
+		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "", "value" => $dataMaster[0]['nama']) );
 		$dataList = array(
 			"" => "-- pilih tipe dokumen --",
 			"asal" => "asal",
@@ -376,7 +389,7 @@ class Ringkasandata extends MY_Controller {
 
 	}
 
-	public function addLegalisasi(){
+	public function addLegalisasi($id){
 		//sampai sini
 		$this->data['content'] = "form_v.php";
 		$this->data['pageTitle'] = "";
@@ -384,12 +397,19 @@ class Ringkasandata extends MY_Controller {
 		$this->data['breadcrumb'] = array("Data Teknik"=> "ringkasandata/addLegalisasi");
 		$this->load->library("va_input", array("group" => "ringkasandata"));
 
-		$this->va_input->addHidden( array("name" => "method", "value" => "legalisasi") );
-		$this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "") );
-		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "") );
+		$dataMaster = $this->getDataMasterById($id);
 
+		$this->va_input->addHidden( array("name" => "method", "value" => "legalisasi") );
+		$this->va_input->addInputPu( array("name" => "lembar_distribusi_ke", "maxlength" => "1", "size" => "1", "label" => "", "value" => $dataMaster[0]['lembar_distribusi']) );
+		$this->va_input->addInputPu( array("name" => "nomer_lembar", "maxlength" => "9", "size" => "9", "label" => "", "value" => $dataMaster[0]['no_leger']) );
+		$this->va_input->addInputPu( array("name" => "kode_provinsi", "maxlength" => "2", "size" => "2", "label" => "", "value" => $dataMaster[0]['id_provinsi']) );
+		$this->va_input->addInputPu( array("name" => "nama_provinsi", "maxlength" => "40", "size" => "40", "label" => "", "value" => $dataMaster[0]['nama']) );
+
+	}
+
+	private function getDataMasterById($id){
+		$list = $this->masterdata_m->getMasterDataById($id);
+		return $list;
 	}
 }
 ?>

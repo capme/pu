@@ -250,5 +250,10 @@ class Masterdata_m extends MY_Model {
 
 	}
 
+	public function getMasterDataById($id){
+		$query = $this->db->query('SELECT a.id_provinsi, a.lembar_distribusi, a.no_leger, b.nama FROM pu_master_data a, pu_area b WHERE a.id_provinsi=b.id and a.id='. $id);
+		$result = $query->result_array();
+		return $result;
+	}
 }
 ?>
