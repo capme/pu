@@ -92,3 +92,4 @@
 	</table>
 	<br />
 </div>
+<?php echo $this->va_input->getFieldInput($this->va_input->fields[15]);?>

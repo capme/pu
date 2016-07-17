@@ -205,6 +205,8 @@ class Ringkasandata extends MY_Controller {
 		$this->va_input->addInputPu( array("name" => "supervisi", "maxlength" => "40", "size" => "30", "label" => "") );
 		$this->va_input->addSelect( array("name" => "tipe_bagian","label" => "", "list" => $dataListBagian, "value" => "") );
 
+		$this->va_input->addHidden( array("name" => "id_master_data", "value" => $id) );
+
 		$this->va_input->setCustomLayout(TRUE)->setCustomLayoutFile("ringkasandata/addPerwujudan.php");
 
 		$this->data['script'] = $this->load->view("script/codgroup_view", array(), true);

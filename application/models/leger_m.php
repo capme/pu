@@ -226,6 +226,94 @@ class Leger_m extends MY_Model {
 			}
 
 
+		}elseif($method == "perwujudan"){
+
+			$tipe = $data['tipe'];
+			$tahun = $data['tahun'];
+			$desain = $data['desain'];
+			$pembebasan_lahan = $data['pembebasan_lahan'];
+			$pembangunan = $data['pembangunan'];
+			$peningkatan = $data['peningkatan'];
+			$penunjangan = $data['penunjangan'];
+			$pemeliharaan_dan_rehab = $data['pemeliharaan_dan_rehab'];
+			$supervisi = $data['supervisi'];
+			$tipe_bagian = $data['tipe_bagian'];
+			$id_master_data = $data['id_master_data'];
+
+			if($tipe == "asal"){
+				if($tipe_bagian == "pelaksana"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, asal, desain_pelaksana_asal, pembebasan_lahan_pelaksana_asal, pembangunan_pelaksana_asal, peningkatan_pelaksana_asal, penunjangan_pelaksana_asal, pemeliharaan_pelaksana_asal, supervisi_pelaksana_asal)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}elseif($tipe_bagian == "cacah"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, asal, desain_cacah_asal, pembebasan_lahan_cacah_asal, pembangunan_cacah_asal, peningkatan_cacah_asal, penunjangan_cacah_asal, pemeliharaan_cacah_asal, supervisi_cacah_asal)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}elseif($tipe_bagian == "biaya"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, asal, desain_biaya_asal, pembebasan_lahan_biaya_asal, pembangunan_biaya_asal, peningkatan_biaya_asal, penunjangan_biaya_asal, pemeliharaan_biaya_asal, supervisi_biaya_asal)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}elseif($tipe_bagian == "sumberdana"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, asal, desain_sumber_dana_asal, pembebasan_lahan_sumber_dana_asal, pembangunan_sumber_dana_asal, peningkatan_sumber_dana_asal, penunjangan_sumber_dana_asal, pemeliharaan_sumber_dana_asal, supervisi_sumber_dana_asal)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}
+			}elseif($tipe == "pemutakhiran1"){
+				if($tipe_bagian == "pelaksana"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, pemutakhiran_1, desain_pelaksana_pemutakhiran_1, pembebasan_lahan_pelaksana_pemutakhiran_1, pembangunan_pelaksana_pemutakhiran_1, peningkatan_pelaksana_pemutakhiran_1, penunjangan_pelaksana_pemutakhiran_1, pemeliharaan_pelaksana_pemutakhiran_1, supervisi_pelaksana_pemutakhiran_1)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}elseif($tipe_bagian == "cacah"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, pemutakhiran_1, desain_cacah_pemutakhiran_1, pembebasan_lahan_cacah_pemutakhiran_1, pembangunan_cacah_pemutakhiran_1, peningkatan_cacah_pemutakhiran_1, penunjangan_cacah_pemutakhiran_1, pemeliharaan_cacah_pemutakhiran_1, supervisi_cacah_pemutakhiran_1)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}elseif($tipe_bagian == "biaya"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, pemutakhiran_1, desain_biaya_pemutakhiran_1, pembebasan_lahan_biaya_pemutakhiran_1, pembangunan_biaya_pemutakhiran_1, peningkatan_biaya_pemutakhiran_1, penunjangan_biaya_pemutakhiran_1, pemeliharaan_biaya_pemutakhiran_1, supervisi_biaya_pemutakhiran_1)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}elseif($tipe_bagian == "sumberdana"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, pemutakhiran_1, desain_sumber_dana_pemutakhiran_1, pembebasan_lahan_sumber_dana_pemutakhiran_1, pembangunan_sumber_dana_pemutakhiran_1, peningkatan_sumber_dana_pemutakhiran_1, penunjangan_sumber_dana_pemutakhiran_1, pemeliharaan_sumber_dana_pemutakhiran_1, supervisi_sumber_dana_pemutakhiran_1)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}
+			}elseif($tipe == "pemutakhiran2"){
+				if($tipe_bagian == "pelaksana"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, pemutakhiran_2, desain_pelaksana_pemutakhiran_2, pembebasan_lahan_pelaksana_pemutakhiran_2, pembangunan_pelaksana_pemutakhiran_2, peningkatan_pelaksana_pemutakhiran_2, penunjangan_pelaksana_pemutakhiran_2, pemeliharaan_pelaksana_pemutakhiran_2, supervisi_pelaksana_pemutakhiran_2)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}elseif($tipe_bagian == "cacah"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, pemutakhiran_2, desain_cacah_pemutakhiran_2, pembebasan_lahan_cacah_pemutakhiran_2, pembangunan_cacah_pemutakhiran_2, peningkatan_cacah_pemutakhiran_2, penunjangan_cacah_pemutakhiran_2, pemeliharaan_cacah_pemutakhiran_2, supervisi_cacah_pemutakhiran_2)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}elseif($tipe_bagian == "biaya"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, pemutakhiran_2, desain_biaya_pemutakhiran_2, pembebasan_lahan_biaya_pemutakhiran_2, pembangunan_biaya_pemutakhiran_2, peningkatan_biaya_pemutakhiran_2, penunjangan_biaya_pemutakhiran_2, pemeliharaan_biaya_pemutakhiran_2, supervisi_biaya_pemutakhiran_2)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}elseif($tipe_bagian == "sumberdana"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, pemutakhiran_2, desain_sumber_dana_pemutakhiran_2, pembebasan_lahan_sumber_dana_pemutakhiran_2, pembangunan_sumber_dana_pemutakhiran_2, peningkatan_sumber_dana_pemutakhiran_2, penunjangan_sumber_dana_pemutakhiran_2, pemeliharaan_sumber_dana_pemutakhiran_2, supervisi_sumber_dana_pemutakhiran_2)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}
+			}elseif($tipe == "pemutakhiran3"){
+				if($tipe_bagian == "pelaksana"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, pemutakhiran_3, desain_pelaksana_pemutakhiran_3, pembebasan_lahan_pelaksana_pemutakhiran_3, pembangunan_pelaksana_pemutakhiran_3, peningkatan_pelaksana_pemutakhiran_3, penunjangan_pelaksana_pemutakhiran_3, pemeliharaan_pelaksana_pemutakhiran_3, supervisi_pelaksana_pemutakhiran_3)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}elseif($tipe_bagian == "cacah"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, pemutakhiran_3, desain_cacah_pemutakhiran_3, pembebasan_lahan_cacah_pemutakhiran_3, pembangunan_cacah_pemutakhiran_3, peningkatan_cacah_pemutakhiran_3, penunjangan_cacah_pemutakhiran_3, pemeliharaan_cacah_pemutakhiran_3, supervisi_cacah_pemutakhiran_3)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}elseif($tipe_bagian == "biaya"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, pemutakhiran_3, desain_biaya_pemutakhiran_3, pembebasan_lahan_biaya_pemutakhiran_3, pembangunan_biaya_pemutakhiran_3, peningkatan_biaya_pemutakhiran_3, penunjangan_biaya_pemutakhiran_3, pemeliharaan_biaya_pemutakhiran_3, supervisi_biaya_pemutakhiran_3)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}elseif($tipe_bagian == "sumberdana"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, pemutakhiran_3, desain_sumber_dana_pemutakhiran_3, pembebasan_lahan_sumber_dana_pemutakhiran_3, pembangunan_sumber_dana_pemutakhiran_3, peningkatan_sumber_dana_pemutakhiran_3, penunjangan_sumber_dana_pemutakhiran_3, pemeliharaan_sumber_dana_pemutakhiran_3, supervisi_sumber_dana_pemutakhiran_3)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}
+			}elseif($tipe == "pemutakhiran4"){
+				if($tipe_bagian == "pelaksana"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, pemutakhiran_4, desain_pelaksana_pemutakhiran_4, pembebasan_lahan_pelaksana_pemutakhiran_4, pembangunan_pelaksana_pemutakhiran_4, peningkatan_pelaksana_pemutakhiran_4, penunjangan_pelaksana_pemutakhiran_4, pemeliharaan_pelaksana_pemutakhiran_4, supervisi_pelaksana_pemutakhiran_4)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}elseif($tipe_bagian == "cacah"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, pemutakhiran_4, desain_cacah_pemutakhiran_4, pembebasan_lahan_cacah_pemutakhiran_4, pembangunan_cacah_pemutakhiran_4, peningkatan_cacah_pemutakhiran_4, penunjangan_cacah_pemutakhiran_4, pemeliharaan_cacah_pemutakhiran_4, supervisi_cacah_pemutakhiran_4)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}elseif($tipe_bagian == "biaya"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, pemutakhiran_4, desain_biaya_pemutakhiran_4, pembebasan_lahan_biaya_pemutakhiran_4, pembangunan_biaya_pemutakhiran_4, peningkatan_biaya_pemutakhiran_4, penunjangan_biaya_pemutakhiran_4, pemeliharaan_biaya_pemutakhiran_4, supervisi_biaya_pemutakhiran_4)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}elseif($tipe_bagian == "sumberdana"){
+					$sql = "INSERT INTO " . $this->tableRingkasanDataPerwujudan . "(id_master_data, pemutakhiran_4, desain_sumber_dana_pemutakhiran_4, pembebasan_lahan_sumber_dana_pemutakhiran_4, pembangunan_sumber_dana_pemutakhiran_4, peningkatan_sumber_dana_pemutakhiran_4, penunjangan_sumber_dana_pemutakhiran_4, pemeliharaan_sumber_dana_pemutakhiran_4, supervisi_sumber_dana_pemutakhiran_4)";
+					$sql .= " values (".$id_master_data.", '".$tahun."', '".$desain."', '".$pembebasan_lahan."', '".$pembangunan."', '".$peningkatan."', '".$penunjangan."', '".$pemeliharaan_dan_rehab."', '".$supervisi."')";
+				}
+			}
+
+			$this->db->query($sql);
+
 		}
 
 		$this->db->trans_complete();
