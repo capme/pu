@@ -314,6 +314,73 @@ class Leger_m extends MY_Model {
 
 			$this->db->query($sql);
 
+		}elseif($method == "lintas harian rata2"){
+
+			$tipe = $data['tipe'];
+			$tahun = $data['tahun'];
+			$sepeda_motor = $data['sepeda_motor'];
+			$mobil_pribadi = $data['mobil_pribadi'];
+			$mobil_penumpang = $data['mobil_penumpang'];
+			$mobil_barang = $data['mobil_barang'];
+			$bis_kecil = $data['bis_kecil'];
+			$bis_besar = $data['bis_besar'];
+			$truk_2_sumbu_kecil = $data['truk_2_sumbu_kecil'];
+			$truk_2_sumbu_besar = $data['truk_2_sumbu_besar'];
+			$truk_3_sumbu_atau_lebih = $data['truk_3_sumbu_atau_lebih'];
+			$truk_dengan_gandengan = $data['truk_dengan_gandengan'];
+			$truk_semi_trailer = $data['truk_semi_trailer'];
+			$kendaraan_tidak_bermotor = $data['kendaraan_tidak_bermotor'];
+
+			$id_master_data = $data['id_master_data'];
+
+			if($tipe == "asal"){
+				$sql = "insert into ".$this->tableRingkasanDataLintasHarian;
+				$sql .= "(id_master_data, asal, sepeda_mtr_roda_3_asal, mobil_pribadi_asal, mobil_penumpang_asal, mobil_barang_asal, ";
+				$sql .= "bis_kecil_asal, bis_besar_asal, truk_2_sumbu_kecil_asal, truck_2_sumbu_besar_asal, ";
+				$sql .= "truk_3_sumbu_lebih_asal, truk_gandeng_asal, truk_semi_trailer_asal, kendaraan_tdk_bermotor_asal) values ";
+				$sql .= "(".$id_master_data.", '".$tahun."', '".$sepeda_motor."', '".$mobil_pribadi."', '".$mobil_penumpang;
+				$sql .= "', '".$mobil_barang."', '".$bis_kecil."', '".$bis_besar;
+				$sql .= "', '".$truk_2_sumbu_kecil."', '".$truk_2_sumbu_besar."', '".$truk_3_sumbu_atau_lebih."', '".$truk_dengan_gandengan;
+				$sql .= "', '".$truk_semi_trailer."', '".$kendaraan_tidak_bermotor."')";
+			}elseif($tipe == "pemutakhiran1"){
+				$sql = "insert into ".$this->tableRingkasanDataLintasHarian;
+				$sql .= "(id_master_data, pemutakhiran_1, sepeda_mtr_roda_3_pemutakhiran_1, mobil_pribadi_pemutakhiran_1, mobil_penumpang_pemutakhiran_1, mobil_barang_pemutakhiran_1, ";
+				$sql .= "bis_kecil_pemutakhiran_1, bis_besar_pemutakhiran_1, truk_2_sumbu_kecil_pemutakhiran_1, truck_2_sumbu_besar_pemutakhiran_1, ";
+				$sql .= "truk_3_sumbu_lebih_pemutakhiran_1, truk_gandeng_pemutakhiran_1, truk_semi_trailer_pemutakhiran_1, kendaraan_tdk_bermotor_pemutakhiran_1) values ";
+				$sql .= "(".$id_master_data.", '".$tahun."', '".$sepeda_motor."', '".$mobil_pribadi."', '".$mobil_penumpang;
+				$sql .= "', '".$mobil_barang."', '".$bis_kecil."', '".$bis_besar;
+				$sql .= "', '".$truk_2_sumbu_kecil."', '".$truk_2_sumbu_besar."', '".$truk_3_sumbu_atau_lebih."', '".$truk_dengan_gandengan;
+				$sql .= "', '".$truk_semi_trailer."', '".$kendaraan_tidak_bermotor."')";
+			}elseif($tipe == "pemutakhiran2"){
+				$sql = "insert into ".$this->tableRingkasanDataLintasHarian;
+				$sql .= "(id_master_data, pemutakhiran_2, sepeda_mtr_roda_3_pemutakhiran_2, mobil_pribadi_pemutakhiran_2, mobil_penumpang_pemutakhiran_2, mobil_barang_pemutakhiran_2, ";
+				$sql .= "bis_kecil_pemutakhiran_2, bis_besar_pemutakhiran_2, truk_2_sumbu_kecil_pemutakhiran_2, truck_2_sumbu_besar_pemutakhiran_2, ";
+				$sql .= "truk_3_sumbu_lebih_pemutakhiran_2, truk_gandeng_pemutakhiran_2, truk_semi_trailer_pemutakhiran_2, kendaraan_tdk_bermotor_pemutakhiran_2) values ";
+				$sql .= "(".$id_master_data.", '".$tahun."', '".$sepeda_motor."', '".$mobil_pribadi."', '".$mobil_penumpang;
+				$sql .= "', '".$mobil_barang."', '".$bis_kecil."', '".$bis_besar;
+				$sql .= "', '".$truk_2_sumbu_kecil."', '".$truk_2_sumbu_besar."', '".$truk_3_sumbu_atau_lebih."', '".$truk_dengan_gandengan;
+				$sql .= "', '".$truk_semi_trailer."', '".$kendaraan_tidak_bermotor."')";
+			}elseif($tipe == "pemutakhiran3"){
+				$sql = "insert into ".$this->tableRingkasanDataLintasHarian;
+				$sql .= "(id_master_data, pemutakhiran_3, sepeda_mtr_roda_3_pemutakhiran_3, mobil_pribadi_pemutakhiran_3, mobil_penumpang_pemutakhiran_3, mobil_barang_pemutakhiran_3, ";
+				$sql .= "bis_kecil_pemutakhiran_3, bis_besar_pemutakhiran_3, truk_2_sumbu_kecil_pemutakhiran_3, truck_2_sumbu_besar_pemutakhiran_3, ";
+				$sql .= "truk_3_sumbu_lebih_pemutakhiran_3, truk_gandeng_pemutakhiran_3, truk_semi_trailer_pemutakhiran_3, kendaraan_tdk_bermotor_pemutakhiran_3) values ";
+				$sql .= "(".$id_master_data.", '".$tahun."', '".$sepeda_motor."', '".$mobil_pribadi."', '".$mobil_penumpang;
+				$sql .= "', '".$mobil_barang."', '".$bis_kecil."', '".$bis_besar;
+				$sql .= "', '".$truk_2_sumbu_kecil."', '".$truk_2_sumbu_besar."', '".$truk_3_sumbu_atau_lebih."', '".$truk_dengan_gandengan;
+				$sql .= "', '".$truk_semi_trailer."', '".$kendaraan_tidak_bermotor."')";
+			}elseif($tipe == "pemutakhiran4"){
+				$sql = "insert into ".$this->tableRingkasanDataLintasHarian;
+				$sql .= "(id_master_data, pemutakhiran_4, sepeda_mtr_roda_3_pemutakhiran_4, mobil_pribadi_pemutakhiran_4, mobil_penumpang_pemutakhiran_4, mobil_barang_pemutakhiran_4, ";
+				$sql .= "bis_kecil_pemutakhiran_4, bis_besar_pemutakhiran_4, truk_2_sumbu_kecil_pemutakhiran_4, truck_2_sumbu_besar_pemutakhiran_4, ";
+				$sql .= "truk_3_sumbu_lebih_pemutakhiran_4, truk_gandeng_pemutakhiran_4, truk_semi_trailer_pemutakhiran_4, kendaraan_tdk_bermotor_pemutakhiran_4) values ";
+				$sql .= "(".$id_master_data.", '".$tahun."', '".$sepeda_motor."', '".$mobil_pribadi."', '".$mobil_penumpang;
+				$sql .= "', '".$mobil_barang."', '".$bis_kecil."', '".$bis_besar;
+				$sql .= "', '".$truk_2_sumbu_kecil."', '".$truk_2_sumbu_besar."', '".$truk_3_sumbu_atau_lebih."', '".$truk_dengan_gandengan;
+				$sql .= "', '".$truk_semi_trailer."', '".$kendaraan_tidak_bermotor."')";
+			}
+			$this->db->query($sql);
+
 		}
 
 		$this->db->trans_complete();
